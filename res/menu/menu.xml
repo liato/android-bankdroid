@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:id="@+id/accounts" android:title="Konton" android:icon="@android:drawable/ic_menu_agenda"/>
+	<item android:id="@+id/settings" android:title="Inställningar" android:icon="@android:drawable/ic_menu_preferences"/>
+	<item android:id="@+id/about" android:title="Om" android:icon="@android:drawable/ic_menu_info_details" />
+	<item android:id="@+id/exit" android:title="Avsluta" android:icon="@android:drawable/ic_menu_close_clear_cancel" />
+</menu>

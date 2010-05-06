@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight" android:paddingBottom="5dp" android:paddingTop="5dp">
+
+    <ImageView
+        android:id="@+id/imgListitemBanks"
+
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="2dp"
+
+        android:src="@drawable/icon" android:maxHeight="32dp" android:maxWidth="32dp"/>
+
+    <TextView
+        android:id="@+id/txtListitemBankname"
+
+        android:layout_width="fill_parent"
+        android:layout_height="26dip" 
+
+        android:layout_toRightOf="@id/imgListitemBanks"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:gravity="center_vertical" android:text="Banknamn"/>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_toRightOf="@id/imgListitemBanks"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_above="@id/txtListitemBankname"
+        android:layout_alignWithParentIfMissing="true"
+
+        android:gravity="center_vertical"
+        android:id="@+id/txtListitemAccountname" android:textSize="23sp" android:text="Personnummer"/>
+
+</RelativeLayout>

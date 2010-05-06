@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/RelativeLayout01"
+	android:layout_width="wrap_content"
+	android:layout_height="fill_parent">
+	<TextView
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:text="Du har inte lagt till någon bank ännu, gå till menyn och tryck på konton för att lägga till ett nytt bankkonto."
+		android:id="@+id/txtAccountsDesc"
+		android:visibility="visible"
+		android:layout_margin="10dp" />
+	<ListView
+		android:layout_width="fill_parent"
+		android:id="@+id/lstAccountsList"
+		android:layout_height="fill_parent"
+		android:fitsSystemWindows="true"
+		android:layout_above="@+id/LinearLayout02" />
+	<LinearLayout
+		android:id="@+id/LinearLayout02"
+		android:gravity="bottom" android:layout_width="fill_parent"
+		android:layout_weight="1" android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true">
+		<Button
+			android:drawableLeft="@android:drawable/ic_menu_rotate"
+			android:text="Uppdatera saldoinformation"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_gravity="bottom"
+			android:id="@+id/btnAccountsRefresh" android:visibility="gone"/>
+	</LinearLayout>
+</RelativeLayout>
