@@ -290,7 +290,7 @@ public class MainActivity extends Activity {
 				this.dialog.dismiss();
 			}
 			
-			if (this.errors != null) {
+			if (this.errors != null && !this.errors.isEmpty()) {
 				StringBuilder errormsg = new StringBuilder();
 				errormsg.append("Saldon för följande konton har ej uppdaterats:");
 				for (String err : errors)
@@ -308,9 +308,6 @@ public class MainActivity extends Activity {
 				});
 				AlertDialog alert = builder.create();
 				alert.show();
-			}
-			else {
-				parent.finish();
 			}
 		}
 	}	
