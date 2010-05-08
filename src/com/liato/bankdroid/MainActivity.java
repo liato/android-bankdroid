@@ -10,6 +10,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -221,12 +222,14 @@ public class MainActivity extends Activity {
 		private Bank bank;
 		private MainActivity parent;
 		private int bankcount;
+		private Resources res;
 
 		public DataRetrieverTask(MainActivity parent) {
 			this.parent = parent;
+			this.res = parent.getResources();
 		}
 		protected void onPreExecute() {
-			this.dialog.setMessage("Uppdaterar saldoinformation...\n ");
+			this.dialog.setMessage(res.getText(R.string.updating_account_balance)+"\n ");
 			this.dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 			this.dialog.setCancelable(false);
 			this.dialog.show();
@@ -282,7 +285,7 @@ public class MainActivity extends Activity {
 
 		protected void onProgressUpdate(String... args) {
 			this.dialog.setProgress(new Integer(args[0]));
-			this.dialog.setMessage("Uppdaterar saldoinformation...\n"+args[1]);
+			this.dialog.setMessage(res.getText(R.string.updating_account_balance)+"\n"+args[1]);
 		}
 		protected void onPostExecute(final Void unused) {
 			parent.refreshView();
@@ -292,14 +295,14 @@ public class MainActivity extends Activity {
 			
 			if (this.errors != null && !this.errors.isEmpty()) {
 				StringBuilder errormsg = new StringBuilder();
-				errormsg.append("Saldon för följande konton har ej uppdaterats:");
+				errormsg.append(res.getText(R.string.acounts_were_not_updated));
 				for (String err : errors)
 				{
 				  errormsg.append(err);
 				  errormsg.append("\n");
 				}
 				AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-				builder.setMessage(errormsg.toString()).setTitle("Fel vid uppdatering")
+				builder.setMessage(errormsg.toString()).setTitle(res.getText(R.string.errors_when_updating))
 				.setIcon(android.R.drawable.ic_dialog_alert)
 				.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {

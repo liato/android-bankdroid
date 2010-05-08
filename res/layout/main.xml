@@ -7,10 +7,9 @@
 	<TextView
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:text="Du har inte lagt till någon bank ännu, gå till menyn och tryck på konton för att lägga till ett nytt bankkonto."
 		android:id="@+id/txtAccountsDesc"
 		android:visibility="visible"
-		android:layout_margin="10dp" />
+		android:layout_margin="10dp" android:text="@string/main_instructions"/>
 	<ListView
 		android:layout_width="fill_parent"
 		android:id="@+id/lstAccountsList"
@@ -24,10 +23,9 @@
 		android:layout_alignParentBottom="true">
 		<Button
 			android:drawableLeft="@android:drawable/ic_menu_rotate"
-			android:text="Uppdatera saldoinformation"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
 			android:layout_gravity="bottom"
-			android:id="@+id/btnAccountsRefresh" android:visibility="gone"/>
+			android:id="@+id/btnAccountsRefresh" android:visibility="gone" android:text="@string/refresh_balance"/>
 	</LinearLayout>
 </RelativeLayout>

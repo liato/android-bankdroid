@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, main!</string>
     <string name="app_name">Bankdroid</string>
+    <string name="acounts_were_not_updated">Saldon för följande konton har ej uppdaterats</string>
+    <string name="updating_account_balance">Uppdaterar saldoinformation...</string>
+    <string name="errors_when_updating">Fel vid uppdatering"</string>
+    <string name="logging_in">Loggar in...</string>
+    <string name="could_not_create_account">Kunde ej skapa konto</string>
+    <string name="menu_edit">Redigera</string>
+    <string name="menu_remove">Radera</string>
+    <string name="invalid_username_password">Personnummer och lösenord stämmer ej.</string>
+    
+    <string name="username">Personnummer</string>
+    <string name="password">Lösenord</string>
+    <string name="bank">Bank</string>
+
+    <string name="cancel">Avbryt</string>
+    <string name="save">Spara</string>
+    
+	<string name="add_new_account">Lägg till ett nytt bankkonto</string>
+	<string name="banks_instructions">Du har inte lagt till någon bank ännu, tryck på knappen för att lägga till en bank.</string>
+	
+	<string name="main_instructions">Du har inte lagt till någon bank ännu, gå till menyn och tryck på konton för att lägga till ett nytt bankkonto.</string>
+	<string name="refresh_balance">Uppdatera saldoinformation</string>    
 </resources>

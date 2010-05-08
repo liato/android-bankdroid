@@ -3,6 +3,7 @@ package com.liato.bankdroid;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -25,11 +26,13 @@ public class AccountsActivity extends Activity {
 	private DBAdapter dba;
 	private Cursor c;
 	private ListView lv;
+	private Resources res;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.banks);
 		Button btnNewacc = (Button)findViewById(R.id.btnBanksNewaccount);
+		res = this.getResources();
 		btnNewacc.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				Intent intentAccount = new Intent(AccountsActivity.this, AccountActivity.class);
@@ -53,8 +56,8 @@ public class AccountsActivity extends Activity {
 			public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 				AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
 				menu.setHeaderTitle(((TextView)info.targetView.findViewById(R.id.txtListitemBankname)).getText());
-				menu.add(0, 0, 0, "Redigera");
-				menu.add(0, 1, 0, "Radera");
+				menu.add(0, 0, 0, res.getText(R.string.menu_edit));
+				menu.add(0, 1, 0, res.getText(R.string.menu_remove));
 			}
 		});
 	}

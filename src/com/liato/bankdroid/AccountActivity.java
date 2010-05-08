@@ -7,10 +7,10 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -54,7 +54,6 @@ public class AccountActivity extends Activity implements OnClickListener, OnItem
 					((EditText)findViewById(R.id.edtBankeditPassword)).setText(c.getString(c.getColumnIndex("password")));
 					SELECTED_BANK = c.getString(c.getColumnIndex("banktype"));
 					int i = items.indexOf(SELECTED_BANK);
-					Log.d("a", "Index "+i);
 					spnBanks.setSelection(i);
 					c.close();
 				}
@@ -89,12 +88,15 @@ public class AccountActivity extends Activity implements OnClickListener, OnItem
 		private Exception exc = null;
 		private Bank bank;
 		private AccountActivity parent;
+		private Resources res;
 
 		public DataRetrieverTask(AccountActivity parent) {
 			this.parent = parent;
+			this.res = parent.getResources();
+			
 		}
 		protected void onPreExecute() {
-			this.dialog.setMessage("Loggar in...");
+			this.dialog.setMessage(res.getText(R.string.logging_in));
 			this.dialog.show();
 		}
 
@@ -135,7 +137,7 @@ public class AccountActivity extends Activity implements OnClickListener, OnItem
 			}
 			if (this.exc != null) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(AccountActivity.this);
-				builder.setMessage(this.exc.getMessage()).setTitle("Kunde ej skapa konto")
+				builder.setMessage(this.exc.getMessage()).setTitle(res.getText(R.string.could_not_create_account))
 				.setIcon(android.R.drawable.ic_dialog_alert)
 				.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
