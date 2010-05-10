@@ -12,6 +12,8 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.text.Html;
+import android.util.Log;
+
 import com.liato.urllib.Urllib;
 
 public class BankICA implements Bank {
@@ -21,8 +23,8 @@ public class BankICA implements Bank {
 	private Banks banktype = Banks.ICA;
 	private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
 	private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
-	private Pattern reError = Pattern.compile("<label\\sclass=\"error\">([^>]+)</label>");
-	//private Pattern reBalance = Pattern.compile("REGEX TILL KONTOÖVERSIKT");
+	private Pattern reError = Pattern.compile("<label\\s+class=\"error\">(.+?)</label>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private Pattern reBalance = Pattern.compile("account\\.aspx\\?id=([^\"]+).+?>([^<]+)</a.+?Saldo([0-9 .,-]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	
 	private ArrayList<Account> accounts = new ArrayList<Account>();
 	private BigDecimal balance = new BigDecimal(0);
@@ -41,10 +43,9 @@ public class BankICA implements Bank {
 	}
 	public void update() throws BankException {
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
-			throw new BankException("");//res.getText(R.string.invalid_username_password));
+			throw new BankException("Personnummer och lÃ¶senord stÃ¤mmer ej.");//res.getText(R.string.invalid_username_password));
 		}
-		throw new BankException("Stöd för ICA-banken kommer inom kort.");
-		/*
+
 		Urllib urlopen = new Urllib();
 		String response = null;
 		Matcher matcher;
@@ -61,25 +62,23 @@ public class BankICA implements Bank {
 			}
 			String strEventValidation = matcher.group(1);
 			List <NameValuePair> postData = new ArrayList <NameValuePair>();
-			postData.add(new BasicNameValuePair("xyz", username));
-			postData.add(new BasicNameValuePair("zyx", password));
+			postData.add(new BasicNameValuePair("pnr_phone", username));
+			postData.add(new BasicNameValuePair("pwd_phone", password));
+			postData.add(new BasicNameValuePair("btnLogin", "Logga in"));
 			postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
 			postData.add(new BasicNameValuePair("__EVENTVALIDATION", strEventValidation));
 			response = urlopen.open("https://mobil.icabanken.se/login/login.aspx", postData);
-
+			
 			matcher = reError.matcher(response);
 			if (matcher.find()) {
 				throw new BankException(Html.fromHtml(matcher.group(1).trim()).toString());
 			}
 
-			if (!response.contains("reDirect")) {
-				throw new BankException("Personnummer och lösenord stämmer ej.");
-			}
-
-			response = urlopen.open("URL TILL KONTOÖVERSIKT");
+			response = urlopen.open("https://mobil.icabanken.se/account/overview.aspx");
 			matcher = reBalance.matcher(response);
 			while (matcher.find()) {
-				accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString(), Helpers.parseBalance(matcher.group(2))));
+				Log.d("BankICA", "Saldo: "+matcher.group(3));
+				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), matcher.group(1).trim()));
 			}
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
@@ -89,7 +88,7 @@ public class BankICA implements Bank {
 		finally {
 			urlopen.close();
 		}
-		*/
+
 	}
 
 

@@ -20,7 +20,9 @@ public class BankNordea implements Bank {
 	private String password;
 	private Banks banktype = Banks.NORDEA;
 	private Pattern reBalance = Pattern.compile("(?is)nowrap>(.+?)SEK<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-	private Pattern reAccounts = Pattern.compile("(?is)Kontoutdraget';.*?>(.*?)</a></td>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	//private Pattern reAccounts = Pattern.compile("(?is)Kontoutdraget';.*?>(.*?)</a></td>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private Pattern reAccounts = Pattern.compile("sendAccount\\('SEK',\\s*'[^']+',\\s*'[^']+',\\s*'([^']+)',\\s*'([^']+)'\\)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	
 	private ArrayList<Account> accounts = new ArrayList<Account>();
 	private BigDecimal balance = new BigDecimal(0);
 
@@ -38,7 +40,7 @@ public class BankNordea implements Bank {
 	}
 	public void update() throws BankException {
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
-			throw new BankException("Personnummer och lösenord stämmer ej.");
+			throw new BankException("Personnummer och lï¿½senord stï¿½mmer ej.");
 		}
 		Urllib urlopen = new Urllib();
 		String response = null;
@@ -55,14 +57,14 @@ public class BankNordea implements Bank {
 			response = urlopen.open("https://gfs.nb.se/bin2/gfskod", postData);
 
 			if (!response.contains("reDirect")) {
-				throw new BankException("Personnummer och lösenord stämmer ej.");
+				throw new BankException("Personnummer och lÃ¶senord stÃ¤mmer ej.");
 			}
 
 			response = urlopen.open("https://gfs.nb.se/bin2/gfskod?OBJECT=KF00T&show_button=No");
 			matcherBalance = reBalance.matcher(response);
 			matcherAccounts = reAccounts.matcher(response);
 			while (matcherAccounts.find() && matcherBalance.find()) {
-				accounts.add(new Account(Html.fromHtml(matcherAccounts.group(1)).toString(), Helpers.parseBalance(matcherBalance.group(1))));
+				accounts.add(new Account(Html.fromHtml(matcherAccounts.group(2)).toString(), Helpers.parseBalance(matcherBalance.group(1)), matcherAccounts.group(2).trim()));
 			}
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();

@@ -20,7 +20,7 @@ public class BankSwedbank implements Bank {
 	private String password;
 	private Banks banktype = Banks.SWEDBANK;
 	private Pattern reCSRF = Pattern.compile("csrf_token\"\\s*value=\"([^\"]+)\"");
-	private Pattern reAccounts = Pattern.compile("<span.*?/span>([^<]+) <.*?secondary\">([0-9 .,-]+)</span");
+	private Pattern reAccounts = Pattern.compile("account\\.html\\?id=([^\"]+)\">\\s*<span.*?/span>([^<]+) <.*?secondary\">([0-9 .,-]+)</span");
 	private ArrayList<Account> accounts = new ArrayList<Account>();
 	private BigDecimal balance = new BigDecimal(0);
 
@@ -40,7 +40,7 @@ public class BankSwedbank implements Bank {
 
 	public void update() throws BankException {
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
-			throw new BankException("Personnummer och lösenord stämmer ej.");
+			throw new BankException("Personnummer och lï¿½senord stï¿½mmer ej.");
 		}        Urllib urlopen = new Urllib();
 		String response = null;
 		Matcher matcher;
@@ -58,12 +58,12 @@ public class BankSwedbank implements Bank {
 			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/login.html", postData);
 
 			if (response.contains("misslyckats")) {
-				throw new BankException("Personnummer och lösenord stämmer ej.");
+				throw new BankException("Personnummer och lï¿½senord stï¿½mmer ej.");
 			}
 			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank-light/accounts.html");
 			matcher = reAccounts.matcher(response);
 			while (matcher.find()) {
-				accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString(), Helpers.parseBalance(matcher.group(2))));
+				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString(), Helpers.parseBalance(matcher.group(3)), matcher.group(1).trim()));
 			}
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();

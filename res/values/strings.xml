@@ -21,5 +21,8 @@
 	<string name="banks_instructions">Du har inte lagt till någon bank ännu, tryck på knappen för att lägga till en bank.</string>
 	
 	<string name="main_instructions">Du har inte lagt till någon bank ännu, gå till menyn och tryck på konton för att lägga till ett nytt bankkonto.</string>
-	<string name="refresh_balance">Uppdatera saldoinformation</string>    
+	<string name="refresh_balance">Uppdatera saldoinformation</string>
+
+	<string name="choose_an_account">Välj ett konto</string>
+	    
 </resources>

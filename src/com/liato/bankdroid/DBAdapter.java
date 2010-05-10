@@ -13,12 +13,12 @@ import android.util.Log;
 
 public class DBAdapter {
 
-    private static final String TAG = "NotesDbAdapter";
+    private static final String TAG = "DBAdapter";
     private DatabaseHelper mDbHelper;
     private SQLiteDatabase mDb;
     
     private static final String DATABASE_NAME = "data";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     private final Context mCtx;
 
@@ -34,7 +34,7 @@ public class DBAdapter {
             		+ "balance real not null, "
                     + "banktype text not null, username text not null, "
                     + "password text not null, disabled integer);");
-            db.execSQL("create table accounts (bankid integer not null, balance real not null, name text not null);");
+            db.execSQL("create table accounts (bankid integer not null, id text not null, balance real not null, name text not null);");
         }
 
         @Override
@@ -120,7 +120,7 @@ public class DBAdapter {
      * @return Cursor over all accounts belonging to a bank
      */
     public Cursor fetchAccounts(long bankId) {
-        return mDb.query("accounts", new String[] {"bankid", "balance", "name"}, "bankid="+bankId, null, null, null, null);
+        return mDb.query("accounts", new String[] {"bankid", "balance", "name", "id"}, "bankid="+bankId, null, null, null, null);
     }
 
     public long updateBank(Bank bank, long bankId) {
@@ -147,6 +147,7 @@ public class DBAdapter {
 	            vals.put("bankid", bankId);
 	            vals.put("balance", acc.getBalance().doubleValue());
 	            vals.put("name", acc.getName());
+	            vals.put("id", new Long(bankId).toString()+"_"+acc.getId());
 	            mDb.insert("accounts", null, vals);	        	
 	        }
 	        ContentValues v = new ContentValues();
