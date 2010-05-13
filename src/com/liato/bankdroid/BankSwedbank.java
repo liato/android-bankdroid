@@ -19,7 +19,7 @@ public class BankSwedbank implements Bank {
 	private String username;
 	private String password;
 	private Banks banktype = Banks.SWEDBANK;
-	private Pattern reCSRF = Pattern.compile("csrf_token\"\\s*value=\"([^\"]+)\"");
+	private Pattern reCSRF = Pattern.compile("csrf_token\".*?value=\"([^\"]+)\"");
 	private Pattern reAccounts = Pattern.compile("account\\.html\\?id=([^\"]+)\">\\s*<span.*?/span>([^<]+) <.*?secondary\">([0-9 .,-]+)</span");
 	private ArrayList<Account> accounts = new ArrayList<Account>();
 	private BigDecimal balance = new BigDecimal(0);
