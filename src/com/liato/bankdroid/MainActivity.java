@@ -29,11 +29,12 @@ import android.widget.TextView;
 public class MainActivity extends Activity {
 	/** Called when the activity is first created. */
 	private DBAdapter dba;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+	
 		setContentView(R.layout.main);
-		
 		Button btnRefresh = (Button)findViewById(R.id.btnAccountsRefresh);
 		btnRefresh.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
@@ -98,13 +99,18 @@ public class MainActivity extends Activity {
 
 
 	public boolean onOptionsItemSelected (MenuItem item){
+		Intent intent;
 		switch (item.getItemId()) {
 		case R.id.exit:
 			this.finish();
 			return true;
 		case R.id.accounts:
-			Intent intentAccounts = new Intent(this, AccountsActivity.class);
-			this.startActivity(intentAccounts);
+			intent = new Intent(this, AccountsActivity.class);
+			this.startActivity(intent);
+			return true;
+		case R.id.settings:
+			intent = new Intent(this, SettingsActivity.class);
+			this.startActivity(intent);
 			return true;
 		case R.id.about:
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);

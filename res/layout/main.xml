@@ -22,10 +22,9 @@
 		android:layout_weight="1" android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true">
 		<Button
-			android:drawableLeft="@android:drawable/ic_menu_rotate"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
 			android:layout_gravity="bottom"
-			android:id="@+id/btnAccountsRefresh" android:visibility="gone" android:text="@string/refresh_balance"/>
+			android:id="@+id/btnAccountsRefresh" android:visibility="gone" android:text="@string/refresh_balance" android:drawableLeft="@drawable/ic_menu_refresh"/>
 	</LinearLayout>
 </RelativeLayout>

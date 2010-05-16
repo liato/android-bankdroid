@@ -24,5 +24,13 @@
 	<string name="refresh_balance">Uppdatera saldoinformation</string>
 
 	<string name="choose_an_account">Välj ett konto</string>
+	
+	<string name="update_frequency">Uppdateringsfrekvens</string>
+	<string name="access_code">PIN-kod</string>
+	<string name="pin_desc">Ange en PIN-kod om du vill lösenordsskydda applikationen och tillhörande widgets.</string>
+	<string name="notify_on_change">Notifiera vid kontohändelser</string>
+	
+    <string name="login">Logga in</string>
+    <string name="invalid_access_code">Ogiltig PIN-kod. Försök igen.</string>
 	    
 </resources>
