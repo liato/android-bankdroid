@@ -152,7 +152,7 @@ public class MainActivity extends Activity {
 			((TextView)v.findViewById(R.id.txtListitemAccountsGroupAccountname)).setText(group.getName());
 			((TextView)v.findViewById(R.id.txtListitemAccountsGroupBankname)).setText(group.getType());
 			((TextView)v.findViewById(R.id.txtListitemAccountsGroupTotal)).setText(Helpers.formatBalance(group.getTotal()));
-			icon.setImageResource(getResources().getIdentifier("drawable/"+group.getType().toLowerCase(), null, getPackageName()));
+			icon.setImageResource(getResources().getIdentifier("drawable/"+Helpers.toAscii(group.getType().toLowerCase()), null, getPackageName()));
 			return v;
 		}
 
@@ -263,7 +263,7 @@ public class MainActivity extends Activity {
 				c.moveToNext();
 				publishProgress(new String[] {new Integer(i).toString(), c.getString(clmBanktype)+" ("+c.getString(clmUsername)+")"});
 				try {
-					cls = Class.forName("com.liato.bankdroid.Bank"+c.getString(clmBanktype));
+					cls = Class.forName("com.liato.bankdroid.Bank"+Helpers.toAscii(c.getString(clmBanktype)));
 					bank = (Bank) cls.newInstance();
 					bank.update(c.getString(clmUsername), c.getString(clmPassword));
 					db.updateBank(bank, new Long(c.getString(clmId)));
@@ -301,7 +301,7 @@ public class MainActivity extends Activity {
 			
 			if (this.errors != null && !this.errors.isEmpty()) {
 				StringBuilder errormsg = new StringBuilder();
-				errormsg.append(res.getText(R.string.acounts_were_not_updated));
+				errormsg.append(res.getText(R.string.acounts_were_not_updated)+":\n");
 				for (String err : errors)
 				{
 				  errormsg.append(err);

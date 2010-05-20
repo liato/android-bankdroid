@@ -77,7 +77,6 @@ public class BankICA implements Bank {
 			response = urlopen.open("https://mobil.icabanken.se/account/overview.aspx");
 			matcher = reBalance.matcher(response);
 			while (matcher.find()) {
-				Log.d("BankICA", "Saldo: "+matcher.group(3));
 				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), matcher.group(1).trim()));
 			}
 		} catch (ClientProtocolException e) {

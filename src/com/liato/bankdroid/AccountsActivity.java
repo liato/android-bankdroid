@@ -112,7 +112,7 @@ public class AccountsActivity extends Activity {
 			ImageView icon = (ImageView)view.findViewById(R.id.imgListitemBanks);
 			((TextView)view.findViewById(R.id.txtListitemAccountname)).setText(cursor.getString(cursor.getColumnIndex("username")));
 			((TextView)view.findViewById(R.id.txtListitemBankname)).setText(cursor.getString(cursor.getColumnIndex("banktype")));
-			icon.setImageResource(getResources().getIdentifier("drawable/"+cursor.getString(cursor.getColumnIndex("banktype")).toLowerCase(), null, getPackageName()));
+			icon.setImageResource(getResources().getIdentifier("drawable/"+Helpers.toAscii(cursor.getString(cursor.getColumnIndex("banktype")).toLowerCase()), null, getPackageName()));
 			view.setTag(cursor.getInt(cursor.getColumnIndex("_id")));
 		}
 

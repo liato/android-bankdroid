@@ -32,7 +32,7 @@ public class AccountsAdapter extends BaseAdapter {
 		((TextView)v.findViewById(R.id.txtListitemAccountsGroupAccountname)).setText(group.getName());
 		((TextView)v.findViewById(R.id.txtListitemAccountsGroupBankname)).setText(group.getType());
 		((TextView)v.findViewById(R.id.txtListitemAccountsGroupTotal)).setText(Helpers.formatBalance(group.getTotal()));
-		icon.setImageResource(context.getResources().getIdentifier("drawable/"+group.getType().toLowerCase(), null, context.getPackageName()));
+		icon.setImageResource(context.getResources().getIdentifier("drawable/"+Helpers.toAscii(group.getType().toLowerCase()), null, context.getPackageName()));
 		return v;
 	}
 

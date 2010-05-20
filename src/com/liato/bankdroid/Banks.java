@@ -1,9 +1,10 @@
 package com.liato.bankdroid;
 
 public enum Banks {
-	SWEDBANK 	("Swedbank"),
-	NORDEA		("Nordea"),
-	ICA			("ICA");
+	SWEDBANK 			("Swedbank"),
+	NORDEA				("Nordea"),
+	ICA					("ICA"),
+	LANSFORSAKRINGAR 	("Länsförsäkringar");
 
 	private String value;
 	private Banks(String value) {

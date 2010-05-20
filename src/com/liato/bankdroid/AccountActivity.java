@@ -102,7 +102,7 @@ public class AccountActivity extends Activity implements OnClickListener, OnItem
 
 		protected Void doInBackground(final String... args) {
 			try {
-				cls = Class.forName("com.liato.bankdroid.Bank"+args[0]);
+				cls = Class.forName("com.liato.bankdroid.Bank"+Helpers.toAscii(args[0]));
 				bank = (Bank) cls.newInstance();
 				bank.update(args[1], args[2]);
 				DBAdapter dba = new DBAdapter(AccountActivity.this);
