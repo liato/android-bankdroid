@@ -31,7 +31,7 @@
 	<string name="pin_desc">Enter an access code if you want to password protect the application and widgets.</string>
 	<string name="notify_on_change">Notify on changes</string>
 	
-    <string name="login">Logga in</string>
-    <string name="invalid_access_code">Ogiltig PIN-kod. Försök igen.</string>
+    <string name="login">Login</string>
+    <string name="invalid_access_code">Invalid access code. Try again.</string>
 	    
 </resources>
