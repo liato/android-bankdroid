@@ -11,11 +11,15 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.text.Html;
 import com.liato.urllib.Urllib;
 
 public class BankSwedbank implements Bank {
-
+	
+	private Context context;
+	private Resources res;
 	private String username;
 	private String password;
 	private Banks banktype = Banks.SWEDBANK;
@@ -25,14 +29,16 @@ public class BankSwedbank implements Bank {
 	private BigDecimal balance = new BigDecimal(0);
 
 	public BankSwedbank() {
-
 	}
 
-	public BankSwedbank(String username, String password) throws BankException {
-		this.update(username, password);
+	public BankSwedbank(String username, String password, Context context) throws BankException {
+		this.update(username, password, context);
 	}
 
-	public void update(String username, String password) throws BankException {
+	public void update(String username, String password, Context context) throws BankException {
+		this.context = context;
+		this.res = this.context.getResources();
+		
 		this.username = username;
 		this.password = password;
 		this.update();
@@ -40,7 +46,7 @@ public class BankSwedbank implements Bank {
 
 	public void update() throws BankException {
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
-			throw new BankException("Personnummer och l�senord st�mmer ej.");
+			throw new BankException(res.getText(R.string.invalid_username_password).toString());
 		}        Urllib urlopen = new Urllib();
 		String response = null;
 		Matcher matcher;
@@ -48,7 +54,7 @@ public class BankSwedbank implements Bank {
 			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank-light/login.html");
 			matcher = reCSRF.matcher(response);
 			if (!matcher.find()) {
-				throw new BankException("Could not connect. CSRF token was not found.");
+				throw new BankException(res.getText(R.string.unable_to_find).toString()+" CSRF token.");
 			}
 			String csrftoken = matcher.group(1);
 			List <NameValuePair> postData = new ArrayList <NameValuePair>();
@@ -58,7 +64,7 @@ public class BankSwedbank implements Bank {
 			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/login.html", postData);
 
 			if (response.contains("misslyckats")) {
-				throw new BankException("Personnummer och l�senord st�mmer ej.");
+				throw new BankException(res.getText(R.string.invalid_username_password).toString());
 			}
 			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank-light/accounts.html");
 			matcher = reAccounts.matcher(response);

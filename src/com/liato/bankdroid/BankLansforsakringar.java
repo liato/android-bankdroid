@@ -11,6 +11,8 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.text.Html;
 import android.util.Log;
 
@@ -18,6 +20,8 @@ import com.liato.urllib.Urllib;
 
 public class BankLansforsakringar implements Bank {
 
+	private Context context;
+	private Resources res;
 	private String username;
 	private String password;
 	private Banks banktype = Banks.LANSFORSAKRINGAR;
@@ -33,18 +37,21 @@ public class BankLansforsakringar implements Bank {
 	public BankLansforsakringar() {
 	}
 
-	public BankLansforsakringar(String username, String password) throws BankException {
-		this.update(username, password);
+	public BankLansforsakringar(String username, String password, Context context) throws BankException {
+		this.update(username, password, context);
 	}
 
-	public void update(String username, String password) throws BankException {
+	public void update(String username, String password, Context context) throws BankException {
+		this.context = context;
+		this.res = this.context.getResources();
+
 		this.username = username;
 		this.password = password;
 		this.update();
 	}
 	public void update() throws BankException {
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
-			throw new BankException("Personnummer och lösenord stämmer ej.");//res.getText(R.string.invalid_username_password));
+			throw new BankException(res.getText(R.string.invalid_username_password).toString());
 		}
 
 		Urllib urlopen = new Urllib();
@@ -54,19 +61,15 @@ public class BankLansforsakringar implements Bank {
 			response = urlopen.open("https://secure246.lansforsakringar.se/lfportal/login/privat");
 			matcher = reViewState.matcher(response);
 			if (!matcher.find()) {
-				throw new BankException("Could not connect to the bank. Unable to parse ViewState.");
+				throw new BankException(res.getText(R.string.unable_to_find).toString()+" ViewState.");
 			}
 			String strViewState = matcher.group(1);
 			matcher = reEventValidation.matcher(response);
 			if (!matcher.find()) {
-				throw new BankException("Could not connect to the bank. Unable to parse EventValidation.");
+				throw new BankException(res.getText(R.string.unable_to_find).toString()+" EventValidation.");
 			}
 			String strEventValidation = matcher.group(1);
 			
-			matcher = reEventValidation.matcher(response);
-			if (!matcher.find()) {
-				throw new BankException("Could not connect to the bank. Unable to parse EventValidation.");
-			}			
 			List <NameValuePair> postData = new ArrayList <NameValuePair>();
 			postData.add(new BasicNameValuePair("inputPersonalNumber", username));
 			postData.add(new BasicNameValuePair("inputPinCode", password));
@@ -81,7 +84,7 @@ public class BankLansforsakringar implements Bank {
 			
 			matcher = reError.matcher(response);
 			if (matcher.find()) {
-				throw new BankException("Personnummer och lösenord stämmer ej.");
+				throw new BankException(res.getText(R.string.invalid_username_password).toString());
 			}
 
 			response = urlopen.open("https://secure246.lansforsakringar.se/lfportal/appmanager/privat/main?_nfpb=true&_pageLabel=bank_konto&newUc=true&isTopLevel=true");

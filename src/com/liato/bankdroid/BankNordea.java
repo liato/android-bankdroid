@@ -11,11 +11,15 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.text.Html;
 import com.liato.urllib.Urllib;
 
 public class BankNordea implements Bank {
 
+	private Context context;
+	private Resources res;
 	private String username;
 	private String password;
 	private Banks banktype = Banks.NORDEA;
@@ -29,18 +33,21 @@ public class BankNordea implements Bank {
 	public BankNordea() {
 	}
 
-	public BankNordea(String username, String password) throws BankException {
-		this.update(username, password);
+	public BankNordea(String username, String password, Context context) throws BankException {
+		this.update(username, password, context);
 	}
 
-	public void update(String username, String password) throws BankException {
+	public void update(String username, String password, Context context) throws BankException {
+		this.context = context;
+		this.res = this.context.getResources();
+		
 		this.username = username;
 		this.password = password;
 		this.update();
 	}
 	public void update() throws BankException {
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
-			throw new BankException("Personnummer och l�senord st�mmer ej.");
+			throw new BankException(res.getText(R.string.invalid_username_password).toString());
 		}
 		Urllib urlopen = new Urllib();
 		String response = null;
@@ -57,7 +64,7 @@ public class BankNordea implements Bank {
 			response = urlopen.open("https://gfs.nb.se/bin2/gfskod", postData);
 
 			if (!response.contains("reDirect")) {
-				throw new BankException("Personnummer och lösenord stämmer ej.");
+				throw new BankException(res.getText(R.string.invalid_username_password).toString());
 			}
 
 			response = urlopen.open("https://gfs.nb.se/bin2/gfskod?OBJECT=KF00T&show_button=No");

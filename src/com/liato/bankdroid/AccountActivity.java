@@ -104,7 +104,7 @@ public class AccountActivity extends Activity implements OnClickListener, OnItem
 			try {
 				cls = Class.forName("com.liato.bankdroid.Bank"+Helpers.toAscii(args[0]));
 				bank = (Bank) cls.newInstance();
-				bank.update(args[1], args[2]);
+				bank.update(args[1], args[2], parent);
 				DBAdapter dba = new DBAdapter(AccountActivity.this);
 				dba.open();
 				if (BANKID != null) {

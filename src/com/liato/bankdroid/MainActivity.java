@@ -265,7 +265,7 @@ public class MainActivity extends Activity {
 				try {
 					cls = Class.forName("com.liato.bankdroid.Bank"+Helpers.toAscii(c.getString(clmBanktype)));
 					bank = (Bank) cls.newInstance();
-					bank.update(c.getString(clmUsername), c.getString(clmPassword));
+					bank.update(c.getString(clmUsername), c.getString(clmPassword), parent);
 					db.updateBank(bank, new Long(c.getString(clmId)));
 					i++;
 				} 
@@ -301,7 +301,7 @@ public class MainActivity extends Activity {
 			
 			if (this.errors != null && !this.errors.isEmpty()) {
 				StringBuilder errormsg = new StringBuilder();
-				errormsg.append(res.getText(R.string.acounts_were_not_updated)+":\n");
+				errormsg.append(res.getText(R.string.accounts_were_not_updated)+":\n");
 				for (String err : errors)
 				{
 				  errormsg.append(err);
