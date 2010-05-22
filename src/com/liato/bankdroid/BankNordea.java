@@ -73,6 +73,9 @@ public class BankNordea implements Bank {
 			while (matcherAccounts.find() && matcherBalance.find()) {
 				accounts.add(new Account(Html.fromHtml(matcherAccounts.group(2)).toString(), Helpers.parseBalance(matcherBalance.group(1)), matcherAccounts.group(2).trim()));
 			}
+			// Konungens konto
+			//accounts.add(new Account("Personkonto", new BigDecimal("568269.37"), "1"));
+			//accounts.add(new Account("Kapitalkonto", new BigDecimal("25789000.00"), "1"));
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

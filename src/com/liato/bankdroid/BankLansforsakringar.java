@@ -27,7 +27,6 @@ public class BankLansforsakringar implements Bank {
 	private Banks banktype = Banks.LANSFORSAKRINGAR;
 	private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
 	private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
-	private Pattern reError = Pattern.compile("ErrMessage.+?>([^<]+)",Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reBalance = Pattern.compile("<a.+?DataTable1:(\\d+):account[^>]+>([^<]+)</a>.+?<spa.+?>([0-9 -,.]+)</span></td>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reToken = Pattern.compile("var\\s+token\\s*=\\s*'([^']+)'", Pattern.CASE_INSENSITIVE);
 	
@@ -79,15 +78,21 @@ public class BankLansforsakringar implements Bank {
 			postData.add(new BasicNameValuePair("__LASTFOCUS", ""));
 			postData.add(new BasicNameValuePair("__EVENTTARGET", ""));
 			postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
-			
+			postData.add(new BasicNameValuePair("btnLogIn.x", "12"));
+			postData.add(new BasicNameValuePair("btnLogIn.y", "34"));			
 			response = urlopen.open(urlopen.getCurrentURI(), postData);
 			
-			matcher = reError.matcher(response);
-			if (matcher.find()) {
+			if (response.contains("Felaktig inloggning")) {
 				throw new BankException(res.getText(R.string.invalid_username_password).toString());
 			}
 
-			response = urlopen.open("https://secure246.lansforsakringar.se/lfportal/appmanager/privat/main?_nfpb=true&_pageLabel=bank_konto&newUc=true&isTopLevel=true");
+			matcher = reToken.matcher(response);
+			if (!matcher.find()) {
+				throw new BankException(res.getText(R.string.unable_to_find).toString()+" token.");
+			}
+			String token = matcher.group(1);
+
+			response = urlopen.open("https://secure246.lansforsakringar.se/lfportal/appmanager/privat/main?_nfpb=true&_pageLabel=bank_konto&newUc=true&isTopLevel=true&_token="+token);
 			matcher = reBalance.matcher(response);
 			while (matcher.find()) {
 				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), matcher.group(1).trim()));

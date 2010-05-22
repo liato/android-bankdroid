@@ -71,6 +71,9 @@ public class BankSwedbank implements Bank {
 			while (matcher.find()) {
 				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString(), Helpers.parseBalance(matcher.group(3)), matcher.group(1).trim()));
 			}
+			// Konungens konto
+			//accounts.add(new Account("Personkonto", new BigDecimal("1485351"), "0"));
+			//accounts.add(new Account("Sparkonto", new BigDecimal("8590700"), "1"));
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
