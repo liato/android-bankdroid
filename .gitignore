@@ -14,3 +14,4 @@ bin
 gen
 local.properties
 *.jar
+dev/
