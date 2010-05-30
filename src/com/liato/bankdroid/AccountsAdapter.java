@@ -112,8 +112,19 @@ public class AccountsAdapter extends BaseAdapter {
 		public Group(String name, String type, Double total, List<Item> items) {
 			this.name = name;
 			this.type = type;
-			this.items = items;
 			this.total = new BigDecimal(total);
+			for(Item item : items) {
+				item.setGroup(this);
+			}
+			this.items = items;
+		}
+		public Group(String name, String type, Double total, Item item) {
+			ArrayList<Item> items = new ArrayList<Item>();
+			items.add(item);
+			this.name = name;
+			this.type = type;
+			this.total = new BigDecimal(total);
+			this.items = items;
 		}
 		public String getName() {
 			return name;
@@ -134,6 +145,7 @@ public class AccountsAdapter extends BaseAdapter {
 		private String name;
 		private BigDecimal balance;
 		private String id;
+		private Group group;
 		public Item (String name, Double balance, String id) {
 			this.name = name;
 			this.balance = new BigDecimal(balance);
@@ -148,6 +160,12 @@ public class AccountsAdapter extends BaseAdapter {
 		public String getId() {
 			return id;
 		}
+		public Group getGroup() {
+			return group;
+		}
+		public void setGroup(Group group) {
+			this.group = group;
+		}		
 	}	
 
 }

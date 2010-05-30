@@ -51,7 +51,8 @@ public class BankSwedbank implements Bank {
 		String response = null;
 		Matcher matcher;
 		try {
-			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank-light/login.html");
+			balance = new BigDecimal(0);
+			/*response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank-light/login.html");
 			matcher = reCSRF.matcher(response);
 			if (!matcher.find()) {
 				throw new BankException(res.getText(R.string.unable_to_find).toString()+" CSRF token.");
@@ -66,10 +67,12 @@ public class BankSwedbank implements Bank {
 			if (response.contains("misslyckats")) {
 				throw new BankException(res.getText(R.string.invalid_username_password).toString());
 			}
-			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank-light/accounts.html");
+			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank-light/accounts.html");*/
+			response = urlopen.open("http://x.x00.us/android/bankdroid/swedbank_oversikt.htm");
 			matcher = reAccounts.matcher(response);
 			while (matcher.find()) {
 				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString(), Helpers.parseBalance(matcher.group(3)), matcher.group(1).trim()));
+				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
 			}
 			// Konungens konto
 			//accounts.add(new Account("Personkonto", new BigDecimal("1485351"), "0"));

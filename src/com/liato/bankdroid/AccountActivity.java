@@ -3,7 +3,6 @@ package com.liato.bankdroid;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -19,7 +18,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
 
-public class AccountActivity extends Activity implements OnClickListener, OnItemSelectedListener {
+public class AccountActivity extends LockableActivity implements OnClickListener, OnItemSelectedListener {
 	private String SELECTED_BANK;
 	private String BANKID;
 

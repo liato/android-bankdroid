@@ -8,19 +8,33 @@
 		android:layout_height="wrap_content" android:typeface="sans"
 		android:textSize="20sp" android:text="@string/access_code" />
 	<EditText android:layout_height="wrap_content"
-		android:layout_width="fill_parent" android:inputType="textPassword" android:id="@+id/edtAccessCode"></EditText>
+		android:layout_width="fill_parent" android:inputType="textPassword"
+		android:id="@+id/edtAccessCode"></EditText>
 
-	<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/txtSettingsPinDesc" android:text="@string/pin_desc" android:textSize="12sp" android:textColor="#A4A4A4" android:drawableLeft="@android:drawable/ic_dialog_info" android:drawablePadding="5dp" android:layout_marginBottom="3dp"></TextView><TextView android:layout_width="fill_parent"
+	<TextView android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:id="@+id/txtSettingsPinDesc"
+		android:text="@string/pin_desc" android:textSize="12sp"
+		android:textColor="#A4A4A4" android:drawableLeft="@android:drawable/ic_dialog_info"
+		android:drawablePadding="5dp" android:layout_marginBottom="3dp"></TextView>
+	<TextView android:layout_width="fill_parent"
 		android:layout_height="wrap_content" android:typeface="sans"
-		android:textSize="20sp" android:text="@string/update_frequency" android:visibility="invisible"/>
+		android:textSize="20sp" android:text="@string/update_frequency" android:visibility="visible"/>
 	<Spinner android:layout_height="wrap_content"
-		android:layout_width="fill_parent" android:id="@+id/spnUpdateFrequency" android:visibility="invisible"></Spinner>
+		android:layout_width="fill_parent" android:id="@+id/spnUpdateFrequency" android:visibility="visible"></Spinner>
 
 
-	
-	
 
-	<LinearLayout android:id="@+id/LinearLayout01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:paddingLeft="10dp"><CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/notify_on_change" android:id="@+id/chkNotifyOnChange" android:visibility="invisible"></CheckBox></LinearLayout><TableLayout android:id="@+id/TableLayout01"
+
+
+	<LinearLayout android:id="@+id/LinearLayout01"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:orientation="vertical" android:paddingLeft="10dp">
+		<CheckBox android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:text="@string/notify_on_change"
+			android:id="@+id/chkNotifyOnChange" android:visibility="visible"></CheckBox>
+	<CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/with_sound" android:id="@+id/chkWithSound" android:textSize="14sp" android:layout_marginLeft="10dp"></CheckBox><CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="14sp" android:id="@+id/chkWithVibration" android:text="@string/vibrate" android:layout_marginLeft="10dp"></CheckBox>
+</LinearLayout>
+	<TableLayout android:id="@+id/TableLayout01"
 		android:layout_width="fill_parent" android:stretchColumns="*"
 		android:gravity="bottom" android:layout_height="fill_parent">
 		<TableRow android:id="@+id/TableRow01" android:layout_height="wrap_content"

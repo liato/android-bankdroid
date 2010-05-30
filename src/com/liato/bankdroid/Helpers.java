@@ -15,6 +15,9 @@ public class Helpers {
 		Locale locale = new Locale("sv", "SE");
 		return NumberFormat.getCurrencyInstance(locale).format(balance).replace("kr", "SEK");
 	}
+	public static String formatBalance(Double balance) {
+		return formatBalance(new BigDecimal(balance));
+	}
 	public static String toAscii(String s) {
 		s = s.replaceAll("[åÅ]", "a").replaceAll("[äÄ]", "a").replaceAll("[öÖ]", "o").replaceAll(" ", "_");
 		s = s.replaceAll("[^a-zA-Z0-9_]", "");

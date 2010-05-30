@@ -50,9 +50,8 @@ public class WidgetConfigureActivity extends Activity {
 				
 	            final Context context = WidgetConfigureActivity.this;
 	            AccountsAdapter.Item item = (AccountsAdapter.Item)parent.getItemAtPosition(position);
-	            SharedPreferences.Editor prefs = context.getSharedPreferences("widget_prefs", 0).edit();
-	            prefs.putString(WIDGET_PREFIX + mAppWidgetId, item.getId());
-	            prefs.commit();
+
+	            WidgetConfigureActivity.setAccountId(context, mAppWidgetId, item.getId());
 
 	            // Push widget update to surface with newly set prefix
 	            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
@@ -73,7 +72,25 @@ public class WidgetConfigureActivity extends Activity {
 		super.onResume();
 		refreshView();
 	}
+	
+	public static String getAccountId(Context context, int appWidgetId) {
+		SharedPreferences prefs = context.getSharedPreferences("widget_prefs", 0);
+		return prefs.getString(WIDGET_PREFIX + appWidgetId, null);
+	}
 
+	public static void setAccountId(Context context, int appWidgetId, String value) {
+        SharedPreferences.Editor prefs = context.getSharedPreferences("widget_prefs", 0).edit();
+        prefs.putString(WIDGET_PREFIX + appWidgetId, value);
+        prefs.commit();
+	}
+
+	public static void delAccountId(Context context, int appWidgetId) {
+        SharedPreferences.Editor prefs = context.getSharedPreferences("widget_prefs", 0).edit();
+        prefs.remove(WIDGET_PREFIX + appWidgetId);
+        prefs.commit();
+	}
+	
+	
 	private void refreshView() {
 		dba = new DBAdapter(this);
 		dba.open();

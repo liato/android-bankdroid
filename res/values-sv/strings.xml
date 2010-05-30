@@ -30,8 +30,16 @@
 	<string name="access_code">PIN-kod</string>
 	<string name="pin_desc">Ange en PIN-kod om du vill lösenordsskydda applikationen och tillhörande widgets.</string>
 	<string name="notify_on_change">Notifiera vid kontohändelser</string>
+	<string name="with_sound">Med ljud</string>
+	<string name="vibrate">Vibrera</string>
 	
     <string name="login">Logga in</string>
     <string name="invalid_access_code">Ogiltig PIN-kod. Försök igen.</string>
+    
+    <string name="disabled">Inaktiverat</string>
+ 	<string name="minutes">minuter</string>
+    <string name="hour">timme</string>
+    <string name="hours">timmar</string>
+    <string name="daily">Dagligen</string>
 	    
 </resources>

@@ -1,6 +1,5 @@
 package com.liato.bankdroid;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -22,7 +21,7 @@ import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class AccountsActivity extends Activity {
+public class AccountsActivity extends LockableActivity {
 	private DBAdapter dba;
 	private Cursor c;
 	private ListView lv;

@@ -173,4 +173,14 @@ public class DBAdapter {
     public Cursor getBank(long bankId) {
     	return getBank(new Long(bankId).toString());
     }
+
+    public Cursor getAccount(String id) {
+    	Cursor c = mDb.query("accounts", new String[] {"id", "balance", "name", "bankid"}, "id='"+id+"'", null, null, null, null);
+    	if (c != null) {
+    		c.moveToFirst();
+    	}
+		return c;
+    }
+    
+
 }

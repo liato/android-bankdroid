@@ -30,8 +30,17 @@
 	<string name="access_code">Access code</string>
 	<string name="pin_desc">Enter an access code if you want to password protect the application and widgets.</string>
 	<string name="notify_on_change">Notify on changes</string>
+	<string name="with_sound">With sound</string>
+	<string name="vibrate">Vibrate</string>
 	
     <string name="login">Login</string>
     <string name="invalid_access_code">Invalid access code. Try again.</string>
+    
+
+    <string name="disabled">Disabled</string>
+    <string name="minutes">minutes</string>
+    <string name="hour">hour</string>
+    <string name="hours">hours</string>
+    <string name="daily">Daily</string>
 	    
 </resources>

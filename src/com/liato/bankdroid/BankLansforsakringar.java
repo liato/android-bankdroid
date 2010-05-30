@@ -27,7 +27,7 @@ public class BankLansforsakringar implements Bank {
 	private Banks banktype = Banks.LANSFORSAKRINGAR;
 	private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
 	private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
-	private Pattern reBalance = Pattern.compile("<a.+?DataTable1:(\\d+):account[^>]+>([^<]+)</a>.+?<spa.+?>.+?</span></td>.*?<spa.+?>(.+?)</span></td>", Pattern.CASE_INSENSITIVE);
+	private Pattern reBalance = Pattern.compile("&AccountNumber=([0-9]+)[^>]+><span[^>]+>([^<]+)</.*?span></td.*?<span[^>]+>([0-9 .,-]+)</span", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reToken = Pattern.compile("var\\s+token\\s*=\\s*'([^']+)'", Pattern.CASE_INSENSITIVE);
 	private Pattern reUrl = Pattern.compile("<li class=\"bank\">\\s*<a href=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
 	
@@ -80,7 +80,8 @@ public class BankLansforsakringar implements Bank {
 			postData.add(new BasicNameValuePair("__EVENTTARGET", ""));
 			postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
 			postData.add(new BasicNameValuePair("btnLogIn.x", "12"));
-			postData.add(new BasicNameValuePair("btnLogIn.y", "34"));			
+			postData.add(new BasicNameValuePair("btnLogIn.y", "34"));
+			Log.d("Bankdroid", "Posting data to: " + urlopen.getCurrentURI());
 			response = urlopen.open(urlopen.getCurrentURI(), postData);
 			
 			if (response.contains("Felaktig inloggning")) {
@@ -97,8 +98,11 @@ public class BankLansforsakringar implements Bank {
 			if (!matcher.find()) {
 				throw new BankException(res.getText(R.string.unable_to_find).toString()+" accounts url.");
 			}
-			String accurl = Html.fromHtml(matcher.group(1)).toString(); 
-			urlopen.open(accurl+"&_token="+token);
+			String accurl = Html.fromHtml(matcher.group(1)).toString();
+			accurl += "&_token=" + token;
+			Log.d("Bankdroid", "Account url: " + accurl);
+			response = urlopen.open(accurl);
+			Log.d("Bankdroid", "Response: "+ response);
 			matcher = reBalance.matcher(response);
 			while (matcher.find()) {
 				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), matcher.group(1).trim()));
