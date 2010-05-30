@@ -1,43 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical" android:layout_width="fill_parent"
-	android:layout_height="fill_parent" android:paddingLeft="10dp"
-	android:paddingRight="10dp" android:paddingTop="10dp"
-	android:layout_gravity="center_vertical" android:gravity="center_vertical">
+<RelativeLayout android:id="@+id/RelativeLayout01"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="fill_parent">
+	<LinearLayout android:orientation="vertical"
+		android:layout_width="fill_parent" android:layout_height="fill_parent"
+		android:paddingLeft="10dp" android:paddingRight="10dp"
+		android:paddingTop="10dp" android:layout_gravity="center_vertical"
+		android:gravity="center_vertical" android:fitsSystemWindows="true">
 
 
-	<TextView android:id="@+id/TextView01" android:layout_height="wrap_content"
-		android:typeface="sans" android:gravity="center_horizontal"
-		android:layout_gravity="center_horizontal" android:text="BANKDROID"
-		android:layout_width="fill_parent" android:visibility="visible"
-		android:textColor="#fff" android:textSize="42dp"></TextView>
-	<LinearLayout android:id="@+id/LinearLayout01"
-		android:layout_height="wrap_content" android:orientation="horizontal"
-		android:layout_width="fill_parent">
-		<ImageView android:id="@+id/ImageView01" android:background="@drawable/icon_large"
-			android:layout_width="100dp" android:layout_height="100dp"
-			android:layout_gravity="center_horizontal" android:visibility="visible"></ImageView>
-		<LinearLayout android:id="@+id/LinearLayout02"
-			android:layout_height="wrap_content" android:orientation="vertical"
+		<TextView android:id="@+id/TextView01" android:layout_height="wrap_content"
+			android:typeface="sans" android:gravity="center_horizontal"
+			android:layout_gravity="center_horizontal" android:text="BANKDROID"
+			android:layout_width="fill_parent" android:visibility="visible"
+			android:textColor="#fff" android:textSize="42dp"></TextView>
+		<LinearLayout android:id="@+id/LinearLayout01"
+			android:layout_height="wrap_content" android:orientation="horizontal"
 			android:layout_width="fill_parent">
-			<EditText android:layout_height="wrap_content"
-				android:layout_width="fill_parent" android:inputType="textPassword"
-				android:layout_gravity="center_vertical" android:hint="@string/access_code"
-				android:id="@+id/edtAccessCode"></EditText>
-			<Button android:id="@+id/btnLogin" android:layout_gravity="right|center_vertical"
-				android:layout_width="fill_parent" android:layout_height="52dp"
-				android:drawableRight="@drawable/ic_menu_forward"></Button>
+			<ImageView android:id="@+id/ImageView01"
+				android:background="@drawable/icon_large" android:layout_width="100dp"
+				android:layout_height="100dp" android:layout_gravity="center_horizontal"
+				android:visibility="visible"></ImageView>
+			<LinearLayout android:id="@+id/LinearLayout02"
+				android:layout_height="wrap_content" android:orientation="vertical"
+				android:layout_width="fill_parent">
+				<EditText android:layout_height="wrap_content"
+					android:layout_width="fill_parent" android:inputType="textPassword"
+					android:layout_gravity="center_vertical" android:hint="@string/access_code"
+					android:id="@+id/edtAccessCode"></EditText>
+				<Button android:id="@+id/btnLogin" android:layout_gravity="right|center_vertical"
+					android:layout_width="fill_parent" android:layout_height="52dp"
+					android:drawableRight="@drawable/ic_menu_forward"></Button>
+			</LinearLayout>
 		</LinearLayout>
-	</LinearLayout>
 
 
 
 
 
 
-	<TextView android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:id="@+id/txtResult"
-		android:textColor="#CC4B28" android:text="@string/invalid_access_code"
-		android:gravity="center_vertical" android:drawableLeft="@drawable/ic_bullet_key_permission"
-		android:layout_gravity="center_horizontal" android:visibility="invisible"></TextView>
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:id="@+id/txtResult"
+			android:textColor="#CC4B28" android:text="@string/invalid_access_code"
+			android:gravity="center_vertical" android:drawableLeft="@drawable/ic_bullet_key_permission"
+			android:layout_gravity="center_horizontal" android:visibility="invisible"></TextView>
+
 </LinearLayout>
+</RelativeLayout>
