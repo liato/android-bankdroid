@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="version">Version 1.1.0 by liato</string>
     <string name="app_name">Bankdroid</string>
+    <string name="about">About</string>
     <string name="accounts_were_not_updated">Balance for the following accounts could not be updated</string>
     <string name="updating_account_balance">Refreshing account balance...</string>
     <string name="errors_when_updating">Errors while refreshing</string>
@@ -10,10 +12,12 @@
     <string name="menu_remove">Remove</string>
     <string name="invalid_username_password">Invalid username or password.</string>
     <string name="unable_to_find">Unable to find</string>
+    <string name="no_accounts_found">No accounts found</string>
     
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="bank">Bank</string>
+    <string name="error_desc">The last update was unsuccessful and updates for this account have been disabled. Make sure you\'ve entered your username and password correctly and press the save button.</string>
 
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
@@ -42,5 +46,13 @@
     <string name="hour">hour</string>
     <string name="hours">hours</string>
     <string name="daily">Daily</string>
-	    
+    
+    <string name="thanks_to">Thanks to</string>
+    <string name="thanks"> 
+    Wendell Fernandes (Icon)
+    \nKingcool (ICA Banken)
+    \ngrief (Länsförsäkringar)
+    \neinand (Länsförsäkringar)
+    \nAnders Widén (Länsförsäkringar)
+    </string>
 </resources>

@@ -113,6 +113,13 @@ public class AccountsActivity extends LockableActivity {
 			((TextView)view.findViewById(R.id.txtListitemBankname)).setText(cursor.getString(cursor.getColumnIndex("banktype")));
 			icon.setImageResource(getResources().getIdentifier("drawable/"+Helpers.toAscii(cursor.getString(cursor.getColumnIndex("banktype")).toLowerCase()), null, getPackageName()));
 			view.setTag(cursor.getInt(cursor.getColumnIndex("_id")));
+			ImageView warning = (ImageView)view.findViewById(R.id.imgWarning);
+			if (cursor.getInt(cursor.getColumnIndex("disabled")) == 1 ? true : false) {
+				warning.setVisibility(View.VISIBLE);
+			}
+			else {
+				warning.setVisibility(View.INVISIBLE);
+			}
 		}
 
 		@Override

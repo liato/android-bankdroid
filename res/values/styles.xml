@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<style
+		name="Widget_Progress">
+		<item
+			name="android:indeterminateDrawable">@drawable/widget_progress</item>
+		<item
+			name="android:minWidth">17dip</item>
+		<item
+			name="android:maxWidth">17dip</item>
+		<item
+			name="android:minHeight">2dip</item>
+		<item
+			name="android:maxHeight">2dip</item>
+	</style>
+</resources>

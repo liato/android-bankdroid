@@ -9,7 +9,8 @@
 		android:layout_height="wrap_content"
 		android:id="@+id/txtAccountsDesc"
 		android:visibility="visible"
-		android:layout_margin="10dp" android:text="@string/main_instructions"/>
+		android:layout_margin="10dp"
+		android:text="@string/main_instructions" />
 	<ListView
 		android:layout_width="fill_parent"
 		android:id="@+id/lstAccountsList"
@@ -18,13 +19,18 @@
 		android:layout_above="@+id/LinearLayout02" />
 	<LinearLayout
 		android:id="@+id/LinearLayout02"
-		android:gravity="bottom" android:layout_width="fill_parent"
-		android:layout_weight="1" android:layout_height="wrap_content"
+		android:gravity="bottom"
+		android:layout_width="fill_parent"
+		android:layout_weight="1"
+		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true">
 		<Button
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
 			android:layout_gravity="bottom"
-			android:id="@+id/btnAccountsRefresh" android:visibility="gone" android:text="@string/refresh_balance" android:drawableLeft="@drawable/ic_menu_refresh"/>
+			android:id="@+id/btnAccountsRefresh"
+			android:visibility="gone"
+			android:text="@string/refresh_balance"
+			android:drawableLeft="@drawable/ic_menu_refresh" />
 	</LinearLayout>
 </RelativeLayout>

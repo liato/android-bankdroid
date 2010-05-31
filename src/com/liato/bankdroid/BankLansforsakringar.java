@@ -30,7 +30,6 @@ public class BankLansforsakringar implements Bank {
 	private Pattern reBalance = Pattern.compile("AccountNumber=([0-9]+)[^>]+><span[^>]+>([^<]+)</.*?span></td.*?<span[^>]+>([0-9 .,-]+)</span", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reToken = Pattern.compile("var\\s+token\\s*=\\s*'([^']+)'", Pattern.CASE_INSENSITIVE);
 	private Pattern reUrl = Pattern.compile("<li class=\"bank\">\\s*<a href=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
-	
 	private ArrayList<Account> accounts = new ArrayList<Account>();
 	private BigDecimal balance = new BigDecimal(0);
 
@@ -69,7 +68,7 @@ public class BankLansforsakringar implements Bank {
 				throw new BankException(res.getText(R.string.unable_to_find).toString()+" EventValidation.");
 			}
 			String strEventValidation = matcher.group(1);
-			
+
 			List <NameValuePair> postData = new ArrayList <NameValuePair>();
 			postData.add(new BasicNameValuePair("inputPersonalNumber", username));
 			postData.add(new BasicNameValuePair("inputPinCode", password));
@@ -83,7 +82,7 @@ public class BankLansforsakringar implements Bank {
 			postData.add(new BasicNameValuePair("btnLogIn.y", "34"));
 			Log.d("Bankdroid", "Posting data to: " + urlopen.getCurrentURI());
 			response = urlopen.open(urlopen.getCurrentURI(), postData);
-			
+
 			if (response.contains("Felaktig inloggning")) {
 				throw new BankException(res.getText(R.string.invalid_username_password).toString());
 			}
@@ -105,11 +104,17 @@ public class BankLansforsakringar implements Bank {
 			matcher = reBalance.matcher(response);
 			while (matcher.find()) {
 				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), matcher.group(1).trim()));
+				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
 			}
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+			if (accounts.isEmpty()) {
+				throw new BankException(res.getText(R.string.no_accounts_found).toString());
+			}
+		}
+		catch (ClientProtocolException e) {
+			throw new BankException(e.getMessage());
+		}
+		catch (IOException e) {
+			throw new BankException(e.getMessage());
 		}
 		finally {
 			urlopen.close();
@@ -137,7 +142,7 @@ public class BankLansforsakringar implements Bank {
 	public String getUsername() {
 		return username;
 	}
-	
+
 	@Override
 	public BigDecimal getBalance() {
 		return balance;

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,14 @@ public class AccountsAdapter extends BaseAdapter {
 		((TextView)v.findViewById(R.id.txtListitemAccountsGroupBankname)).setText(group.getType());
 		((TextView)v.findViewById(R.id.txtListitemAccountsGroupTotal)).setText(Helpers.formatBalance(group.getTotal()));
 		icon.setImageResource(context.getResources().getIdentifier("drawable/"+Helpers.toAscii(group.getType().toLowerCase()), null, context.getPackageName()));
+		ImageView warning = (ImageView)v.findViewById(R.id.imgWarning);
+		Log.d("AccountsAdapter", ""+group.getDisabled());
+		if (group.getDisabled()) {
+			warning.setVisibility(View.VISIBLE);
+		}
+		else {
+			warning.setVisibility(View.INVISIBLE);
+		}
 		return v;
 	}
 
@@ -109,7 +118,8 @@ public class AccountsAdapter extends BaseAdapter {
 		private String type;
 		private BigDecimal total;
 		private List<Item> items;
-		public Group(String name, String type, Double total, List<Item> items) {
+		private Boolean disabled;
+		public Group(String name, String type, Double total, List<Item> items, Boolean disabled) {
 			this.name = name;
 			this.type = type;
 			this.total = new BigDecimal(total);
@@ -117,14 +127,16 @@ public class AccountsAdapter extends BaseAdapter {
 				item.setGroup(this);
 			}
 			this.items = items;
+			this.disabled = disabled;
 		}
-		public Group(String name, String type, Double total, Item item) {
+		public Group(String name, String type, Double total, Item item, Boolean disabled) {
 			ArrayList<Item> items = new ArrayList<Item>();
 			items.add(item);
 			this.name = name;
 			this.type = type;
 			this.total = new BigDecimal(total);
 			this.items = items;
+			this.disabled = disabled;
 		}
 		public String getName() {
 			return name;
@@ -137,6 +149,9 @@ public class AccountsAdapter extends BaseAdapter {
 		}
 		public List<Item> getItems() {
 			return items;
+		}
+		public Boolean getDisabled() {
+			return disabled;
 		}
 
 	}

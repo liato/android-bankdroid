@@ -12,7 +12,6 @@
 		android:paddingRight="10dp"
 		android:paddingTop="10dp"
 		android:layout_gravity="center_vertical"
-		android:gravity="center_vertical"
 		android:fitsSystemWindows="true">
 
 
@@ -43,38 +42,23 @@
 				android:id="@+id/LinearLayout02"
 				android:layout_height="wrap_content"
 				android:orientation="vertical"
-				android:layout_width="fill_parent">
-				<EditText
-					android:layout_height="wrap_content"
-					android:layout_width="fill_parent"
-					android:inputType="textPassword"
-					android:layout_gravity="center_vertical"
-					android:hint="@string/access_code"
-					android:id="@+id/edtAccessCode"></EditText>
-				<Button
-					android:id="@+id/btnLogin"
-					android:layout_gravity="right|center_vertical"
-					android:layout_width="fill_parent"
-					android:layout_height="52dp"
-					android:drawableRight="@drawable/ic_menu_forward"></Button>
-			</LinearLayout>
-		</LinearLayout>
+				android:layout_width="fill_parent"><TextView android:layout_height="wrap_content" android:id="@+id/txtVersion" android:layout_width="fill_parent" android:textSize="17dp" android:text="@string/version"></TextView>
+				
+				
+			<TextView android:id="@+id/TextView02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="http://liato.github.com/android-bankdroid/" android:autoLink="web" android:fitsSystemWindows="false"></TextView></LinearLayout>
+		
+
+</LinearLayout>
 
 
 
 
 
 
-		<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:id="@+id/txtResult"
-			android:textColor="#CC4B28"
-			android:text="@string/invalid_access_code"
-			android:gravity="center_vertical"
-			android:drawableLeft="@drawable/ic_bullet_key_permission"
-			android:layout_gravity="center_horizontal"
-			android:visibility="invisible"></TextView>
+		
 
-	</LinearLayout>
+	<TextView android:id="@+id/TextView04" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/thanks_to" android:textSize="20sp" android:textStyle="bold" android:layout_marginTop="10dp"></TextView><ScrollView android:id="@+id/ScrollView01" android:layout_height="wrap_content" android:layout_width="fill_parent"><TextView android:id="@+id/TextView03" android:layout_height="wrap_content" android:text="@string/thanks" android:layout_width="fill_parent" android:paddingLeft="10dp" android:typeface="serif" android:textSize="12sp"></TextView></ScrollView>
+
+
+</LinearLayout>
 </RelativeLayout>

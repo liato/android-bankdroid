@@ -1,14 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_gravity="center_horizontal" android:background="@drawable/widget_2x1" android:layout_height="100dp" android:layout_width="160dp">
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_gravity="center_horizontal"
+	android:background="@drawable/widget_2x1"
+	android:layout_height="100dp"
+	android:layout_width="160dp">
 
-    <LinearLayout android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/layWidgetRow01" android:layout_marginTop="0dp"><ImageView android:layout_above="@+id/txtListitemAccountsItemAccountname" android:layout_width="22dp" android:layout_height="22dp" android:id="@+id/imgWidgetIcon" android:layout_gravity="center_vertical" android:baselineAlignBottom="true" android:src="@drawable/icon" android:scaleType="fitXY"></ImageView><TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/txtWidgetAccountname" android:text="Kapitalkonto" android:layout_gravity="center_vertical" android:textColor="#a8a3a3" android:textSize="11dp" android:inputType="none" android:layout_marginLeft="2dp"></TextView></LinearLayout><LinearLayout android:id="@+id/layWidgetRow02" android:layout_below="@+id/layWidgetRow01" android:layout_width="fill_parent" android:layout_height="fill_parent"><TextView android:textColor="#fff" android:inputType="none" android:layout_height="fill_parent" android:layout_gravity="center_vertical|center_horizontal" android:layout_width="fill_parent" android:ellipsize="none" android:gravity="center_vertical|center_horizontal" android:textSize="15dp" android:text="129 500,00 SEK" android:id="@+id/txtWidgetAccountbalance" android:layout_marginTop="-6dp"/></LinearLayout>
+	<LinearLayout
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:id="@+id/layWidgetRow01"
+		android:layout_marginTop="0dp">
+		<ImageView
+			android:layout_above="@+id/txtListitemAccountsItemAccountname"
+			android:layout_width="22dp"
+			android:layout_height="22dp"
+			android:id="@+id/imgWidgetIcon"
+			android:layout_gravity="center_vertical"
+			android:baselineAlignBottom="true"
+			android:src="@drawable/icon"
+			android:scaleType="fitXY"></ImageView>
+		<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:id="@+id/txtWidgetAccountname"
+			android:text="Kapitalkonto"
+			android:layout_gravity="center_vertical"
+			android:textColor="#a8a3a3"
+			android:textSize="11dp"
+			android:inputType="none"
+			android:layout_marginLeft="2dp"></TextView>
+	</LinearLayout>
+	<LinearLayout
+		android:id="@+id/layWidgetRow02"
+		android:layout_below="@+id/layWidgetRow01"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="7dp">
+		<TextView
+			android:textColor="#fff"
+			android:inputType="none"
+			android:layout_gravity="center_vertical|center_horizontal"
+			android:layout_width="fill_parent"
+			android:ellipsize="none"
+			android:gravity="center_vertical|center_horizontal"
+			android:textSize="15dp"
+			android:text="129 500,00 SEK"
+			android:id="@+id/txtWidgetAccountbalance"
+			android:layout_height="fill_parent" />
+	</LinearLayout>
+	<LinearLayout
+		android:id="@+id/layWidgetRow03"
+		android:layout_below="@+id/layWidgetRow02"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:gravity="bottom"
+		android:layout_alignParentBottom="true"
+		android:visibility="visible">
+		
+		<FrameLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/frmProgress" android:visibility="invisible"><ProgressBar android:layout_width="wrap_content" android:indeterminateOnly="true" android:indeterminateBehavior="repeat" android:indeterminate="true" android:layout_height="wrap_content" style="@style/Widget_Progress" android:id="@+id/prgProgress" android:maxHeight="2dp" android:minHeight="2dp" android:minWidth="17dp" android:visibility="visible"></ProgressBar></FrameLayout>
 
-    
-    
-        
 
-
-
+		<FrameLayout
+			android:layout_height="wrap_content"
+			android:id="@+id/frmWarning"
+			android:layout_width="fill_parent"
+			android:visibility="invisible">
+			<ImageView
+				android:id="@+id/imgWarning"
+				android:adjustViewBounds="true"
+				android:layout_gravity="bottom|right"
+				android:layout_height="fill_parent"
+				android:src="@drawable/indicator_input_error"
+				android:scaleType="fitXY"
+				android:layout_width="wrap_content"></ImageView>
+		</FrameLayout>
+	</LinearLayout>
+	
 
 </RelativeLayout>

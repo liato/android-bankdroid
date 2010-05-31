@@ -79,9 +79,9 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
 				e.printStackTrace();
 			}
 		}
-		publishProgress(new String[] {new Integer(i).toString(), ""});
 		c.close();
 		db.close();
+		publishProgress(new String[] {new Integer(i).toString(), ""});
 		return null;
 	}
 
@@ -91,6 +91,7 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
 	}
 	protected void onPostExecute(final Void unused) {
 		parent.refreshView();
+		AutoRefreshService.sendWidgetRefresh(parent);
 		if (this.dialog.isShowing()) {
 			this.dialog.dismiss();
 		}

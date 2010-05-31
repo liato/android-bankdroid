@@ -17,7 +17,7 @@ import android.text.Html;
 import com.liato.urllib.Urllib;
 
 public class BankSwedbank implements Bank {
-	
+
 	private Context context;
 	private Resources res;
 	private String username;
@@ -38,7 +38,7 @@ public class BankSwedbank implements Bank {
 	public void update(String username, String password, Context context) throws BankException {
 		this.context = context;
 		this.res = this.context.getResources();
-		
+
 		this.username = username;
 		this.password = password;
 		this.update();
@@ -52,7 +52,7 @@ public class BankSwedbank implements Bank {
 		Matcher matcher;
 		try {
 			balance = new BigDecimal(0);
-			/*response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank-light/login.html");
+			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank-light/login.html");
 			matcher = reCSRF.matcher(response);
 			if (!matcher.find()) {
 				throw new BankException(res.getText(R.string.unable_to_find).toString()+" CSRF token.");
@@ -67,20 +67,25 @@ public class BankSwedbank implements Bank {
 			if (response.contains("misslyckats")) {
 				throw new BankException(res.getText(R.string.invalid_username_password).toString());
 			}
-			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank-light/accounts.html");*/
-			response = urlopen.open("http://x.x00.us/android/bankdroid/swedbank_oversikt.htm");
+			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank-light/accounts.html");
+			//response = urlopen.open("http://x.x00.us/android/bankdroid/swedbank_oversikt.htm");
 			matcher = reAccounts.matcher(response);
 			while (matcher.find()) {
 				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString(), Helpers.parseBalance(matcher.group(3)), matcher.group(1).trim()));
 				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
 			}
+			if (accounts.isEmpty()) {
+				throw new BankException(res.getText(R.string.no_accounts_found).toString());
+			}
 			// Konungens konto
 			//accounts.add(new Account("Personkonto", new BigDecimal("1485351"), "0"));
 			//accounts.add(new Account("Sparkonto", new BigDecimal("8590700"), "1"));
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		}
+		catch (ClientProtocolException e) {
+			throw new BankException(e.getMessage());
+		}
+		catch (IOException e) {
+			throw new BankException(e.getMessage());
 		}
 		finally {
 			urlopen.close();

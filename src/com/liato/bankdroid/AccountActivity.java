@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
 
 public class AccountActivity extends LockableActivity implements OnClickListener, OnItemSelectedListener {
@@ -51,7 +52,13 @@ public class AccountActivity extends LockableActivity implements OnClickListener
 				if (c != null) {
 					((EditText)findViewById(R.id.edtBankeditUsername)).setText(c.getString(c.getColumnIndex("username")));
 					((EditText)findViewById(R.id.edtBankeditPassword)).setText(c.getString(c.getColumnIndex("password")));
-					SELECTED_BANK = c.getString(c.getColumnIndex("banktype"));
+					TextView errorDesc = (TextView)findViewById(R.id.txtErrorDesc);
+					if (c.getInt(c.getColumnIndex("disabled")) == 1 ? true : false) {
+						errorDesc.setVisibility(View.VISIBLE);
+					}
+					else {
+						errorDesc.setVisibility(View.INVISIBLE);
+					}					SELECTED_BANK = c.getString(c.getColumnIndex("banktype"));
 					int i = items.indexOf(SELECTED_BANK);
 					spnBanks.setSelection(i);
 					c.close();
@@ -131,6 +138,7 @@ public class AccountActivity extends LockableActivity implements OnClickListener
 		}
 
 		protected void onPostExecute(final Void unused) {
+			AutoRefreshService.sendWidgetRefresh(parent);
 			if (this.dialog.isShowing()) {
 				this.dialog.dismiss();
 			}

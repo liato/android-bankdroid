@@ -74,6 +74,7 @@ public class DBAdapter {
     
     public void close() {
         mDbHelper.close();
+        mDb.close();
     }
 
 
@@ -159,11 +160,12 @@ public class DBAdapter {
     
     public void disableBank(long bankId) {
         ContentValues initialValues = new ContentValues();
-        initialValues.put("disabled", 1);    	
+        initialValues.put("disabled", 1);
+    	mDb.update("banks", initialValues, "_id="+bankId, null);
     }
     
     public Cursor getBank(String bankId) {
-    	Cursor c = mDb.query("banks", new String[] {"_id", "balance", "banktype", "username", "password"}, "_id="+bankId, null, null, null, null);
+    	Cursor c = mDb.query("banks", new String[] {"_id", "balance", "banktype", "username", "password", "disabled"}, "_id="+bankId, null, null, null, null);
     	if (c != null) {
     		c.moveToFirst();
     	}

@@ -1,17 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:background="#000" android:layout_height="35dp" android:layout_gravity="center_horizontal" android:paddingLeft="15dp" android:paddingRight="10dp">
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:background="#000"
+	android:layout_height="35dp"
+	android:layout_gravity="center_horizontal"
+	android:paddingLeft="15dp"
+	android:paddingRight="10dp">
 
-    <TextView
-        android:layout_alignParentBottom="true"
-        android:ellipsize="marquee"
-        android:gravity="center_vertical" android:layout_width="wrap_content" android:layout_alignParentRight="false" android:textColor="#fff" android:layout_alignParentLeft="true" android:layout_alignParentTop="true" android:id="@+id/txtListitemAccountsItemAccountname" android:inputType="none" android:text="Kontonamn" android:textStyle="bold" android:layout_height="fill_parent"/>
+	<TextView
+		android:layout_alignParentBottom="true"
+		android:ellipsize="marquee"
+		android:gravity="center_vertical"
+		android:layout_width="wrap_content"
+		android:layout_alignParentRight="false"
+		android:textColor="#fff"
+		android:layout_alignParentLeft="true"
+		android:layout_alignParentTop="true"
+		android:id="@+id/txtListitemAccountsItemAccountname"
+		android:inputType="none"
+		android:text="Kontonamn"
+		android:textStyle="bold"
+		android:layout_height="fill_parent" />
 
-    
-    <TextView
-        android:layout_alignParentBottom="true"
-        android:ellipsize="marquee"
-        android:text="00000 SEK" android:layout_width="wrap_content" android:layout_alignParentRight="true" android:textColor="#fff" android:layout_alignParentTop="true" android:id="@+id/txtListitemAccountsItemBalance" android:inputType="none" android:layout_toRightOf="@+id/txtListitemAccountsItemAccountname" android:gravity="right|center_vertical" android:layout_height="fill_parent"/>
-        
+
+	<TextView
+		android:layout_alignParentBottom="true"
+		android:ellipsize="marquee"
+		android:text="00000 SEK"
+		android:layout_width="wrap_content"
+		android:layout_alignParentRight="true"
+		android:textColor="#fff"
+		android:layout_alignParentTop="true"
+		android:id="@+id/txtListitemAccountsItemBalance"
+		android:inputType="none"
+		android:layout_toRightOf="@+id/txtListitemAccountsItemAccountname"
+		android:gravity="right|center_vertical"
+		android:layout_height="fill_parent" />
+
 </RelativeLayout>

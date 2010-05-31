@@ -24,9 +24,7 @@ public class BankNordea implements Bank {
 	private String password;
 	private Banks banktype = Banks.NORDEA;
 	private Pattern reBalance = Pattern.compile("(?is)nowrap>(.+?)SEK<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-	//private Pattern reAccounts = Pattern.compile("(?is)Kontoutdraget';.*?>(.*?)</a></td>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reAccounts = Pattern.compile("sendAccount\\('SEK',\\s*'[^']+',\\s*'[^']+',\\s*'([^']+)',\\s*'([^']+)'\\)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-	
 	private ArrayList<Account> accounts = new ArrayList<Account>();
 	private BigDecimal balance = new BigDecimal(0);
 
@@ -40,7 +38,7 @@ public class BankNordea implements Bank {
 	public void update(String username, String password, Context context) throws BankException {
 		this.context = context;
 		this.res = this.context.getResources();
-		
+
 		this.username = username;
 		this.password = password;
 		this.update();
@@ -72,14 +70,20 @@ public class BankNordea implements Bank {
 			matcherAccounts = reAccounts.matcher(response);
 			while (matcherAccounts.find() && matcherBalance.find()) {
 				accounts.add(new Account(Html.fromHtml(matcherAccounts.group(2)).toString(), Helpers.parseBalance(matcherBalance.group(1)), matcherAccounts.group(2).trim()));
+				balance = balance.add(Helpers.parseBalance(matcherBalance.group(1)));
+			}
+			if (accounts.isEmpty()) {
+				throw new BankException(res.getText(R.string.no_accounts_found).toString());
 			}
 			// Konungens konto
 			//accounts.add(new Account("Personkonto", new BigDecimal("568269.37"), "1"));
 			//accounts.add(new Account("Kapitalkonto", new BigDecimal("25789000.00"), "1"));
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		}
+		catch (ClientProtocolException e) {
+			throw new BankException(e.getMessage());
+		}
+		catch (IOException e) {
+			throw new BankException(e.getMessage());
 		}
 		finally {
 			urlopen.close();
@@ -107,7 +111,7 @@ public class BankNordea implements Bank {
 	public String getUsername() {
 		return username;
 	}
-	
+
 	@Override
 	public BigDecimal getBalance() {
 		return balance;

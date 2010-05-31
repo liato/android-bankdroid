@@ -26,8 +26,7 @@ public class BankICA implements Bank {
 	private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
 	private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
 	private Pattern reError = Pattern.compile("<label\\s+class=\"error\">(.+?)</label>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-	private Pattern reBalance = Pattern.compile("account\\.aspx\\?id=([^\"]+).+?>([^<]+)</a.+?Saldo([0-9 .,-]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-	
+	private Pattern reBalance = Pattern.compile("account\\.aspx\\?id=([^\"]+).+?>([^<]+)</a.+?Disponibelt\\s*([0-9 .,-]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private ArrayList<Account> accounts = new ArrayList<Account>();
 	private BigDecimal balance = new BigDecimal(0);
 
@@ -73,21 +72,29 @@ public class BankICA implements Bank {
 			postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
 			postData.add(new BasicNameValuePair("__EVENTVALIDATION", strEventValidation));
 			response = urlopen.open("https://mobil.icabanken.se/login/login.aspx", postData);
-			
+
 			matcher = reError.matcher(response);
 			if (matcher.find()) {
 				throw new BankException(Html.fromHtml(matcher.group(1).trim()).toString());
 			}
-
+			if (accounts.isEmpty()) {
+				throw new BankException(res.getText(R.string.no_accounts_found).toString());
+			}
 			response = urlopen.open("https://mobil.icabanken.se/account/overview.aspx");
 			matcher = reBalance.matcher(response);
 			while (matcher.find()) {
 				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), matcher.group(1).trim()));
+				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
 			}
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+			if (accounts.isEmpty()) {
+				throw new BankException(res.getText(R.string.no_accounts_found).toString());
+			}
+		}
+		catch (ClientProtocolException e) {
+			throw new BankException(e.getMessage());
+		}
+		catch (IOException e) {
+			throw new BankException(e.getMessage());
 		}
 		finally {
 			urlopen.close();
@@ -115,7 +122,7 @@ public class BankICA implements Bank {
 	public String getUsername() {
 		return username;
 	}
-	
+
 	@Override
 	public BigDecimal getBalance() {
 		return balance;

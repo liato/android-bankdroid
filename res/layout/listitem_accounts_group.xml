@@ -1,48 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:background="@drawable/title_bar_medium" android:layout_height="62dp" android:clickable="false" android:paddingBottom="5dp" android:paddingLeft="5dp" android:paddingTop="5dp" android:paddingRight="10dp">
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:background="@drawable/title_bar_medium"
+	android:layout_height="62dp"
+	android:clickable="false"
+	android:paddingBottom="5dp"
+	android:paddingLeft="5dp"
+	android:paddingTop="5dp"
+	android:paddingRight="10dp">
 
-    <ImageView
-        android:id="@+id/imgListitemAccountsGroup"
+	<ImageView
+		android:id="@+id/imgListitemAccountsGroup"
 
-        android:layout_height="fill_parent"
+		android:layout_height="fill_parent"
 
-        android:layout_alignParentTop="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginRight="2dp"
+		android:layout_alignParentTop="true"
+		android:layout_alignParentBottom="true"
+		android:layout_marginRight="2dp"
 
-        android:src="@drawable/icon" android:layout_alignParentLeft="true" android:padding="0dp" android:layout_marginLeft="0dp" android:layout_width="48dp" android:maxHeight="48dp" android:maxWidth="48dp" android:minHeight="48dp" android:minWidth="48dp"/>
+		android:src="@drawable/icon"
+		android:layout_alignParentLeft="true"
+		android:padding="0dp"
+		android:layout_marginLeft="0dp"
+		android:layout_width="48dp"
+		android:maxHeight="48dp"
+		android:maxWidth="48dp"
+		android:minHeight="48dp"
+		android:minWidth="48dp" />
 
-    <TextView
-        android:id="@+id/txtListitemAccountsGroupBankname"
+	<TextView
+		android:id="@+id/txtListitemAccountsGroupBankname"
 
-        android:layout_height="26dip" 
+		android:layout_height="26dip"
 
-        android:layout_toRightOf="@id/imgListitemAccountsGroup"
-        android:layout_alignParentBottom="true"
-        android:singleLine="true"
-        android:ellipsize="marquee"
-        android:gravity="center_vertical" android:text="Banknamn" android:textColor="#000" android:layout_width="wrap_content" android:layout_alignParentRight="false"/>
+		android:layout_toRightOf="@id/imgListitemAccountsGroup"
+		android:layout_alignParentBottom="true"
+		android:singleLine="true"
+		android:ellipsize="marquee"
+		android:gravity="center_vertical"
+		android:text="Banknamn"
+		android:textColor="#000"
+		android:layout_width="wrap_content"
+		android:layout_alignParentRight="false" />
 
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+	<TextView
+		android:layout_height="wrap_content"
 
-        android:layout_toRightOf="@id/imgListitemAccountsGroup"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:layout_above="@id/txtListitemAccountsGroupBankname"
-        android:layout_alignWithParentIfMissing="true"
+		android:layout_toRightOf="@id/imgListitemAccountsGroup"
+		android:layout_alignParentTop="true"
+		android:layout_above="@id/txtListitemAccountsGroupBankname"
+		android:layout_alignWithParentIfMissing="true"
 
-        android:gravity="center_vertical"
-        android:id="@+id/txtListitemAccountsGroupAccountname" android:textSize="23sp" android:text="Personnummer" android:textColor="#000"/>
-    <TextView
-        android:id="@+id/txtListitemAccountsGroupTotal"
-        android:layout_height="26dip" 
-        android:layout_alignParentBottom="true"
-        android:singleLine="true"
-        android:ellipsize="marquee"
-        android:gravity="center_vertical" android:text="00000 SEK" android:layout_width="wrap_content" android:layout_alignParentRight="true" android:textColor="#333"/>
+		android:gravity="center_vertical"
+		android:id="@+id/txtListitemAccountsGroupAccountname"
+		android:textSize="23sp"
+		android:text="Personnummer"
+		android:textColor="#000"
+		android:layout_width="wrap_content"
+		android:layout_alignParentRight="false" />
+	<ImageView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:id="@+id/imgWarning"
+		android:src="@drawable/indicator_input_error"
+		android:layout_alignParentRight="true"
+		android:layout_above="@id/txtListitemAccountsGroupBankname"
+		android:visibility="invisible"></ImageView>
+	<TextView
+		android:id="@+id/txtListitemAccountsGroupTotal"
+		android:layout_height="26dip"
+		android:layout_alignParentBottom="true"
+		android:singleLine="true"
+		android:ellipsize="marquee"
+		android:gravity="center_vertical"
+		android:text="00000 SEK"
+		android:layout_width="wrap_content"
+		android:layout_alignParentRight="true"
+		android:textColor="#333" />
         
+
 </RelativeLayout>
