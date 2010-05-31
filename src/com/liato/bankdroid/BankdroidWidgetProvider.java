@@ -101,6 +101,7 @@ public class BankdroidWidgetProvider extends AppWidgetProvider {
 		Intent intent = new Intent(context, LoginActivity.class);
 		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 		views.setOnClickPendingIntent(R.id.txtWidgetAccountbalance, pendingIntent);
+		views.setOnClickPendingIntent(R.id.layWidgetContainer, pendingIntent);
 
 		intent = new Intent(context, AccountsActivity.class);
 		pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);

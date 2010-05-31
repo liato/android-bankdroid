@@ -26,7 +26,8 @@ public class BankICA implements Bank {
 	private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
 	private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
 	private Pattern reError = Pattern.compile("<label\\s+class=\"error\">(.+?)</label>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-	private Pattern reBalance = Pattern.compile("account\\.aspx\\?id=([^\"]+).+?>([^<]+)</a.+?Disponibelt\\s*([0-9 .,-]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private Pattern reBalanceDisp = Pattern.compile("account\\.aspx\\?id=([^\"]+).+?>([^<]+)</a.+?Disponibelt([0-9 .,-]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private Pattern reBalanceSald = Pattern.compile("account\\.aspx\\?id=([^\"]+).+?>([^<]+)</a[^D]*Saldo([0-9 .,-]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private ArrayList<Account> accounts = new ArrayList<Account>();
 	private BigDecimal balance = new BigDecimal(0);
 
@@ -81,7 +82,13 @@ public class BankICA implements Bank {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
 			}
 			response = urlopen.open("https://mobil.icabanken.se/account/overview.aspx");
-			matcher = reBalance.matcher(response);
+			//response = urlopen.open("http://x.x00.us/android/bankdroid/icabanken_oversikt.htm");
+			matcher = reBalanceSald.matcher(response);
+			while (matcher.find()) {
+				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), matcher.group(1).trim()));
+				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
+			}
+			matcher = reBalanceDisp.matcher(response);
 			while (matcher.find()) {
 				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), matcher.group(1).trim()));
 				balance = balance.add(Helpers.parseBalance(matcher.group(3)));

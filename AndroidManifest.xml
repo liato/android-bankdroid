@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.liato.bankdroid" android:versionName="1.1.0" android:versionCode="13">
-	<application android:icon="@drawable/icon" android:label="@string/app_name">
+	package="com.liato.bankdroid" android:versionName="1.1.1" android:versionCode="14">
+	<application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="true">
 		<activity android:label="@string/app_name"
 			android:multiprocess="false" android:name=".LoginActivity"
 			android:alwaysRetainTaskState="true" android:theme="@android:style/Theme.Dialog">

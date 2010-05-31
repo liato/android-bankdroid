@@ -52,10 +52,9 @@ public class AutoRefreshService extends Service {
 	        notification.defaults |= Notification.DEFAULT_SOUND;
 		}
 		if (prefs.getBoolean("notify_with_vibration", true)) {
-			/*long[] vib = {23,28,27,143,20,30,26,364,22,26,
-						  28,26,28,26,28,26,29,25,27,27,
-						  27,27,28,28,28,28,28,27,27,26,27};
-			notification.vibrate = vib;*/
+			//long[] vib = {23,28,27,143,20,30,26,364,22,26,28,26,28,26,28,26,29,25,27,27,27,27,28,28,28,28,28,27,27,26,27};
+			//long[] vib = {46, 56, 54, 286, 40, 60, 52, 728, 44, 52, 56, 52, 56, 52, 56, 52, 58, 50, 54, 54, 54, 54, 56, 56, 56, 56, 56, 54, 54, 52, 54};
+			//notification.vibrate = vib;
 			notification.defaults |= Notification.DEFAULT_VIBRATE;
 		}
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,

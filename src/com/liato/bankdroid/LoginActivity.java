@@ -19,7 +19,7 @@ public class LoginActivity extends Activity {
 
 	public void onCreate(Bundle savedInstanceState) {
 		String widgetAction = getIntent().getAction();
-		if (!widgetAction.equals("widgetLogin")) {
+		if ("widgetLogin".equals(widgetAction)) {
 		    setTheme(android.R.style.Theme);
 		}
 		super.onCreate(savedInstanceState);
@@ -34,7 +34,7 @@ public class LoginActivity extends Activity {
 					if (((EditText)findViewById(R.id.edtAccessCode)).getText().toString().equals(access_code)) {
 						Log.d("LoginActivity", "Success");
 						String widgetAction = getIntent().getAction();
-						if (widgetAction.equals("widgetLogin")) {
+						if ("widgetLogin".equals(widgetAction)) {
 							Log.d("LoginActivity", "unLockOnly");
 							setResult(Activity.RESULT_OK);
 							finish();
@@ -56,8 +56,8 @@ public class LoginActivity extends Activity {
 			});	
 		}
 		else {
-			Log.d("LoginActivity", widgetAction);
-			if (widgetAction.equals("widgetLogin")) {
+			Log.d("LoginActivity", "Action:"+ widgetAction);
+			if ("widgetLogin".equals(widgetAction)) {
 				Log.d("LoginActivity", "unLockOnly");
 				setResult(Activity.RESULT_OK);
 				finish();

@@ -1,80 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical"
-	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
-	android:paddingLeft="10dp"
-	android:paddingRight="10dp"
-	android:paddingTop="10dp">
-	<TextView
+	android:layout_width="fill_parent" android:fillViewport="true">
+	<LinearLayout
+		android:orientation="vertical"
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:typeface="sans"
-		android:textSize="20sp"
-		android:text="@string/username" />
-
-	<EditText
-		android:layout_height="wrap_content"
-		android:layout_width="fill_parent"
-		android:id="@+id/edtBankeditUsername"
-		android:digits="0123456789-"
-		android:inputType="phone"></EditText>
-	<TextView
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:typeface="sans"
-		android:textSize="20sp"
-		android:text="@string/password" />
-	<EditText
-		android:layout_height="wrap_content"
-		android:layout_width="fill_parent"
-		android:id="@+id/edtBankeditPassword"
-		android:inputType="textPassword"></EditText>
-	<TextView
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:typeface="sans"
-		android:textSize="20sp"
-		android:text="@string/bank" />
-
-
-	<Spinner
-		android:layout_height="wrap_content"
-		android:layout_width="fill_parent"
-		android:id="@+id/spnBankeditBanklist"></Spinner>
-	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:drawableLeft="@drawable/indicator_input_error"
-		android:text="@string/error_desc"
-		android:textSize="12sp"
-		android:drawablePadding="5dp"
-		android:id="@+id/txtErrorDesc"
-		android:visibility="invisible"></TextView>
-	<TableLayout
-		android:id="@+id/TableLayout01"
-		android:layout_width="fill_parent"
-		android:stretchColumns="*"
-		android:gravity="bottom"
-		android:layout_height="fill_parent">
-		<TableRow
-			android:id="@+id/TableRow01"
+		android:layout_height="fill_parent"
+		android:paddingLeft="10dp"
+		android:paddingRight="10dp"
+		android:paddingTop="10dp">
+		<TextView
+			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:layout_width="fill_parent">
-			<Button
-				android:layout_height="wrap_content"
-				android:drawableLeft="@android:drawable/ic_menu_close_clear_cancel"
-				android:layout_width="fill_parent"
-				android:id="@+id/btnSettingsCancel"
-				android:text="@string/cancel"></Button>
-			<Button
-				android:layout_height="wrap_content"
-				android:drawableLeft="@android:drawable/ic_menu_save"
-				android:layout_width="fill_parent"
-				android:id="@+id/btnSettingsOk"
-				android:text="@string/save"></Button>
-		</TableRow>
-	</TableLayout>
+			android:typeface="sans"
+			android:textSize="20sp"
+			android:text="@string/username" />
 
-</LinearLayout>
+		<EditText
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:id="@+id/edtBankeditUsername"
+			android:digits="0123456789-"
+			android:inputType="phone"></EditText>
+		<TextView
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:typeface="sans"
+			android:textSize="20sp"
+			android:text="@string/password" />
+		<EditText
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:id="@+id/edtBankeditPassword"
+			android:inputType="textPassword"></EditText>
+		<TextView
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:typeface="sans"
+			android:textSize="20sp"
+			android:text="@string/bank" />
+
+
+		<Spinner
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:id="@+id/spnBankeditBanklist"></Spinner>
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:drawableLeft="@drawable/indicator_input_error"
+			android:text="@string/error_desc"
+			android:textSize="12sp"
+			android:drawablePadding="5dp"
+			android:id="@+id/txtErrorDesc"
+			android:visibility="invisible"></TextView>
+		<TableLayout
+			android:id="@+id/TableLayout01"
+			android:layout_width="fill_parent"
+			android:stretchColumns="*"
+			android:gravity="bottom"
+			android:layout_height="fill_parent">
+			<TableRow
+				android:id="@+id/TableRow01"
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent">
+				<Button
+					android:layout_height="wrap_content"
+					android:drawableLeft="@android:drawable/ic_menu_close_clear_cancel"
+					android:layout_width="fill_parent"
+					android:id="@+id/btnSettingsCancel"
+					android:text="@string/cancel"></Button>
+				<Button
+					android:layout_height="wrap_content"
+					android:drawableLeft="@android:drawable/ic_menu_save"
+					android:layout_width="fill_parent"
+					android:id="@+id/btnSettingsOk"
+					android:text="@string/save"></Button>
+			</TableRow>
+		</TableLayout>
+	</LinearLayout>
+</ScrollView>

@@ -4,7 +4,7 @@
 	android:layout_gravity="center_horizontal"
 	android:background="@drawable/widget_2x1"
 	android:layout_height="100dp"
-	android:layout_width="160dp">
+	android:layout_width="160dp" android:id="@+id/layWidgetContainer">
 
 	<LinearLayout
 		android:layout_height="wrap_content"
