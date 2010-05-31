@@ -14,6 +14,8 @@ import org.apache.http.message.BasicNameValuePair;
 import android.content.Context;
 import android.content.res.Resources;
 import android.text.Html;
+import android.util.Log;
+
 import com.liato.urllib.Urllib;
 
 public class BankICA implements Bank {
@@ -73,15 +75,13 @@ public class BankICA implements Bank {
 			postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
 			postData.add(new BasicNameValuePair("__EVENTVALIDATION", strEventValidation));
 			response = urlopen.open("https://mobil.icabanken.se/login/login.aspx", postData);
-
+			Log.d("BankICA", urlopen.getCurrentURI());
 			matcher = reError.matcher(response);
 			if (matcher.find()) {
 				throw new BankException(Html.fromHtml(matcher.group(1).trim()).toString());
 			}
-			if (accounts.isEmpty()) {
-				throw new BankException(res.getText(R.string.no_accounts_found).toString());
-			}
 			response = urlopen.open("https://mobil.icabanken.se/account/overview.aspx");
+			Log.d("BankICA", urlopen.getCurrentURI());
 			//response = urlopen.open("http://x.x00.us/android/bankdroid/icabanken_oversikt.htm");
 			matcher = reBalanceSald.matcher(response);
 			while (matcher.find()) {
