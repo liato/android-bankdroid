@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     
-     <string name="about">Om</string>
+    <string name="about">Om</string>
+    <string name="version">Version 1.1.1 av liato</string>
     <string name="accounts_were_not_updated">Saldon för följande konton har ej uppdaterats</string>
     <string name="updating_account_balance">Uppdaterar saldoinformation...</string>
     <string name="errors_when_updating">Fel vid uppdatering</string>

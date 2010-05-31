@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="version">Version 1.1.0 by liato</string>
+    <string name="version">Version 1.1.1 by liato</string>
     <string name="app_name">Bankdroid</string>
     <string name="about">About</string>
     <string name="accounts_were_not_updated">Balance for the following accounts could not be updated</string>
