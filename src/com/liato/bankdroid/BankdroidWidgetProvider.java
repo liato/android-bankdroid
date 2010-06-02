@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.appwidget.AppWidgetProviderInfo;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -17,8 +18,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
-public class BankdroidWidgetProvider extends AppWidgetProvider {
-
+public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
+	
 	static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
 			int appWidgetId, AccountsAdapter.Item item) {
 		RemoteViews views = buildAppWidget(context, appWidgetManager, appWidgetId, item);
@@ -30,7 +31,7 @@ public class BankdroidWidgetProvider extends AppWidgetProvider {
 		RemoteViews views = buildAppWidget(context, appWidgetManager, appWidgetId);
 		if (views != null) appWidgetManager.updateAppWidget(appWidgetId, views);
 	}
-	
+
 	static RemoteViews buildAppWidget(Context context, AppWidgetManager appWidgetManager,
 			int appWidgetId) {
 		Log.d("BankdroidWigetProvider", "Updating widget: "+appWidgetId);
@@ -82,12 +83,14 @@ public class BankdroidWidgetProvider extends AppWidgetProvider {
 
 
 
-	
 	static RemoteViews buildAppWidget(Context context, AppWidgetManager appWidgetManager,
 			int appWidgetId, AccountsAdapter.Item item) {
 		Log.d("Widget", "Building widget: "+appWidgetId);
+		AppWidgetProviderInfo providerInfo = appWidgetManager.getAppWidgetInfo(appWidgetId);
+		int layoutId = (providerInfo == null) ? R.layout.widget : providerInfo.initialLayout;
 		AccountsAdapter.Group group = item.getGroup();
-		RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
+		RemoteViews views = new RemoteViews(context.getPackageName(), layoutId);
+		Log.d("buildAppWidget", "WidgetLayout: "+layoutId);
 		views.setTextViewText(R.id.txtWidgetAccountname, item.getName());
 		views.setTextViewText(R.id.txtWidgetAccountbalance, Helpers.formatBalance(item.getBalance()));
 		views.setImageViewResource(R.id.imgWidgetIcon, context.getResources().getIdentifier("drawable/"+Helpers.toAscii(group.getType().toLowerCase()), null, context.getPackageName()));
@@ -114,7 +117,7 @@ public class BankdroidWidgetProvider extends AppWidgetProvider {
 		pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		views.setOnClickPendingIntent(R.id.imgWidgetIcon, pendingIntent);
 
-		//appWidgetManager.updateAppWidget(appWidgetId, views);
+		//appWidgetManager.updateAppWidget(appWidgetId, views); 
 		return views;
 	}
 	
@@ -135,11 +138,10 @@ public class BankdroidWidgetProvider extends AppWidgetProvider {
 		}
 
 
-		Log.d("BankdroidWidgetProvider", "intent=" + intent);
-
-		if (action.equals(AutoRefreshService.WIDGET_REFRESH)) {
+		Log.d("BankdroidWidgetProvider", "intent=" + intent+"; action="+action);
+		if (action.equals(AutoRefreshService.WIDGET_REFRESH) || action.equals(android.appwidget.AppWidgetManager.ACTION_APPWIDGET_UPDATE)) {
 			AppWidgetManager appWM = AppWidgetManager.getInstance(context);
-			int[] appWidgetIds = appWM.getAppWidgetIds(new ComponentName(context, BankdroidWidgetProvider.class));
+			int[] appWidgetIds = appWM.getAppWidgetIds(intent.getComponent());
 			final int N = appWidgetIds.length;
 			for (int i = 0; i < N; i++) {
 				int appWidgetId = appWidgetIds[i];
@@ -260,6 +262,7 @@ public class BankdroidWidgetProvider extends AppWidgetProvider {
 					views.setViewVisibility(R.id.frmProgress, View.INVISIBLE);
 					appWidgetManager.updateAppWidget(appWidgetId, views);
 				}
+				WidgetService.this.stopSelf();
 			}
 
 			

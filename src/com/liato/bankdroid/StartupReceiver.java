@@ -9,15 +9,12 @@ import android.content.SharedPreferences;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.Toast;
 
 public class StartupReceiver extends BroadcastReceiver{
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		//Intent serviceIntent = new Intent();
-		//serviceIntent.setAction("AutoRefreshService");
-		//Log.d("","starting service");
-		//context.startService(serviceIntent);
+		//Set alarms for auto updates on boot
+		Log.d("StartupReceiever", "Intent action: "+intent.getAction());
 		setAlarm(context);
 	}
 	
@@ -27,7 +24,7 @@ public class StartupReceiver extends BroadcastReceiver{
 		
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		Integer refreshrate = prefs.getInt("refreshrate", -1);
-        AlarmManager am = (AlarmManager)context.getSystemService(context.ALARM_SERVICE);
+        AlarmManager am = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         if (refreshrate < 0) {
         	am.cancel(alarmSender);
         	Log.d("","Alarm disabled.");
@@ -35,7 +32,7 @@ public class StartupReceiver extends BroadcastReceiver{
         else {
 	        long firstTime = SystemClock.elapsedRealtime();
 	        am.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, firstTime+refreshrate*60*1000, refreshrate*60*1000, alarmSender);
-        	Log.d("","Alarm set to "+refreshrate.toString()+" minutes.");
+        	Log.d("StartupReceiever.SetAlarm","Alarm set to "+refreshrate.toString()+" minutes.");
         }
 	
 	}

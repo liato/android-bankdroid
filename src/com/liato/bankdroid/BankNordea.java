@@ -76,8 +76,8 @@ public class BankNordea implements Bank {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
 			}
 			// Konungens konto
-			//accounts.add(new Account("Personkonto", new BigDecimal("568269.37"), "1"));
-			//accounts.add(new Account("Kapitalkonto", new BigDecimal("25789000.00"), "1"));
+			//accounts.add(new Account("Personkonto", new BigDecimal("568268.37"), "1"));
+			//accounts.add(new Account("Kapitalkonto", new BigDecimal("5789002.00"), "0"));
 		}
 		catch (ClientProtocolException e) {
 			throw new BankException(e.getMessage());

@@ -78,7 +78,7 @@ public class BankSwedbank implements Bank {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
 			}
 			// Konungens konto
-			//accounts.add(new Account("Personkonto", new BigDecimal("1485351"), "0"));
+			//accounts.add(new Account("Personkonto", new BigDecimal("85351"), "0"));
 			//accounts.add(new Account("Sparkonto", new BigDecimal("8590700"), "1"));
 		}
 		catch (ClientProtocolException e) {

@@ -2,6 +2,8 @@
 <resources>
     <string name="version">Version 1.1.1 by liato</string>
     <string name="app_name">Bankdroid</string>
+    <string name="widget_name_small">Bankdroid (Small)</string>
+    <string name="widget_name_large">Bankdroid (Large)</string>
     <string name="about">About</string>
     <string name="accounts_were_not_updated">Balance for the following accounts could not be updated</string>
     <string name="updating_account_balance">Refreshing account balance...</string>

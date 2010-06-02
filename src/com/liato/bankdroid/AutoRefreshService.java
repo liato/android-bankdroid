@@ -166,6 +166,7 @@ public class AutoRefreshService extends Service {
 
     
     public static void sendWidgetRefresh(Context context) {
+    	//Send intent to BankdroidWidgetProvider
         Intent updateIntent = new Intent(WIDGET_REFRESH);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
         		context, 0, updateIntent,

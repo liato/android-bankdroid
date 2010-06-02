@@ -24,12 +24,11 @@
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
 			android:id="@+id/txtWidgetAccountname"
-			android:text="Kapitalkonto"
 			android:layout_gravity="center_vertical"
 			android:textColor="#a8a3a3"
 			android:textSize="11dp"
 			android:inputType="none"
-			android:layout_marginLeft="2dp"></TextView>
+			android:layout_marginLeft="2dp" android:text="Bankdroid"></TextView>
 	</LinearLayout>
 	<LinearLayout
 		android:id="@+id/layWidgetRow02"
@@ -45,9 +44,8 @@
 			android:ellipsize="none"
 			android:gravity="center_vertical|center_horizontal"
 			android:textSize="15dp"
-			android:text="129 500,00 SEK"
 			android:id="@+id/txtWidgetAccountbalance"
-			android:layout_height="fill_parent" />
+			android:layout_height="fill_parent" android:text="Loading..."/>
 	</LinearLayout>
 	<LinearLayout
 		android:id="@+id/layWidgetRow03"
