@@ -23,8 +23,8 @@ public class BankNordea implements Bank {
 	private String username;
 	private String password;
 	private Banks banktype = Banks.NORDEA;
-	private Pattern reBalance = Pattern.compile("(?is)nowrap>(.+?)SEK<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-	private Pattern reAccounts = Pattern.compile("sendAccount\\('SEK',\\s*'[^']+',\\s*'[^']+',\\s*'([^']+)',\\s*'([^']+)'\\)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private Pattern reAccounts = Pattern.compile("account\\.html\\?id=konton:([^\"]+)\"[^>]+>\\s*<div[^>]+>([^<]+)<span[^>]+>([^<]+)</span", Pattern.CASE_INSENSITIVE );
+	private Pattern reCSRF = Pattern.compile("csrf_token\".*?value=\"([^\"]+)\"");
 	private ArrayList<Account> accounts = new ArrayList<Account>();
 	private BigDecimal balance = new BigDecimal(0);
 
@@ -49,28 +49,28 @@ public class BankNordea implements Bank {
 		}
 		Urllib urlopen = new Urllib();
 		String response = null;
-		Matcher matcherBalance;
-		Matcher matcherAccounts;
+		Matcher matcher;
 		try {
-			response = urlopen.open("https://gfs.nb.se/bin2/gfskod?OBJECT=KK20");
+			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/login.html");
+			matcher = reCSRF.matcher(response);
+			if (!matcher.find()) {
+				throw new BankException(res.getText(R.string.unable_to_find).toString()+" CSRF token.");
+			}
+			String csrftoken = matcher.group(1);
 			List <NameValuePair> postData = new ArrayList <NameValuePair>();
-			postData.add(new BasicNameValuePair("kundnr", username));
-			postData.add(new BasicNameValuePair("pinkod", password));
-			postData.add(new BasicNameValuePair("OBJECT", "TT00"));
-			postData.add(new BasicNameValuePair("prev_link", "https://gfs.nb.se/privat/bank/login_kod2.html"));
-			postData.add(new BasicNameValuePair("CHECKCODE", "checkcode"));
-			response = urlopen.open("https://gfs.nb.se/bin2/gfskod", postData);
+			postData.add(new BasicNameValuePair("xyz", username));
+			postData.add(new BasicNameValuePair("zyx", password));
+			postData.add(new BasicNameValuePair("_csrf_token", csrftoken));
+			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/login.html", postData);
 
-			if (!response.contains("reDirect")) {
+			if (!response.contains("accounts.html")) {
 				throw new BankException(res.getText(R.string.invalid_username_password).toString());
 			}
 
-			response = urlopen.open("https://gfs.nb.se/bin2/gfskod?OBJECT=KF00T&show_button=No");
-			matcherBalance = reBalance.matcher(response);
-			matcherAccounts = reAccounts.matcher(response);
-			while (matcherAccounts.find() && matcherBalance.find()) {
-				accounts.add(new Account(Html.fromHtml(matcherAccounts.group(2)).toString(), Helpers.parseBalance(matcherBalance.group(1)), matcherAccounts.group(2).trim()));
-				balance = balance.add(Helpers.parseBalance(matcherBalance.group(1)));
+			matcher = reAccounts.matcher(response);
+			while (matcher.find()) {
+				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), matcher.group(1).trim()));
+				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
 			}
 			if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());

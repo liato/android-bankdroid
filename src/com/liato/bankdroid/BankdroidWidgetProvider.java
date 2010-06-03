@@ -38,14 +38,20 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 		String accountId = WidgetConfigureActivity.getAccountId(context, appWidgetId);
 		if (accountId == null) {
 			Log.d("BankdroidWidgetProvider", "Widget not found. ID: "+appWidgetId);
-			return null;
+			return disableAppWidget(context, appWidgetManager,
+					appWidgetId);
 		}
+		Log.d("BankdroidWidgetProvider", "Account ID: "+accountId);
 		DBAdapter dba = new DBAdapter(context);
 		dba.open();
 		Cursor c = dba.getAccount(accountId);
-		if (c == null) {
+
+		if (c == null || c.isClosed() || (c.isBeforeFirst() && c.isAfterLast())) {
 			Log.d("BankdroidWidgetProvider", "Account not found in db: "+accountId);
-			return null;
+			c.close();
+			dba.close();
+			return disableAppWidget(context, appWidgetManager,
+					appWidgetId);
 		}
 		int clmBalance = c.getColumnIndex("balance");
 		int clmId = c.getColumnIndex("id");
@@ -58,9 +64,12 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 		AccountsAdapter.Item account = new AccountsAdapter.Item(name, balance, id);
 		c.close();
 		c = dba.getBank(bankId);
-		if (c == null) {
+		if (c == null || c.isClosed() || (c.isBeforeFirst() && c.isAfterLast())) {
 			Log.d("BankdroidWidgetProvider", "Bank not found: " + bankId);
-			return null;
+			c.close();
+			dba.close();
+			return disableAppWidget(context, appWidgetManager,
+					appWidgetId);
 		}
 
 		int clmType = c.getColumnIndex("banktype");
@@ -121,6 +130,26 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 		return views;
 	}
 	
+
+	static RemoteViews disableAppWidget(Context context, AppWidgetManager appWidgetManager,
+			int appWidgetId) {
+		Log.d("Widget", "Disabling widget: "+appWidgetId);
+		AppWidgetProviderInfo providerInfo = appWidgetManager.getAppWidgetInfo(appWidgetId);
+		int layoutId = (providerInfo == null) ? R.layout.widget : providerInfo.initialLayout;
+		RemoteViews views = new RemoteViews(context.getPackageName(), layoutId);
+		Log.d("buildAppWidget", "WidgetLayout: "+layoutId);
+		views.setTextViewText(R.id.txtWidgetAccountname, "");
+		views.setTextViewText(R.id.txtWidgetAccountbalance, "ERROR");
+		views.setImageViewResource(R.id.imgWidgetIcon, R.drawable.icon_large);
+		views.setViewVisibility(R.id.frmWarning, View.VISIBLE);
+
+		Intent intent = new Intent(context, LoginActivity.class);
+		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+		views.setOnClickPendingIntent(R.id.txtWidgetAccountbalance, pendingIntent);
+		views.setOnClickPendingIntent(R.id.layWidgetContainer, pendingIntent);
+
+		return views;
+	}	
 	
 	
 	

@@ -123,6 +123,7 @@ public class AutoRefreshService extends Service {
     				i++;
     			} 
     			catch (BankException e) {
+    				refreshWidgets = true;
     				db.disableBank(c.getLong(clmId));
     			}
     			catch (ClassNotFoundException e) {
