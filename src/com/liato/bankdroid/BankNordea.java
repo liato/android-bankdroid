@@ -14,6 +14,8 @@ import org.apache.http.message.BasicNameValuePair;
 import android.content.Context;
 import android.content.res.Resources;
 import android.text.Html;
+import android.util.Log;
+
 import com.liato.urllib.Urllib;
 
 public class BankNordea implements Bank {
@@ -61,12 +63,22 @@ public class BankNordea implements Bank {
 			postData.add(new BasicNameValuePair("xyz", username));
 			postData.add(new BasicNameValuePair("zyx", password));
 			postData.add(new BasicNameValuePair("_csrf_token", csrftoken));
+			Log.d("BankNordea", "Posting to https://mobil.nordea.se/banking-nordea/nordea-c3/login.html");
 			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/login.html", postData);
-
-			if (!response.contains("accounts.html")) {
+			Log.d("BankNordea", "Url after post: "+urlopen.getCurrentURI());
+			for (String s : response.split("\n")) {
+				Log.d("BankNordea-ResponseData", s);
+			}
+			
+			if (!response.contains("logout.html")) {
 				throw new BankException(res.getText(R.string.invalid_username_password).toString());
 			}
-
+			Log.d("BankNordea", "Opening: https://mobil.nordea.se/banking-nordea/nordea-c3/accounts.html");
+			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/accounts.html");
+			for (String s : response.split("\n")) {
+				Log.d("BankNordea-ResponseData", s);
+			}
+			
 			matcher = reAccounts.matcher(response);
 			while (matcher.find()) {
 				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), matcher.group(1).trim()));
