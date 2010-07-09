@@ -32,6 +32,7 @@ public class Handelsbanken extends Bank {
 
 	private Pattern reBalance = Pattern.compile("block-link\\s*\"\\s*href=\"/primary/_-([^\"]+)\"><span>([^<]+)</span>.*?SEK([0-9\\s.,-ÃÂ]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reAccountsUrl = Pattern.compile("_-([^\"]+)\"><img[^>]+><span[^>]+>Konton<",Pattern.CASE_INSENSITIVE);
+	private Pattern reLoginUrl = Pattern.compile("_-([^\"]+)\"><img[^>]*><img[^>]*><span[^>]*>Logga",Pattern.CASE_INSENSITIVE);
 	private Pattern reTransactions = Pattern.compile("padding-left\">([^<]+)</span><span[^>]*><span[^>]*>([^<]+)</span><span[^>]*>([^<]+)<", Pattern.CASE_INSENSITIVE);
 	public Handelsbanken(Context context) {
 		super(context);
@@ -52,25 +53,36 @@ public class Handelsbanken extends Bank {
 	public Urllib login() throws LoginException, BankException {
 		Urllib urlopen = new Urllib();
 		String response = null;
+		Matcher matcher;
 		try {
-			//Let the website set som cookies
-			response = urlopen.open("https://m.handelsbanken.se/primary/_-iseufea5");
-
+			response = urlopen.open("https://m.handelsbanken.se/primary/");
+			matcher = reLoginUrl.matcher(response);
+			if (!matcher.find()) {
+				throw new BankException(res.getText(R.string.unable_to_find).toString()+" login url.");
+			}
+			String strLoginUrl = "https://m.handelsbanken.se/primary/_-"+matcher.group(1);
 			List <NameValuePair> postData = new ArrayList <NameValuePair>();
 			postData.add(new BasicNameValuePair("username", username));
 			postData.add(new BasicNameValuePair("pin", password));
 			postData.add(new BasicNameValuePair("execute", "true"));
-			Log.d(TAG, "Posting data to: " + "https://m.handelsbanken.se/primary/_-iseufea5");
-			response = urlopen.open("https://m.handelsbanken.se/primary/_-iseufea5", postData);
+			Log.d(TAG, "Posting data to: " + strLoginUrl);
+			response = urlopen.open(strLoginUrl, postData);
+			/*
+			for (String s : response.split("<span")) {
+				Log.d(TAG, s);
+			}
+			*/
 
 			if (response.contains("ontrollera dina uppgifter")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}
 		}
 		catch (ClientProtocolException e) {
+			Log.d(TAG, "ClientProtocolException: "+e.getMessage());
 			throw new BankException(e.getMessage());
 		}
 		catch (IOException e) {
+			Log.d(TAG, "IOException: "+e.getMessage());
 			throw new BankException(e.getMessage());
 		}
 		finally {
@@ -89,7 +101,7 @@ public class Handelsbanken extends Bank {
 		String response = null;
 		Matcher matcher;
 		try {
-			response = urlopen.open("https://m.handelsbanken.se/primary/_-iseufea5");
+			response = urlopen.open(urlopen.getCurrentURI());
 			//Successful login, find accounts url and retrieve account info.
 			matcher = reAccountsUrl.matcher(response);
 			if (!matcher.find()) {
