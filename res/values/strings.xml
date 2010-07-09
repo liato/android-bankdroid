@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="version">Version 1.1.4 by liato</string>
+    <string name="version">Version 1.2.0-rc1 by liato</string>
     <string name="app_name">Bankdroid</string>
     <string name="widget_name_small">Bankdroid (Small)</string>
     <string name="widget_name_large">Bankdroid (Large)</string>
@@ -21,19 +21,22 @@
     <string name="bank">Bank</string>
     <string name="error_desc">The last update was unsuccessful and updates for this account have been disabled. Make sure you\'ve entered your username and password correctly and press the save button.</string>
 
-    <string name="cancel">Cancel</string>
-    <string name="save">Save</string>
+    <string name="cancel">CANCEL</string>
+    <string name="save">SAVE</string>
     
-	<string name="add_new_account">Add new bank account</string>
+	<string name="add_new_account">ADD BANK</string>
 	<string name="banks_instructions">You have not added any bank accounts yet. Press the button to add a new account.</string>
 	
 	<string name="main_instructions">You have not added any bank accounts yet, press the "Accounts" button in the menu to add a new account.</string>
-	<string name="refresh_balance">Refresh account balance</string>
+	<string name="refresh_balance">REFRESH</string>
 
 	<string name="choose_an_account">Choose an account</string>
 	
 	<string name="update_frequency">Update frequency</string>
 	<string name="access_code">Access code</string>
+	<string name="access_code_repeat">Repeat access code</string>
+	<string name="passwords_mismatch">You\'ve entered two different access codes. Enter the same password in both password fields.</string>
+	<string name="passwords_mismatch_title">Access code mismatch</string>
 	<string name="pin_desc">Enter an access code if you want to password protect the application and widgets.</string>
 	<string name="notify_on_change">Notify on changes</string>
 	<string name="with_sound">With sound</string>
@@ -49,6 +52,18 @@
     <string name="hours">hours</string>
     <string name="daily">Daily</string>
     
+    <string name="popup_refresh">Refresh</string>
+    <string name="popup_edit">Edit</string>
+    <string name="popup_www">WWW</string>
+    <string name="popup_remove">Remove</string>
+    
+    <string name="remove_bank_msg">Are you sure you want to remove this bank?</string>
+    <string name="remove_bank_title">Remove bank?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <string name="tran_desc">No transaction history available for this account.</string>
+    
     <string name="thanks_to">Thanks to</string>
     <string name="thanks"> 
     Wendell Fernandes (Icon)
@@ -56,5 +71,7 @@
     \ngrief (Länsförsäkringar)
     \neinand (Länsförsäkringar)
     \nAnders Widén (Länsförsäkringar)
+    \nHund (Handelsbanken)
+    \nTravolta (Coop)
     </string>
 </resources>

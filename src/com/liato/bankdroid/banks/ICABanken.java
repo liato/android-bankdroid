@@ -1,7 +1,6 @@
-package com.liato.bankdroid;
+package com.liato.bankdroid.banks;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -12,45 +11,49 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.text.Html;
 import android.util.Log;
 
+import com.liato.bankdroid.Account;
+import com.liato.bankdroid.Bank;
+import com.liato.bankdroid.BankException;
+import com.liato.bankdroid.Helpers;
+import com.liato.bankdroid.LoginException;
+import com.liato.bankdroid.R;
 import com.liato.urllib.Urllib;
 
-public class BankICA implements Bank {
+public class ICABanken extends Bank {
+	private static final String TAG = "ICABanken";
+	private static final String NAME = "ICA Banken";
+	private static final String NAME_SHORT = "icabanken";
+	private static final String URL = "https://mobil.icabanken.se/";
+	private static final int BANKTYPE_ID = Bank.ICABANKEN;
 
-	private Context context;
-	private Resources res;
-	private String username;
-	private String password;
-	private Banks banktype = Banks.ICA;
 	private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
 	private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
 	private Pattern reError = Pattern.compile("<label\\s+class=\"error\">(.+?)</label>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reBalanceDisp = Pattern.compile("account\\.aspx\\?id=([^\"]+).+?>([^<]+)</a.+?Disponibelt([0-9 .,-]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reBalanceSald = Pattern.compile("account\\.aspx\\?id=([^\"]+).+?>([^<]+)</a[^D]*Saldo([0-9 .,-]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-	private ArrayList<Account> accounts = new ArrayList<Account>();
-	private BigDecimal balance = new BigDecimal(0);
 
-	public BankICA() {
+	public ICABanken(Context context) {
+		super(context);
+		super.TAG = TAG;
+		super.NAME = NAME;
+		super.NAME_SHORT = NAME_SHORT;
+		super.BANKTYPE_ID = BANKTYPE_ID;
+		super.URL = URL;
 	}
 
-	public BankICA(String username, String password, Context context) throws BankException {
-		this.update(username, password, context);
+	public ICABanken(String username, String password, Context context) throws BankException, LoginException {
+		this(context);
+		this.update(username, password);
 	}
 
-	public void update(String username, String password, Context context) throws BankException {
-		this.context = context;
-		this.res = this.context.getResources();
-
-		this.username = username;
-		this.password = password;
-		this.update();
-	}
-	public void update() throws BankException {
+	@Override
+	public void update() throws BankException, LoginException {
+		super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
-			throw new BankException(res.getText(R.string.invalid_username_password).toString());
+			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 
 		Urllib urlopen = new Urllib();
@@ -78,7 +81,7 @@ public class BankICA implements Bank {
 			Log.d("BankICA", urlopen.getCurrentURI());
 			matcher = reError.matcher(response);
 			if (matcher.find()) {
-				throw new BankException(Html.fromHtml(matcher.group(1).trim()).toString());
+				throw new LoginException(Html.fromHtml(matcher.group(1).trim()).toString());
 			}
 			response = urlopen.open("https://mobil.icabanken.se/account/overview.aspx");
 			Log.d("BankICA", urlopen.getCurrentURI());
@@ -108,30 +111,4 @@ public class BankICA implements Bank {
 		}
 
 	}
-
-
-	@Override
-	public ArrayList<Account> getAccounts() {
-		return this.accounts;
-	}
-
-	@Override
-	public String getPassword() {
-		return password;
-	}
-
-	@Override
-	public Banks getType() {
-		return banktype;
-	}
-
-	@Override
-	public String getUsername() {
-		return username;
-	}
-
-	@Override
-	public BigDecimal getBalance() {
-		return balance;
-	}	
 }

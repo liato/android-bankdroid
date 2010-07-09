@@ -2,13 +2,11 @@
 <RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent"
-	android:background="@drawable/title_bar_medium"
 	android:layout_height="62dp"
-	android:clickable="false"
 	android:paddingBottom="5dp"
 	android:paddingLeft="5dp"
 	android:paddingTop="5dp"
-	android:paddingRight="10dp">
+	android:paddingRight="10dp" android:background="@drawable/group_bg" android:id="@+id/layBankHeader">
 
 	<ImageView
 		android:id="@+id/imgListitemAccountsGroup"

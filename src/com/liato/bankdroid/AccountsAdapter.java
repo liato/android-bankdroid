@@ -1,8 +1,6 @@
 package com.liato.bankdroid;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.List;
 
 import android.content.Context;
 import android.util.Log;
@@ -14,51 +12,65 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class AccountsAdapter extends BaseAdapter {
-	private ArrayList<Group> groups;
+	private ArrayList<Bank> groups;
 	private Context context;
+	private LayoutInflater inflater;
+	
 
 	public AccountsAdapter(Context context) {
 		this.context = context;
-		this.groups = new ArrayList<Group>();
+		this.groups = new ArrayList<Bank>();
+		inflater = LayoutInflater.from(context);
+		
 	}
 
-	public void addGroup(Group group) {
+	public void addGroup(Bank group) {
 		groups.add(group);
 	}
+	
+	public void setGroups(ArrayList<Bank> banks) {
+		groups = banks;
+	}
 
-	public View newGroupView(Group group, ViewGroup parent) {
-		LayoutInflater inflater = LayoutInflater.from(context);
-		View v = inflater.inflate(R.layout.listitem_accounts_group, parent, false);
-		ImageView icon = (ImageView)v.findViewById(R.id.imgListitemAccountsGroup);
-		((TextView)v.findViewById(R.id.txtListitemAccountsGroupAccountname)).setText(group.getName());
-		((TextView)v.findViewById(R.id.txtListitemAccountsGroupBankname)).setText(group.getType());
-		((TextView)v.findViewById(R.id.txtListitemAccountsGroupTotal)).setText(Helpers.formatBalance(group.getTotal()));
-		icon.setImageResource(context.getResources().getIdentifier("drawable/"+Helpers.toAscii(group.getType().toLowerCase()), null, context.getPackageName()));
-		ImageView warning = (ImageView)v.findViewById(R.id.imgWarning);
-		Log.d("AccountsAdapter", ""+group.getDisabled());
-		if (group.getDisabled()) {
+	public View newGroupView(Bank group, ViewGroup parent, View convertView) {
+		if (convertView == null) {
+			convertView = inflater.inflate(R.layout.listitem_accounts_group, parent, false);
+		}
+		//Log.d("Convertview", ""+convertView);
+		//Log.d("Missing view?", ""+convertView.findViewById(R.id.txtListitemAccountsGroupAccountname));
+		ImageView icon = (ImageView)convertView.findViewById(R.id.imgListitemAccountsGroup);
+		((TextView)convertView.findViewById(R.id.txtListitemAccountsGroupAccountname)).setText(group.getUsername());
+		((TextView)convertView.findViewById(R.id.txtListitemAccountsGroupBankname)).setText(group.getName());
+		((TextView)convertView.findViewById(R.id.txtListitemAccountsGroupTotal)).setText(Helpers.formatBalance(group.getBalance()));
+		icon.setImageResource(context.getResources().getIdentifier("drawable/"+group.getShortName(), null, context.getPackageName()));
+		ImageView warning = (ImageView)convertView.findViewById(R.id.imgWarning);
+		Log.d("AccountsAdapter", ""+group.isDisabled());
+		if (group.isDisabled()) {
 			warning.setVisibility(View.VISIBLE);
 		}
 		else {
 			warning.setVisibility(View.INVISIBLE);
 		}
-		return v;
+		return convertView;
 	}
 
-	public View newItemView(Item item, ViewGroup parent) {
-		LayoutInflater inflater = LayoutInflater.from(context);
-		View v = inflater.inflate(R.layout.listitem_accounts_item, parent, false);
-		((TextView)v.findViewById(R.id.txtListitemAccountsItemAccountname)).setText(item.getName());
-		((TextView)v.findViewById(R.id.txtListitemAccountsItemBalance)).setText(Helpers.formatBalance(item.getBalance()));
-		//v.setOnClickListener(this);
-		return v;
+	public View newItemView(Account item, ViewGroup parent, View convertView) {
+		if (convertView == null) {
+			convertView = inflater.inflate(R.layout.listitem_accounts_item, parent, false);
+		}
+		//Log.d("Convertview", ""+convertView);
+		//Log.d("Missing view?", ""+convertView.findViewById(R.id.txtListitemAccountsItemAccountname));
+		
+		((TextView)convertView.findViewById(R.id.txtListitemAccountsItemAccountname)).setText(item.getName());
+		((TextView)convertView.findViewById(R.id.txtListitemAccountsItemBalance)).setText(Helpers.formatBalance(item.getBalance()));
+		return convertView;
 	}
 
 	@Override
 	public int getCount() {
 		int c = 0;
-		for(Group g : groups) {
-			c += g.getItems().size()+1;
+		for(Bank g : groups) {
+			c += g.getAccounts().size()+1;
 		}
 		return c;
 	}
@@ -73,14 +85,14 @@ public class AccountsAdapter extends BaseAdapter {
 		}
 
 		int i = 0;
-		for (Group g : groups) {
+		for (Bank g : groups) {
 			if (position == i) {
 				return g;
 			}
-			else if (position <= (g.getItems().size()+i)) {
-				return g.getItems().get(position-i-1);
+			else if (position <= (g.getAccounts().size()+i)) {
+				return g.getAccounts().get(position-i-1);
 			}
-			i += g.getItems().size()+1;
+			i += g.getAccounts().size()+1;
 		}
 
 		return(null);
@@ -97,92 +109,32 @@ public class AccountsAdapter extends BaseAdapter {
 		if (item == null) {
 			return null;
 		}
-		if (item instanceof Group) {
-			return newGroupView((Group)item, parent);
+		if (item instanceof Bank) {
+			return newGroupView((Bank)item, parent, convertView);
 		}
-		else if (item instanceof Item) {
-			return newItemView((Item)item, parent);
+		else if (item instanceof Account) {
+			return newItemView((Account)item, parent, convertView);
 		}
 		return null;
 	}
 
 	public boolean isEnabled(int position) {
-		if (getItem(position) instanceof Item) {
-			return true;
-		}
-		return false;
+		return true;
 	}
 
-	public final static class Group {
-		private String name;
-		private String type;
-		private BigDecimal total;
-		private List<Item> items;
-		private Boolean disabled;
-		public Group(String name, String type, Double total, List<Item> items, Boolean disabled) {
-			this.name = name;
-			this.type = type;
-			this.total = new BigDecimal(total);
-			for(Item item : items) {
-				item.setGroup(this);
-			}
-			this.items = items;
-			this.disabled = disabled;
-		}
-		public Group(String name, String type, Double total, Item item, Boolean disabled) {
-			ArrayList<Item> items = new ArrayList<Item>();
-			items.add(item);
-			this.name = name;
-			this.type = type;
-			this.total = new BigDecimal(total);
-			this.items = items;
-			this.disabled = disabled;
-		}
-		public String getName() {
-			return name;
-		}
-		public String getType() {
-			return type;
-		}
-		public BigDecimal getTotal() {
-			return total;
-		}
-		public List<Item> getItems() {
-			return items;
-		}
-		public Boolean getDisabled() {
-			return disabled;
-		}
-
+	@Override
+	public int getViewTypeCount () {
+		return 2;
 	}
 
-	public final static class Item {
-		private String name;
-		private BigDecimal balance;
-		private String id;
-		private Group group;
-		public Item (String name, Double balance, String id) {
-			this.name = name;
-			this.balance = new BigDecimal(balance);
-			this.id = id;
+	@Override
+	public int getItemViewType(int position) {
+		Object item = getItem(position);
+		if (item instanceof Bank) {
+			return 0;
 		}
-		public String getName() {
-			return name;
-		}
-		public BigDecimal getBalance() {
-			return balance;
-		}
-		public String getId() {
-			return id;
-		}
-		public Group getGroup() {
-			return group;
-		}
-		public void setGroup(Group group) {
-			this.group = group;
-		}		
+		return 1;
 	}	
-
 }
 
 

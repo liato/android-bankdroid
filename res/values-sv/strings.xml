@@ -2,7 +2,7 @@
 <resources>
     
     <string name="about">Om</string>
-    <string name="version">Version 1.1.4 av liato</string>
+    <string name="version">Version 1.2.0-rc1 av liato</string>
     <string name="widget_name_small">Bankdroid (Liten)</string>
     <string name="widget_name_large">Bankdroid (Stor)</string>
     <string name="accounts_were_not_updated">Saldon för följande konton har ej uppdaterats</string>
@@ -21,20 +21,23 @@
     <string name="bank">Bank</string>
     <string name="error_desc">Senaste uppdateringsförsöket misslyckades och uppdateringar för detta konto har inaktiverats. Se till att lösenord och användarnamn är korrekt angivet och tryck på spara-knappen.</string>
 
-    <string name="cancel">Avbryt</string>
-    <string name="save">Spara</string>
+    <string name="cancel">AVBRYT</string>
+    <string name="save">SPARA</string>
     
-	<string name="add_new_account">Lägg till ett nytt bankkonto</string>
+	<string name="add_new_account">LÄGG TILL BANK</string>
 	<string name="banks_instructions">Du har inte lagt till någon bank ännu, tryck på knappen för att lägga till en bank.</string>
 	
 	<string name="main_instructions">Du har inte lagt till någon bank ännu, gå till menyn och tryck på konton för att lägga till ett nytt bankkonto.</string>
-	<string name="refresh_balance">Uppdatera saldoinformation</string>
+	<string name="refresh_balance">UPPDATERA</string>
 
 	<string name="choose_an_account">Välj ett konto</string>
 	
 	<string name="update_frequency">Uppdateringsfrekvens</string>
-	<string name="access_code">PIN-kod</string>
-	<string name="pin_desc">Ange en PIN-kod om du vill lösenordsskydda applikationen och tillhörande widgets.</string>
+	<string name="access_code">Lösenord</string>
+	<string name="access_code_repeat">Upprepa lösenord</string>
+	<string name="passwords_mismatch">Du har angivit två olika lösenord. Skriv samma lösenord i båda fälten.</string>
+	<string name="passwords_mismatch_title">Felaktigt lösenord</string>
+	<string name="pin_desc">Ange ett lösenord om du vill lösenordsskydda applikationen och tillhörande widgets.</string>
 	<string name="notify_on_change">Notifiera vid kontohändelser</string>
 	<string name="with_sound">Med ljud</string>
 	<string name="vibrate">Vibrera</string>
@@ -48,6 +51,17 @@
     <string name="hours">timmar</string>
     <string name="daily">Dagligen</string>
 
+    <string name="popup_refresh">Uppdatera</string>
+    <string name="popup_edit">Redigera</string>
+    <string name="popup_www">WWW</string>
+    <string name="popup_remove">Radera</string>
+
+    <string name="remove_bank_msg">Är du säker på att du vill ta bort denna bank?</string>
+    <string name="remove_bank_title">Radera bank?</string>
+    <string name="yes">Ja</string>
+    <string name="no">Nej</string>
+    
+    <string name="tran_desc">Inget kontoutdrag tillgängligt för detta konto.</string>
 
     <string name="thanks_to">Tack till</string>
     <string name="thanks"> 
@@ -56,5 +70,7 @@
     \ngrief (Länsförsäkringar)
     \neinand (Länsförsäkringar)
     \nAnders Widén (Länsförsäkringar)
+    \nHund (Handelsbanken)
+    \nTravolta (Coop)
     </string>	    
 </resources>

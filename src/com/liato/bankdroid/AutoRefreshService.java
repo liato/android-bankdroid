@@ -1,8 +1,6 @@
 package com.liato.bankdroid;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Random;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -13,16 +11,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.os.AsyncTask;
-import android.os.Binder;
 import android.os.IBinder;
-import android.os.Parcel;
-import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class AutoRefreshService extends Service {
+	private final static String TAG = "AutoRefreshService";
 	final static String WIDGET_REFRESH = "com.liato.bankdroid.WIDGET_REFRESH";
     NotificationManager notificationManager;
 
@@ -48,6 +43,7 @@ public class AutoRefreshService extends Service {
 		
         Notification notification = new Notification(R.drawable.icon, text,
                 System.currentTimeMillis());
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
 		if (prefs.getBoolean("notify_with_sound", true)) {
 	        notification.defaults |= Notification.DEFAULT_SOUND;
 		}
@@ -66,10 +62,7 @@ public class AutoRefreshService extends Service {
     }
     
     private class DataRetrieverTask extends AsyncTask<String, String, Void> {
-    	private Class<?> cls;
     	private ArrayList<String> errors;
-    	private Bank bank;
-    	private int bankcount;
     	private Resources res;
 
     	public DataRetrieverTask() {
@@ -81,69 +74,44 @@ public class AutoRefreshService extends Service {
     		Log.d("doinback", "round");
     		errors = new ArrayList<String>();
     		Boolean refreshWidgets = false;
-    		DBAdapter db;
-    		Cursor c;
-    		db = new DBAdapter(AutoRefreshService.this);
-    		db.open();
-    		c = db.fetchBanks();
-    		if (c == null) {
+    		ArrayList<Bank> banks = BankFactory.banksFromDb(AutoRefreshService.this, false);
+    		if (banks.isEmpty()) {
     			return null;
     		}
-    		bankcount = c.getCount();
-    		
+    		DBAdapter db = new DBAdapter(AutoRefreshService.this);
+    		db.open();    		
     		Double currentBalance;
-    		int clmId = c.getColumnIndex("_id");
-    		int clmBanktype = c.getColumnIndex("banktype");
-    		int clmBalance = c.getColumnIndex("balance");
-    		int clmUsername = c.getColumnIndex("username");
-    		int clmPassword = c.getColumnIndex("password");
-    		int clmDisabled = c.getColumnIndex("disabled");
-    		int i = 0; 
-    		while (!c.isLast() && !c.isAfterLast()) {
-    			c.moveToNext();
-    			//publishProgress(new String[] {new Integer(i).toString(), c.getString(clmBanktype)+" ("+c.getString(clmUsername)+")"});
-    			//showNotification("Uppdaterar "+c.getString(clmBanktype));
-    			if (c.getInt(clmDisabled) == 1) {
-    				Log.d("AA", c.getString(clmBanktype)+" ("+c.getString(clmUsername)+") is disabled. Skipping refresh.");
+    		Double diff;
+    		
+    		for (Bank bank : banks) {
+    			if (bank.isDisabled()) {
+    				Log.d("AA", bank.getName()+" ("+bank.getUsername()+") is disabled. Skipping refresh.");
     				continue;
     			}
-				Log.d("AA", "Refreshing "+c.getString(clmBanktype)+" ("+c.getString(clmUsername)+").");
+				Log.d("AA", "Refreshing "+bank.getName()+" ("+bank.getUsername()+").");
     			try {
-    				currentBalance = c.getDouble(clmBalance);
-    				cls = Class.forName("com.liato.bankdroid.Bank"+Helpers.toAscii(c.getString(clmBanktype)));
-    				bank = (Bank) cls.newInstance();
-    				bank.update(c.getString(clmUsername), c.getString(clmPassword), AutoRefreshService.this);
-    				Log.d("aa",bank.getBalance().toString());
-					Double diff =  bank.getBalance().doubleValue() - currentBalance;
+    				currentBalance = bank.getBalance().doubleValue();
+    				bank.update();
+					diff =  bank.getBalance().doubleValue() - currentBalance;
     				if (diff != 0) {
-    					showNotification(c.getString(clmBanktype)+ ": "+ ((diff > 0) ? "+" : "") + Helpers.formatBalance(diff) + " ("+Helpers.formatBalance(bank.getBalance())+")");
+    					showNotification(bank.getName()+ ": "+ ((diff > 0) ? "+" : "") + Helpers.formatBalance(diff) + " ("+Helpers.formatBalance(bank.getBalance())+")");
     					refreshWidgets = true;
+    					bank.updateAllTransactions();
     				}
-    				db.updateBank(bank, c.getLong(clmId));
-    				i++;
+    				db.updateBank(bank);
     			} 
     			catch (BankException e) {
+    				// Refresh widgets if an update fails
+    				Log.d(TAG, "Error while updating bank '"+bank.getDbId()+"'; "+e.getMessage());
+    			} catch (LoginException e) {
     				refreshWidgets = true;
-    				db.disableBank(c.getLong(clmId));
-    			}
-    			catch (ClassNotFoundException e) {
-    				// TODO Auto-generated catch block
-    				e.printStackTrace();
-    			} catch (IllegalAccessException e) {
-    				// TODO Auto-generated catch block
-    				e.printStackTrace();
-    			} catch (InstantiationException e) {
-    				// TODO Auto-generated catch block
-    				e.printStackTrace();
-    			}
-    			
+    				db.disableBank(bank.getDbId());
+				}
     		}
     		
 			if (refreshWidgets) {
 				sendWidgetRefresh(AutoRefreshService.this);
 			}
-    		publishProgress(new String[] {new Integer(i).toString(), ""});
-    		c.close();
     		db.close();
     		return null;
     	}

@@ -2,6 +2,8 @@ package com.liato.bankdroid;
 
 import java.util.ArrayList;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
@@ -82,15 +84,29 @@ public class SettingsActivity extends LockableActivity implements OnClickListene
 			this.finish();
 		}
 		else if (v.getId() == R.id.btnSettingsOk){
-			Editor editor = prefs.edit();
-			editor.putString("access_code", ((EditText)findViewById(R.id.edtAccessCode)).getText().toString());
-			editor.putBoolean("notify_on_change", ((CheckBox)findViewById(R.id.chkNotifyOnChange)).isChecked());
-			editor.putBoolean("notify_with_sound", ((CheckBox)findViewById(R.id.chkWithSound)).isChecked());
-			editor.putBoolean("notify_with_vibration", ((CheckBox)findViewById(R.id.chkWithVibration)).isChecked());
-			editor.putInt("refreshrate", refreshrate);
-			editor.commit();
-			StartupReceiver.setAlarm(this);
-			this.finish();
+			if (!(((EditText)findViewById(R.id.edtAccessCode)).getText().toString().equals(((EditText)findViewById(R.id.edtAccessCodeRepeat)).getText().toString()))) {
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+				builder.setMessage(getText(R.string.passwords_mismatch)).setTitle(getText(R.string.passwords_mismatch_title))
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+					}
+				});
+				AlertDialog alert = builder.create();
+				alert.show();
+			}
+			else {
+				Editor editor = prefs.edit();
+				editor.putString("access_code", ((EditText)findViewById(R.id.edtAccessCode)).getText().toString());
+				editor.putBoolean("notify_on_change", ((CheckBox)findViewById(R.id.chkNotifyOnChange)).isChecked());
+				editor.putBoolean("notify_with_sound", ((CheckBox)findViewById(R.id.chkWithSound)).isChecked());
+				editor.putBoolean("notify_with_vibration", ((CheckBox)findViewById(R.id.chkWithVibration)).isChecked());
+				editor.putInt("refreshrate", refreshrate);
+				editor.commit();
+				StartupReceiver.setAlarm(this);
+				this.finish();
+			}
 		}
 		else if (v.getId() == R.id.chkNotifyOnChange) {
 			findViewById(R.id.chkWithSound).setEnabled(((CheckBox)v).isChecked());
@@ -114,6 +130,7 @@ public class SettingsActivity extends LockableActivity implements OnClickListene
 	protected void onResume() {
 		super.onResume();
 		((EditText)findViewById(R.id.edtAccessCode)).setText(prefs.getString("access_code", ""));
+		((EditText)findViewById(R.id.edtAccessCodeRepeat)).setText(prefs.getString("access_code", ""));
 		((CheckBox)findViewById(R.id.chkNotifyOnChange)).setChecked(prefs.getBoolean("notify_on_change", true));
 		((CheckBox)findViewById(R.id.chkWithSound)).setChecked(prefs.getBoolean("notify_with_sound", true));
 		((CheckBox)findViewById(R.id.chkWithSound)).setEnabled(prefs.getBoolean("notify_on_change", true));

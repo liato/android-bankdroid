@@ -1,17 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
-<ScrollView
+<RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent" android:layout_height="fill_parent" android:fillViewport="true">
-	<LinearLayout
+	android:id="@+id/RelativeLayout01"
+	android:layout_height="fill_parent"
+	android:background="@drawable/background_repeat"
+	android:layout_width="fill_parent">
 
+	<ScrollView
+
+		android:layout_height="fill_parent"
+		android:layout_width="fill_parent"
+		android:fillViewport="true" android:layout_above="@+id/TableLayout01">
+	<LinearLayout
 		android:orientation="vertical"
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
-		android:paddingLeft="10dp"
-		android:paddingRight="10dp"
-		android:paddingTop="10dp">
+		android:padding="10dp"
+		android:background="@drawable/background_repeat">
 		<TextView
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
@@ -23,6 +28,17 @@
 			android:layout_width="fill_parent"
 			android:inputType="textPassword"
 			android:id="@+id/edtAccessCode"></EditText>
+		<TextView
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:typeface="sans"
+			android:textSize="20sp"
+			android:text="@string/access_code_repeat" />
+		<EditText
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:inputType="textPassword"
+			android:id="@+id/edtAccessCodeRepeat"></EditText>
 
 		<TextView
 			android:layout_width="wrap_content"
@@ -78,29 +94,44 @@
 				android:text="@string/vibrate"
 				android:layout_marginLeft="10dp"></CheckBox>
 		</LinearLayout>
-		<TableLayout
-			android:id="@+id/TableLayout01"
-			android:layout_width="fill_parent"
-			android:stretchColumns="*"
-			android:gravity="bottom"
-			android:layout_height="fill_parent">
-			<TableRow
-				android:id="@+id/TableRow01"
-				android:layout_height="wrap_content"
-				android:layout_width="fill_parent">
-				<Button
-					android:layout_height="wrap_content"
-					android:drawableLeft="@android:drawable/ic_menu_close_clear_cancel"
-					android:layout_width="fill_parent"
-					android:id="@+id/btnSettingsCancel"
-					android:text="@string/cancel"></Button>
-				<Button
-					android:layout_height="wrap_content"
-					android:drawableLeft="@android:drawable/ic_menu_save"
-					android:layout_width="fill_parent"
-					android:id="@+id/btnSettingsOk"
-					android:text="@string/save"></Button>
-			</TableRow>
-		</TableLayout>
+		
 	</LinearLayout>
-</ScrollView>
+	</ScrollView>
+	<TableLayout
+		android:id="@+id/TableLayout01"
+		android:stretchColumns="0,2"
+		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
+		android:layout_alignParentLeft="true"
+		android:layout_alignParentRight="true"
+		android:layout_width="wrap_content"
+		android:layout_below="@+id/LinearLayout01"
+		android:gravity="bottom">
+		<TableRow
+			android:id="@+id/TableRow01"
+			android:layout_height="wrap_content"
+			android:gravity="center_vertical|center_horizontal"
+			android:layout_gravity="center_vertical|center_horizontal"
+			android:layout_width="fill_parent">
+			<Button
+				android:text="@string/cancel"
+				android:drawableLeft="@drawable/button_cancel"
+				android:id="@+id/btnSettingsCancel"
+				style="@style/Menu_Button"></Button>
+			<ImageView
+				android:layout_height="wrap_content"
+				android:focusable="false"
+				android:src="@drawable/menu_separator"
+				android:adjustViewBounds="true"
+				android:scaleType="fitXY"
+				android:minWidth="3dp"
+				android:maxWidth="3dp"
+				android:layout_width="wrap_content"></ImageView>
+			<Button
+				android:id="@+id/btnSettingsOk"
+				android:drawableLeft="@drawable/button_save"
+				android:text="@string/save"
+				style="@style/Menu_Button"></Button>
+		</TableRow>
+	</TableLayout>
+</RelativeLayout>

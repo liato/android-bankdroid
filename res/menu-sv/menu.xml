@@ -2,10 +2,6 @@
 <menu
 	xmlns:android="http://schemas.android.com/apk/res/android">
 	<item
-		android:id="@+id/accounts"
-		android:title="Konton"
-		android:icon="@android:drawable/ic_menu_agenda" />
-	<item
 		android:id="@+id/settings"
 		android:title="Inställningar"
 		android:icon="@android:drawable/ic_menu_preferences" />

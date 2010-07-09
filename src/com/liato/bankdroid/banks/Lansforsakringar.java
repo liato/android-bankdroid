@@ -1,7 +1,6 @@
-package com.liato.bankdroid;
+package com.liato.bankdroid.banks;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -12,45 +11,49 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.text.Html;
 import android.util.Log;
 
+import com.liato.bankdroid.Account;
+import com.liato.bankdroid.Bank;
+import com.liato.bankdroid.BankException;
+import com.liato.bankdroid.Helpers;
+import com.liato.bankdroid.LoginException;
+import com.liato.bankdroid.R;
 import com.liato.urllib.Urllib;
 
-public class BankLansforsakringar implements Bank {
+public class Lansforsakringar extends Bank {
+	private static final String TAG = "Lansforsakringar";
+	private static final String NAME = "Länsförsäkringar";
+	private static final String NAME_SHORT = "lansforsakringar";
+	private static final String URL = "https://secure246.lansforsakringar.se/lfportal/login/privat";
+	private static final int BANKTYPE_ID = Bank.LANSFORSAKRINGAR;
 
-	private Context context;
-	private Resources res;
-	private String username;
-	private String password;
-	private Banks banktype = Banks.LANSFORSAKRINGAR;
 	private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
 	private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
 	private Pattern reBalance = Pattern.compile("AccountNumber=([0-9]+)[^>]+><span[^>]+>([^<]+)</.*?span></td.*?<span[^>]+>([0-9 .,-]+)</span", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reToken = Pattern.compile("var\\s+token\\s*=\\s*'([^']+)'", Pattern.CASE_INSENSITIVE);
 	private Pattern reUrl = Pattern.compile("<li class=\"bank\">\\s*<a href=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
-	private ArrayList<Account> accounts = new ArrayList<Account>();
-	private BigDecimal balance = new BigDecimal(0);
 
-	public BankLansforsakringar() {
+	public Lansforsakringar(Context context) {
+		super(context);
+		super.TAG = TAG;
+		super.NAME = NAME;
+		super.NAME_SHORT = NAME_SHORT;
+		super.BANKTYPE_ID = BANKTYPE_ID;
+		super.URL = URL;
 	}
 
-	public BankLansforsakringar(String username, String password, Context context) throws BankException {
-		this.update(username, password, context);
+	public Lansforsakringar(String username, String password, Context context) throws BankException, LoginException {
+		this(context);
+		this.update(username, password);
 	}
 
-	public void update(String username, String password, Context context) throws BankException {
-		this.context = context;
-		this.res = this.context.getResources();
-
-		this.username = username;
-		this.password = password;
-		this.update();
-	}
-	public void update() throws BankException {
+	@Override
+	public void update() throws BankException, LoginException {
+		super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
-			throw new BankException(res.getText(R.string.invalid_username_password).toString());
+			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 
 		Urllib urlopen = new Urllib();
@@ -84,7 +87,7 @@ public class BankLansforsakringar implements Bank {
 			response = urlopen.open(urlopen.getCurrentURI(), postData);
 
 			if (response.contains("Felaktig inloggning")) {
-				throw new BankException(res.getText(R.string.invalid_username_password).toString());
+				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}
 
 			matcher = reToken.matcher(response);
@@ -121,30 +124,4 @@ public class BankLansforsakringar implements Bank {
 		}
 
 	}
-
-
-	@Override
-	public ArrayList<Account> getAccounts() {
-		return this.accounts;
-	}
-
-	@Override
-	public String getPassword() {
-		return password;
-	}
-
-	@Override
-	public Banks getType() {
-		return banktype;
-	}
-
-	@Override
-	public String getUsername() {
-		return username;
-	}
-
-	@Override
-	public BigDecimal getBalance() {
-		return balance;
-	}	
 }

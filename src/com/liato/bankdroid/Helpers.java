@@ -6,9 +6,17 @@ import java.util.Locale;
 
 public class Helpers {
 	public static BigDecimal parseBalance(String balance) {
-		balance = balance.replaceAll("(?:\\.|&nbsp;| )*", "");
-		balance = balance.replaceAll("[a-zA-Z]*", "");
+		//balance = balance.replaceAll("(?:\\.|&nbsp;| )*", "");
+		//balance = balance.replaceAll("[a-zA-Z]*", "");
+		//balance = balance.replaceAll("\\s*", "");
+		balance = balance.replaceAll("[^0-9,.-]*", "");
 		balance = balance.replace(",", ".");
+		if (balance.indexOf(".") != balance.lastIndexOf(".")) {
+			String b = balance.substring(balance.lastIndexOf("."));
+			balance = balance.substring(0, balance.lastIndexOf("."));
+			balance = balance.replace(".", "");
+			balance = balance+b;
+		}
 		return new BigDecimal(balance);
 	}
 	public static String formatBalance(BigDecimal balance) {
@@ -17,10 +25,5 @@ public class Helpers {
 	}
 	public static String formatBalance(Double balance) {
 		return formatBalance(new BigDecimal(balance));
-	}
-	public static String toAscii(String s) {
-		s = s.replaceAll("[åÅ]", "a").replaceAll("[äÄ]", "a").replaceAll("[öÖ]", "o").replaceAll(" ", "_");
-		s = s.replaceAll("[^a-zA-Z0-9_]", "");
-		return s;
 	}
 }

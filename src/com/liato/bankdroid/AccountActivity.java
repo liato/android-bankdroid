@@ -2,15 +2,19 @@ package com.liato.bankdroid;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,22 +24,19 @@ import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
 
 public class AccountActivity extends LockableActivity implements OnClickListener, OnItemSelectedListener {
-	private String SELECTED_BANK;
-	private String BANKID;
+	private final static String TAG = "AccountActivity";
+	private Bank SELECTED_BANK;
+	private long BANKID = -1;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.bank);
-		ArrayList<String> items = new ArrayList<String>();
-		for(Banks bank: Banks.values()) {
-			items.add(bank.toString());
-		}
+		ArrayList<Bank> items = BankFactory.listBanks(this);
 		Collections.sort(items);
 		Spinner spnBanks = (Spinner)findViewById(R.id.spnBankeditBanklist);
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_spinner_item, items);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		BankSpinnerAdapter<Bank> adapter = new BankSpinnerAdapter<Bank>(this, android.R.layout.simple_spinner_item, items);
+		//adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spnBanks.setAdapter(adapter);
 		spnBanks.setOnItemSelectedListener(this);
 
@@ -44,26 +45,28 @@ public class AccountActivity extends LockableActivity implements OnClickListener
 
 		Bundle extras = getIntent().getExtras(); 
 		if (extras != null) {
-			BANKID = extras.getString("id");
-			if (BANKID != null) {
-				DBAdapter db = new DBAdapter(this);
-				db.open();
-				Cursor c = db.getBank(BANKID);
-				if (c != null) {
-					((EditText)findViewById(R.id.edtBankeditUsername)).setText(c.getString(c.getColumnIndex("username")));
-					((EditText)findViewById(R.id.edtBankeditPassword)).setText(c.getString(c.getColumnIndex("password")));
+			BANKID = extras.getLong("id", -1);
+			if (BANKID != -1) {
+				Bank bank = BankFactory.bankFromDb(BANKID, this, false);
+				if (bank != null) {
+					((EditText)findViewById(R.id.edtBankeditUsername)).setText(bank.getUsername());
+					((EditText)findViewById(R.id.edtBankeditPassword)).setText(bank.getPassword());
+					
 					TextView errorDesc = (TextView)findViewById(R.id.txtErrorDesc);
-					if (c.getInt(c.getColumnIndex("disabled")) == 1 ? true : false) {
+					if (bank.isDisabled()) {
 						errorDesc.setVisibility(View.VISIBLE);
 					}
 					else {
 						errorDesc.setVisibility(View.INVISIBLE);
-					}					SELECTED_BANK = c.getString(c.getColumnIndex("banktype"));
-					int i = items.indexOf(SELECTED_BANK);
-					spnBanks.setSelection(i);
-					c.close();
+					}
+					SELECTED_BANK = bank;
+					for (int i = 0; i < items.size(); i++) {
+						if (bank.getBanktypeId() == items.get(i).getBanktypeId()) {
+							spnBanks.setSelection(i);
+							break;
+						}
+					}
 				}
-				db.close();
 			}
 		}
 	}
@@ -74,32 +77,62 @@ public class AccountActivity extends LockableActivity implements OnClickListener
 			this.finish();
 		}
 		else if (v.getId() == R.id.btnSettingsOk){
-			new DataRetrieverTask(this).execute(SELECTED_BANK, ((EditText) findViewById(R.id.edtBankeditUsername)).getText().toString().trim(), ((EditText) findViewById(R.id.edtBankeditPassword)).getText().toString().trim());
+			SELECTED_BANK.setUsername(((EditText) findViewById(R.id.edtBankeditUsername)).getText().toString().trim());
+			SELECTED_BANK.setPassword(((EditText) findViewById(R.id.edtBankeditPassword)).getText().toString().trim());
+			SELECTED_BANK.setDbid(BANKID);
+			new DataRetrieverTask(this, SELECTED_BANK).execute();
 		}
 
 	}
 
 	@Override
 	public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int pos, long id) {
-		SELECTED_BANK = parentView.getItemAtPosition(pos).toString();
+		SELECTED_BANK = (Bank) parentView.getItemAtPosition(pos);
 	}
 
 	@Override
 	public void onNothingSelected(AdapterView<?> arg) {
 	}
 
+	private class BankSpinnerAdapter<T> extends ArrayAdapter<T> {
+		private int resource;
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			if (convertView == null) {
+				convertView = ((LayoutInflater)super.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(resource, parent, false);
+			}
+			((TextView)convertView).setText(((Bank)getItem(position)).getName());
+			return convertView;			
+		}
+
+		public BankSpinnerAdapter(Context context, int textViewResourceId, List<T> items) {
+			super(context, textViewResourceId, items);
+			resource = textViewResourceId;
+		}
+
+		@Override
+		public View getDropDownView(int position, View convertView,
+				ViewGroup parent) {
+			if (convertView == null) {
+				convertView = ((LayoutInflater)super.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(android.R.layout.simple_spinner_dropdown_item, parent, false);
+			}
+			((TextView)convertView).setText(((Bank)getItem(position)).getName());
+			return convertView;
+		}
+
+
+	}
 	private class DataRetrieverTask extends AsyncTask<String, Void, Void> {
 		private final ProgressDialog dialog = new ProgressDialog(AccountActivity.this);
-		private Class<?> cls;
 		private Exception exc = null;
 		private Bank bank;
-		private AccountActivity parent;
+		private AccountActivity context;
 		private Resources res;
 
-		public DataRetrieverTask(AccountActivity parent) {
-			this.parent = parent;
-			this.res = parent.getResources();
-			
+		public DataRetrieverTask(AccountActivity context, Bank bank) {
+			this.context = context;
+			this.res = context.getResources();
+			this.bank = bank;
 		}
 		protected void onPreExecute() {
 			this.dialog.setMessage(res.getText(R.string.logging_in));
@@ -108,37 +141,23 @@ public class AccountActivity extends LockableActivity implements OnClickListener
 
 		protected Void doInBackground(final String... args) {
 			try {
-				cls = Class.forName("com.liato.bankdroid.Bank"+Helpers.toAscii(args[0]));
-				bank = (Bank) cls.newInstance();
-				bank.update(args[1], args[2], parent);
-				DBAdapter dba = new DBAdapter(AccountActivity.this);
-				dba.open();
-				if (BANKID != null) {
-					dba.updateBank(bank, new Long(BANKID));
-				}
-				else {
-					dba.createBank(bank);
-				}
-				dba.close();
+				Log.d(TAG, "Updating "+bank);
+				bank.update();
+				bank.updateAllTransactions();
+				Log.d(TAG, "Saving "+bank);
+				bank.save();
+				Log.d(TAG, "Disabled: "+bank.isDisabled());
 			} 
 			catch (BankException e) {
 				this.exc = e;
-			}
-			catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (LoginException e) {
+				this.exc = e;
 			}
 			return null;
 		}
 
 		protected void onPostExecute(final Void unused) {
-			AutoRefreshService.sendWidgetRefresh(parent);
+			AutoRefreshService.sendWidgetRefresh(context);
 			if (this.dialog.isShowing()) {
 				this.dialog.dismiss();
 			}
@@ -155,11 +174,11 @@ public class AccountActivity extends LockableActivity implements OnClickListener
 				alert.show();
 			}
 			else {
-				parent.finish();
+				context.finish();
 			}
 		}
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();

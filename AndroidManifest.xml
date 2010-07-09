@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.liato.bankdroid" android:versionName="1.1.4" android:versionCode="23">
+	package="com.liato.bankdroid" android:versionName="1.2.0-rc1" android:versionCode="24">
 	<application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="false">
 		<activity android:label="@string/app_name"
 			android:multiprocess="false" android:name=".LoginActivity"
@@ -12,7 +12,7 @@
 		</activity>
 		<activity android:name=".MainActivity" android:label="@string/app_name">
 		</activity>
-		<activity android:name=".AccountsActivity" android:label="@string/app_name">
+		<activity android:name=".TransactionsActivity" android:label="@string/app_name">
 		</activity>
 		<activity android:name=".AccountActivity" android:label="@string/app_name">
 		</activity>
@@ -53,8 +53,13 @@
 			</intent-filter>
 		</receiver>
 	</application>
-	<uses-sdk android:minSdkVersion="3" />
+	<uses-sdk android:minSdkVersion="4" android:targetSdkVersion="4" />
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 	<uses-permission android:name="android.permission.VIBRATE" />
+	<supports-screens
+		android:largeScreens="true"
+		android:normalScreens="true"
+		android:smallScreens="true"
+		android:anyDensity="true" />
 </manifest> 

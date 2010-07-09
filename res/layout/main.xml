@@ -3,7 +3,8 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:id="@+id/RelativeLayout01"
 	android:layout_width="wrap_content"
-	android:layout_height="fill_parent">
+	android:layout_height="fill_parent"
+	android:background="@drawable/background_repeat">
 	<TextView
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
@@ -16,21 +17,41 @@
 		android:id="@+id/lstAccountsList"
 		android:layout_height="fill_parent"
 		android:fitsSystemWindows="true"
-		android:layout_above="@+id/LinearLayout02" />
-	<LinearLayout
-		android:id="@+id/LinearLayout02"
-		android:gravity="bottom"
-		android:layout_width="fill_parent"
-		android:layout_weight="1"
+		android:layout_above="@+id/TableLayout01"
+		android:layout_alignParentTop="true" android:cacheColorHint="#00000000"/>
+	<TableLayout
+		android:id="@+id/TableLayout01"
+		android:stretchColumns="0,2"
 		android:layout_height="wrap_content"
-		android:layout_alignParentBottom="true">
-		<Button
-			android:layout_width="fill_parent"
+		android:layout_alignParentBottom="true"
+		android:layout_alignParentLeft="true"
+		android:layout_alignParentRight="true"
+		android:layout_width="wrap_content">
+		<TableRow
+			android:id="@+id/TableRow01"
 			android:layout_height="wrap_content"
-			android:layout_gravity="bottom"
-			android:id="@+id/btnAccountsRefresh"
-			android:visibility="gone"
-			android:text="@string/refresh_balance"
-			android:drawableLeft="@drawable/ic_menu_refresh" />
-	</LinearLayout>
+			android:gravity="center_vertical|center_horizontal"
+			android:layout_gravity="center_vertical|center_horizontal"
+			android:layout_width="fill_parent">
+			<Button
+				android:text="@string/add_new_account"
+				android:drawableLeft="@drawable/button_add"
+				android:id="@+id/btnAddBank"
+				style="@style/Menu_Button"></Button>
+			<ImageView
+				android:layout_height="wrap_content"
+				android:focusable="false"
+				android:src="@drawable/menu_separator"
+				android:adjustViewBounds="true"
+				android:scaleType="fitXY"
+				android:minWidth="3dp"
+				android:maxWidth="3dp"
+				android:layout_width="wrap_content"></ImageView>
+			<Button
+				android:id="@+id/btnAccountsRefresh"
+				android:drawableLeft="@drawable/button_refresh"
+				android:text="@string/refresh_balance"
+				style="@style/Menu_Button"></Button>
+		</TableRow>
+	</TableLayout>
 </RelativeLayout>

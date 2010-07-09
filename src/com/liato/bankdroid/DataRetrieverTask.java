@@ -6,24 +6,26 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.util.Log;
 
 public class DataRetrieverTask extends AsyncTask<String, String, Void> {
 	private ProgressDialog dialog;
-	private Class<?> cls;
 	private ArrayList<String> errors;
-	private Bank bank;
 	private MainActivity parent;
 	private int bankcount;
 	private Resources res;
+	private long bankId = -1;
 
 	public DataRetrieverTask(MainActivity parent) {
 		this.parent = parent;
 		this.res = parent.getResources();
 		this.dialog =  new ProgressDialog(parent);
 	}
+	public DataRetrieverTask(MainActivity parent, long bankId) {
+		this(parent);
+		this.bankId = bankId;
+	}	
 	protected void onPreExecute() {
 		this.dialog.setMessage(res.getText(R.string.updating_account_balance)+"\n ");
 		this.dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
@@ -33,54 +35,37 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
 
 	protected Void doInBackground(final String... args) {
 		errors = new ArrayList<String>();
-		DBAdapter db;
-		Cursor c;
-		db = new DBAdapter(parent);
-		db.open();
-		c = db.fetchBanks();
-		if (c == null) {
-			return null;
+		ArrayList<Bank> banks;
+		if (bankId != -1) {
+			banks = new ArrayList<Bank>();
+			banks.add(BankFactory.bankFromDb(bankId, parent, true));
 		}
-		bankcount = c.getCount();
+		else {
+			banks = BankFactory.banksFromDb(parent, true);	
+		}
+		bankcount = banks.size();
 		this.dialog.setMax(bankcount);
-		int clmId = c.getColumnIndex("_id");
-		int clmBanktype = c.getColumnIndex("banktype");
-		int clmBalance = c.getColumnIndex("balance");
-		int clmUsername = c.getColumnIndex("username");
-		int clmPassword = c.getColumnIndex("password");
-		int clmDisabled = c.getColumnIndex("disabled");
-		int i = 0; 
-		while (!c.isLast() && !c.isAfterLast()) {
-			c.moveToNext();
-			publishProgress(new String[] {new Integer(i).toString(), c.getString(clmBanktype)+" ("+c.getString(clmUsername)+")"});
-			if (c.getInt(clmDisabled) == 1) {
-				Log.d("AA", c.getString(clmBanktype)+" ("+c.getString(clmUsername)+") is disabled. Skipping refresh.");
+		int i = 0;
+		for (Bank bank : banks) {
+			publishProgress(new String[] {new Integer(i).toString(), bank.getName()+" ("+bank.getUsername()+")"});
+			if (bank.isDisabled()) {
+				Log.d("AA", bank.getName()+" ("+bank.getUsername()+") is disabled. Skipping refresh.");
 				continue;
 			}
-			Log.d("AA", "Refreshing "+c.getString(clmBanktype)+" ("+c.getString(clmUsername)+").");
-			try {				cls = Class.forName("com.liato.bankdroid.Bank"+Helpers.toAscii(c.getString(clmBanktype)));
-				bank = (Bank) cls.newInstance();
-				bank.update(c.getString(clmUsername), c.getString(clmPassword), parent);
-				db.updateBank(bank, new Long(c.getString(clmId)));
+			Log.d("AA", "Refreshing "+bank.getName()+" ("+bank.getUsername()+").");
+			try {
+				bank.update();
+				bank.updateAllTransactions();
+				bank.save();
 				i++;
 			} 
 			catch (BankException e) {
-				this.errors.add(c.getString(clmBanktype)+" ("+c.getString(clmUsername));
-				db.disableBank(c.getLong(clmId));
-			}
-			catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				this.errors.add(bank.getName()+" ("+bank.getUsername()+")");
+			} catch (LoginException e) {
+				this.errors.add(bank.getName()+" ("+bank.getUsername()+")");
+				bank.disable();
 			}
 		}
-		c.close();
-		db.close();
 		publishProgress(new String[] {new Integer(i).toString(), ""});
 		return null;
 	}

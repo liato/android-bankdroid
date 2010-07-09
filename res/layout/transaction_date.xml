@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:paddingLeft="10dp" android:paddingRight="0dp" android:clickable="true" android:background="@drawable/date_bg" android:layout_height="28dp" android:gravity="center_vertical">
+
+	<TextView
+		android:inputType="none"
+		android:scrollHorizontally="true" android:layout_width="fill_parent" android:layout_toLeftOf="@+id/txtAmount" android:textStyle="bold" android:text="2010-11-12" android:typeface="sans" android:shadowColor="#000" android:id="@+id/txtDate" android:shadowDx="0" android:shadowDy="0" android:shadowRadius="1" android:textSize="16dp" android:layout_height="wrap_content" android:gravity="center_vertical" android:paddingTop="1dp" android:textColor="#fff"/>
+
+
+	
+
+
+</RelativeLayout>
