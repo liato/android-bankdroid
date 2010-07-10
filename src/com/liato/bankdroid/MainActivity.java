@@ -7,6 +7,9 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +22,7 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 
@@ -107,6 +111,15 @@ public class MainActivity extends LockableActivity {
 		Dialog dialog = new Dialog(this);
 		dialog.setContentView(R.layout.about);
 		dialog.setTitle(getString(R.string.about));
+		PackageInfo pInfo;
+		String version = "v1.x.x";
+		try {
+			pInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA);
+			version = pInfo.versionName;		
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+		}
+		((TextView)dialog.findViewById(R.id.txtVersion)).setText(getText(R.string.version).toString().replace("$version", version));
 		return dialog;
 	}
 

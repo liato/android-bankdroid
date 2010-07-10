@@ -12,10 +12,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class AccountsAdapter extends BaseAdapter {
+	public final static int VIEWTYPE_BANK = 0;
+	public final static int VIEWTYPE_ACCOUNT = 1;
 	private ArrayList<Bank> groups;
 	private Context context;
 	private LayoutInflater inflater;
-	
 
 	public AccountsAdapter(Context context) {
 		this.context = context;
@@ -131,9 +132,9 @@ public class AccountsAdapter extends BaseAdapter {
 	public int getItemViewType(int position) {
 		Object item = getItem(position);
 		if (item instanceof Bank) {
-			return 0;
+			return VIEWTYPE_BANK;
 		}
-		return 1;
+		return VIEWTYPE_ACCOUNT;
 	}	
 }
 

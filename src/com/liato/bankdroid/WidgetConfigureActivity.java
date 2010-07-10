@@ -11,15 +11,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class WidgetConfigureActivity extends Activity {
     private static final String WIDGET_PREFIX = "widget_";
 	int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
-	
 	private static final int LOGIN_ID = 1;
+	private AccountsAdapter adapter;
 	
 	public WidgetConfigureActivity() {
 		super();
@@ -54,7 +53,7 @@ public class WidgetConfigureActivity extends Activity {
 		setContentView(R.layout.main);
 		this.setTitle(this.getString(R.string.choose_an_account));
         setResult(RESULT_CANCELED);
-		((Button)findViewById(R.id.btnAccountsRefresh)).setVisibility(View.GONE);
+		((View)findViewById(R.id.layMainMenu)).setVisibility(View.GONE);
 
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
@@ -68,13 +67,10 @@ public class WidgetConfigureActivity extends Activity {
         ListView lv = (ListView)findViewById(R.id.lstAccountsList);
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				Log.d("!", "CLICK!");
-				
-	            final Context context = WidgetConfigureActivity.this;
+				if (adapter.getItemViewType(position) != AccountsAdapter.VIEWTYPE_ACCOUNT) return;
+				final Context context = WidgetConfigureActivity.this;
 	            Account account = (Account)parent.getItemAtPosition(position);
-
 	            WidgetConfigureActivity.setAccountId(context, mAppWidgetId, account.getId());
-
 	            // Push widget update to surface with newly set prefix
 	            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 	            BankdroidWidgetProvider.updateAppWidget(context, appWidgetManager,
@@ -119,7 +115,7 @@ public class WidgetConfigureActivity extends Activity {
 		if (banks.size() > 0) {
 			findViewById(R.id.txtAccountsDesc).setVisibility(View.GONE);
 			ListView lv = (ListView)findViewById(R.id.lstAccountsList);
-			AccountsAdapter adapter = new AccountsAdapter(this);
+			adapter = new AccountsAdapter(this);
 			adapter.setGroups(banks);
 			lv.setAdapter(adapter);
 		}
