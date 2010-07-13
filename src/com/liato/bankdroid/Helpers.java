@@ -21,7 +21,9 @@ public class Helpers {
 	}
 	public static String formatBalance(BigDecimal balance) {
 		Locale locale = new Locale("sv", "SE");
-		return NumberFormat.getCurrencyInstance(locale).format(balance).replace("kr", "SEK");
+		String bs = NumberFormat.getCurrencyInstance(locale).format(balance);
+		bs = bs.replaceAll("[^0-9\\s,.-]*", "");
+		return bs.trim() + " SEK";
 	}
 	public static String formatBalance(Double balance) {
 		return formatBalance(new BigDecimal(balance));
