@@ -70,7 +70,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 		Bank bank = account.getBank();
 		RemoteViews views = new RemoteViews(context.getPackageName(), layoutId);
 		Log.d("buildAppWidget", "WidgetLayout: "+layoutId);
-		views.setTextViewText(R.id.txtWidgetAccountname, account.getName());
+		views.setTextViewText(R.id.txtWidgetAccountname, account.getName().toUpperCase());
 		views.setTextViewText(R.id.txtWidgetAccountbalance, Helpers.formatBalance(account.getBalance()));
 		views.setImageViewResource(R.id.imgWidgetIcon, context.getResources().getIdentifier("drawable/"+bank.getShortName(), null, context.getPackageName()));
 		Log.d("Disabled", ""+bank.isDisabled());

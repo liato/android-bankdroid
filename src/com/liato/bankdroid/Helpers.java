@@ -1,8 +1,8 @@
 package com.liato.bankdroid;
 
 import java.math.BigDecimal;
-import java.text.NumberFormat;
-import java.util.Locale;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 
 public class Helpers {
 	public static BigDecimal parseBalance(String balance) {
@@ -20,10 +20,12 @@ public class Helpers {
 		return new BigDecimal(balance);
 	}
 	public static String formatBalance(BigDecimal balance) {
-		Locale locale = new Locale("sv", "SE");
-		String bs = NumberFormat.getCurrencyInstance(locale).format(balance);
-		bs = bs.replaceAll("[^0-9\\s,.-]*", "");
-		return bs.trim() + " SEK";
+		DecimalFormatSymbols dfs = new DecimalFormatSymbols();
+		dfs.setDecimalSeparator(',');
+		dfs.setGroupingSeparator(' ');
+		DecimalFormat currency = new DecimalFormat("#,##0.00 SEK");
+		currency.setDecimalFormatSymbols(dfs);
+		return currency.format(balance.doubleValue());
 	}
 	public static String formatBalance(Double balance) {
 		return formatBalance(new BigDecimal(balance));
