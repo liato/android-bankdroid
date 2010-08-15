@@ -8,6 +8,7 @@ import android.database.Cursor;
 
 import com.liato.bankdroid.banks.Coop;
 import com.liato.bankdroid.banks.Handelsbanken;
+import com.liato.bankdroid.banks.ICA;
 import com.liato.bankdroid.banks.ICABanken;
 import com.liato.bankdroid.banks.Lansforsakringar;
 import com.liato.bankdroid.banks.Nordea;
@@ -29,6 +30,8 @@ public class BankFactory {
 			return new Handelsbanken(context);
 		case Bank.COOP:
 			return new Coop(context);
+		case Bank.ICA:
+			return new ICA(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -43,6 +46,7 @@ public class BankFactory {
 		banks.add(new Lansforsakringar(context));
 		banks.add(new Handelsbanken(context));
 		banks.add(new Coop(context));
+		banks.add(new ICA(context));
 		return banks;
 	}
 

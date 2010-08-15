@@ -11,6 +11,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
+import android.text.Html;
 import android.util.Log;
 
 import com.liato.bankdroid.Account;
@@ -19,6 +20,7 @@ import com.liato.bankdroid.BankException;
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.LoginException;
 import com.liato.bankdroid.R;
+import com.liato.bankdroid.Transaction;
 import com.liato.urllib.Urllib;
 
 public class Coop extends Bank {
@@ -31,6 +33,7 @@ public class Coop extends Bank {
 	private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
 	private Pattern reBalanceVisa = Pattern.compile("Disponibelt\\s*belopp:</td>[^>]*>([^<]+)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reBalanceKonto = Pattern.compile("Aktuellt\\s*saldo:</span>[^>]*>([^<]+)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private Pattern reTransactionsKonto = Pattern.compile("<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>([^<]+)</td>\\s*<td>[^<]*</td>\\s*<td>([^<]*)</td>\\s*<td[^>]*>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
 
 	public Coop(Context context) {
 		super(context);
@@ -82,15 +85,23 @@ public class Coop extends Bank {
 			*/			
 			response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/?t=MedMeraVisa");
 			matcher = reBalanceVisa.matcher(response);
-			while (matcher.find()) {
+			if (matcher.find()) {
 				accounts.add(new Account("MedMera Visa", Helpers.parseBalance(matcher.group(1).trim()), "1"));
 				balance = balance.add(Helpers.parseBalance(matcher.group(1)));
 			}
 			response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Konto/");
 			matcher = reBalanceKonto.matcher(response);
-			while (matcher.find()) {
-				accounts.add(new Account("MedMera Konto", Helpers.parseBalance(matcher.group(1).trim()), "2"));
+			if (matcher.find()) {
+				Account account = new Account("MedMera Konto", Helpers.parseBalance(matcher.group(1).trim()), "2");
 				balance = balance.add(Helpers.parseBalance(matcher.group(1)));
+				matcher = reTransactionsKonto.matcher(response);
+				ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+				while (matcher.find()) {
+					String title = matcher.group(4).length() > 0 ? matcher.group(4) : matcher.group(3);
+					transactions.add(new Transaction(matcher.group(1).trim(), Html.fromHtml(title).toString().trim(), Helpers.parseBalance(matcher.group(4))));
+				}
+				account.setTransactions(transactions);
+				accounts.add(account);
 			}
 			if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
