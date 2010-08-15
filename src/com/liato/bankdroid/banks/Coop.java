@@ -29,7 +29,8 @@ public class Coop extends Bank {
 	private static final int BANKTYPE_ID = Bank.COOP;
 
 	private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
-	private Pattern reBalance = Pattern.compile("Disponibelt\\s*belopp:</td>[^>]*>([^<]+)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private Pattern reBalanceVisa = Pattern.compile("Disponibelt\\s*belopp:</td>[^>]*>([^<]+)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private Pattern reBalanceKonto = Pattern.compile("Aktuellt\\s*saldo:</span>[^>]*>([^<]+)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
 	public Coop(Context context) {
 		super(context);
@@ -80,9 +81,15 @@ public class Coop extends Bank {
 			}
 			*/			
 			response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/?t=MedMeraVisa");
-			matcher = reBalance.matcher(response);
+			matcher = reBalanceVisa.matcher(response);
 			while (matcher.find()) {
-				accounts.add(new Account("Betalkort", Helpers.parseBalance(matcher.group(1).trim()), "1"));
+				accounts.add(new Account("MedMera Visa", Helpers.parseBalance(matcher.group(1).trim()), "1"));
+				balance = balance.add(Helpers.parseBalance(matcher.group(1)));
+			}
+			response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Konto/");
+			matcher = reBalanceKonto.matcher(response);
+			while (matcher.find()) {
+				accounts.add(new Account("MedMera Konto", Helpers.parseBalance(matcher.group(1).trim()), "2"));
 				balance = balance.add(Helpers.parseBalance(matcher.group(1)));
 			}
 			if (accounts.isEmpty()) {

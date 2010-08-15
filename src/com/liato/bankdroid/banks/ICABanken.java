@@ -20,6 +20,7 @@ import com.liato.bankdroid.BankException;
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.LoginException;
 import com.liato.bankdroid.R;
+import com.liato.bankdroid.Transaction;
 import com.liato.urllib.Urllib;
 
 public class ICABanken extends Bank {
@@ -34,6 +35,7 @@ public class ICABanken extends Bank {
 	private Pattern reError = Pattern.compile("<label\\s+class=\"error\">(.+?)</label>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reBalanceDisp = Pattern.compile("account\\.aspx\\?id=([^\"]+).+?>([^<]+)</a.+?Disponibelt([0-9 .,-]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reBalanceSald = Pattern.compile("account\\.aspx\\?id=([^\"]+).+?>([^<]+)</a[^D]*Saldo([0-9 .,-]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private Pattern reTransactions = Pattern.compile("<label>(.+?)</label>\\s*<[^>]+(.+?)</div>\\s*<[^>]+>-\\s*Belopp(.+?)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
 	public ICABanken(Context context) {
 		super(context);
@@ -49,13 +51,7 @@ public class ICABanken extends Bank {
 		this.update(username, password);
 	}
 
-	@Override
-	public void update() throws BankException, LoginException {
-		super.update();
-		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
-			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-		}
-
+	public Urllib login() throws LoginException, BankException {
 		Urllib urlopen = new Urllib();
 		String response = null;
 		Matcher matcher;
@@ -83,6 +79,31 @@ public class ICABanken extends Bank {
 			if (matcher.find()) {
 				throw new LoginException(Html.fromHtml(matcher.group(1).trim()).toString());
 			}
+		}
+		catch (ClientProtocolException e) {
+			Log.d(TAG, "ClientProtocolException: "+e.getMessage());
+			throw new BankException(e.getMessage());
+		}
+		catch (IOException e) {
+			Log.d(TAG, "IOException: "+e.getMessage());
+			throw new BankException(e.getMessage());
+		}
+		finally {
+		}		
+		return urlopen;
+	}	
+	
+	@Override
+	public void update() throws BankException, LoginException {
+		super.update();
+		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
+			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+		}
+
+		Urllib urlopen = login();
+		String response = null;
+		Matcher matcher;
+		try {
 			response = urlopen.open("https://mobil.icabanken.se/account/overview.aspx");
 			Log.d("BankICA", urlopen.getCurrentURI());
 			//response = urlopen.open("http://x.x00.us/android/bankdroid/icabanken_oversikt.htm");
@@ -111,4 +132,38 @@ public class ICABanken extends Bank {
 		}
 
 	}
+
+	@Override
+	public void updateTransactions(Account account, Urllib urlopened) throws LoginException, BankException {
+		super.updateTransactions(account, urlopened);
+		Urllib urlopen = null;
+		if (urlopened == null) {
+			urlopen = login();
+		}
+		else {
+			urlopen = urlopened;
+		}
+		String response = null;
+		Matcher matcher;
+		try {
+			Log.d(TAG, "Opening: https://mobil.icabanken.se/account/account.aspx?id="+account.getId());
+			response = urlopen.open("https://mobil.icabanken.se/account/account.aspx?id="+account.getId());
+			//response = urlopen.open("http://x.x00.us/android/bankdroid/icabanken_kontoutdrag.htm");
+			matcher = reTransactions.matcher(response);
+			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+			while (matcher.find()) {
+				transactions.add(new Transaction(matcher.group(2).trim().substring(8), Html.fromHtml(matcher.group(1)).toString().trim(), Helpers.parseBalance(matcher.group(3))));
+			}
+			account.setTransactions(transactions);
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (urlopened == null) {
+			urlopen.close();
+		}
+	}		
 }
