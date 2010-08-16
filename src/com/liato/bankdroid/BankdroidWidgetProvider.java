@@ -95,6 +95,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 		intent.setData(Uri.parse("rofl://copter/"+appWidgetId+"/"+System.currentTimeMillis()));
 		pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		views.setOnClickPendingIntent(R.id.imgWidgetIcon, pendingIntent);
+		views.setOnClickPendingIntent(R.id.hitBox, pendingIntent);
 
 		//appWidgetManager.updateAppWidget(appWidgetId, views); 
 		return views;

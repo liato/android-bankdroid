@@ -34,6 +34,8 @@ public class Handelsbanken extends Bank {
 	private Pattern reAccountsUrl = Pattern.compile("_-([^\"]+)\"><img[^>]+><span[^>]+>Konton<",Pattern.CASE_INSENSITIVE);
 	private Pattern reLoginUrl = Pattern.compile("_-([^\"]+)\"><img[^>]*><img[^>]*><span[^>]*>Logga",Pattern.CASE_INSENSITIVE);
 	private Pattern reTransactions = Pattern.compile("padding-left\">([^<]+)</span><span[^>]*><span[^>]*>([^<]+)</span><span[^>]*>([^<]+)<", Pattern.CASE_INSENSITIVE);
+
+	private ArrayList<String> accountIds = new ArrayList<String>(); 
 	public Handelsbanken(Context context) {
 		super(context);
 		super.TAG = TAG;
@@ -111,10 +113,11 @@ public class Handelsbanken extends Bank {
 			Log.d("TAG", "Accounts url: "+strAccountsUrl);
 			response = urlopen.open(strAccountsUrl);
 			matcher = reBalance.matcher(response);
-			Integer accountId = 1;
+			Integer accountId = 0;
 			while (matcher.find()) {
 				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), accountId.toString()));
 				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
+				accountIds.add(matcher.group(1));
 				accountId += 1;
 			}
 			if (accounts.isEmpty()) {
@@ -146,8 +149,9 @@ public class Handelsbanken extends Bank {
 		String response = null;
 		Matcher matcher;
 		try {
-			Log.d(TAG, "Opening: https://m.handelsbanken.se/primary/_-"+account.getId());
-			response = urlopen.open("https://m.handelsbanken.se/primary/_-"+account.getId());
+			String accountWebId = accountIds.get(Integer.parseInt(account.getId()));
+			Log.d(TAG, "Opening: https://m.handelsbanken.se/primary/_-"+accountWebId);
+			response = urlopen.open("https://m.handelsbanken.se/primary/_-"+accountWebId);
 			matcher = reTransactions.matcher(response);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 			while (matcher.find()) {

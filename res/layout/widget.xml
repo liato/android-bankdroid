@@ -6,7 +6,7 @@
 	android:layout_height="100dp"
 	android:layout_width="160dp" android:id="@+id/layWidgetContainer">
 
-	<LinearLayout
+	<FrameLayout android:layout_height="22dp" android:layout_width="fill_parent" android:id="@+id/hitBox" android:focusable="true"></FrameLayout><LinearLayout
 		android:layout_height="wrap_content"
 		android:layout_width="wrap_content"
 		android:id="@+id/layWidgetRow01"
@@ -75,5 +75,6 @@
 		</FrameLayout>
 	</LinearLayout>
 	
+
 
 </RelativeLayout>
