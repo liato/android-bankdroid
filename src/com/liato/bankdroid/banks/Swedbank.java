@@ -31,7 +31,7 @@ public class Swedbank extends Bank {
 	private static final int BANKTYPE_ID = Bank.SWEDBANK;
 
 	private Pattern reCSRF = Pattern.compile("csrf_token\".*?value=\"([^\"]+)\"");
-	private Pattern reAccounts = Pattern.compile("(account|loan)\\.html\\?id=([^\"]+)\">\\s*<span.*?/span>([^<]+) <.*?secondary\">([0-9 .,-]+)</span");
+	private Pattern reAccounts = Pattern.compile("(account|loan)\\.html\\?id=([^\"]+)\">\\s*(?:<span.*?/span>)?([^<]+)<.*?secondary\">([^<]+)</span");
 	private Pattern reTransactions = Pattern.compile("trans-date\">([^<]+)</div>.*?trans-subject\">([^<]+)</div>.*?trans-amount\">([^<]+)</div>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	public Swedbank(Context context) {
 		super(context);

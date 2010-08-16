@@ -54,14 +54,20 @@ public class Statoil extends Bank {
 		Urllib urlopen = new Urllib(true);
 		String response = null;
 		try {
-			response = urlopen.open("https://applications.sebkort.com/nis/external/stse/login.do");
 			List <NameValuePair> postData = new ArrayList <NameValuePair>();
+			response = urlopen.open("https://applications.sebkort.com/nis/external/stse/login.do");
+			List<NameValuePair> parameters = new ArrayList<NameValuePair>(3);
+            parameters.add(new BasicNameValuePair("USERNAME", "0122"+username.toUpperCase()));
+            parameters.add(new BasicNameValuePair("referer", "login.jsp"));
+            response = urlopen.open("https://applications.sebkort.com/nis/external/hidden.jsp", postData);
+            
+			postData.clear();
 			postData.add(new BasicNameValuePair("choice", "PWD"));
-			postData.add(new BasicNameValuePair("uname", username));
+			postData.add(new BasicNameValuePair("uname", username.toUpperCase()));
 			postData.add(new BasicNameValuePair("PASSWORD", password));
 			postData.add(new BasicNameValuePair("target", "/nis/stse/main.do"));
 			postData.add(new BasicNameValuePair("prodgroup", "0122"));
-			postData.add(new BasicNameValuePair("USERNAME", "0122"+username));
+			postData.add(new BasicNameValuePair("USERNAME", "0122"+username.toUpperCase()));
 			postData.add(new BasicNameValuePair("METHOD", "LOGIN"));
 			postData.add(new BasicNameValuePair("CURRENT_METHOD", "PWD"));
 			response = urlopen.open("https://applications.sebkort.com/siteminderagent/forms/generic.fcc", postData);
