@@ -111,9 +111,11 @@ public class Handelsbanken extends Bank {
 			Log.d("TAG", "Accounts url: "+strAccountsUrl);
 			response = urlopen.open(strAccountsUrl);
 			matcher = reBalance.matcher(response);
+			Integer accountId = 1;
 			while (matcher.find()) {
-				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), matcher.group(1).trim()));
+				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), accountId.toString()));
 				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
+				accountId += 1;
 			}
 			if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
