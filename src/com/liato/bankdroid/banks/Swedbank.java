@@ -31,7 +31,7 @@ public class Swedbank extends Bank {
 	private static final int BANKTYPE_ID = Bank.SWEDBANK;
 
 	private Pattern reCSRF = Pattern.compile("csrf_token\".*?value=\"([^\"]+)\"");
-	private Pattern reAccounts = Pattern.compile("account\\.html\\?id=([^\"]+)\">\\s*<span.*?/span>([^<]+) <.*?secondary\">([0-9 .,-]+)</span");
+	private Pattern reAccounts = Pattern.compile("(account|loan)\\.html\\?id=([^\"]+)\">\\s*<span.*?/span>([^<]+) <.*?secondary\">([0-9 .,-]+)</span");
 	private Pattern reTransactions = Pattern.compile("trans-date\">([^<]+)</div>.*?trans-subject\">([^<]+)</div>.*?trans-amount\">([^<]+)</div>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	public Swedbank(Context context) {
 		super(context);
@@ -53,7 +53,7 @@ public class Swedbank extends Bank {
 		String response = null;
 		Matcher matcher;
 		try {
-			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank-light/login.html");
+			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/login.html");
 			matcher = reCSRF.matcher(response);
 			if (!matcher.find()) {
 				throw new BankException(res.getText(R.string.unable_to_find).toString()+" CSRF token.");
@@ -90,11 +90,11 @@ public class Swedbank extends Bank {
 		String response = null;
 		Matcher matcher;
 		try {
-			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank-light/accounts.html");
+			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/accounts.html");
 			matcher = reAccounts.matcher(response);
 			while (matcher.find()) {
-				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString(), Helpers.parseBalance(matcher.group(3)), matcher.group(1).trim()));
-				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
+				accounts.add(new Account(Html.fromHtml(matcher.group(3)).toString(), Helpers.parseBalance(matcher.group(4)), matcher.group(2).trim() == "loan" ? "l"+matcher.group(2).trim() : matcher.group(2).trim()));
+				balance = balance.add(Helpers.parseBalance(matcher.group(4)));
 			}
 			if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
@@ -118,6 +118,7 @@ public class Swedbank extends Bank {
 	@Override
 	public void updateTransactions(Account account, Urllib urlopened) throws LoginException, BankException {
 		super.updateTransactions(account, urlopened);
+		if (account.getId().startsWith("l")) return; //No transaction history for loans
 		Urllib urlopen = null;
 		if (urlopened == null) {
 			urlopen = login();

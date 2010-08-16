@@ -2,7 +2,7 @@ package com.liato.bankdroid;
 
 import java.math.BigDecimal;
 
-public class Transaction {
+public class Transaction implements Comparable<Transaction> {
 	private String date;
 	private String transaction;
 	private BigDecimal amount;
@@ -35,5 +35,12 @@ public class Transaction {
 
 	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
+	}
+
+	@Override
+	public int compareTo(Transaction another) {
+		Integer thisdate = Integer.parseInt(date.replaceAll("-", ""));
+		Integer thatdate = Integer.parseInt((another).getDate().replaceAll("-", ""));
+		return thisdate - thatdate;
 	}
 }

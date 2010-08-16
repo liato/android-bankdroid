@@ -1,7 +1,10 @@
 package com.liato.bankdroid.banks;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,6 +14,8 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
+import android.text.Html;
+import android.util.Log;
 
 import com.liato.bankdroid.Account;
 import com.liato.bankdroid.Bank;
@@ -18,6 +23,7 @@ import com.liato.bankdroid.BankException;
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.LoginException;
 import com.liato.bankdroid.R;
+import com.liato.bankdroid.Transaction;
 import com.liato.urllib.Urllib;
 
 public class Statoil extends Bank {
@@ -28,7 +34,7 @@ public class Statoil extends Bank {
 	private static final int BANKTYPE_ID = Bank.STATOIL;
 
 	private Pattern reAccounts = Pattern.compile("class=\"Right\">([^<]+)<", Pattern.CASE_INSENSITIVE);
-	//private Pattern reTransactions = Pattern.compile("trans-date\">([^<]+)</div>.*?trans-subject\">([^<]+)</div>.*?trans-amount\">([^<]+)</div>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private Pattern reTransactions = Pattern.compile("(?:7px\">|</a>)\\s*(\\d{2}-\\d{2})\\s*</td>\\s*<td>[^<]+</td>\\s*<[^>]+>([^<]+)</td>\\s*<[^>]+>([^<]+)<.*?nowrap>([^<]+)<", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	public Statoil(Context context) {
 		super(context);
 		super.TAG = TAG;
@@ -58,7 +64,7 @@ public class Statoil extends Bank {
 			postData.add(new BasicNameValuePair("USERNAME", "0122"+username));
 			postData.add(new BasicNameValuePair("METHOD", "LOGIN"));
 			postData.add(new BasicNameValuePair("CURRENT_METHOD", "PWD"));
-			response = urlopen.open("https://applications.sebkort.com/nis/external/stse/login.do", postData);
+			response = urlopen.open("https://applications.sebkort.com/siteminderagent/forms/generic.fcc", postData);
 			if (response.contains("du loggar in till")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}
@@ -106,7 +112,7 @@ public class Statoil extends Bank {
 
 	}
 	
-	/*@Override
+	@Override
 	public void updateTransactions(Account account, Urllib urlopened) throws LoginException, BankException {
 		super.updateTransactions(account, urlopened);
 		Urllib urlopen = null;
@@ -122,13 +128,16 @@ public class Statoil extends Bank {
 		String response = null;
 		Matcher matcher;
 		try {
-			Log.d(TAG, "Opening: https://mobilbank.swedbank.se/banking/swedbank/account.html?id="+account.getId());
-			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/account.html?id="+account.getId());
+			Log.d(TAG, "Opening: https://applications.sebkort.com/nis/stse/getPendingTransactions.do");
+			response = urlopen.open("https://applications.sebkort.com/nis/stse/getPendingTransactions.do");
 			matcher = reTransactions.matcher(response);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+			Calendar cal = Calendar.getInstance();
 			while (matcher.find()) {
-				transactions.add(new Transaction("20"+matcher.group(1).trim(), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3))));
+				transactions.add(new Transaction(""+cal.get(Calendar.YEAR)+"-"+matcher.group(1).trim(), Html.fromHtml(matcher.group(2)).toString().trim()+(Html.fromHtml(matcher.group(3)).toString().trim().length() > 1 ? " ("+Html.fromHtml(matcher.group(3)).toString().trim()+")" : ""), Helpers.parseBalance(matcher.group(4)).multiply(new BigDecimal(-1))));
 			}
+			Collections.sort(transactions);
+			Collections.reverse(transactions);
 			account.setTransactions(transactions);
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
@@ -140,5 +149,5 @@ public class Statoil extends Bank {
 		if (urlopened == null) {
 			urlopen.close();
 		}
-	}	*/
+	}	
 }
