@@ -15,6 +15,7 @@
     <string name="invalid_username_password">Personnummer och lösenord stämmer ej.</string>
     <string name="unable_to_find">Kunde ej hitta</string>
     <string name="no_accounts_found">Inga konton funna</string>
+    <string name="transparent_background">Transparent bakgrund</string>
     
     <string name="username">Personnummer</string>
     <string name="password">Lösenord</string>
@@ -77,5 +78,7 @@
     \nDustin (ICA)
     \ndimaZ (Statoil)
     \nOxygen (Statoil)
+    \Niclas Ljungstrand (Nordea)
+	\Ozzy (Avanza)
     </string>	    
 </resources>

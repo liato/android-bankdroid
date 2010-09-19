@@ -7,6 +7,7 @@ import android.appwidget.AppWidgetProvider;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.IBinder;
@@ -67,6 +68,14 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 		Log.d("Widget", "Building widget: "+appWidgetId);
 		AppWidgetProviderInfo providerInfo = appWidgetManager.getAppWidgetInfo(appWidgetId);
 		int layoutId = (providerInfo == null) ? R.layout.widget : providerInfo.initialLayout;
+        SharedPreferences prefs = context.getSharedPreferences("widget_prefs", 0);		
+		if (prefs.getBoolean("transperant_background" + appWidgetId, false) && (providerInfo != null)) {
+			if (providerInfo.initialLayout == R.layout.widget_large) {
+				layoutId = R.layout.widget_large_transparent;
+			} else {
+				layoutId = R.layout.widget_transparent;
+			}
+		}
 		Bank bank = account.getBank();
 		RemoteViews views = new RemoteViews(context.getPackageName(), layoutId);
 		Log.d("buildAppWidget", "WidgetLayout: "+layoutId);
@@ -107,6 +116,14 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 		Log.d("Widget", "Disabling widget: "+appWidgetId);
 		AppWidgetProviderInfo providerInfo = appWidgetManager.getAppWidgetInfo(appWidgetId);
 		int layoutId = (providerInfo == null) ? R.layout.widget : providerInfo.initialLayout;
+        SharedPreferences prefs = context.getSharedPreferences("widget_prefs", 0);		
+		if (prefs.getBoolean("transperant_background" + appWidgetId, false) && (providerInfo != null)) {
+			if (providerInfo.initialLayout == R.layout.widget_large) {
+				layoutId=R.layout.widget_large_transparent;
+			} else {
+				layoutId=R.layout.widget_transparent;
+			}
+		}		
 		RemoteViews views = new RemoteViews(context.getPackageName(), layoutId);
 		Log.d("buildAppWidget", "WidgetLayout: "+layoutId);
 		views.setTextViewText(R.id.txtWidgetAccountname, "");

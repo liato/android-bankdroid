@@ -15,6 +15,7 @@
     <string name="invalid_username_password">Invalid username or password.</string>
     <string name="unable_to_find">Unable to find</string>
     <string name="no_accounts_found">No accounts found</string>
+    <string name="transparent_background">Transparent background</string>
     
     <string name="username">Username</string>
     <string name="password">Password</string>
@@ -78,5 +79,7 @@
     \nDustin (ICA)
     \ndimaZ (Statoil)
     \nOxygen (Statoil)
+    \Niclas Ljungstrand (Nordea)
+	\Ozzy (Avanza)
      </string>
 </resources>

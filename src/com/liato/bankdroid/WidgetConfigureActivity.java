@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 
@@ -71,6 +72,9 @@ public class WidgetConfigureActivity extends Activity {
 				final Context context = WidgetConfigureActivity.this;
 	            Account account = (Account)parent.getItemAtPosition(position);
 	            WidgetConfigureActivity.setAccountId(context, mAppWidgetId, account.getId());
+	            SharedPreferences.Editor prefs = context.getSharedPreferences("widget_prefs", 0).edit();
+	            prefs.putBoolean("transperant_background" + mAppWidgetId, ((CheckBox)findViewById(R.id.chkTransperantBackground)).isChecked());
+	            prefs.commit();	            
 	            // Push widget update to surface with newly set prefix
 	            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 	            BankdroidWidgetProvider.updateAppWidget(context, appWidgetManager,
@@ -113,6 +117,7 @@ public class WidgetConfigureActivity extends Activity {
 		ArrayList<Bank> banks = BankFactory.banksFromDb(this, true);
 
 		if (banks.size() > 0) {
+			findViewById(R.id.chkTransperantBackground).setVisibility(View.VISIBLE);
 			findViewById(R.id.txtAccountsDesc).setVisibility(View.GONE);
 			ListView lv = (ListView)findViewById(R.id.lstAccountsList);
 			adapter = new AccountsAdapter(this);

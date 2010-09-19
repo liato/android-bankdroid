@@ -31,7 +31,8 @@ public class Nordea extends Bank {
 	private static final String URL = "https://mobil.nordea.se/";
 	private static final int BANKTYPE_ID = Bank.NORDEA;
 	
-	private Pattern reAccounts = Pattern.compile("account\\.html\\?id=konton:([^\"]+)\"[^>]+>\\s*<div[^>]+>([^<]+)<span[^>]+>([^<]+)</span", Pattern.CASE_INSENSITIVE );
+	private Pattern reAccounts = Pattern.compile("account\\.html\\?id=konton:([^\"]+)\"[^>]+>\\s*<div[^>]+>([^<]+)<span[^>]+>([^<]+)</span", Pattern.CASE_INSENSITIVE);
+	private Pattern reFundsLoans = Pattern.compile("(?:fund|loan)\\.html\\?id=(?:fonder|lan):([^\"]+)\".*?>.*?>([^<]+).*?>([^<]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reTransactions = Pattern.compile("(\\d{2}.\\d{2})\\s</dt>[^>]+>([^<]+)[^>]+>.*?(?:Positive|Negative)\">([^<]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reCSRF = Pattern.compile("csrf_token\".*?value=\"([^\"]+)\"");
 
@@ -108,6 +109,24 @@ public class Nordea extends Bank {
 				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), matcher.group(1).trim()));
 				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
 			}
+
+			Log.d("BankNordea", "Opening: https://mobil.nordea.se/banking-nordea/nordea-c3/funds/portfolio/funds.html");
+			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/funds/portfolio/funds.html");
+
+			matcher = reFundsLoans.matcher(response);
+			while (matcher.find()) {
+				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), "f"+matcher.group(1).trim()));
+				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
+			}
+
+			Log.d("BankNordea", "Opening: https://mobil.nordea.se/banking-nordea/nordea-c3/accounts.html?type=lan");
+			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/accounts.html?type=lan");
+			
+			matcher = reFundsLoans.matcher(response);
+			while (matcher.find()) {
+				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), "l"+matcher.group(1).trim()));
+				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
+			}
 			if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
 			}
@@ -129,6 +148,7 @@ public class Nordea extends Bank {
 	@Override
 	public void updateTransactions(Account account, Urllib urlopened) throws LoginException, BankException {
 		super.updateTransactions(account, urlopened);
+		if (account.getId().startsWith("l") || account.getId().startsWith("f")) return; //No transaction history for loans and funds
 		Urllib urlopen = null;
 		if (urlopened == null) {
 			urlopen = login();

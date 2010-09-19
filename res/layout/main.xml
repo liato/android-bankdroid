@@ -5,6 +5,13 @@
 	android:layout_width="wrap_content"
 	android:layout_height="fill_parent"
 	android:background="@drawable/background_repeat">
+	<CheckBox
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/chkTransperantBackground"
+		android:visibility="gone"
+		android:layout_margin="10dp"
+		android:text="@string/transparent_background" />
 	<TextView
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
@@ -15,16 +22,18 @@
 	<ListView
 		android:layout_width="fill_parent"
 		android:id="@+id/lstAccountsList"
-		android:layout_height="fill_parent"
-		android:fitsSystemWindows="true"
-		android:layout_alignParentTop="true" android:cacheColorHint="#00000000" android:layout_above="@+id/layMainMenu"/>
+		android:layout_height="wrap_content"
+		android:cacheColorHint="#00000000"
+		android:layout_above="@+id/layMainMenu"
+		android:layout_below="@+id/chkTransperantBackground" android:layout_alignWithParentIfMissing="true"/>
 	<TableLayout
 		android:stretchColumns="0,2"
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true"
 		android:layout_alignParentLeft="true"
 		android:layout_alignParentRight="true"
-		android:layout_width="wrap_content" android:id="@+id/layMainMenu">
+		android:layout_width="wrap_content"
+		android:id="@+id/layMainMenu">
 		<TableRow
 			android:id="@+id/TableRow01"
 			android:layout_height="wrap_content"

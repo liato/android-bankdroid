@@ -32,6 +32,7 @@ public class Swedbank extends Bank {
 
 	private Pattern reCSRF = Pattern.compile("csrf_token\".*?value=\"([^\"]+)\"");
 	private Pattern reAccounts = Pattern.compile("(account|loan)\\.html\\?id=([^\"]+)\">\\s*(?:<span.*?/span>)?([^<]+)<.*?secondary\">([^<]+)</span");
+	private Pattern reLinklessAccounts = Pattern.compile("<li>\\s*([^<]+)<br/?><span\\sclass=\"secondary\">([^<]+)</span>\\s*</li>", Pattern.CASE_INSENSITIVE);
 	private Pattern reTransactions = Pattern.compile("trans-date\">([^<]+)</div>.*?trans-subject\">([^<]+)</div>.*?trans-amount\">([^<]+)</div>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	public Swedbank(Context context) {
 		super(context);
@@ -95,6 +96,13 @@ public class Swedbank extends Bank {
 			while (matcher.find()) {
 				accounts.add(new Account(Html.fromHtml(matcher.group(3)).toString(), Helpers.parseBalance(matcher.group(4)), matcher.group(2).trim() == "loan" ? "l"+matcher.group(2).trim() : matcher.group(2).trim()));
 				balance = balance.add(Helpers.parseBalance(matcher.group(4)));
+			}
+			matcher = reLinklessAccounts.matcher(response);
+			int accid = 0;
+			while (matcher.find()) {
+				accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString(), Helpers.parseBalance(matcher.group(2)), "ll"+accid));
+				balance = balance.add(Helpers.parseBalance(matcher.group(2)));
+				accid++;
 			}
 			if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
