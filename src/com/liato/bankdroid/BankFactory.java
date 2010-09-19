@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.database.Cursor;
 
+import com.liato.bankdroid.banks.Avanza;
 import com.liato.bankdroid.banks.Coop;
 import com.liato.bankdroid.banks.Handelsbanken;
 import com.liato.bankdroid.banks.ICA;
@@ -51,6 +52,7 @@ public class BankFactory {
 		banks.add(new Coop(context));
 		banks.add(new ICA(context));
 		banks.add(new Statoil(context));
+		banks.add(new Avanza(context));
 		return banks;
 	}
 

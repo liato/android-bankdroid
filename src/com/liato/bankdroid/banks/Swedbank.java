@@ -92,6 +92,7 @@ public class Swedbank extends Bank {
 		Matcher matcher;
 		try {
 			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/accounts.html");
+			
 			matcher = reAccounts.matcher(response);
 			while (matcher.find()) {
 				accounts.add(new Account(Html.fromHtml(matcher.group(3)).toString(), Helpers.parseBalance(matcher.group(4)), matcher.group(2).trim() == "loan" ? "l"+matcher.group(2).trim() : matcher.group(2).trim()));
@@ -108,8 +109,8 @@ public class Swedbank extends Bank {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
 			}
 			// Konungens konto
-			//accounts.add(new Account("Personkonto", new BigDecimal("85351"), "0"));
-			//accounts.add(new Account("Sparkonto", new BigDecimal("8590700"), "1"));
+			//accounts.add(new Account("Personkonto", Helpers.parseBalance("85351"), "0"));
+			//accounts.add(new Account("Sparkonto", Helpers.parseBalance("8590700"), "1"));
 		}
 		catch (ClientProtocolException e) {
 			throw new BankException(e.getMessage());
