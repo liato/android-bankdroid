@@ -23,6 +23,10 @@ import com.liato.bankdroid.R;
 import com.liato.bankdroid.Transaction;
 import com.liato.urllib.Urllib;
 
+/**
+ * @author Darko
+ *
+ */
 public class Handelsbanken extends Bank {
 	private static final String TAG = "Handelsbanken";
 	private static final String NAME = "Handelsbanken";
@@ -118,6 +122,7 @@ public class Handelsbanken extends Bank {
 				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), accountId.toString()));
 				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
 				accountIds.add(matcher.group(1));
+				updateShbTransactions((Account)accounts.get(accountId), urlopen);
 				accountId += 1;
 			}
 			if (accounts.isEmpty()) {
@@ -136,16 +141,8 @@ public class Handelsbanken extends Bank {
 
 	}
 	
-	@Override
-	public void updateTransactions(Account account, Urllib urlopened) throws LoginException, BankException {
-		super.updateTransactions(account, urlopened);
-		Urllib urlopen = null;
-		if (urlopened == null) {
-			urlopen = login();
-		}
-		else {
-			urlopen = urlopened;
-		}
+
+	public void updateShbTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
 		String response = null;
 		Matcher matcher;
 		try {
@@ -165,8 +162,5 @@ public class Handelsbanken extends Bank {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if (urlopened == null) {
-			urlopen.close();
-		}
-	}	
+	}
 }
