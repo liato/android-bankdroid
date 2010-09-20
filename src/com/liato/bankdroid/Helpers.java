@@ -17,7 +17,14 @@ public class Helpers {
 			balance = balance.replace(".", "");
 			balance = balance+b;
 		}
-		return new BigDecimal(balance);
+		BigDecimal ret;
+		try {
+			ret = new BigDecimal(balance);
+		}
+		catch (NumberFormatException e) {
+			ret = new BigDecimal(0);
+		}
+		return ret;
 	}
 	public static String formatBalance(BigDecimal balance) {
 		DecimalFormatSymbols dfs = new DecimalFormatSymbols();

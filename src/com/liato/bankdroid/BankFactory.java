@@ -15,6 +15,7 @@ import com.liato.bankdroid.banks.Lansforsakringar;
 import com.liato.bankdroid.banks.Nordea;
 import com.liato.bankdroid.banks.Statoil;
 import com.liato.bankdroid.banks.Swedbank;
+import com.liato.bankdroid.banks.Villabanken;
 
 public class BankFactory {
 
@@ -36,6 +37,10 @@ public class BankFactory {
 			return new ICA(context);
 		case Bank.STATOIL:
 			return new Statoil(context);
+		case Bank.AVANZA:
+			return new Avanza(context);
+		case Bank.VILLABANKEN:
+			return new Villabanken(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -53,6 +58,7 @@ public class BankFactory {
 		banks.add(new ICA(context));
 		banks.add(new Statoil(context));
 		banks.add(new Avanza(context));
+		banks.add(new Villabanken(context));
 		return banks;
 	}
 
