@@ -24,7 +24,7 @@ import com.liato.bankdroid.Transaction;
 import com.liato.urllib.Urllib;
 
 /**
- * @author Darko
+ * @author DEGE
  *
  */
 public class Handelsbanken extends Bank {
@@ -91,8 +91,6 @@ public class Handelsbanken extends Bank {
 			Log.d(TAG, "IOException: "+e.getMessage());
 			throw new BankException(e.getMessage());
 		}
-		finally {
-		}		
 		return urlopen;
 	}
 	
@@ -122,7 +120,6 @@ public class Handelsbanken extends Bank {
 				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), accountId.toString()));
 				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
 				accountIds.add(matcher.group(1));
-				updateShbTransactions((Account)accounts.get(accountId), urlopen);
 				accountId += 1;
 			}
 			if (accounts.isEmpty()) {
@@ -135,14 +132,10 @@ public class Handelsbanken extends Bank {
 		catch (IOException e) {
 			throw new BankException(e.getMessage());
 		}
-		finally {
-			urlopen.close();
-		}
-
 	}
 	
 
-	public void updateShbTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
 		String response = null;
 		Matcher matcher;
 		try {
