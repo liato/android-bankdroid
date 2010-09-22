@@ -57,7 +57,7 @@ public class Handelsbanken extends Bank {
 	
 	@Override
 	public Urllib login() throws LoginException, BankException {
-		Urllib urlopen = new Urllib();
+		urlopen = new Urllib();
 		String response = null;
 		Matcher matcher;
 		try {
@@ -101,7 +101,7 @@ public class Handelsbanken extends Bank {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 
-		Urllib urlopen = login();
+		urlopen = login();
 		String response = null;
 		Matcher matcher;
 		try {
