@@ -23,6 +23,10 @@ import com.liato.bankdroid.R;
 import com.liato.bankdroid.Transaction;
 import com.liato.urllib.Urllib;
 
+/**
+ * @author DEGE
+ *
+ */
 public class Handelsbanken extends Bank {
 	private static final String TAG = "Handelsbanken";
 	private static final String NAME = "Handelsbanken";
@@ -53,7 +57,7 @@ public class Handelsbanken extends Bank {
 	
 	@Override
 	public Urllib login() throws LoginException, BankException {
-		Urllib urlopen = new Urllib();
+		urlopen = new Urllib();
 		String response = null;
 		Matcher matcher;
 		try {
@@ -87,8 +91,6 @@ public class Handelsbanken extends Bank {
 			Log.d(TAG, "IOException: "+e.getMessage());
 			throw new BankException(e.getMessage());
 		}
-		finally {
-		}		
 		return urlopen;
 	}
 	
@@ -99,7 +101,7 @@ public class Handelsbanken extends Bank {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 
-		Urllib urlopen = login();
+		urlopen = login();
 		String response = null;
 		Matcher matcher;
 		try {
@@ -130,22 +132,10 @@ public class Handelsbanken extends Bank {
 		catch (IOException e) {
 			throw new BankException(e.getMessage());
 		}
-		finally {
-			urlopen.close();
-		}
-
 	}
 	
-	@Override
-	public void updateTransactions(Account account, Urllib urlopened) throws LoginException, BankException {
-		super.updateTransactions(account, urlopened);
-		Urllib urlopen = null;
-		if (urlopened == null) {
-			urlopen = login();
-		}
-		else {
-			urlopen = urlopened;
-		}
+
+	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
 		String response = null;
 		Matcher matcher;
 		try {
@@ -165,8 +155,5 @@ public class Handelsbanken extends Bank {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if (urlopened == null) {
-			urlopen.close();
-		}
-	}	
+	}
 }
