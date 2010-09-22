@@ -33,8 +33,17 @@ public abstract class Bank implements Comparable<Bank> {
 	protected ArrayList<Account> accounts = new ArrayList<Account>();
 	protected BigDecimal balance = new BigDecimal(0);
 	protected boolean disabled = false;
-	protected long dbid = -1;	
+	protected long dbid = -1;
+	protected Urllib urlopen = null;
 
+
+	public Urllib getUrlopen() {
+		return urlopen;
+	}
+
+	public void setUrlopen(Urllib urlopen) {
+		this.urlopen = urlopen;
+	}
 
 	public void setDbid(long dbid) {
 		this.dbid = dbid;
@@ -61,7 +70,9 @@ public abstract class Bank implements Comparable<Bank> {
 	}
 
 	public void updateAllTransactions() throws LoginException, BankException {
-		Urllib urlopen = login();
+		if (urlopen == null) {
+			urlopen = login();
+		}
 		for (Account account: accounts) {
 			updateTransactions(account, urlopen);
 		}
