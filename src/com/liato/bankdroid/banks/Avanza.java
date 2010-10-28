@@ -34,8 +34,6 @@ public class Avanza extends Bank {
 	
 	private Pattern reAccounts = Pattern.compile("depa\\.jsp\\?depotnr=(\\d*).*?(?:width=\"235\">*?)(.*?)<.*?(?:looser|winner).*?>(.*?)<.*?(?:looser|winner).*?>(.*?)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reTransactions = Pattern.compile("(?:warrantguide\\.jsp|aktie\\.jsp)(?:.*?)orderbookId=(?:.*?)>(.*?)<(?:.*?)<nobr>(?:.*?)<nobr>(?:.*?)<nobr>(.*?)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-	private Pattern reAvanzaMini = Pattern.compile("w100\\s+azatable\"[^>]+>\\s*<tr>\\s*<td>([^<]+)</td>\\s*<td\\s+class=\"tright\">([^<]+)</td.*?<td><strong>([^<]+)</strong></td>\\s+<td[^>]+>([^<]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-	private boolean avanzaMini = false;
 	public Avanza(Context context) {
 		super(context);
 		super.TAG = TAG;
@@ -52,7 +50,7 @@ public class Avanza extends Bank {
 
 	@Override
 	public Urllib login() throws LoginException, BankException {
-		Urllib urlopen = new Urllib(true);
+		urlopen = new Urllib(true, true);
 		String response = null;
 		try {
 			//response = urlopen.open("https://www.avanza.se/aza/login/logout.jsp");
@@ -67,16 +65,10 @@ public class Avanza extends Bank {
 			if (response.contains("Felaktigt") && !response.contains("Logga ut")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}
-			if (urlopen.getCurrentURI().equalsIgnoreCase("https://www.avanza.se/mini/hem/index.html")) {
-				avanzaMini = true;
-			}
-			
 		} catch (ClientProtocolException e) {
 			throw new BankException(e.getMessage());
 		} catch (IOException e) {
 			throw new BankException(e.getMessage());
-		}
-		finally {
 		}
 		return urlopen;
 	}
@@ -90,26 +82,13 @@ public class Avanza extends Bank {
 		String response = null;
 		Matcher matcher;
 		try {
-			if (!avanzaMini) {
-				Log.d("BankAvanza", "Opening: https://www.avanza.se/aza/depa/sammanfattning/sammanfattning.jsp");
-				response = urlopen.open("https://www.avanza.se/aza/depa/sammanfattning/sammanfattning.jsp");
-							
-				matcher = reAccounts.matcher(response);
-				while (matcher.find()) {
-					accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim(), Helpers.parseBalance(matcher.group(4)), matcher.group(1).trim()));
-					balance = balance.add(Helpers.parseBalance(matcher.group(4)));
-				}
-			}
-			else {
-				Log.d("BankAvanza", "Opening: https://www.avanza.se/mini/mitt_konto/index.html");
-				response = urlopen.open("https://www.avanza.se/mini/mitt_konto/index.html");
-				matcher = reAvanzaMini.matcher(response);
-				if (matcher.find()) {
-					accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim(), Helpers.parseBalance(matcher.group(2)), "1"));
-					accounts.add(new Account(Html.fromHtml(matcher.group(3)).toString().trim(), Helpers.parseBalance(matcher.group(4)), "2"));
-					balance = balance.add(Helpers.parseBalance(matcher.group(2)));
-					balance = balance.add(Helpers.parseBalance(matcher.group(4)));
-				}
+			Log.d("BankAvanza", "Opening: https://www.avanza.se/aza/depa/sammanfattning/sammanfattning.jsp");
+			response = urlopen.open("https://www.avanza.se/aza/depa/sammanfattning/sammanfattning.jsp");
+						
+			matcher = reAccounts.matcher(response);
+			while (matcher.find()) {
+				accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim(), Helpers.parseBalance(matcher.group(4)), matcher.group(1).trim()));
+				balance = balance.add(Helpers.parseBalance(matcher.group(4)));
 			}
 			if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
@@ -121,22 +100,12 @@ public class Avanza extends Bank {
 		catch (IOException e) {
 			throw new BankException(e.getMessage());
 		}
-		finally {
-			urlopen.close();
-		}
 	}
 
 	@Override
-	public void updateTransactions(Account account, Urllib urlopened) throws LoginException, BankException {
-		super.updateTransactions(account, urlopened);
-		if (avanzaMini) return;
-		Urllib urlopen = null;
-		if (urlopened == null) {
-			urlopen = login();
-		}
-		else {
-			urlopen = urlopened;
-		}
+	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+		super.updateTransactions(account, urlopen);
+
 		String response = null;
 		Matcher matcher;
 		try {						
@@ -159,9 +128,6 @@ public class Avanza extends Bank {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		if (urlopened == null) {
-			urlopen.close();
 		}
 	}
 	

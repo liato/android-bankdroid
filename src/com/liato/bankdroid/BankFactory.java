@@ -7,6 +7,7 @@ import android.content.Context;
 import android.database.Cursor;
 
 import com.liato.bankdroid.banks.Avanza;
+import com.liato.bankdroid.banks.AvanzaMini;
 import com.liato.bankdroid.banks.Coop;
 import com.liato.bankdroid.banks.Handelsbanken;
 import com.liato.bankdroid.banks.ICA;
@@ -41,6 +42,8 @@ public class BankFactory {
 			return new Avanza(context);
 		case Bank.VILLABANKEN:
 			return new Villabanken(context);
+		case Bank.AVANZAMINI:
+			return new AvanzaMini(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -59,6 +62,7 @@ public class BankFactory {
 		banks.add(new Statoil(context));
 		banks.add(new Avanza(context));
 		banks.add(new Villabanken(context));
+		banks.add(new AvanzaMini(context));
 		return banks;
 	}
 

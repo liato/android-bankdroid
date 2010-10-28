@@ -34,7 +34,7 @@ public class Lansforsakringar extends Bank {
 	private Pattern reBalance = Pattern.compile("AccountNumber=([0-9]+)[^>]+><span[^>]+>([^<]+)</.*?span></td.*?<span[^>]+>([0-9 .,-]+)</span", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reToken = Pattern.compile("var\\s+token\\s*=\\s*'([^']+)'", Pattern.CASE_INSENSITIVE);
 	private Pattern reUrl = Pattern.compile("<li class=\"bank\">\\s*<a href=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
-
+	private String accountsUrl = null;
 	public Lansforsakringar(Context context) {
 		super(context);
 		super.TAG = TAG;
@@ -49,14 +49,9 @@ public class Lansforsakringar extends Bank {
 		this.update(username, password);
 	}
 
-	@Override
-	public void update() throws BankException, LoginException {
-		super.update();
-		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
-			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-		}
-
-		Urllib urlopen = new Urllib();
+	
+	public Urllib login() throws LoginException, BankException {
+		urlopen = new Urllib();
 		String response = null;
 		Matcher matcher;
 		try {
@@ -100,10 +95,34 @@ public class Lansforsakringar extends Bank {
 			if (!matcher.find()) {
 				throw new BankException(res.getText(R.string.unable_to_find).toString()+" accounts url.");
 			}
-			String accurl = Html.fromHtml(matcher.group(1)).toString();
-			accurl += "&_token=" + token;
-			Log.d("Bankdroid", "Account url: " + accurl);
-			response = urlopen.open(accurl);
+			accountsUrl = Html.fromHtml(matcher.group(1)).toString() + "&_token=" + token;
+			Log.d("Bankdroid", "Accounts url: " + accountsUrl);
+		}
+		catch (ClientProtocolException e) {
+			throw new BankException(e.getMessage());
+		}
+		catch (IOException e) {
+			throw new BankException(e.getMessage());
+		}
+		return urlopen;
+	}
+	
+	@Override
+	public void update() throws BankException, LoginException {
+		super.update();
+		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
+			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+		}
+
+		urlopen = login();
+		String response = null;
+		Matcher matcher;
+		try {
+			if (accountsUrl == null) {
+				Log.d(TAG, "accountsUrl is null, unable to update.");
+				return;
+			}
+			response = urlopen.open(accountsUrl);
 			matcher = reBalance.matcher(response);
 			while (matcher.find()) {
 				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), matcher.group(1).trim()));
@@ -119,9 +138,5 @@ public class Lansforsakringar extends Bank {
 		catch (IOException e) {
 			throw new BankException(e.getMessage());
 		}
-		finally {
-			urlopen.close();
-		}
-
 	}
 }

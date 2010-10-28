@@ -4,6 +4,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 
 public class Account {
+	public final static int REGULAR = 1;
+	public final static int FUNDS = 2;
+	public final static int LOANS = 3;
+	public final static int OTHER = 4;
+	
 	private String name;
 	private BigDecimal balance;
 	private String id;

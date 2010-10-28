@@ -50,13 +50,8 @@ public class Coop extends Bank {
 	}
 
 	@Override
-	public void update() throws BankException, LoginException {
-		super.update();
-		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
-			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-		}
-
-		Urllib urlopen = new Urllib();
+	public Urllib login() throws LoginException, BankException {
+		urlopen = new Urllib();
 		String response = null;
 		Matcher matcher;
 		try {
@@ -78,11 +73,27 @@ public class Coop extends Bank {
 			if (response.contains("Felmeddelande")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}
-			/*
-			for (String s : response.split("\n")) {
-				Log.d(TAG, s);
-			}
-			*/			
+		}
+		catch (ClientProtocolException e) {
+			throw new BankException(e.getMessage());
+		}
+		catch (IOException e) {
+			throw new BankException(e.getMessage());
+		}
+		return urlopen;		
+	}
+	
+	@Override
+	public void update() throws BankException, LoginException {
+		super.update();
+		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
+			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+		}
+
+		urlopen = login();
+		String response = null;
+		Matcher matcher;
+		try {
 			response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/?t=MedMeraVisa");
 			matcher = reBalanceVisa.matcher(response);
 			if (matcher.find()) {
@@ -113,9 +124,5 @@ public class Coop extends Bank {
 		catch (IOException e) {
 			throw new BankException(e.getMessage());
 		}
-		finally {
-			urlopen.close();
-		}
-
 	}
 }

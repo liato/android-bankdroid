@@ -38,12 +38,16 @@ public class Urllib {
 		this(false);
 	}
 	public Urllib(boolean acceptInvalidCertificates) {
+		this(acceptInvalidCertificates, false);
+	}	
+
+	public Urllib(boolean acceptInvalidCertificates, boolean allowCircularRedirects) {
 		this.acceptInvalidCertificates = acceptInvalidCertificates;
     	HttpParams params = new BasicHttpParams(); 
     	HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
         HttpProtocolParams.setContentCharset(params, "UTF-8");
         params.setBooleanParameter("http.protocol.expect-continue", false);
-        params.setBooleanParameter("http.protocol.allow-circular-redirects", true);
+        if (allowCircularRedirects) params.setBooleanParameter("http.protocol.allow-circular-redirects", true);
 		if (acceptInvalidCertificates) {
 	        SchemeRegistry registry = new SchemeRegistry();
 	        registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
@@ -55,7 +59,6 @@ public class Urllib {
 			httpclient = new DefaultHttpClient();
 		}
     	context = new BasicHttpContext();
-
     }
     
     public String open(String url) throws ClientProtocolException, IOException {

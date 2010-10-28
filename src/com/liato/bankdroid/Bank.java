@@ -20,6 +20,7 @@ public abstract class Bank implements Comparable<Bank> {
 	public final static int STATOIL = 8;
 	public final static int AVANZA = 9;
 	public final static int VILLABANKEN = 10;
+	public final static int AVANZAMINI = 11;
 	
 
 	protected String TAG = "Bank";
@@ -88,6 +89,11 @@ public abstract class Bank implements Comparable<Bank> {
 		return null;
 	}
 
+	public void closeConnection() {
+		if (urlopen != null) {
+			urlopen.close();
+		}
+	}
 	public ArrayList<Account> getAccounts() {
 		return this.accounts;
 	}

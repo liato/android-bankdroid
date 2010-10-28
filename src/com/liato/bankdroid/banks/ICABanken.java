@@ -52,7 +52,7 @@ public class ICABanken extends Bank {
 	}
 
 	public Urllib login() throws LoginException, BankException {
-		Urllib urlopen = new Urllib();
+		urlopen = new Urllib();
 		String response = null;
 		Matcher matcher;
 		try {
@@ -88,8 +88,6 @@ public class ICABanken extends Bank {
 			Log.d(TAG, "IOException: "+e.getMessage());
 			throw new BankException(e.getMessage());
 		}
-		finally {
-		}		
 		return urlopen;
 	}	
 	
@@ -100,7 +98,7 @@ public class ICABanken extends Bank {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 
-		Urllib urlopen = login();
+		urlopen = login();
 		String response = null;
 		Matcher matcher;
 		try {
@@ -127,22 +125,11 @@ public class ICABanken extends Bank {
 		catch (IOException e) {
 			throw new BankException(e.getMessage());
 		}
-		finally {
-			urlopen.close();
-		}
-
 	}
 
 	@Override
-	public void updateTransactions(Account account, Urllib urlopened) throws LoginException, BankException {
-		super.updateTransactions(account, urlopened);
-		Urllib urlopen = null;
-		if (urlopened == null) {
-			urlopen = login();
-		}
-		else {
-			urlopen = urlopened;
-		}
+	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+		super.updateTransactions(account, urlopen);
 		String response = null;
 		Matcher matcher;
 		try {
@@ -161,9 +148,6 @@ public class ICABanken extends Bank {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		if (urlopened == null) {
-			urlopen.close();
 		}
 	}		
 }

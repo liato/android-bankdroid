@@ -136,6 +136,7 @@ public class Handelsbanken extends Bank {
 	
 
 	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+		super.updateTransactions(account, urlopen);
 		String response = null;
 		Matcher matcher;
 		try {

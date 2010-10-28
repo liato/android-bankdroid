@@ -51,7 +51,7 @@ public class Villabanken extends Bank {
 
 	@Override
 	public Urllib login() throws LoginException, BankException {
-		Urllib urlopen = new Urllib();
+		urlopen = new Urllib();
 		String response = null;
 		Matcher matcher;
 		try {
@@ -121,8 +121,6 @@ public class Villabanken extends Bank {
 		} catch (IOException e) {
 			throw new BankException(e.getMessage());
 		}
-		finally {
-		}
 		return urlopen;
 	}
 	@Override
@@ -131,7 +129,7 @@ public class Villabanken extends Bank {
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
-		Urllib urlopen = login();
+		urlopen = login();
 		String response = null;
 		Matcher matcher;
 		try {
@@ -156,9 +154,6 @@ public class Villabanken extends Bank {
 		}
 		catch (IOException e) {
 			throw new BankException(e.getMessage());
-		}
-		finally {
-			urlopen.close();
 		}
 	}
 }
