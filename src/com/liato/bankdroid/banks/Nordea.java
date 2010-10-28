@@ -33,6 +33,7 @@ public class Nordea extends Bank {
 	
 	private Pattern reAccounts = Pattern.compile("account\\.html\\?id=konton:([^\"]+)\"[^>]+>\\s*<div[^>]+>([^<]+)<span[^>]+>([^<]+)</span", Pattern.CASE_INSENSITIVE);
 	private Pattern reFundsLoans = Pattern.compile("(?:fund|loan)\\.html\\?id=(?:fonder|lan):([^\"]+)\".*?>.*?>([^<]+).*?>([^<]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private Pattern reCards = Pattern.compile("/card/details\\.html\\?id=(\\d{1,})[^\"]*\".*?>\\s*<span[^>]*>\\s*<span>([^<]+)</span>\\s*<span[^>]+>([^<]+)<", Pattern.CASE_INSENSITIVE);
 	private Pattern reTransactions = Pattern.compile("(\\d{2}.\\d{2})\\s</dt>[^>]+>([^<]+)[^>]+>.*?(?:Positive|Negative)\">([^<]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reCSRF = Pattern.compile("csrf_token\".*?value=\"([^\"]+)\"");
 
@@ -126,9 +127,18 @@ public class Nordea extends Bank {
 				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), "l"+matcher.group(1).trim()));
 				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
 			}
+			matcher = reCards.matcher(response);
+			Log.d(TAG, "Opening: https://mobil.nordea.se/banking-nordea/nordea-c3/card/list.html");
+			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/card/list.html");
+			while (matcher.find()) {
+				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), "c"+matcher.group(1).trim()));
+				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
+			}
+
 			if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
 			}
+			
 			// Konungens konto
 			//accounts.add(new Account("Personkonto", Helpers.parseBalance("568268.37"), "1"));
 			//accounts.add(new Account("Kapitalkonto", Helpers.parseBalance("5789002.00"), "0"));
@@ -144,7 +154,9 @@ public class Nordea extends Bank {
 	@Override
 	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
 		super.updateTransactions(account, urlopen);
-		if (account.getId().startsWith("l") || account.getId().startsWith("f")) return; //No transaction history for loans and funds
+
+		//No transaction history for loans, funds and credit cards.
+		if (account.getId().startsWith("l") || account.getId().startsWith("f") || account.getId().startsWith("c")) return;
 
 		String response = null;
 		Matcher matcher;
