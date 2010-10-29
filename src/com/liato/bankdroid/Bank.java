@@ -179,6 +179,10 @@ public abstract class Bank implements Comparable<Bank> {
 	public String getURL() {
 		return URL;
 	}
+	
+	public int getImageResource() {
+		return res.getIdentifier("drawable/logos/"+NAME_SHORT, null, context.getPackageName());	
+	}
 
 	public int compareTo(Bank another) {
 		return this.toString().compareToIgnoreCase(another.toString());

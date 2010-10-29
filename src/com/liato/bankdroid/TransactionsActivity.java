@@ -31,7 +31,7 @@ public class TransactionsActivity extends LockableActivity {
 		viewBankName.setText(bank.getUsername());
 		viewAccountName.setText(account.getName());
 		viewAccountBalance.setText(Helpers.formatBalance(account.getBalance()));
-		icon.setImageResource(getResources().getIdentifier("drawable/"+bank.getShortName(), null, getPackageName()));
+		icon.setImageResource(bank.getImageResource());
 		ArrayList<Transaction> transactions = account.getTransactions();
 		Log.d(TAG, "Transactions: "+transactions.size());
 		if (transactions.size() > 0) {

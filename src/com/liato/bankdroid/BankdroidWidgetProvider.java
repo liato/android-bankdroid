@@ -81,7 +81,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 		Log.d("buildAppWidget", "WidgetLayout: "+layoutId);
 		views.setTextViewText(R.id.txtWidgetAccountname, account.getName().toUpperCase());
 		views.setTextViewText(R.id.txtWidgetAccountbalance, Helpers.formatBalance(account.getBalance()));
-		views.setImageViewResource(R.id.imgWidgetIcon, context.getResources().getIdentifier("drawable/"+bank.getShortName(), null, context.getPackageName()));
+		views.setImageViewResource(R.id.imgWidgetIcon, bank.getImageResource());
 		Log.d("Disabled", ""+bank.isDisabled());
 		if (bank.isDisabled()) {
 			views.setViewVisibility(R.id.frmWarning, View.VISIBLE);
