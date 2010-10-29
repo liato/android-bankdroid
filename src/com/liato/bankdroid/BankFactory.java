@@ -10,6 +10,7 @@ import com.liato.bankdroid.banks.Avanza;
 import com.liato.bankdroid.banks.AvanzaMini;
 import com.liato.bankdroid.banks.Coop;
 import com.liato.bankdroid.banks.Eurocard;
+import com.liato.bankdroid.banks.FirstCard;
 import com.liato.bankdroid.banks.Handelsbanken;
 import com.liato.bankdroid.banks.ICA;
 import com.liato.bankdroid.banks.ICABanken;
@@ -65,6 +66,7 @@ public class BankFactory {
 		banks.add(new Villabanken(context));
 		banks.add(new AvanzaMini(context));
 		banks.add(new Eurocard(context));
+		banks.add(new FirstCard(context));
 		return banks;
 	}
 

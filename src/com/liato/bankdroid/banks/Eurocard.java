@@ -116,6 +116,7 @@ public class Eurocard extends Bank {
 				 * 4: currency			SEK or empty
 				 * 5: tax				12.99 or empty
 				 * 6: amount			118.65
+				 * 
 				 */
 				strDate = ""+cal.get(Calendar.YEAR)+"-"+Html.fromHtml(matcher.group(1)).toString().trim();
 				transactions.add(new Transaction(strDate, Html.fromHtml(matcher.group(2)).toString().trim()+(matcher.group(3).trim().length() > 0 ? " ("+Html.fromHtml(matcher.group(3)).toString().trim()+")" : ""), Helpers.parseBalance(matcher.group(6)).negate()));
