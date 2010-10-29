@@ -15,3 +15,5 @@ gen
 local.properties
 *.jar
 dev/
+src/com/liato/bankdroid/Crypto.java
+src/com/liato/bankdroid/Crypto.java.dev
