@@ -31,10 +31,11 @@ public class Coop extends Bank {
 	private static final int BANKTYPE_ID = Bank.COOP;
 
 	private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
-	private Pattern reBalanceVisa = Pattern.compile("Disponibelt\\s*belopp:</td>[^>]*>([^<]+)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private Pattern reBalanceVisa = Pattern.compile("aktuellt\\s*saldo:</span>\\s*<span>([^<]+)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reBalanceKonto = Pattern.compile("Aktuellt\\s*saldo:</span>[^>]*>([^<]+)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reTransactionsKonto = Pattern.compile("<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>([^<]+)</td>\\s*<td>[^<]*</td>\\s*<td>([^<]*)</td>\\s*<td[^>]*>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
-
+	private Pattern reTransactionsVisa = Pattern.compile("<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]*)</td>\\s*<td>([^<]*)</td>\\s*<td.*?</td>\\s*<td><s.*?value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
+	
 	public Coop(Context context) {
 		super(context);
 		super.TAG = TAG;
@@ -94,16 +95,25 @@ public class Coop extends Bank {
 		String response = null;
 		Matcher matcher;
 		try {
-			response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/?t=MedMeraVisa");
+			Account account;
+			response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Visa/");
 			matcher = reBalanceVisa.matcher(response);
 			if (matcher.find()) {
-				accounts.add(new Account("MedMera Visa", Helpers.parseBalance(matcher.group(1).trim()), "1"));
+				account = new Account("MedMera Visa", Helpers.parseBalance(matcher.group(1).trim()), "1");
 				balance = balance.add(Helpers.parseBalance(matcher.group(1)));
+				matcher = reTransactionsVisa.matcher(response);
+				ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+				while (matcher.find()) {
+					String title = matcher.group(4).length() > 0 ? matcher.group(4).trim() + "(" + matcher.group(3).trim() + ")" : matcher.group(2);
+					transactions.add(new Transaction(matcher.group(1).trim(), Html.fromHtml(title).toString().trim(), Helpers.parseBalance(matcher.group(5))));
+				}
+				account.setTransactions(transactions);
+				accounts.add(account);
 			}
 			response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Konto/");
 			matcher = reBalanceKonto.matcher(response);
 			if (matcher.find()) {
-				Account account = new Account("MedMera Konto", Helpers.parseBalance(matcher.group(1).trim()), "2");
+				account = new Account("MedMera Konto", Helpers.parseBalance(matcher.group(1).trim()), "2");
 				balance = balance.add(Helpers.parseBalance(matcher.group(1)));
 				matcher = reTransactionsKonto.matcher(response);
 				ArrayList<Transaction> transactions = new ArrayList<Transaction>();

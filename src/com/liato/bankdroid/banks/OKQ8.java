@@ -147,26 +147,26 @@ public class OKQ8 extends Bank {
 			Log.d(TAG, "Response is null, login again.");
 			urlopen = login();
 		}
-		/*
-		 * The start page contains the balance of the account ("Kvar att utnytta") so read it.
-		 * The balance is the first value (of three) that are matched by reBalance expression.
-		 */
-		Matcher matcher;
-		matcher = reBalance.matcher(response);
-		if (matcher.find()) {
-			accounts.add(new Account("OKQ8 VISA" , Helpers.parseBalance(matcher.group(1)), "1"));
-			balance = balance.add(Helpers.parseBalance(matcher.group(1)));
-		}
-		
-		if (accounts.isEmpty()) {
-			throw new BankException(res.getText(R.string.no_accounts_found).toString());
-		}
-	}
-	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
-		super.updateTransactions(account, urlopen);
 		try {
+			/*
+			 * The start page contains the balance of the account ("Kvar att utnytta") so read it.
+			 * The balance is the first value (of three) that are matched by reBalance expression.
+			 */
+			Matcher matcher;
+			matcher = reBalance.matcher(response);
+			if (matcher.find()) {
+				accounts.add(new Account("OKQ8 VISA" , Helpers.parseBalance(matcher.group(1)), "1"));
+				balance = balance.add(Helpers.parseBalance(matcher.group(1)));
+			}
+			
+			if (accounts.isEmpty()) {
+				throw new BankException(res.getText(R.string.no_accounts_found).toString());
+			}
+	
+	
 			response = urlopen.open("https://nettbank.edb.com/cardpayment/transigo/card/overview/lastTransactionsAccount");
-			Matcher matcher = reTransactions.matcher(response);
+	
+			matcher = reTransactions.matcher(response);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 			while (matcher.find()) {
 				/*
@@ -177,13 +177,13 @@ public class OKQ8 extends Bank {
 				 */
 				transactions.add(new Transaction(matcher.group(1).trim(), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)).negate()));
 			}
-			account.setTransactions(transactions);
+			accounts.get(0).setTransactions(transactions);
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}		
 	}
 }
