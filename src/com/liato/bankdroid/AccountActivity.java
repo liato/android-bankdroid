@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import net.sf.andhsli.hotspotlogin.SimpleCrypto;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;

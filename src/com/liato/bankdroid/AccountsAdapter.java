@@ -43,7 +43,7 @@ public class AccountsAdapter extends BaseAdapter {
 		((TextView)convertView.findViewById(R.id.txtListitemAccountsGroupAccountname)).setText(group.getUsername());
 		((TextView)convertView.findViewById(R.id.txtListitemAccountsGroupBankname)).setText(group.getName());
 		((TextView)convertView.findViewById(R.id.txtListitemAccountsGroupTotal)).setText(Helpers.formatBalance(group.getBalance()));
-		icon.setImageResource(context.getResources().getIdentifier("drawable/logos/"+group.getShortName(), null, context.getPackageName()));
+		icon.setImageResource(group.getImageResource());
 		ImageView warning = (ImageView)convertView.findViewById(R.id.imgWarning);
 		Log.d("AccountsAdapter", ""+group.isDisabled());
 		if (group.isDisabled()) {

@@ -181,7 +181,7 @@ public abstract class Bank implements Comparable<Bank> {
 	}
 	
 	public int getImageResource() {
-		return res.getIdentifier("drawable/logos/"+NAME_SHORT, null, context.getPackageName());	
+		return res.getIdentifier("logo_"+NAME_SHORT, "drawable", context.getPackageName());	
 	}
 
 	public int compareTo(Bank another) {
