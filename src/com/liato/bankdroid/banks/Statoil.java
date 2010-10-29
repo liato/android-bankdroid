@@ -1,10 +1,8 @@
 package com.liato.bankdroid.banks;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,8 +31,9 @@ public class Statoil extends Bank {
 	private static final String URL = "https://applications.sebkort.com/nis/external/stse/login.do";
 	private static final int BANKTYPE_ID = Bank.STATOIL;
 
-	private Pattern reAccounts = Pattern.compile("class=\"Right\">([^<]+)<", Pattern.CASE_INSENSITIVE);
-	private Pattern reTransactions = Pattern.compile("(?:7px\">|</a>)\\s*(\\d{2}-\\d{2})\\s*</td>\\s*<td>[^<]+</td>\\s*<[^>]+>([^<]+)</td>\\s*<[^>]+>([^<]+)<.*?nowrap>([^<]+)<", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private Pattern reAccounts = Pattern.compile("Welcomepagebillingunitlastdisposableamount\">([^<]+)</div>", Pattern.CASE_INSENSITIVE);
+	private Pattern reTransactions = Pattern.compile("transcol1\">\\s*<span>([^<]+)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^<]+)</span>\\s*</td>\\s*<td[^>]+>\\s*<div[^>]+>\\s*<span>([^<]*)</span>\\s*</div>\\s*</td>\\s*<td[^>]+>\\s*<span>([^<]*)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^>]*)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^<]*)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^<]+)</span>", Pattern.CASE_INSENSITIVE);
+	private String response = null;
 	public Statoil(Context context) {
 		super(context);
 		super.TAG = TAG;
@@ -52,7 +51,6 @@ public class Statoil extends Bank {
 	@Override
 	public Urllib login() throws LoginException, BankException {
 		urlopen = new Urllib(true);
-		String response = null;
 		try {
 			List <NameValuePair> postData = new ArrayList <NameValuePair>();
 			response = urlopen.open("https://applications.sebkort.com/nis/external/stse/login.do");
@@ -71,7 +69,7 @@ public class Statoil extends Bank {
 			postData.add(new BasicNameValuePair("METHOD", "LOGIN"));
 			postData.add(new BasicNameValuePair("CURRENT_METHOD", "PWD"));
 			response = urlopen.open("https://applications.sebkort.com/siteminderagent/forms/generic.fcc", postData);
-			if (response.contains("du loggar in till")) {
+			if (response.contains("elaktig kombination")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}
 		}
@@ -91,12 +89,19 @@ public class Statoil extends Bank {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		urlopen = login();
-		String response = null;
 		Matcher matcher;
 		try {
-			response = urlopen.open("https://applications.sebkort.com/nis/stse/main.do");
+			if (!"https://applications.sebkort.com/nis/stse/main.do".equals(urlopen.getCurrentURI())) {
+				response = urlopen.open("https://applications.sebkort.com/nis/stse/main.do");
+			}
 			matcher = reAccounts.matcher(response);
 			if (matcher.find()) {
+				/*
+				 * Capture groups:
+				 * GROUP				EXAMPLE DATA
+				 * 1: amount			10 579,43
+				 * 
+				 */
 				accounts.add(new Account("Statoil MasterCard" , Helpers.parseBalance(matcher.group(1)), "1"));
 				balance = balance.add(Helpers.parseBalance(matcher.group(1)));
 			}
@@ -127,10 +132,20 @@ public class Statoil extends Bank {
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 			Calendar cal = Calendar.getInstance();
 			while (matcher.find()) {
-				transactions.add(new Transaction(""+cal.get(Calendar.YEAR)+"-"+matcher.group(1).trim(), Html.fromHtml(matcher.group(2)).toString().trim()+(Html.fromHtml(matcher.group(3)).toString().trim().length() > 1 ? " ("+Html.fromHtml(matcher.group(3)).toString().trim()+")" : ""), Helpers.parseBalance(matcher.group(4)).multiply(new BigDecimal(-1))));
+				/*
+				 * Capture groups:
+				 * GROUP				EXAMPLE DATA
+				 * 1: date				10-18
+				 * 2: date				10-19
+				 * 3: specification		ICA Kvantum
+				 * 4: location			Stockholm
+				 * 5: currency			always empty?
+				 * 6: amount			always empty?
+				 * 7: amount in sek		5791,18
+				 * 
+				 */				
+				transactions.add(new Transaction(""+cal.get(Calendar.YEAR)+"-"+matcher.group(1).trim(), Html.fromHtml(matcher.group(3)).toString().trim()+(matcher.group(4).trim().length() > 0 ? " ("+Html.fromHtml(matcher.group(4)).toString().trim()+")" : ""), Helpers.parseBalance(matcher.group(7)).negate()));
 			}
-			Collections.sort(transactions);
-			Collections.reverse(transactions);
 			account.setTransactions(transactions);
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
