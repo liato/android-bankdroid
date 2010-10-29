@@ -98,6 +98,7 @@ public class AutoRefreshService extends Service {
     					refreshWidgets = true;
     					bank.updateAllTransactions();
     				}
+    				bank.closeConnection();
     				db.updateBank(bank);
     			} 
     			catch (BankException e) {

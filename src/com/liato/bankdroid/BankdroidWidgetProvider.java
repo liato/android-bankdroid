@@ -233,6 +233,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 				try {
 					if (!bank.isDisabled()) {
 						bank.update();
+						bank.closeConnection();
 						bank.save();
 					}
 					else {

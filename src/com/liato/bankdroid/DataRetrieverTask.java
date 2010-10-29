@@ -56,6 +56,7 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
 			try {
 				bank.update();
 				bank.updateAllTransactions();
+				bank.closeConnection();
 				bank.save();
 				i++;
 			} 

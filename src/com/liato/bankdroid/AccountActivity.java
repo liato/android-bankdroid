@@ -144,6 +144,7 @@ public class AccountActivity extends LockableActivity implements OnClickListener
 				Log.d(TAG, "Updating "+bank);
 				bank.update();
 				bank.updateAllTransactions();
+				bank.closeConnection();
 				Log.d(TAG, "Saving "+bank);
 				bank.save();
 				Log.d(TAG, "Disabled: "+bank.isDisabled());
