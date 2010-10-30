@@ -1,7 +1,8 @@
 package com.liato.bankdroid;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
+
+import net.sf.andhsli.hotspotlogin.SimpleCrypto;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -140,7 +141,12 @@ public class DBAdapter {
     	ContentValues initialValues = new ContentValues();
         initialValues.put("banktype", bank.getBanktypeId());
         initialValues.put("username", bank.getUsername());
-        initialValues.put("password", bank.getPassword());
+        try {
+			initialValues.put("password", SimpleCrypto.encrypt(Crypto.getKey(), bank.getPassword()));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         initialValues.put("disabled", 0);
         initialValues.put("balance", bank.getBalance().toPlainString());
         long bankId = bank.getDbId();

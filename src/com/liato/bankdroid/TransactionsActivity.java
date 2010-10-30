@@ -22,7 +22,7 @@ public class TransactionsActivity extends LockableActivity {
 		setContentView(R.layout.transactions);
 		Bundle extras = getIntent().getExtras();
 		Bank bank = BankFactory.bankFromDb(extras.getLong("bank"), this, false);
-		Account account = BankFactory.accountFromDb(this, extras.getString("account"), true);
+		Account account = BankFactory.accountFromDb(this, extras.getLong("bank")+"_"+extras.getString("account"), true);
 		TextView viewBankName = (TextView)findViewById(R.id.txtListitemAccountsGroupAccountname);
 		TextView viewAccountName = (TextView)findViewById(R.id.txtListitemAccountsGroupBankname);
 		TextView viewAccountBalance = (TextView)findViewById(R.id.txtListitemAccountsGroupTotal);

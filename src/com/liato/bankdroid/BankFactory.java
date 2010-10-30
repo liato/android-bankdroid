@@ -3,6 +3,8 @@ package com.liato.bankdroid;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
+import net.sf.andhsli.hotspotlogin.SimpleCrypto;
+
 import android.content.Context;
 import android.database.Cursor;
 
@@ -79,8 +81,19 @@ public class BankFactory {
 		if (c != null) {
 			try {
 				bank = fromBanktypeId(c.getInt(c.getColumnIndex("banktype")), context);
-				bank.setData(c.getString(c.getColumnIndex("username")), c.getString(c.getColumnIndex("password")),
-						new BigDecimal(c.getString(c.getColumnIndex("balance"))), (c.getInt(c.getColumnIndex("disabled")) == 0 ? false : true), c.getLong(c.getColumnIndex("_id")));
+				String password = "";
+				try {
+					password = SimpleCrypto.decrypt(Crypto.getKey(), c.getString(c.getColumnIndex("password")));
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				bank.setData(c.getString(c.getColumnIndex("username")),
+							 password,
+							 new BigDecimal(c.getString(c.getColumnIndex("balance"))),
+							 (c.getInt(c.getColumnIndex("disabled")) == 0 ? false : true),
+							 c.getLong(c.getColumnIndex("_id")));
 				if (loadAccounts) {
 					bank.setAccounts(accountsFromDb(context, bank.getDbId()));
 				}
