@@ -13,7 +13,7 @@ import android.util.Log;
 public class StartupReceiver extends BroadcastReceiver{
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		//Set alarms for auto updates on boot
+		//Set alarms for auto updates on boot, package update, package replace and package new
 		Log.d("StartupReceiever", "Intent action: "+intent.getAction());
 		setAlarm(context);
 	}

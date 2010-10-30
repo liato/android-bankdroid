@@ -48,6 +48,8 @@
 		<receiver android:name="StartupReceiver">
 			<intent-filter>
 				<action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.PACKAGE_ADDED"></action> 
+                <action android:name="android.intent.action.PACKAGE_CHANGED"></action> 
 				<action android:name="android.intent.action.PACKAGE_REPLACED" />
 				<data android:scheme="package" android:path="com.liato.bankdroid" />
 			</intent-filter>

@@ -99,7 +99,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 		views.setOnClickPendingIntent(R.id.imgWarning, pendingIntent);
 		
 		intent = new Intent(context, WidgetService.class);
-		intent.setAction(AutoRefreshService.WIDGET_REFRESH);
+		intent.setAction(AutoRefreshService.BROADCAST_WIDGET_REFRESH);
 		intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
 		intent.setData(Uri.parse("rofl://copter/"+appWidgetId+"/"+System.currentTimeMillis()));
 		pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -156,7 +156,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 
 
 		Log.d("BankdroidWidgetProvider", "intent=" + intent+"; action="+action);
-		if (action.equals(AutoRefreshService.WIDGET_REFRESH) || action.equals(android.appwidget.AppWidgetManager.ACTION_APPWIDGET_UPDATE)) {
+		if (action.equals(AutoRefreshService.BROADCAST_WIDGET_REFRESH) || action.equals(android.appwidget.AppWidgetManager.ACTION_APPWIDGET_UPDATE)) {
 			AppWidgetManager appWM = AppWidgetManager.getInstance(context);
 			int[] appWidgetIds = appWM.getAppWidgetIds(intent.getComponent());
 			final int N = appWidgetIds.length;
@@ -184,7 +184,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 			Log.d("WidgetService", "Updating widget: " + appWidgetId);
 
 			String action = intent.getAction();
-			if (action.equals(AutoRefreshService.WIDGET_REFRESH)) {
+			if (action.equals(AutoRefreshService.BROADCAST_WIDGET_REFRESH)) {
 				Context context = getApplicationContext();
 				new WidgetUpdateTask(context, AppWidgetManager.getInstance(context), appWidgetId).execute();
 			}

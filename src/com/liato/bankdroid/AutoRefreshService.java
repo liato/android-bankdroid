@@ -1,6 +1,9 @@
 package com.liato.bankdroid;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -18,7 +21,8 @@ import android.util.Log;
 
 public class AutoRefreshService extends Service {
 	private final static String TAG = "AutoRefreshService";
-	final static String WIDGET_REFRESH = "com.liato.bankdroid.WIDGET_REFRESH";
+	final static String BROADCAST_WIDGET_REFRESH = "com.liato.bankdroid.WIDGET_REFRESH";
+	final static String BROADCAST_MAIN_REFRESH = "com.liato.bankdroid.MAIN_REFRESH";
     NotificationManager notificationManager;
 
     @Override
@@ -37,26 +41,29 @@ public class AutoRefreshService extends Service {
         return null;
     }
 
-    private void showNotification(String text) {
+    private void showNotification(String text, int icon, String title) {
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		if (!prefs.getBoolean("notify_on_change", true)) return;
 		
-        Notification notification = new Notification(R.drawable.icon, text,
+        Notification notification = new Notification(icon, text,
                 System.currentTimeMillis());
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
 		if (prefs.getBoolean("notify_with_sound", true)) {
+			//http://www.freesound.org/samplesViewSingle.php?id=91924
+			//http://www.freesound.org/samplesViewSingle.php?id=75235
 	        notification.defaults |= Notification.DEFAULT_SOUND;
 		}
 		if (prefs.getBoolean("notify_with_vibration", true)) {
 			//long[] vib = {23,28,27,143,20,30,26,364,22,26,28,26,28,26,28,26,29,25,27,27,27,27,28,28,28,28,28,27,27,26,27};
 			//long[] vib = {46, 56, 54, 286, 40, 60, 52, 728, 44, 52, 56, 52, 56, 52, 56, 52, 58, 50, 54, 54, 54, 54, 56, 56, 56, 56, 56, 54, 54, 52, 54};
-			//notification.vibrate = vib;
-			notification.defaults |= Notification.DEFAULT_VIBRATE;
+			long[] vib = {0, 90, 130, 80, 350, 190, 20, 380};
+			notification.vibrate = vib;
+			//notification.defaults |= Notification.DEFAULT_VIBRATE;
 		}
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, MainActivity.class), 0);
 
-        notification.setLatestEventInfo(this,  this.getString(R.string.app_name), text, contentIntent);
+        notification.setLatestEventInfo(this, title, text, contentIntent);
 
         notificationManager.notify(R.id.about, notification);
     }
@@ -71,31 +78,45 @@ public class AutoRefreshService extends Service {
     	}
 
     	protected Void doInBackground(final String... args) {
-    		Log.d("doinback", "round");
     		errors = new ArrayList<String>();
     		Boolean refreshWidgets = false;
-    		ArrayList<Bank> banks = BankFactory.banksFromDb(AutoRefreshService.this, false);
+    		ArrayList<Bank> banks = BankFactory.banksFromDb(AutoRefreshService.this, true);
     		if (banks.isEmpty()) {
     			return null;
     		}
     		DBAdapter db = new DBAdapter(AutoRefreshService.this);
     		db.open();    		
-    		Double currentBalance;
-    		Double diff;
+    		BigDecimal currentBalance;
+    		BigDecimal diff;
+    		HashMap<String, Account> accounts = new HashMap<String, Account>();
     		
     		for (Bank bank : banks) {
     			if (bank.isDisabled()) {
-    				Log.d("AA", bank.getName()+" ("+bank.getUsername()+") is disabled. Skipping refresh.");
+    				Log.d(TAG, bank.getName()+" ("+bank.getDisplayName()+") is disabled. Skipping refresh.");
     				continue;
     			}
-				Log.d("AA", "Refreshing "+bank.getName()+" ("+bank.getUsername()+").");
+				Log.d(TAG, "Refreshing "+bank.getName()+" ("+bank.getDisplayName()+").");
     			try {
-    				currentBalance = bank.getBalance().doubleValue();
+    				currentBalance = bank.getBalance();
+    				accounts.clear();
+    				for(Account account : bank.getAccounts()) {
+    					accounts.put(account.getId(), account);
+    				}
     				bank.update();
-					diff =  bank.getBalance().doubleValue() - currentBalance;
-    				if (diff != 0) {
-    					showNotification(bank.getName()+ ": "+ ((diff > 0) ? "+" : "") + Helpers.formatBalance(diff) + " ("+Helpers.formatBalance(bank.getBalance())+")");
-    					refreshWidgets = true;
+					diff = currentBalance.subtract(bank.getBalance());
+    				if (diff.compareTo(new BigDecimal(0)) != 0) {
+    					Account oldAccount;
+    					for(Account account : bank.getAccounts()) {
+    						oldAccount = accounts.get(account.getId());
+    						if (oldAccount != null) {
+    							if (account.getBalance().compareTo(oldAccount.getBalance()) != 0) {
+    								diff = account.getBalance().subtract(oldAccount.getBalance());
+    								showNotification(account.getName()+ ": "+ ((diff.compareTo(new BigDecimal(0)) == 1) ? "+" : "") + Helpers.formatBalance(diff) + " ("+Helpers.formatBalance(account.getBalance())+")",
+    												 bank.getImageResource(), bank.getDisplayName());
+    								refreshWidgets = true;
+    							}
+    						}
+    					}
     					bank.updateAllTransactions();
     				}
     				bank.closeConnection();
@@ -111,6 +132,8 @@ public class AutoRefreshService extends Service {
     		}
     		
 			if (refreshWidgets) {
+				Intent updateIntent = new Intent(BROADCAST_MAIN_REFRESH);
+				sendBroadcast(updateIntent);
 				sendWidgetRefresh(AutoRefreshService.this);
 			}
     		db.close();
@@ -137,7 +160,7 @@ public class AutoRefreshService extends Service {
     
     public static void sendWidgetRefresh(Context context) {
     	//Send intent to BankdroidWidgetProvider
-        Intent updateIntent = new Intent(WIDGET_REFRESH);
+        Intent updateIntent = new Intent(BROADCAST_WIDGET_REFRESH);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
         		context, 0, updateIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
@@ -148,5 +171,4 @@ public class AutoRefreshService extends Service {
 				Log.e("", e.getMessage(), e);
 			}
     }    
-    
 }

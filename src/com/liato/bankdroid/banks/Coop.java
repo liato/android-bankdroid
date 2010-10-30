@@ -104,7 +104,7 @@ public class Coop extends Bank {
 				matcher = reTransactionsVisa.matcher(response);
 				ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 				while (matcher.find()) {
-					String title = matcher.group(4).length() > 0 ? matcher.group(4).trim() + "(" + matcher.group(3).trim() + ")" : matcher.group(2);
+					String title = matcher.group(4).length() > 0 ? matcher.group(4).trim() + " (" + matcher.group(3).trim() + ")" : matcher.group(2);
 					transactions.add(new Transaction(matcher.group(1).trim(), Html.fromHtml(title).toString().trim(), Helpers.parseBalance(matcher.group(5))));
 				}
 				account.setTransactions(transactions);

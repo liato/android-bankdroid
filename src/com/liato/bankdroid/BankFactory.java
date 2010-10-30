@@ -80,7 +80,7 @@ public class BankFactory {
 			try {
 				bank = fromBanktypeId(c.getInt(c.getColumnIndex("banktype")), context);
 				bank.setData(c.getString(c.getColumnIndex("username")), c.getString(c.getColumnIndex("password")),
-						new BigDecimal(c.getDouble(c.getColumnIndex("username"))), (c.getInt(c.getColumnIndex("disabled")) == 0 ? false : true), c.getLong(c.getColumnIndex("_id")));
+						new BigDecimal(c.getString(c.getColumnIndex("balance"))), (c.getInt(c.getColumnIndex("disabled")) == 0 ? false : true), c.getLong(c.getColumnIndex("_id")));
 				if (loadAccounts) {
 					bank.setAccounts(accountsFromDb(context, bank.getDbId()));
 				}
@@ -111,7 +111,7 @@ public class BankFactory {
 			try {
 				Bank bank = fromBanktypeId(c.getInt(c.getColumnIndex("banktype")), context);
 				bank.setData(c.getString(c.getColumnIndex("username")), c.getString(c.getColumnIndex("password")),
-						new BigDecimal(c.getDouble(c.getColumnIndex("balance"))), (c.getInt(c.getColumnIndex("disabled")) == 0 ? false : true), c.getLong(c.getColumnIndex("_id")));
+						new BigDecimal(c.getString(c.getColumnIndex("balance"))), (c.getInt(c.getColumnIndex("disabled")) == 0 ? false : true), c.getLong(c.getColumnIndex("_id")));
 				if (loadAccounts) {
 					bank.setAccounts(accountsFromDb(context, bank.getDbId()));
 				}
@@ -134,7 +134,7 @@ public class BankFactory {
 			return null;
 		}
 
-		Account account = new Account(c.getString(c.getColumnIndex("name")), new BigDecimal(c.getDouble(c.getColumnIndex("balance"))), c.getString(c.getColumnIndex("id")), c.getLong(c.getColumnIndex("bankid")));
+		Account account = new Account(c.getString(c.getColumnIndex("name")), new BigDecimal(c.getString(c.getColumnIndex("balance"))), c.getString(c.getColumnIndex("id")).split("_")[1], c.getLong(c.getColumnIndex("bankid")));
 		c.close();
 		if (loadTransactions) {
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
@@ -143,7 +143,7 @@ public class BankFactory {
 			if (!(c == null || c.isClosed() || (c.isBeforeFirst() && c.isAfterLast()))) {
 				while (!c.isLast() && !c.isAfterLast()) {
 					c.moveToNext();
-					transactions.add(new Transaction(c.getString(c.getColumnIndex("transdate")), c.getString(c.getColumnIndex("btransaction")), new BigDecimal(c.getDouble(c.getColumnIndex("amount")))));
+					transactions.add(new Transaction(c.getString(c.getColumnIndex("transdate")), c.getString(c.getColumnIndex("btransaction")), new BigDecimal(c.getString(c.getColumnIndex("amount")))));
 				}
 			}
 			account.setTransactions(transactions);
@@ -164,7 +164,7 @@ public class BankFactory {
 		}
 		while (!c.isLast() && !c.isAfterLast()) {
 			c.moveToNext();
-			Account account = new Account(c.getString(c.getColumnIndex("name")), new BigDecimal(c.getDouble(c.getColumnIndex("balance"))), c.getString(c.getColumnIndex("id")), c.getLong(c.getColumnIndex("bankid")));
+			Account account = new Account(c.getString(c.getColumnIndex("name")), new BigDecimal(c.getString(c.getColumnIndex("balance"))), c.getString(c.getColumnIndex("id")).split("_")[1], c.getLong(c.getColumnIndex("bankid")));
 			accounts.add(account);
 		}
 		c.close();

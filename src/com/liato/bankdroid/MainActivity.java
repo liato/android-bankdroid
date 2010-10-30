@@ -4,9 +4,11 @@ import java.util.ArrayList;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -22,8 +24,8 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class MainActivity extends LockableActivity {
@@ -77,9 +79,16 @@ public class MainActivity extends LockableActivity {
 
 	public void onResume() {
 		super.onResume();
+		registerReceiver(receiver, new IntentFilter(AutoRefreshService.BROADCAST_MAIN_REFRESH));		
 		refreshView();
 	}
 
+	private BroadcastReceiver receiver=new BroadcastReceiver() {
+		public void onReceive(Context context, Intent intent) {
+			refreshView();
+		}
+	};	
+	
 	public void refreshView() {
 		Log.d(TAG, "refreshView()");
 		ArrayList<Bank> banks = BankFactory.banksFromDb(this, true);

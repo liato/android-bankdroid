@@ -41,6 +41,7 @@ public abstract class Bank implements Comparable<Bank> {
 	protected boolean disabled = false;
 	protected long dbid = -1;
 	protected Urllib urlopen = null;
+	protected String customName;
 
 
 	public Urllib getUrlopen() {
@@ -128,6 +129,12 @@ public abstract class Bank implements Comparable<Bank> {
 		return NAME;
 	}
 
+	public String getDisplayName() {
+		if (customName != null && customName.length() > 0) return customName;
+		return username;
+	}
+
+	
 	public String getShortName() {
 		return NAME_SHORT;
 	}

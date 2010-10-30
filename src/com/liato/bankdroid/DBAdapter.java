@@ -18,7 +18,7 @@ public class DBAdapter {
     private SQLiteDatabase mDb;
     
     private static final String DATABASE_NAME = "data";
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
 
     private final Context mCtx;
 
@@ -31,11 +31,11 @@ public class DBAdapter {
         @Override
         public void onCreate(SQLiteDatabase db) {
             db.execSQL("create table banks (_id integer primary key autoincrement, "
-            		+ "balance real not null, "
+            		+ "balance text not null, "
                     + "banktype integer not null, username text not null, "
                     + "password text not null, disabled integer);");
-            db.execSQL("create table accounts (bankid integer not null, id text not null, balance real not null, name text not null);");
-            db.execSQL("create table transactions (_id integer primary key autoincrement, transdate text not null, btransaction text not null, amount real not null, account text not null);");
+            db.execSQL("create table accounts (bankid integer not null, id text not null, balance text not null, name text not null);");
+            db.execSQL("create table transactions (_id integer primary key autoincrement, transdate text not null, btransaction text not null, amount text not null, account text not null);");
         }
 
         @Override
@@ -142,8 +142,7 @@ public class DBAdapter {
         initialValues.put("username", bank.getUsername());
         initialValues.put("password", bank.getPassword());
         initialValues.put("disabled", 0);
-        initialValues.put("balance", 0);
-        BigDecimal total = new BigDecimal(0);
+        initialValues.put("balance", bank.getBalance().toPlainString());
         long bankId = bank.getDbId();
         Log.d(TAG, "Bankid: "+bankId);
         if (bankId == -1) {
@@ -159,10 +158,9 @@ public class DBAdapter {
 	        ArrayList<Account> accounts = bank.getAccounts();
             Log.d(TAG, "Bank accounts: "+bank.getAccounts().size());
 	        for(Account acc : accounts) {
-	        	total = total.add(acc.getBalance());
 	            ContentValues vals = new ContentValues();
 	            vals.put("bankid", bankId);
-	            vals.put("balance", acc.getBalance().doubleValue());
+	            vals.put("balance", acc.getBalance().toPlainString());
 	            vals.put("name", acc.getName());
 	            vals.put("id", new Long(bankId).toString()+"_"+acc.getId());
 	            mDb.insert("accounts", null, vals);
@@ -173,15 +171,12 @@ public class DBAdapter {
 			            ContentValues transvals = new ContentValues();
 			            transvals.put("transdate", transaction.getDate());
 			            transvals.put("btransaction", transaction.getTransaction());
-			            transvals.put("amount", transaction.getAmount().doubleValue());
+			            transvals.put("amount", transaction.getAmount().toPlainString());
 			            transvals.put("account", new Long(bankId).toString()+"_"+acc.getId());
 			            mDb.insert("transactions", null, transvals);
 		            }
 	            }
 	        }
-	        ContentValues v = new ContentValues();
-	        v.put("balance", total.doubleValue());
-	        mDb.update("banks", v, "_id="+bankId, null);
         }
         Log.d(TAG, "Updated bank: "+bankId);
         return bankId;
