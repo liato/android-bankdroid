@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="wrap_content"
+	android:background="@drawable/popup_bg_down"
+	android:layout_width="fill_parent"
+	android:layout_gravity="fill_horizontal"
+	android:id="@+id/layPopupCont">
+	<Button style="@style/Popup_Button"
+		android:drawableTop="@drawable/button_hide" android:id="@+id/btnHide" android:text="@string/popup_hide"></Button><Button style="@style/Popup_Button"
+		android:drawableTop="@drawable/button_hide" android:id="@+id/btnUnhide" android:text="@string/popup_unhide"></Button>
+	<ImageView style="@style/Popup_Separator"></ImageView>		
+	<Button
+		style="@style/Popup_Button" android:id="@+id/btnDisableNotifications" android:drawableTop="@drawable/button_notification" android:text="@string/popup_disable_notifications"></Button><Button
+		style="@style/Popup_Button" android:drawableTop="@drawable/button_notification" android:id="@+id/btnEnableNotifications" android:text="@string/popup_enable_notifications"></Button>
+	<ImageView style="@style/Popup_Separator"></ImageView>		
+	
+			
+	
+			
+</LinearLayout>

@@ -27,11 +27,14 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 
 public class MainActivity extends LockableActivity {
 	private final static String TAG = "MainActivity";
 	protected AccountsAdapter adapter = null;
-	private static Bank selected_bank = null;
+    private static Bank selected_bank = null;
+    private static Account selected_account = null;
+    protected static boolean showHidden = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -47,31 +50,46 @@ public class MainActivity extends LockableActivity {
 		Button btnAddBank = (Button)findViewById(R.id.btnAddBank);
 		btnAddBank.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				Intent intentAccount = new Intent(MainActivity.this, AccountActivity.class);
+				Intent intentAccount = new Intent(MainActivity.this, BankEditActivity.class);
 				startActivity(intentAccount);
 			}
 		});
 
 		ListView lv = (ListView)findViewById(R.id.lstAccountsList);
-		adapter = new AccountsAdapter(this);
+		adapter = new AccountsAdapter(this, showHidden);
 		ArrayList<Bank> banks = new ArrayList<Bank>();//BankFactory.banksFromDb(this, true);
 		adapter.setGroups(banks);
 		lv.setAdapter(adapter);
+		lv.setOnItemLongClickListener(new OnItemLongClickListener() {
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d("itemclick", "Parent: "+parent+ "; View: "+view+"; Pos: "+position+"; ID: "+id);
+                if (adapter.getItem(position) instanceof Account) {
+                    selected_account = (Account)adapter.getItem(position);
+                    PopupMenuAccount pmenu = new PopupMenuAccount(view, MainActivity.this);
+                    pmenu.setContentView(R.layout.popup_account);
+                    pmenu.showLikeQuickAction(0, 12);
+                    return true;
+                }
+                return true;
+            }
+        });
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				//view.showContextMenu();
 				Log.d("itemclick", "Parent: "+parent+ "; View: "+view+"; Pos: "+position+"; ID: "+id);
 				if (adapter.getItem(position) instanceof Bank) {
 					selected_bank = (Bank) adapter.getItem(position);
-					PopupMenu pmenu = new PopupMenu(view, MainActivity.this);
+					PopupMenuBank pmenu = new PopupMenuBank(view, MainActivity.this);
 					pmenu.showLikeQuickAction(0, 12);					
 				}
 				else {
-					Intent intent = new Intent(MainActivity.this, TransactionsActivity.class);
+					/*Intent intent = new Intent(MainActivity.this, TransactionsActivity.class);
 					Account account = (Account) adapter.getItem(position);
 					intent.putExtra("account", account.getId());
 					intent.putExtra("bank", account.getBankDbId());
-					MainActivity.this.startActivity(intent);
+					MainActivity.this.startActivity(intent);*/
+                    selected_account = (Account) adapter.getItem(position);
+                    PopupMenuAccount pmenu = new PopupMenuAccount(view, MainActivity.this);
+                    pmenu.showLikeQuickAction(0, 12);   				    
 				}
 			}
 		});
@@ -102,6 +120,7 @@ public class MainActivity extends LockableActivity {
 			//findViewById(R.id.btnAccountsRefresh).setClickable(false);
 		}
 
+		adapter.setShowHidden(showHidden);
 		adapter.setGroups(banks);
 		adapter.notifyDataSetChanged();
 	}
@@ -135,8 +154,9 @@ public class MainActivity extends LockableActivity {
 	public boolean onOptionsItemSelected (MenuItem item){
 		Intent intent;
 		switch (item.getItemId()) {
-		case R.id.exit:
-			this.finish();
+		case R.id.toggle_hidden:
+		    showHidden = !showHidden;
+		    refreshView();
 			return true;
 		case R.id.settings:
 			intent = new Intent(this, SettingsActivity.class);
@@ -151,6 +171,7 @@ public class MainActivity extends LockableActivity {
 
 	public void onDestroy() {
 		super.onDestroy();
+		unregisterReceiver(receiver);  
 	}
 
 	/**
@@ -161,9 +182,9 @@ public class MainActivity extends LockableActivity {
 	 * @author qbert
 	 * 
 	 */
-	private static class PopupMenu extends BetterPopupWindow implements OnClickListener {
+	private static class PopupMenuBank extends BetterPopupWindow implements OnClickListener {
 		MainActivity parent = null;
-		public PopupMenu(View anchor, MainActivity parent) {
+		public PopupMenuBank(View anchor, MainActivity parent) {
 			super(anchor);
 			this.parent = parent;
 		}
@@ -174,7 +195,7 @@ public class MainActivity extends LockableActivity {
 			LayoutInflater inflater =
 				(LayoutInflater) this.anchor.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-			ViewGroup root = (ViewGroup) inflater.inflate(R.layout.popup, null);
+			ViewGroup root = (ViewGroup) inflater.inflate(R.layout.popup_bank, null);
 			root.findViewById(R.id.btnRefresh).setOnClickListener(this);
 			root.findViewById(R.id.btnWWW).setOnClickListener(this);
 			root.findViewById(R.id.btnEdit).setOnClickListener(this);
@@ -198,7 +219,7 @@ public class MainActivity extends LockableActivity {
 				this.dismiss();
 				return; 
 			case R.id.btnEdit:
-				Intent intent = new Intent(context, AccountActivity.class);
+				Intent intent = new Intent(context, BankEditActivity.class);
 				intent.putExtra("id", selected_bank.getDbId());
 				context.startActivity(intent);
 				this.dismiss();
@@ -235,5 +256,92 @@ public class MainActivity extends LockableActivity {
 
 		}
 	}
+	
+	
+    /**
+     * Extends {@link BetterPopupWindow}
+     * <p>
+     * Overrides onCreate to create the view and register the button listeners
+     * 
+     * @author qbert
+     * 
+     */
+    private static class PopupMenuAccount extends BetterPopupWindow implements OnClickListener {
+        MainActivity parent = null;
+        public PopupMenuAccount(View anchor, MainActivity parent) {
+            super(anchor);
+            this.parent = parent;
+        }
+
+        @Override
+        protected void onCreate() {
+            Log.d(TAG, "PopUpMenuAcc, oncreate");
+            // inflate layout
+            LayoutInflater inflater =
+                (LayoutInflater) this.anchor.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+            ViewGroup root = (ViewGroup) inflater.inflate(R.layout.popup_account, null);
+            Button btnHide = (Button) root.findViewById(R.id.btnHide);
+            Button btnUnhide = (Button)root.findViewById(R.id.btnUnhide);
+            Button btnDisableNotifications = (Button)root.findViewById(R.id.btnDisableNotifications);
+            Button btnEnableNotifications = (Button)root.findViewById(R.id.btnEnableNotifications);
+            if (selected_account.isHidden()) {
+                btnHide.setVisibility(View.GONE);
+                btnUnhide.setVisibility(View.VISIBLE);
+                btnUnhide.setOnClickListener(this);
+            }
+            else {
+                btnHide.setVisibility(View.VISIBLE);
+                btnUnhide.setVisibility(View.GONE);
+                btnHide.setOnClickListener(this);
+            }
+            if (selected_account.isNotify()) {
+                btnDisableNotifications.setVisibility(View.VISIBLE);
+                btnDisableNotifications.setOnClickListener(this);
+                btnEnableNotifications.setVisibility(View.GONE);
+            }
+            else {
+                btnDisableNotifications.setVisibility(View.GONE);
+                btnEnableNotifications.setOnClickListener(this);
+                btnEnableNotifications.setVisibility(View.VISIBLE);
+            }            
+            this.setContentView(root);
+        }
+
+        @Override
+        public void onClick(View v) {
+            final Context context = this.anchor.getContext();
+            Log.d(TAG, "CLICK!");
+            int id = v.getId();
+            switch (id) {
+            case R.id.btnHide:
+                this.dismiss();
+                selected_account.setHidden(true);
+                selected_account.getBank().save();
+                parent.refreshView();
+                return; 
+            case R.id.btnUnhide:
+                this.dismiss();
+                selected_account.setHidden(false);
+                selected_account.getBank().save();
+                parent.refreshView();
+                return; 
+            case R.id.btnEnableNotifications:
+                this.dismiss();
+                selected_account.setNotify(true);
+                selected_account.getBank().save();
+                parent.refreshView();
+                return; 
+            case R.id.btnDisableNotifications:
+                this.dismiss();
+                selected_account.setNotify(false);
+                selected_account.getBank().save();
+                parent.refreshView();
+                return; 
+
+            }
+
+        }
+    }	
 
 }

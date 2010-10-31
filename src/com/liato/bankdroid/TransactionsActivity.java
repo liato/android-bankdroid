@@ -28,9 +28,9 @@ public class TransactionsActivity extends LockableActivity {
 		TextView viewAccountBalance = (TextView)findViewById(R.id.txtListitemAccountsGroupTotal);
 		ListView viewTransactionsList = (ListView)findViewById(R.id.lstTransactionsList);
 		ImageView icon = (ImageView)findViewById(R.id.imgListitemAccountsGroup);
-		viewBankName.setText(bank.getUsername());
+		viewBankName.setText(bank.getDisplayName());
 		viewAccountName.setText(account.getName());
-		viewAccountBalance.setText(Helpers.formatBalance(account.getBalance()));
+		viewAccountBalance.setText(Helpers.formatBalance(account.getBalance(), account.getCurrency()));
 		icon.setImageResource(bank.getImageResource());
 		ArrayList<Transaction> transactions = account.getTransactions();
 		Log.d(TAG, "Transactions: "+transactions.size());
@@ -71,7 +71,7 @@ public class TransactionsActivity extends LockableActivity {
 				convertView = inflater.inflate(R.layout.transaction_item, parent, false);
 			}
 			((TextView)convertView.findViewById(R.id.txtTransaction)).setText(transaction.getTransaction());
-			((TextView)convertView.findViewById(R.id.txtAmount)).setText(Helpers.formatBalance(transaction.getAmount()));
+			((TextView)convertView.findViewById(R.id.txtAmount)).setText(Helpers.formatBalance(transaction.getAmount(), transaction.getCurrency()));
 			if (transaction.getAmount().signum() == 1) {
 				((ImageView)convertView.findViewById(R.id.imgColor)).setBackgroundResource(R.drawable.transaction_positive);
 			}

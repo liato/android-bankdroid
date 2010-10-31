@@ -3,9 +3,7 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent"
 	android:layout_height="35dp"
-	android:layout_gravity="center_horizontal"
-	android:paddingLeft="15dp"
-	android:paddingRight="10dp">
+	android:layout_gravity="center_horizontal">
 
 	<TextView
 		android:layout_alignParentBottom="true"
@@ -20,7 +18,7 @@
 		android:inputType="none"
 		android:text="Kontonamn"
 		android:textStyle="bold"
-		android:layout_height="fill_parent" />
+		android:layout_height="fill_parent" android:paddingLeft="15dp"/>
 
 
 	<TextView
@@ -29,12 +27,13 @@
 		android:text="00000 SEK"
 		android:layout_width="wrap_content"
 		android:layout_alignParentRight="true"
-		android:textColor="#fff"
 		android:layout_alignParentTop="true"
 		android:id="@+id/txtListitemAccountsItemBalance"
 		android:inputType="none"
 		android:layout_toRightOf="@+id/txtListitemAccountsItemAccountname"
 		android:gravity="right|center_vertical"
-		android:layout_height="fill_parent" />
+		android:layout_height="fill_parent" android:textColor="#fff" android:paddingRight="10dp"/>
 
+
+<RelativeLayout android:layout_width="wrap_content" android:layout_alignParentLeft="true" android:layout_alignParentRight="true" android:minHeight="1dp" android:layout_height="wrap_content" android:layout_alignWithParentIfMissing="true" android:layout_alignParentTop="false" android:layout_alignParentBottom="true" android:id="@+id/divider"></RelativeLayout>
 </RelativeLayout>

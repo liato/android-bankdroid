@@ -34,13 +34,14 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 			int appWidgetId) {
 		Log.d("BankdroidWigetProvider", "Updating widget: "+appWidgetId);
 		String accountId = WidgetConfigureActivity.getAccountId(context, appWidgetId);
+		long bankId = WidgetConfigureActivity.getBankId(context, appWidgetId);
 		if (accountId == null) {
 			Log.d("BankdroidWidgetProvider", "Widget not found. ID: "+appWidgetId);
 			return disableAppWidget(context, appWidgetManager,
 					appWidgetId);
 		}
 		Log.d("BankdroidWidgetProvider", "Account ID: "+accountId);
-		Account account = BankFactory.accountFromDb(context, accountId, false);
+		Account account = BankFactory.accountFromDb(context, bankId + "_" + accountId, false);
 		if (account == null) {
 			Log.d("BankdroidWidgetProvider", "Account not found in db: "+accountId);
 			return disableAppWidget(context, appWidgetManager,
@@ -80,7 +81,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 		RemoteViews views = new RemoteViews(context.getPackageName(), layoutId);
 		Log.d("buildAppWidget", "WidgetLayout: "+layoutId);
 		views.setTextViewText(R.id.txtWidgetAccountname, account.getName().toUpperCase());
-		views.setTextViewText(R.id.txtWidgetAccountbalance, Helpers.formatBalance(account.getBalance()));
+		views.setTextViewText(R.id.txtWidgetAccountbalance, Helpers.formatBalance(account.getBalance(), account.getCurrency()));
 		views.setImageViewResource(R.id.imgWidgetIcon, bank.getImageResource());
 		Log.d("Disabled", ""+bank.isDisabled());
 		if (bank.isDisabled()) {
@@ -224,7 +225,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 					Log.d("WidgetService", "Widget not found in db: "+appWidgetId);
 					return null;
 				}
-				String bankId = accountId.split("_")[0];
+				long bankId = WidgetConfigureActivity.getBankId(context, appWidgetId);
 				Bank bank = BankFactory.bankFromDb(new Long(bankId), context, false);
 				if (bank == null) {
 					return null;

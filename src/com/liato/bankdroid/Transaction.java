@@ -6,12 +6,18 @@ public class Transaction implements Comparable<Transaction> {
 	private String date;
 	private String transaction;
 	private BigDecimal amount;
+	private String currency;
 	
-	public Transaction(String date, String transaction, BigDecimal amount) {
+	public Transaction(String date, String transaction, BigDecimal amount, String currency) {
 		this.date = date;
 		this.transaction = transaction;
 		this.amount = amount;
+		this.currency = currency;
 	}
+
+    public Transaction(String date, String transaction, BigDecimal amount) {
+        this(date, transaction, amount, "SEK");
+    }	
 
 	public String getDate() {
 		return date;
@@ -37,7 +43,15 @@ public class Transaction implements Comparable<Transaction> {
 		this.amount = amount;
 	}
 
-	@Override
+	public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    @Override
 	public int compareTo(Transaction another) {
 		Integer thisdate = Integer.parseInt(date.replaceAll("-", ""));
 		Integer thatdate = Integer.parseInt((another).getDate().replaceAll("-", ""));

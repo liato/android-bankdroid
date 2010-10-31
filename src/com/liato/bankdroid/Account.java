@@ -7,13 +7,18 @@ public class Account {
 	public final static int REGULAR = 1;
 	public final static int FUNDS = 2;
 	public final static int LOANS = 3;
-	public final static int OTHER = 4;
+	public final static int CCARD = 4;
+	public final static int OTHER = 5;
 	
 	private String name;
 	private BigDecimal balance;
 	private String id;
 	private Bank bank = null;
 	private long bankId = -1;
+	private int type = Account.REGULAR;
+	private boolean hidden = false;
+	private boolean notify = true;
+	private String currency;
 	private ArrayList<Transaction> transactions;
 
 	public ArrayList<Transaction> getTransactions() {
@@ -24,18 +29,45 @@ public class Account {
 		this.transactions = transactions;
 	}
 
-	public Account(String name, BigDecimal balance, String id, long bankId) {
+	public Account(String name, BigDecimal balance, String id, long bankId,
+	               int type, String currency) {
 		this.name = name;
 		this.balance = balance;
 		this.id = id;
 		this.bankId = bankId;
+		this.type = type;
+		this.currency = currency;
 	}
 
-	public Account(String name, BigDecimal balance, String id) {
-		this(name, balance, id, -1);
-	}	
+    public Account(String name, BigDecimal balance, String id, long bankId) {
+        this(name, balance, id, bankId, REGULAR, "SEK");
+    }
+    
+	public Account(String name, BigDecimal balance, String id, long bankId, int type) {
+        this(name, balance, id, bankId, type, "SEK");
+    }
+    
+    public Account(String name, BigDecimal balance, String id) {
+        this(name, balance, id, -1L);
+    }
+    
+    public Account(String name, BigDecimal balance, String id, int type) {
+        this(name, balance, id, -1L, type);
+    }	
 
-	public void setBalance(BigDecimal balance) {
+    public Account(String name, BigDecimal balance, String id, int type, String currency) {
+        this(name, balance, id, -1L, type, currency);
+    }
+
+    public boolean isNotify() {
+        return notify;
+    }
+
+    public void setNotify(boolean notify) {
+        this.notify = notify;
+    }
+    
+    public void setBalance(BigDecimal balance) {
 		this.balance = balance;
 	}
 
@@ -62,4 +94,29 @@ public class Account {
 	public long getBankDbId() {
 		return bankId;
 	}
+
+	public void setType(int type) {
+		this.type = type;
+	}
+
+	public int getType() {
+		return type;
+	}
+
+    public boolean isHidden() {
+        return this.hidden;
+    }
+    
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+    
 }

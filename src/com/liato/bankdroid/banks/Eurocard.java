@@ -93,6 +93,7 @@ public class Eurocard extends Bank {
 		if (accounts.isEmpty()) {
 			throw new BankException(res.getText(R.string.no_accounts_found).toString());
 		}
+        super.updateComplete();
 	}
 
 	@Override

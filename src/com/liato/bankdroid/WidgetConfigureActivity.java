@@ -71,7 +71,8 @@ public class WidgetConfigureActivity extends Activity {
 				if (adapter.getItemViewType(position) != AccountsAdapter.VIEWTYPE_ACCOUNT) return;
 				final Context context = WidgetConfigureActivity.this;
 	            Account account = (Account)parent.getItemAtPosition(position);
-	            WidgetConfigureActivity.setAccountId(context, mAppWidgetId, account.getId());
+	            Bank bank = account.getBank();
+	            WidgetConfigureActivity.setAccountBankId(context, mAppWidgetId, account.getId(), bank.getDbId());
 	            SharedPreferences.Editor prefs = context.getSharedPreferences("widget_prefs", 0).edit();
 	            prefs.putBoolean("transperant_background" + mAppWidgetId, ((CheckBox)findViewById(R.id.chkTransperantBackground)).isChecked());
 	            prefs.commit();	            
@@ -95,20 +96,27 @@ public class WidgetConfigureActivity extends Activity {
 //		refreshView();
 //	}
 	
-	public static String getAccountId(Context context, int appWidgetId) {
-		SharedPreferences prefs = context.getSharedPreferences("widget_prefs", 0);
-		return prefs.getString(WIDGET_PREFIX + appWidgetId, null);
-	}
-
-	public static void setAccountId(Context context, int appWidgetId, String value) {
+	public static void setAccountBankId(Context context, int appWidgetId, String accountId, long bankId) {
         SharedPreferences.Editor prefs = context.getSharedPreferences("widget_prefs", 0).edit();
-        prefs.putString(WIDGET_PREFIX + appWidgetId, value);
+        prefs.putString(WIDGET_PREFIX + appWidgetId, accountId);
+        prefs.putLong(WIDGET_PREFIX + appWidgetId + "_bankid", bankId);
         prefs.commit();
 	}
 
+    public static String getAccountId(Context context, int appWidgetId) {
+        SharedPreferences prefs = context.getSharedPreferences("widget_prefs", 0);
+        return prefs.getString(WIDGET_PREFIX + appWidgetId, null);
+    }
+
+    public static long getBankId(Context context, int appWidgetId) {
+        SharedPreferences prefs = context.getSharedPreferences("widget_prefs", 0);
+        return prefs.getLong(WIDGET_PREFIX + appWidgetId + "_bankid", -1);
+    }
+	
 	public static void delAccountId(Context context, int appWidgetId) {
         SharedPreferences.Editor prefs = context.getSharedPreferences("widget_prefs", 0).edit();
         prefs.remove(WIDGET_PREFIX + appWidgetId);
+        prefs.remove(WIDGET_PREFIX + appWidgetId + "_bankid");
         prefs.commit();
 	}
 	
@@ -120,7 +128,7 @@ public class WidgetConfigureActivity extends Activity {
 			findViewById(R.id.chkTransperantBackground).setVisibility(View.VISIBLE);
 			findViewById(R.id.txtAccountsDesc).setVisibility(View.GONE);
 			ListView lv = (ListView)findViewById(R.id.lstAccountsList);
-			adapter = new AccountsAdapter(this);
+			adapter = new AccountsAdapter(this, false);
 			adapter.setGroups(banks);
 			lv.setAdapter(adapter);
 		}

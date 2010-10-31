@@ -3,6 +3,8 @@ package com.liato.bankdroid;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,40 +15,59 @@ import android.widget.TextView;
 
 public class AccountsAdapter extends BaseAdapter {
 	public final static int VIEWTYPE_BANK = 0;
-	public final static int VIEWTYPE_ACCOUNT = 1;
-	private ArrayList<Bank> groups;
+    public final static int VIEWTYPE_ACCOUNT = 1;
+    public final static int VIEWTYPE_EMPTY = 2;
+	private ArrayList<Bank> banks;
 	private Context context;
 	private LayoutInflater inflater;
+	private boolean showHidden; 
 
-	public AccountsAdapter(Context context) {
+
+    public AccountsAdapter(Context context, boolean showHidden) {
 		this.context = context;
-		this.groups = new ArrayList<Bank>();
+		this.banks = new ArrayList<Bank>();
 		inflater = LayoutInflater.from(context);
-		
+		this.showHidden = showHidden;
 	}
 
-	public void addGroup(Bank group) {
-		groups.add(group);
+	public void addGroup(Bank bank) {
+		banks.add(bank);
 	}
 	
 	public void setGroups(ArrayList<Bank> banks) {
-		groups = banks;
+		this.banks = banks;
+		/*for (Bank b : this.banks) {
+		    ArrayList<Account> as = b.getAccounts(); 
+		    for (Account a : as) {
+		        if (a.isHidden() && !showHidden) {
+		            as.remove(a);
+		        }
+		            
+		    }
+		}*/
 	}
 
-	public View newGroupView(Bank group, ViewGroup parent, View convertView) {
+    public boolean isShowHidden() {
+        return showHidden;
+    }
+
+    public void setShowHidden(boolean showHidden) {
+        this.showHidden = showHidden;
+    }
+    
+	public View newBankView(Bank bank, ViewGroup parent, View convertView) {
 		if (convertView == null) {
 			convertView = inflater.inflate(R.layout.listitem_accounts_group, parent, false);
 		}
-		//Log.d("Convertview", ""+convertView);
-		//Log.d("Missing view?", ""+convertView.findViewById(R.id.txtListitemAccountsGroupAccountname));
+
 		ImageView icon = (ImageView)convertView.findViewById(R.id.imgListitemAccountsGroup);
-		((TextView)convertView.findViewById(R.id.txtListitemAccountsGroupAccountname)).setText(group.getUsername());
-		((TextView)convertView.findViewById(R.id.txtListitemAccountsGroupBankname)).setText(group.getName());
-		((TextView)convertView.findViewById(R.id.txtListitemAccountsGroupTotal)).setText(Helpers.formatBalance(group.getBalance()));
-		icon.setImageResource(group.getImageResource());
+		((TextView)convertView.findViewById(R.id.txtListitemAccountsGroupAccountname)).setText(bank.getDisplayName());
+		((TextView)convertView.findViewById(R.id.txtListitemAccountsGroupBankname)).setText(bank.getName());
+		((TextView)convertView.findViewById(R.id.txtListitemAccountsGroupTotal)).setText(Helpers.formatBalance(bank.getBalance(), bank.getCurrency()));
+		icon.setImageResource(bank.getImageResource());
 		ImageView warning = (ImageView)convertView.findViewById(R.id.imgWarning);
-		Log.d("AccountsAdapter", ""+group.isDisabled());
-		if (group.isDisabled()) {
+		Log.d("AccountsAdapter", ""+bank.isDisabled());
+		if (bank.isDisabled()) {
 			warning.setVisibility(View.VISIBLE);
 		}
 		else {
@@ -55,22 +76,34 @@ public class AccountsAdapter extends BaseAdapter {
 		return convertView;
 	}
 
-	public View newItemView(Account item, ViewGroup parent, View convertView) {
+	public View newAccountView(Account account, ViewGroup parent, View convertView) {
+        if (account.isHidden() && !showHidden) {
+            return convertView == null ? inflater.inflate(R.layout.empty, parent, false) : convertView;
+        }
 		if (convertView == null) {
 			convertView = inflater.inflate(R.layout.listitem_accounts_item, parent, false);
 		}
-		//Log.d("Convertview", ""+convertView);
-		//Log.d("Missing view?", ""+convertView.findViewById(R.id.txtListitemAccountsItemAccountname));
-		
-		((TextView)convertView.findViewById(R.id.txtListitemAccountsItemAccountname)).setText(item.getName());
-		((TextView)convertView.findViewById(R.id.txtListitemAccountsItemBalance)).setText(Helpers.formatBalance(item.getBalance()));
+		convertView.findViewById(R.id.divider).setBackgroundColor(Color.argb(60, 255, 255, 255));
+		TextView txtAccountName = ((TextView)convertView.findViewById(R.id.txtListitemAccountsItemAccountname));
+        TextView txtBalance = ((TextView)convertView.findViewById(R.id.txtListitemAccountsItemBalance));
+		txtAccountName.setText(account.getName());
+		txtBalance.setText(Helpers.formatBalance(account.getBalance(), account.getCurrency()));
+		Log.d("ACCADDAPTER", "Account: "+account.getName()+"; hidden: "+account.isHidden());
+		if (account.isHidden()) {
+            txtAccountName.setTextColor(Color.argb(255, 191, 191, 191));
+            txtBalance.setTextColor(Color.argb(255, 191, 191, 191));		    
+		}
+		else {
+            txtAccountName.setTextColor(Color.WHITE);
+            txtBalance.setTextColor(Color.WHITE);            
+		}
 		return convertView;
 	}
 
 	@Override
 	public int getCount() {
 		int c = 0;
-		for(Bank g : groups) {
+		for(Bank g : banks) {
 			c += g.getAccounts().size()+1;
 		}
 		return c;
@@ -78,15 +111,15 @@ public class AccountsAdapter extends BaseAdapter {
 
 	@Override
 	public Object getItem(int position) {
-		if (groups.size() == 0) {
+		if (banks.size() == 0) {
 			return null;
 		}
 		if (position == 0) {
-			return groups.get(0);
+			return banks.get(0);
 		}
 
 		int i = 0;
-		for (Bank g : groups) {
+		for (Bank g : banks) {
 			if (position == i) {
 				return g;
 			}
@@ -111,21 +144,23 @@ public class AccountsAdapter extends BaseAdapter {
 			return null;
 		}
 		if (item instanceof Bank) {
-			return newGroupView((Bank)item, parent, convertView);
+			return newBankView((Bank)item, parent, convertView);
 		}
 		else if (item instanceof Account) {
-			return newItemView((Account)item, parent, convertView);
+			return newAccountView((Account)item, parent, convertView);
 		}
 		return null;
 	}
 
 	public boolean isEnabled(int position) {
-		return true;
+	    if (getItemViewType(position) == VIEWTYPE_EMPTY) return false;
+	    return true;
 	}
+        
 
 	@Override
 	public int getViewTypeCount () {
-		return 2;
+		return 3;
 	}
 
 	@Override
@@ -133,6 +168,11 @@ public class AccountsAdapter extends BaseAdapter {
 		Object item = getItem(position);
 		if (item instanceof Bank) {
 			return VIEWTYPE_BANK;
+		}
+		else {
+		    if (((Account)item).isHidden() && !showHidden) {
+		        return VIEWTYPE_EMPTY;
+		    }
 		}
 		return VIEWTYPE_ACCOUNT;
 	}	

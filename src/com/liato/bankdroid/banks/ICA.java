@@ -122,5 +122,8 @@ public class ICA extends Bank {
 		catch (IOException e) {
 			throw new BankException(e.getMessage());
 		}
+        finally {
+            super.updateComplete();
+        }
 	}
 }

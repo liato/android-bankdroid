@@ -10,7 +10,7 @@
 		android:title="About"
 		android:icon="@android:drawable/ic_menu_info_details" />
 	<item
-		android:id="@+id/exit"
-		android:title="Exit"
-		android:icon="@android:drawable/ic_menu_close_clear_cancel" />
+		android:id="@+id/toggle_hidden"
+		android:title="Show/hide\nhidden accounts"
+		android:icon="@drawable/ic_menu_view"/>
 </menu>

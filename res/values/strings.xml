@@ -19,8 +19,10 @@
     
     <string name="username">Username</string>
     <string name="password">Password</string>
+    <string name="custom_name">Custom Name (optional)</string>
     <string name="bank">Bank</string>
     <string name="error_desc">The last update was unsuccessful and updates for this account have been disabled. Make sure you\'ve entered your username and password correctly and press the save button.</string>
+
 
     <string name="cancel">CANCEL</string>
     <string name="save">SAVE</string>
@@ -57,7 +59,12 @@
     <string name="popup_edit">Edit</string>
     <string name="popup_www">WWW</string>
     <string name="popup_remove">Remove</string>
-    
+
+    <string name="popup_hide">Hide</string>
+    <string name="popup_unhide">Unhide</string>
+    <string name="popup_enable_notifications">Enable notifications</string>
+    <string name="popup_disable_notifications">Disable notifications</string>
+        
     <string name="remove_bank_msg">Are you sure you want to remove this bank?</string>
     <string name="remove_bank_title">Remove bank?</string>
     <string name="yes">Yes</string>

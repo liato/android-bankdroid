@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import net.sf.andhsli.hotspotlogin.SimpleCrypto;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -12,6 +11,8 @@ import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.InputType;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +25,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
 
-public class AccountActivity extends LockableActivity implements OnClickListener, OnItemSelectedListener {
+public class BankEditActivity extends LockableActivity implements OnClickListener, OnItemSelectedListener {
 	private final static String TAG = "AccountActivity";
 	private Bank SELECTED_BANK;
 	private long BANKID = -1;
@@ -51,8 +52,9 @@ public class AccountActivity extends LockableActivity implements OnClickListener
 				Bank bank = BankFactory.bankFromDb(BANKID, this, false);
 				if (bank != null) {
 					((EditText)findViewById(R.id.edtBankeditUsername)).setText(bank.getUsername());
-					((EditText)findViewById(R.id.edtBankeditPassword)).setText(bank.getPassword());
-					
+                    ((EditText)findViewById(R.id.edtBankeditPassword)).setText(bank.getPassword());
+                    ((EditText)findViewById(R.id.edtBankeditCustomName)).setText(bank.getCustomName());
+                    
 					TextView errorDesc = (TextView)findViewById(R.id.txtErrorDesc);
 					if (bank.isDisabled()) {
 						errorDesc.setVisibility(View.VISIBLE);
@@ -79,7 +81,8 @@ public class AccountActivity extends LockableActivity implements OnClickListener
 		}
 		else if (v.getId() == R.id.btnSettingsOk){
 			SELECTED_BANK.setUsername(((EditText) findViewById(R.id.edtBankeditUsername)).getText().toString().trim());
-			SELECTED_BANK.setPassword(((EditText) findViewById(R.id.edtBankeditPassword)).getText().toString().trim());
+            SELECTED_BANK.setPassword(((EditText) findViewById(R.id.edtBankeditPassword)).getText().toString().trim());
+            SELECTED_BANK.setCustomName(((EditText) findViewById(R.id.edtBankeditCustomName)).getText().toString().trim());
 			SELECTED_BANK.setDbid(BANKID);
 			new DataRetrieverTask(this, SELECTED_BANK).execute();
 		}
@@ -88,7 +91,24 @@ public class AccountActivity extends LockableActivity implements OnClickListener
 
 	@Override
 	public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int pos, long id) {
-		SELECTED_BANK = (Bank) parentView.getItemAtPosition(pos);
+		SELECTED_BANK = (Bank)parentView.getItemAtPosition(pos);
+		if (SELECTED_BANK.isUsernameNumeric()) {
+		    ((EditText) findViewById(R.id.edtBankeditUsername)).setInputType(InputType.TYPE_CLASS_PHONE);
+		}
+		else {
+		    ((EditText) findViewById(R.id.edtBankeditUsername)).setInputType(InputType.TYPE_TEXT_VARIATION_NORMAL);
+		}
+        
+		/*
+		 * Not possible to set a textfield to both PHONE and PASSWORD :\ 
+
+    		if (SELECTED_BANK.isPasswordNumeric()) {
+                ((EditText) findViewById(R.id.edtBankeditPassword)).setInputType(InputType.TYPE_CLASS_PHONE);
+            }
+            else {
+                ((EditText) findViewById(R.id.edtBankeditPassword)).setInputType(InputType.TYPE_TEXT_VARIATION_NORMAL);
+            }
+        */
 	}
 
 	@Override
@@ -124,13 +144,13 @@ public class AccountActivity extends LockableActivity implements OnClickListener
 
 	}
 	private class DataRetrieverTask extends AsyncTask<String, Void, Void> {
-		private final ProgressDialog dialog = new ProgressDialog(AccountActivity.this);
+		private final ProgressDialog dialog = new ProgressDialog(BankEditActivity.this);
 		private Exception exc = null;
 		private Bank bank;
-		private AccountActivity context;
+		private BankEditActivity context;
 		private Resources res;
 
-		public DataRetrieverTask(AccountActivity context, Bank bank) {
+		public DataRetrieverTask(BankEditActivity context, Bank bank) {
 			this.context = context;
 			this.res = context.getResources();
 			this.bank = bank;
@@ -164,7 +184,7 @@ public class AccountActivity extends LockableActivity implements OnClickListener
 				this.dialog.dismiss();
 			}
 			if (this.exc != null) {
-				AlertDialog.Builder builder = new AlertDialog.Builder(AccountActivity.this);
+				AlertDialog.Builder builder = new AlertDialog.Builder(BankEditActivity.this);
 				builder.setMessage(this.exc.getMessage()).setTitle(res.getText(R.string.could_not_create_account))
 				.setIcon(android.R.drawable.ic_dialog_alert)
 				.setNeutralButton("Ok", new DialogInterface.OnClickListener() {

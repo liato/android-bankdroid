@@ -102,7 +102,9 @@ public class Statoil extends Bank {
 				 * 1: amount			10 579,43
 				 * 
 				 */
-				accounts.add(new Account("Statoil MasterCard" , Helpers.parseBalance(matcher.group(1)), "1"));
+			    Account account = new Account("Statoil MasterCard" , Helpers.parseBalance(matcher.group(1)), "1");
+			    account.setType(Account.CCARD);
+				accounts.add(account);
 				balance = balance.add(Helpers.parseBalance(matcher.group(1)));
 			}
 			if (accounts.isEmpty()) {
@@ -115,6 +117,9 @@ public class Statoil extends Bank {
 		catch (IOException e) {
 			throw new BankException(e.getMessage());
 		}
+        finally {
+            super.updateComplete();
+        }
 	}
 	
 	@Override

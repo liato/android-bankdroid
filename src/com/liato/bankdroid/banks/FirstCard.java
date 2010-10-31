@@ -108,7 +108,9 @@ public class FirstCard extends Bank {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+        finally {
+            super.updateComplete();
+        }
 	}
 
 	@Override

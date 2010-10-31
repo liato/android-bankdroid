@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="wrap_content"
+	android:background="@drawable/popup_bg_down"
+	android:layout_width="fill_parent"
+	android:layout_gravity="fill_horizontal"
+	android:id="@+id/layPopupCont">
+	<Button style="@style/Popup_Button"
+		android:id="@+id/btnRefresh"
+		android:drawableTop="@drawable/button_refresh" android:text="@string/popup_refresh"></Button>
+	<ImageView style="@style/Popup_Separator"></ImageView>		
+	<Button
+		android:id="@+id/btnEdit"
+		android:drawableTop="@drawable/button_edit"
+		style="@style/Popup_Button" android:text="@string/popup_edit"></Button>
+	<ImageView style="@style/Popup_Separator"></ImageView>		
+	<Button
+		android:id="@+id/btnWWW"
+		android:drawableTop="@drawable/button_www"
+		style="@style/Popup_Button" android:text="@string/popup_www"></Button>
+	<ImageView style="@style/Popup_Separator"></ImageView>		
+	<Button
+		android:id="@+id/btnRemove"
+		android:drawableTop="@drawable/button_cancel"
+		style="@style/Popup_Button" android:text="@string/popup_remove"></Button>
+	<ImageView style="@style/Popup_Separator"></ImageView>		
+</LinearLayout>

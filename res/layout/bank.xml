@@ -20,7 +20,7 @@
 			android:orientation="vertical"
 			android:layout_alignParentTop="true"
 			android:padding="10dp">
-			<TextView
+			<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:typeface="sans" android:textSize="20sp" android:text="@string/bank" /><Spinner android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/spnBankeditBanklist"></Spinner><TextView
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				android:typeface="sans"
@@ -29,7 +29,7 @@
 			<EditText
 				android:layout_height="wrap_content"
 				android:layout_width="fill_parent"
-				android:id="@+id/edtBankeditUsername"></EditText>
+				android:id="@+id/edtBankeditUsername" android:inputType="number"></EditText>
 			<TextView
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
@@ -39,18 +39,16 @@
 			<EditText
 				android:layout_height="wrap_content"
 				android:layout_width="fill_parent"
-				android:id="@+id/edtBankeditPassword"
-				android:inputType="textPassword"></EditText>
-			<TextView
+				android:id="@+id/edtBankeditPassword" android:inputType="textPassword"></EditText><TextView
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				android:typeface="sans"
-				android:textSize="20sp"
-				android:text="@string/bank" />
-			<Spinner
+				android:textSize="20sp" android:text="@string/custom_name"/><EditText
 				android:layout_height="wrap_content"
 				android:layout_width="fill_parent"
-				android:id="@+id/spnBankeditBanklist"></Spinner>
+				android:id="@+id/edtBankeditCustomName" android:inputType="textCapWords"></EditText>
+			
+			
 			<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"

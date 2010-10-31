@@ -2,7 +2,6 @@ package com.liato.bankdroid;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import android.app.Notification;
@@ -110,9 +109,35 @@ public class AutoRefreshService extends Service {
     						oldAccount = accounts.get(account.getId());
     						if (oldAccount != null) {
     							if (account.getBalance().compareTo(oldAccount.getBalance()) != 0) {
-    								diff = account.getBalance().subtract(oldAccount.getBalance());
-    								showNotification(account.getName()+ ": "+ ((diff.compareTo(new BigDecimal(0)) == 1) ? "+" : "") + Helpers.formatBalance(diff) + " ("+Helpers.formatBalance(account.getBalance())+")",
-    												 bank.getImageResource(), bank.getDisplayName());
+    							    boolean notify = false;
+    							    switch (account.getType()) {
+    							    case Account.REGULAR:
+    							        notify = true;
+    							        break;
+    							    case Account.FUNDS:
+    							        notify = false;
+    							        break;
+    							    case Account.LOANS:
+    							        notify = false;
+    							        break;
+    							    case Account.CCARD:
+    							        notify = true;
+    							        break;
+    							    case Account.OTHER:
+    							        notify = false;
+    							        break;
+    							    }
+    							    if (account.getType() == Account.REGULAR) {
+    							        notify = true;
+    							    }
+    							    if (account.isHidden() || account.isNotify()) {
+    							        notify = false;
+    							    }
+    		                        if (notify) {
+    		                            diff = account.getBalance().subtract(oldAccount.getBalance());
+        								showNotification(account.getName()+ ": "+ ((diff.compareTo(new BigDecimal(0)) == 1) ? "+" : "") + Helpers.formatBalance(diff, account.getCurrency()) + " ("+Helpers.formatBalance(account.getBalance(), account.getCurrency())+")",
+        												 bank.getImageResource(), bank.getDisplayName());
+                                    }
     								refreshWidgets = true;
     							}
     						}
@@ -124,8 +149,9 @@ public class AutoRefreshService extends Service {
     			} 
     			catch (BankException e) {
     				// Refresh widgets if an update fails
-    				Log.d(TAG, "Error while updating bank '"+bank.getDbId()+"'; "+e.getMessage());
+    				Log.d(TAG, "Error while updating bank '"+bank.getDbId()+"'; BankException: "+e.getMessage());
     			} catch (LoginException e) {
+                    Log.d(TAG, "Error while updating bank '"+bank.getDbId()+"'; LoginException: "+e.getMessage());
     				refreshWidgets = true;
     				db.disableBank(bank.getDbId());
 				}

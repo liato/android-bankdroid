@@ -41,6 +41,7 @@ public class Swedbank extends Bank {
 		super.NAME_SHORT = NAME_SHORT;
 		super.BANKTYPE_ID = BANKTYPE_ID;
 		super.URL = URL;
+        super.usernameNumeric = true;
 	}
 
 	public Swedbank(String username, String password, Context context) throws BankException, LoginException {
@@ -63,6 +64,7 @@ public class Swedbank extends Bank {
 			List <NameValuePair> postData = new ArrayList <NameValuePair>();
 			postData.add(new BasicNameValuePair("xyz", username));
 			postData.add(new BasicNameValuePair("zyx", password));
+			Log.d(TAG, "user: "+username+"; pass: "+password);
 			postData.add(new BasicNameValuePair("_csrf_token", csrftoken));
 			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/login.html", postData);
 
@@ -93,15 +95,23 @@ public class Swedbank extends Bank {
 			
 			matcher = reAccounts.matcher(response);
 			while (matcher.find()) {
-				accounts.add(new Account(Html.fromHtml(matcher.group(3)).toString(), Helpers.parseBalance(matcher.group(4)), matcher.group(2).trim() == "loan" ? "l"+matcher.group(2).trim() : matcher.group(2).trim()));
-				balance = balance.add(Helpers.parseBalance(matcher.group(4)));
+				Account account = new Account(Html.fromHtml(matcher.group(3)).toString(), Helpers.parseBalance(matcher.group(4)), matcher.group(2).trim() == "loan" ? "loan_" + matcher.group(2).trim() : matcher.group(2).trim());
+				if (matcher.group(2).trim() == "loan") {
+				    account.setType(Account.LOANS);
+				}
+				else {
+				    balance = balance.add(Helpers.parseBalance(matcher.group(4)));
+				}
+				accounts.add(account);
 			}
 			matcher = reLinklessAccounts.matcher(response);
 			int accid = 0;
 			while (matcher.find()) {
-				accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString(), Helpers.parseBalance(matcher.group(2)), "ll"+accid));
+				Account account = new Account(Html.fromHtml(matcher.group(1)).toString(), Helpers.parseBalance(matcher.group(2)), "ll_"+accid);
 				balance = balance.add(Helpers.parseBalance(matcher.group(2)));
-				accid++;
+				account.setType(Account.OTHER);
+                accounts.add(account);
+                accid++;
 			}
 			if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
@@ -116,12 +126,15 @@ public class Swedbank extends Bank {
 		catch (IOException e) {
 			throw new BankException(e.getMessage());
 		}
+		finally {
+	      super.updateComplete();
+		}
 	}
 	
 	@Override
 	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
 		super.updateTransactions(account, urlopen);
-		if (account.getId().startsWith("l")) return; //No transaction history for loans
+		if (account.getType() == Account.LOANS || account.getType() == Account.OTHER) return; //No transaction history for loans
 
 		String response = null;
 		Matcher matcher;

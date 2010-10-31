@@ -185,5 +185,8 @@ public class OKQ8 extends Bank {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		
+        finally {
+            super.updateComplete();
+        }
 	}
 }
