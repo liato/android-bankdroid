@@ -43,6 +43,12 @@
 	<string name="notify_on_change">Notifiera vid kontohändelser</string>
 	<string name="with_sound">Med ljud</string>
 	<string name="vibrate">Vibrera</string>
+	<string name="notify_account_types">Endast för följande konototyper:</string>
+	<string name="funds">Fonder</string>
+	<string name="ccards">Kreditkort</string>
+	<string name="loans">Lån</string>
+	<string name="deposit_account">Transaktionskonto</string>
+	<string name="other">Andra</string>
 	
     <string name="login">Logga in</string>
     <string name="invalid_access_code">Ogiltig PIN-kod. Försök igen.</string>
@@ -67,6 +73,9 @@
     <string name="remove_bank_title">Radera bank?</string>
     <string name="yes">Ja</string>
     <string name="no">Nej</string>
+ 
+    <string name="menu_show_hidden">Visa gömda konton</string>
+    <string name="menu_hide_hidden">Göm gömda konton</string>
     
     <string name="tran_desc">Inget kontoutdrag tillgängligt för detta konto.</string>
 

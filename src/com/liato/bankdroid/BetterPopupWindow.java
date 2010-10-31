@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -41,6 +42,7 @@ public class BetterPopupWindow {
 		this.window.setTouchInterceptor(new OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
+			    Log.d("TOCUH", "TOUCH!");
 				if(event.getAction() == MotionEvent.ACTION_OUTSIDE) {
 					BetterPopupWindow.this.window.dismiss();
 					return true;

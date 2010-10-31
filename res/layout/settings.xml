@@ -92,10 +92,15 @@
 				android:textSize="14sp"
 				android:id="@+id/chkWithVibration"
 				android:text="@string/vibrate"
-				android:layout_marginLeft="10dp"></CheckBox>
-		</LinearLayout>
+				android:layout_marginLeft="10dp"></CheckBox><LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginLeft="10dp"><TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/notify_account_types"></TextView><CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="14sp" android:id="@+id/chkDeposit" android:text="@string/deposit_account"></CheckBox><CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="14sp" android:id="@+id/chkLoans" android:text="@string/loans"></CheckBox><CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="14sp" android:id="@+id/chkFunds" android:text="@string/funds"></CheckBox><CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="14sp" android:id="@+id/chkCCards" android:text="@string/ccards"></CheckBox><CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="14sp" android:id="@+id/chkOther" android:text="@string/other"></CheckBox>
+</LinearLayout>
 		
-	</LinearLayout>
+
+</LinearLayout>
+		
+	
+
+</LinearLayout>
 	</ScrollView>
 	<TableLayout
 		android:id="@+id/TableLayout01"

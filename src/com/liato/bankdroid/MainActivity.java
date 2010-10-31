@@ -66,11 +66,10 @@ public class MainActivity extends LockableActivity {
                 if (adapter.getItem(position) instanceof Account) {
                     selected_account = (Account)adapter.getItem(position);
                     PopupMenuAccount pmenu = new PopupMenuAccount(view, MainActivity.this);
-                    pmenu.setContentView(R.layout.popup_account);
                     pmenu.showLikeQuickAction(0, 12);
                     return true;
                 }
-                return true;
+                return false;
             }
         });
 		lv.setOnItemClickListener(new OnItemClickListener() {
@@ -82,14 +81,11 @@ public class MainActivity extends LockableActivity {
 					pmenu.showLikeQuickAction(0, 12);					
 				}
 				else {
-					/*Intent intent = new Intent(MainActivity.this, TransactionsActivity.class);
+					Intent intent = new Intent(MainActivity.this, TransactionsActivity.class);
 					Account account = (Account) adapter.getItem(position);
 					intent.putExtra("account", account.getId());
 					intent.putExtra("bank", account.getBankDbId());
-					MainActivity.this.startActivity(intent);*/
-                    selected_account = (Account) adapter.getItem(position);
-                    PopupMenuAccount pmenu = new PopupMenuAccount(view, MainActivity.this);
-                    pmenu.showLikeQuickAction(0, 12);   				    
+					MainActivity.this.startActivity(intent);
 				}
 			}
 		});
@@ -156,6 +152,12 @@ public class MainActivity extends LockableActivity {
 		switch (item.getItemId()) {
 		case R.id.toggle_hidden:
 		    showHidden = !showHidden;
+		    if (showHidden) {
+		        item.setTitle(R.string.menu_hide_hidden);
+		    }
+		    else {
+		        item.setTitle(R.string.menu_show_hidden);
+		    }
 		    refreshView();
 			return true;
 		case R.id.settings:
@@ -310,8 +312,6 @@ public class MainActivity extends LockableActivity {
 
         @Override
         public void onClick(View v) {
-            final Context context = this.anchor.getContext();
-            Log.d(TAG, "CLICK!");
             int id = v.getId();
             switch (id) {
             case R.id.btnHide:

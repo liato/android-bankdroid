@@ -110,27 +110,26 @@ public class AutoRefreshService extends Service {
     						if (oldAccount != null) {
     							if (account.getBalance().compareTo(oldAccount.getBalance()) != 0) {
     							    boolean notify = false;
+    							    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(AutoRefreshService.this);
     							    switch (account.getType()) {
     							    case Account.REGULAR:
-    							        notify = true;
+    							        notify = prefs.getBoolean("notify_for_deposit", true);
     							        break;
     							    case Account.FUNDS:
-    							        notify = false;
+    							        notify = prefs.getBoolean("notify_for_funds", false);
     							        break;
     							    case Account.LOANS:
-    							        notify = false;
+    							        notify = prefs.getBoolean("notify_for_loans", false);
     							        break;
     							    case Account.CCARD:
-    							        notify = true;
+    							        notify = prefs.getBoolean("notify_for_ccards", true);
     							        break;
     							    case Account.OTHER:
-    							        notify = false;
+    							        notify = prefs.getBoolean("notify_for_other", false);
     							        break;
     							    }
-    							    if (account.getType() == Account.REGULAR) {
-    							        notify = true;
-    							    }
-    							    if (account.isHidden() || account.isNotify()) {
+    							    Log.d(TAG, "Account type: "+account.getType()+"; notify: "+notify);
+    							    if (account.isHidden() || !account.isNotify()) {
     							        notify = false;
     							    }
     		                        if (notify) {

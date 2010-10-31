@@ -6,11 +6,11 @@
 		android:title="Settings"
 		android:icon="@android:drawable/ic_menu_preferences" />
 	<item
+		android:id="@+id/toggle_hidden"
+		android:title="@string/menu_show_hidden"
+		android:icon="@drawable/ic_menu_view"/>
+	<item
 		android:id="@+id/about"
 		android:title="About"
 		android:icon="@android:drawable/ic_menu_info_details" />
-	<item
-		android:id="@+id/toggle_hidden"
-		android:title="Show/hide\nhidden accounts"
-		android:icon="@drawable/ic_menu_view"/>
 </menu>

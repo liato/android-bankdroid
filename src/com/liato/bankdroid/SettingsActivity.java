@@ -101,8 +101,13 @@ public class SettingsActivity extends LockableActivity implements OnClickListene
 				editor.putString("access_code", ((EditText)findViewById(R.id.edtAccessCode)).getText().toString());
 				editor.putBoolean("notify_on_change", ((CheckBox)findViewById(R.id.chkNotifyOnChange)).isChecked());
 				editor.putBoolean("notify_with_sound", ((CheckBox)findViewById(R.id.chkWithSound)).isChecked());
-				editor.putBoolean("notify_with_vibration", ((CheckBox)findViewById(R.id.chkWithVibration)).isChecked());
-				editor.putInt("refreshrate", refreshrate);
+                editor.putBoolean("notify_with_vibration", ((CheckBox)findViewById(R.id.chkWithVibration)).isChecked());
+                editor.putBoolean("notify_for_deposit", ((CheckBox)findViewById(R.id.chkDeposit)).isChecked());
+                editor.putBoolean("notify_for_funds", ((CheckBox)findViewById(R.id.chkFunds)).isChecked());
+                editor.putBoolean("notify_for_loans", ((CheckBox)findViewById(R.id.chkLoans)).isChecked());
+                editor.putBoolean("notify_for_ccards", ((CheckBox)findViewById(R.id.chkCCards)).isChecked());
+                editor.putBoolean("notify_for_other", ((CheckBox)findViewById(R.id.chkOther)).isChecked());
+                editor.putInt("refreshrate", refreshrate);
 				editor.commit();
 				StartupReceiver.setAlarm(this);
 				this.finish();
@@ -110,7 +115,12 @@ public class SettingsActivity extends LockableActivity implements OnClickListene
 		}
 		else if (v.getId() == R.id.chkNotifyOnChange) {
 			findViewById(R.id.chkWithSound).setEnabled(((CheckBox)v).isChecked());
-			findViewById(R.id.chkWithVibration).setEnabled(((CheckBox)v).isChecked());
+            findViewById(R.id.chkWithVibration).setEnabled(((CheckBox)v).isChecked());
+            findViewById(R.id.chkDeposit).setEnabled(((CheckBox)v).isChecked());
+            findViewById(R.id.chkFunds).setEnabled(((CheckBox)v).isChecked());
+            findViewById(R.id.chkLoans).setEnabled(((CheckBox)v).isChecked());
+            findViewById(R.id.chkCCards).setEnabled(((CheckBox)v).isChecked());
+            findViewById(R.id.chkOther).setEnabled(((CheckBox)v).isChecked());
 		}
 
 	}
@@ -136,6 +146,16 @@ public class SettingsActivity extends LockableActivity implements OnClickListene
 		((CheckBox)findViewById(R.id.chkWithSound)).setEnabled(prefs.getBoolean("notify_on_change", true));
 		((CheckBox)findViewById(R.id.chkWithVibration)).setChecked(prefs.getBoolean("notify_with_vibration", true));
 		((CheckBox)findViewById(R.id.chkWithVibration)).setEnabled(prefs.getBoolean("notify_on_change", true));
+        ((CheckBox)findViewById(R.id.chkDeposit)).setChecked(prefs.getBoolean("notify_for_deposit", true));
+        ((CheckBox)findViewById(R.id.chkDeposit)).setEnabled(prefs.getBoolean("notify_on_change", true));
+        ((CheckBox)findViewById(R.id.chkFunds)).setChecked(prefs.getBoolean("notify_for_funds", false));
+        ((CheckBox)findViewById(R.id.chkFunds)).setEnabled(prefs.getBoolean("notify_on_change", true));
+        ((CheckBox)findViewById(R.id.chkLoans)).setChecked(prefs.getBoolean("notify_for_loans", false));
+        ((CheckBox)findViewById(R.id.chkLoans)).setEnabled(prefs.getBoolean("notify_on_change", true));
+        ((CheckBox)findViewById(R.id.chkCCards)).setChecked(prefs.getBoolean("notify_for_ccards", true));
+        ((CheckBox)findViewById(R.id.chkCCards)).setEnabled(prefs.getBoolean("notify_on_change", true));
+        ((CheckBox)findViewById(R.id.chkOther)).setChecked(prefs.getBoolean("notify_for_other", false));
+        ((CheckBox)findViewById(R.id.chkOther)).setEnabled(prefs.getBoolean("notify_on_change", true));
 	}
 
 	@Override

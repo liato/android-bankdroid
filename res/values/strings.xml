@@ -44,6 +44,12 @@
 	<string name="notify_on_change">Notify on changes</string>
 	<string name="with_sound">With sound</string>
 	<string name="vibrate">Vibrate</string>
+	<string name="notify_account_types">Only for the following account types:</string>
+	<string name="funds">Funds</string>
+	<string name="ccards">Credit cards</string>
+	<string name="loans">Loans</string>
+	<string name="deposit_account">Deposit accounts</string>
+	<string name="other">Other</string>
 	
     <string name="login">Login</string>
     <string name="invalid_access_code">Invalid access code. Try again.</string>
@@ -69,6 +75,9 @@
     <string name="remove_bank_title">Remove bank?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    
+    <string name="menu_show_hidden">Show hidden accounts</string>
+    <string name="menu_hide_hidden">Hide hidden accounts</string>
 
     <string name="tran_desc">No transaction history available for this account.</string>
     
