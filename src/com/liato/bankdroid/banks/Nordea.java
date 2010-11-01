@@ -151,7 +151,6 @@ public class Nordea extends Bank {
 	@Override
 	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
 		super.updateTransactions(account, urlopen);
-		if (new String("").equals(new String(""))) return;
 
 		//No transaction history for loans, funds and credit cards.
 		int accType = account.getType();
