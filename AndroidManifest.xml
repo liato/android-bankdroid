@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.liato.bankdroid" android:versionName="1.4.0-RC4" android:versionCode="28">
+	package="com.liato.bankdroid" android:versionName="1.4.0-RC5" android:versionCode="29">
 	<application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="false">
 		<activity android:label="@string/app_name"
 			android:multiprocess="false" android:name=".LoginActivity"

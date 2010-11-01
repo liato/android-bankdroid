@@ -31,7 +31,7 @@ public class Coop extends Bank {
 	private static final int BANKTYPE_ID = Bank.COOP;
 
 	private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
-	private Pattern reBalanceVisa = Pattern.compile("Disponibelt\\s*belopp[^<]*</h6>\\s*<ul>(.*?)</ul>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private Pattern reBalanceVisa = Pattern.compile("MedMera\\s*Visa</h3>\\s*<h6>Disponibelt\\s*belopp[^<]*</h6>\\s*<ul>(.*?)</ul>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reBalanceKonto = Pattern.compile("Aktuellt\\s*saldo:</span>[^>]*>([^<]+)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reTransactionsKonto = Pattern.compile("<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>([^<]+)</td>\\s*<td>[^<]*</td>\\s*<td>([^<]*)</td>\\s*<td[^>]*>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
 	private Pattern reTransactionsVisa = Pattern.compile("<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]*)</td>\\s*<td>([^<]*)</td>\\s*<td.*?</td>\\s*<td><s.*?value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
