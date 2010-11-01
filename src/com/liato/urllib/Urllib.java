@@ -73,7 +73,7 @@ public class Urllib {
     		//URL urli = new URL(url); 
     		HttpGet urlConnection = new HttpGet(url);
     		urlConnection.addHeader("User-Agent", USER_AGENT);
-    		response = httpclient.execute(urlConnection, responseHandler, context); 
+    		response = httpclient.execute(urlConnection, responseHandler, context);
     	}
     	else {
     		HttpPost urlConnection = new HttpPost(url);
@@ -101,6 +101,9 @@ public class Urllib {
     	return currentURI;
     }
     
+    public DefaultHttpClient getHttpclient() {
+        return httpclient;
+    }
     public boolean acceptsInvalidCertificates() {
     	return acceptInvalidCertificates;
     }

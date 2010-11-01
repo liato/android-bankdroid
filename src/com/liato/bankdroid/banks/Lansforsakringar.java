@@ -12,6 +12,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
 import android.text.Html;
+import android.text.InputType;
 import android.util.Log;
 
 import com.liato.bankdroid.Account;
@@ -28,6 +29,8 @@ public class Lansforsakringar extends Bank {
 	private static final String NAME_SHORT = "lansforsakringar";
 	private static final String URL = "https://secure246.lansforsakringar.se/lfportal/login/privat";
 	private static final int BANKTYPE_ID = Bank.LANSFORSAKRINGAR;
+    private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+    private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
 
 	private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
 	private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
@@ -42,6 +45,8 @@ public class Lansforsakringar extends Bank {
 		super.NAME_SHORT = NAME_SHORT;
 		super.BANKTYPE_ID = BANKTYPE_ID;
 		super.URL = URL;
+		super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
+		super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
 	}
 
 	public Lansforsakringar(String username, String password, Context context) throws BankException, LoginException {

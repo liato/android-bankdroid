@@ -12,6 +12,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
 import android.text.Html;
+import android.text.InputType;
 import android.util.Log;
 
 import com.liato.bankdroid.Account;
@@ -29,6 +30,7 @@ public class ICABanken extends Bank {
 	private static final String NAME_SHORT = "icabanken";
 	private static final String URL = "https://mobil.icabanken.se/";
 	private static final int BANKTYPE_ID = Bank.ICABANKEN;
+    private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
 
 	private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
 	private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
@@ -44,6 +46,7 @@ public class ICABanken extends Bank {
 		super.NAME_SHORT = NAME_SHORT;
 		super.BANKTYPE_ID = BANKTYPE_ID;
 		super.URL = URL;
+		super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
 	}
 
 	public ICABanken(String username, String password, Context context) throws BankException, LoginException {

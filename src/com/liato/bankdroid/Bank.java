@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.text.InputType;
 
 import com.liato.urllib.Urllib;
 
@@ -24,6 +25,8 @@ public abstract class Bank implements Comparable<Bank> {
 	public final static int OKQ8 = 12;
 	public final static int EUROCARD = 13;
 	public final static int FIRSTCARD = 14;
+	public final static int PAYPAL = 15;
+	public final static int Payson = 16;
 	
 
 	protected String TAG = "Bank";
@@ -31,12 +34,12 @@ public abstract class Bank implements Comparable<Bank> {
 	protected String NAME_SHORT = "bank";
 	protected int BANKTYPE_ID = 0;
 	protected String URL;
+    protected int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT;
+    protected int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_TEXT;
 
 	protected Context context;
 	protected Resources res;
 
-    protected boolean usernameNumeric = false;
-    protected boolean passwordNumeric = false;
 	
 	protected String username;
 	protected String password;
@@ -214,15 +217,15 @@ public abstract class Bank implements Comparable<Bank> {
 		return URL;
 	}
 	
-    public boolean isUsernameNumeric() {
-        return usernameNumeric;
+	public int getInputTypeUsername() {
+        return INPUT_TYPE_USERNAME;
     }
 
-    public boolean isPasswordNumeric() {
-        return passwordNumeric;
-    }	
-	
-	public int getImageResource() {
+    public int getInputTypePassword() {
+        return INPUT_TYPE_PASSWORD;
+    }
+
+    public int getImageResource() {
 		return res.getIdentifier("logo_"+NAME_SHORT, "drawable", context.getPackageName());	
 	}
 

@@ -29,7 +29,7 @@
 			<EditText
 				android:layout_height="wrap_content"
 				android:layout_width="fill_parent"
-				android:id="@+id/edtBankeditUsername" android:inputType="number"></EditText>
+				android:id="@+id/edtBankeditUsername" android:inputType="textEmailAddress"></EditText>
 			<TextView
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"

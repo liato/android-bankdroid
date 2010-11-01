@@ -12,6 +12,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
 import android.text.Html;
+import android.text.InputType;
 import android.util.Log;
 
 import com.liato.bankdroid.Account;
@@ -28,6 +29,7 @@ public class AvanzaMini extends Bank {
 	private static final String NAME_SHORT = "avanzamini";
 	private static final String URL = "https://www.avanza.se/mini/hem/";
 	private static final int BANKTYPE_ID = Bank.AVANZAMINI;
+	private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
 	
     private Pattern reAvanzaMini = Pattern.compile("w100\\s+azatable\"[^>]+>\\s*<tbody>\\s*(.*)</tbody>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private Pattern accountsAvanzaMini = Pattern.compile("<tr>\\s*<td>([^<]+)</td>\\s*<td\\s+class=\"tright\">([^<]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
@@ -38,6 +40,7 @@ public class AvanzaMini extends Bank {
 		super.NAME_SHORT = NAME_SHORT;
 		super.BANKTYPE_ID = BANKTYPE_ID;
 		super.URL = URL;
+		super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
 	}
 
 	public AvanzaMini(String username, String password, Context context) throws BankException, LoginException {

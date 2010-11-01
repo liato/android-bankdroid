@@ -13,6 +13,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
 import android.text.Html;
+import android.text.InputType;
 import android.util.Log;
 
 import com.liato.bankdroid.Account;
@@ -30,6 +31,7 @@ public class Statoil extends Bank {
 	private static final String NAME_SHORT = "statoil";
 	private static final String URL = "https://applications.sebkort.com/nis/external/stse/login.do";
 	private static final int BANKTYPE_ID = Bank.STATOIL;
+    private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
 
 	private Pattern reAccounts = Pattern.compile("Welcomepagebillingunitlastdisposableamount\">([^<]+)</div>", Pattern.CASE_INSENSITIVE);
 	private Pattern reTransactions = Pattern.compile("transcol1\">\\s*<span>([^<]+)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^<]+)</span>\\s*</td>\\s*<td[^>]+>\\s*<div[^>]+>\\s*<span>([^<]*)</span>\\s*</div>\\s*</td>\\s*<td[^>]+>\\s*<span>([^<]*)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^>]*)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^<]*)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^<]+)</span>", Pattern.CASE_INSENSITIVE);
@@ -41,6 +43,7 @@ public class Statoil extends Bank {
 		super.NAME_SHORT = NAME_SHORT;
 		super.BANKTYPE_ID = BANKTYPE_ID;
 		super.URL = URL;
+		super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
 	}
 
 	public Statoil(String username, String password, Context context) throws BankException, LoginException {

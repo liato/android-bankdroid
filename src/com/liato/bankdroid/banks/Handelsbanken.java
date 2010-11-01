@@ -12,6 +12,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
 import android.text.Html;
+import android.text.InputType;
 import android.util.Log;
 
 import com.liato.bankdroid.Account;
@@ -33,6 +34,7 @@ public class Handelsbanken extends Bank {
 	private static final String NAME_SHORT = "handelsbanken";
 	private static final String URL = "https://m.handelsbanken.se/";
 	private static final int BANKTYPE_ID = Bank.HANDELSBANKEN;
+    private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
 
 	private Pattern reBalance = Pattern.compile("block-link\\s*\"\\s*href=\"/primary/_-([^\"]+)\"><span>([^<]+)</span>.*?SEK([0-9\\s.,-ÃÂ]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reAccountsUrl = Pattern.compile("_-([^\"]+)\"><img[^>]+><span[^>]+>Konton<",Pattern.CASE_INSENSITIVE);
@@ -47,6 +49,7 @@ public class Handelsbanken extends Bank {
 		super.NAME_SHORT = NAME_SHORT;
 		super.BANKTYPE_ID = BANKTYPE_ID;
 		super.URL = URL;
+		super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
 	}
 
 	public Handelsbanken(String username, String password, Context context) throws BankException, LoginException {

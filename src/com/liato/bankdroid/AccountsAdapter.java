@@ -3,7 +3,6 @@ package com.liato.bankdroid;
 import java.util.ArrayList;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,7 +25,7 @@ public class AccountsAdapter extends BaseAdapter {
     public AccountsAdapter(Context context, boolean showHidden) {
 		this.context = context;
 		this.banks = new ArrayList<Bank>();
-		inflater = LayoutInflater.from(context);
+		inflater = LayoutInflater.from(this.context);
 		this.showHidden = showHidden;
 	}
 
@@ -83,7 +82,7 @@ public class AccountsAdapter extends BaseAdapter {
 		if (convertView == null) {
 			convertView = inflater.inflate(R.layout.listitem_accounts_item, parent, false);
 		}
-		convertView.findViewById(R.id.divider).setBackgroundColor(Color.argb(60, 255, 255, 255));
+		convertView.findViewById(R.id.divider).setBackgroundColor(Color.argb(30, 255, 255, 255));
 		TextView txtAccountName = ((TextView)convertView.findViewById(R.id.txtListitemAccountsItemAccountname));
         TextView txtBalance = ((TextView)convertView.findViewById(R.id.txtListitemAccountsItemBalance));
 		txtAccountName.setText(account.getName());

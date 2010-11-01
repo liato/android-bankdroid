@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import net.sf.andhsli.hotspotlogin.SimpleCrypto;
-
 import android.content.Context;
 import android.database.Cursor;
 
@@ -18,6 +17,8 @@ import com.liato.bankdroid.banks.ICA;
 import com.liato.bankdroid.banks.ICABanken;
 import com.liato.bankdroid.banks.Lansforsakringar;
 import com.liato.bankdroid.banks.Nordea;
+import com.liato.bankdroid.banks.OKQ8;
+import com.liato.bankdroid.banks.PayPal;
 import com.liato.bankdroid.banks.Statoil;
 import com.liato.bankdroid.banks.Swedbank;
 import com.liato.bankdroid.banks.Villabanken;
@@ -46,8 +47,16 @@ public class BankFactory {
 			return new Avanza(context);
 		case Bank.VILLABANKEN:
 			return new Villabanken(context);
-		case Bank.AVANZAMINI:
-			return new AvanzaMini(context);
+        case Bank.AVANZAMINI:
+            return new AvanzaMini(context);
+        case Bank.OKQ8:
+            return new OKQ8(context);
+        case Bank.EUROCARD:
+            return new Eurocard(context);
+        case Bank.FIRSTCARD:
+            return new FirstCard(context);
+        case Bank.PAYPAL:
+            return new PayPal(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -67,8 +76,10 @@ public class BankFactory {
 		banks.add(new Avanza(context));
 		banks.add(new Villabanken(context));
 		banks.add(new AvanzaMini(context));
+        banks.add(new OKQ8(context));
 		banks.add(new Eurocard(context));
-		banks.add(new FirstCard(context));
+        banks.add(new FirstCard(context));
+        banks.add(new PayPal(context));
 		return banks;
 	}
 
@@ -168,6 +179,7 @@ public class BankFactory {
                                       c.getInt(c.getColumnIndex("acctype")));
         account.setHidden(c.getInt(c.getColumnIndex("hidden")) == 1 ? true : false);
         account.setNotify(c.getInt(c.getColumnIndex("notify")) == 1 ? true : false);
+        account.setCurrency(c.getString(c.getColumnIndex("currency")));
 		c.close();
 		if (loadTransactions) {
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
@@ -207,6 +219,7 @@ public class BankFactory {
                                           c.getInt(c.getColumnIndex("acctype")));
 	        account.setHidden(c.getInt(c.getColumnIndex("hidden")) == 1 ? true : false);
 	        account.setNotify(c.getInt(c.getColumnIndex("notify")) == 1 ? true : false);			
+	        account.setCurrency(c.getString(c.getColumnIndex("currency")));
 			accounts.add(account);
 		}
 		c.close();

@@ -13,6 +13,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
 import android.text.Html;
+import android.text.InputType;
 import android.util.Log;
 
 import com.liato.bankdroid.Account;
@@ -30,6 +31,8 @@ public class Nordea extends Bank {
 	private static final String NAME_SHORT = "nordea";
 	private static final String URL = "https://mobil.nordea.se/";
 	private static final int BANKTYPE_ID = Bank.NORDEA;
+    private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+    private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
 	
 	private Pattern reAccounts = Pattern.compile("account\\.html\\?id=konton:([^\"]+)\"[^>]+>\\s*<div[^>]+>([^<]+)<span[^>]+>([^<]+)</span", Pattern.CASE_INSENSITIVE);
 	private Pattern reFundsLoans = Pattern.compile("(?:fund|loan)\\.html\\?id=(?:fonder|lan):([^\"]+)\".*?>.*?>([^<]+).*?>([^<]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
@@ -44,6 +47,8 @@ public class Nordea extends Bank {
 		super.NAME_SHORT = NAME_SHORT;
 		super.BANKTYPE_ID = BANKTYPE_ID;
 		super.URL = URL;
+        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
+        super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
 	}
 
 	public Nordea(String username, String password, Context context) throws BankException, LoginException {
@@ -70,11 +75,6 @@ public class Nordea extends Bank {
 			Log.d("BankNordea", "Posting to https://mobil.nordea.se/banking-nordea/nordea-c3/login.html");
 			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/login.html", postData);
 			Log.d("BankNordea", "Url after post: "+urlopen.getCurrentURI());
-			/*
-			for (String s : response.split("\n")) {
-				Log.d("BankNordea-ResponseData", s);
-			}
-			*/
 			
 			if (response.contains("felaktiga uppgifter")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -100,23 +100,19 @@ public class Nordea extends Bank {
 		try {
 			Log.d("BankNordea", "Opening: https://mobil.nordea.se/banking-nordea/nordea-c3/accounts.html");
 			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/accounts.html");
-			/*for (String s : response.split("\n")) {
-				Log.d("BankNordea-ResponseData", s);
-			}*/
 			
 			matcher = reAccounts.matcher(response);
 			while (matcher.find()) {
 				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), matcher.group(1).trim()));
 				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
 			}
-
+			
 			Log.d("BankNordea", "Opening: https://mobil.nordea.se/banking-nordea/nordea-c3/funds/portfolio/funds.html");
 			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/funds/portfolio/funds.html");
 
 			matcher = reFundsLoans.matcher(response);
 			while (matcher.find()) {
-				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), "f"+matcher.group(1).trim()));
-				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
+				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), "f_"+matcher.group(1).trim(), -1L, Account.FUNDS));
 			}
 
 			Log.d("BankNordea", "Opening: https://mobil.nordea.se/banking-nordea/nordea-c3/accounts.html?type=lan");
@@ -124,17 +120,15 @@ public class Nordea extends Bank {
 			
 			matcher = reFundsLoans.matcher(response);
 			while (matcher.find()) {
-				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), "l"+matcher.group(1).trim()));
-				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
+				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), "l_"+matcher.group(1).trim(), -1L, Account.LOANS));
 			}
 			matcher = reCards.matcher(response);
 			Log.d(TAG, "Opening: https://mobil.nordea.se/banking-nordea/nordea-c3/card/list.html");
 			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/card/list.html");
 			while (matcher.find()) {
-				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), "c"+matcher.group(1).trim()));
+				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), "c_"+matcher.group(1).trim(), -1L, Account.CCARD));
 				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
 			}
-
 			if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
 			}
@@ -149,14 +143,19 @@ public class Nordea extends Bank {
 		catch (IOException e) {
 			throw new BankException(e.getMessage());
 		}
+		finally {
+		    super.updateComplete();
+		}
 	}
 
 	@Override
 	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
 		super.updateTransactions(account, urlopen);
+		if (new String("").equals(new String(""))) return;
 
 		//No transaction history for loans, funds and credit cards.
-		if (account.getId().startsWith("l") || account.getId().startsWith("f") || account.getId().startsWith("c")) return;
+		int accType = account.getType();
+		if (accType == Account.LOANS || accType == Account.FUNDS || accType == Account.CCARD) return;
 
 		String response = null;
 		Matcher matcher;

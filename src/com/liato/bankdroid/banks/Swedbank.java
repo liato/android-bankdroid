@@ -12,6 +12,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
 import android.text.Html;
+import android.text.InputType;
 import android.util.Log;
 
 import com.liato.bankdroid.Account;
@@ -29,6 +30,7 @@ public class Swedbank extends Bank {
 	private static final String NAME_SHORT = "swedbank";
 	private static final String URL = "https://mobilbank.swedbank.se/";
 	private static final int BANKTYPE_ID = Bank.SWEDBANK;
+    private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
 
 	private Pattern reCSRF = Pattern.compile("csrf_token\".*?value=\"([^\"]+)\"");
 	private Pattern reAccounts = Pattern.compile("(account|loan)\\.html\\?id=([^\"]+)\">\\s*(?:<span.*?/span>)?([^<]+)<.*?secondary\">([^<]+)</span");
@@ -41,7 +43,7 @@ public class Swedbank extends Bank {
 		super.NAME_SHORT = NAME_SHORT;
 		super.BANKTYPE_ID = BANKTYPE_ID;
 		super.URL = URL;
-        super.usernameNumeric = true;
+        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
 	}
 
 	public Swedbank(String username, String password, Context context) throws BankException, LoginException {
