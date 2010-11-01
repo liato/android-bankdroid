@@ -92,7 +92,6 @@ public class Coop extends Bank {
 		}
 
 		urlopen = login();
-		String response = null;
 		Matcher matcher;
 		try {
 			Account account;
