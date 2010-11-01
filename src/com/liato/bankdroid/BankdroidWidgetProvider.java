@@ -226,7 +226,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 					return null;
 				}
 				long bankId = WidgetConfigureActivity.getBankId(context, appWidgetId);
-				Bank bank = BankFactory.bankFromDb(new Long(bankId), context, false);
+				Bank bank = BankFactory.bankFromDb(new Long(bankId), context, true);
 				if (bank == null) {
 					return null;
 				}
