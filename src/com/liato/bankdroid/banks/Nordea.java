@@ -112,7 +112,7 @@ public class Nordea extends Bank {
 
 			matcher = reFundsLoans.matcher(response);
 			while (matcher.find()) {
-				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), "f_"+matcher.group(1).trim(), -1L, Account.FUNDS));
+				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), "f:"+matcher.group(1).trim(), -1L, Account.FUNDS));
 			}
 
 			Log.d("BankNordea", "Opening: https://mobil.nordea.se/banking-nordea/nordea-c3/accounts.html?type=lan");
@@ -120,13 +120,13 @@ public class Nordea extends Bank {
 			
 			matcher = reFundsLoans.matcher(response);
 			while (matcher.find()) {
-				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), "l_"+matcher.group(1).trim(), -1L, Account.LOANS));
+				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), "l:"+matcher.group(1).trim(), -1L, Account.LOANS));
 			}
 			matcher = reCards.matcher(response);
 			Log.d(TAG, "Opening: https://mobil.nordea.se/banking-nordea/nordea-c3/card/list.html");
 			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/card/list.html");
 			while (matcher.find()) {
-				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), "c_"+matcher.group(1).trim(), -1L, Account.CCARD));
+				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), "c:"+matcher.group(1).trim(), -1L, Account.CCARD));
 				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
 			}
 			if (accounts.isEmpty()) {

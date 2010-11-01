@@ -97,7 +97,7 @@ public class Swedbank extends Bank {
 			
 			matcher = reAccounts.matcher(response);
 			while (matcher.find()) {
-				Account account = new Account(Html.fromHtml(matcher.group(3)).toString(), Helpers.parseBalance(matcher.group(4)), matcher.group(2).trim() == "loan" ? "loan_" + matcher.group(2).trim() : matcher.group(2).trim());
+				Account account = new Account(Html.fromHtml(matcher.group(3)).toString(), Helpers.parseBalance(matcher.group(4)), matcher.group(2).trim() == "loan" ? "l:" + matcher.group(2).trim() : matcher.group(2).trim());
 				if (matcher.group(2).trim() == "loan") {
 				    account.setType(Account.LOANS);
 				}
@@ -109,7 +109,7 @@ public class Swedbank extends Bank {
 			matcher = reLinklessAccounts.matcher(response);
 			int accid = 0;
 			while (matcher.find()) {
-				Account account = new Account(Html.fromHtml(matcher.group(1)).toString(), Helpers.parseBalance(matcher.group(2)), "ll_"+accid);
+				Account account = new Account(Html.fromHtml(matcher.group(1)).toString(), Helpers.parseBalance(matcher.group(2)), "ll:"+accid);
 				balance = balance.add(Helpers.parseBalance(matcher.group(2)));
 				account.setType(Account.OTHER);
                 accounts.add(account);
