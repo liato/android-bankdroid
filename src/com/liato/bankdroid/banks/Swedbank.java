@@ -66,7 +66,6 @@ public class Swedbank extends Bank {
 			List <NameValuePair> postData = new ArrayList <NameValuePair>();
 			postData.add(new BasicNameValuePair("xyz", username));
 			postData.add(new BasicNameValuePair("zyx", password));
-			Log.d(TAG, "user: "+username+"; pass: "+password);
 			postData.add(new BasicNameValuePair("_csrf_token", csrftoken));
 			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/login.html", postData);
 
