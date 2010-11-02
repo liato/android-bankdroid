@@ -110,7 +110,6 @@ public class Swedbank extends Bank {
 			int accid = 0;
 			while (matcher.find()) {
 				Account account = new Account(Html.fromHtml(matcher.group(1)).toString(), Helpers.parseBalance(matcher.group(2)), "ll:"+accid);
-				balance = balance.add(Helpers.parseBalance(matcher.group(2)));
 				account.setType(Account.OTHER);
                 accounts.add(account);
                 accid++;
