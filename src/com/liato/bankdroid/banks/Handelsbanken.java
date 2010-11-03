@@ -35,6 +35,7 @@ public class Handelsbanken extends Bank {
 	private static final String URL = "https://m.handelsbanken.se/";
 	private static final int BANKTYPE_ID = Bank.HANDELSBANKEN;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+    private static final String INPUT_HINT_USERNAME = "ÅÅMMDD-XXXX";
 
 	private Pattern reBalance = Pattern.compile("block-link\\s*\"\\s*href=\"/primary/_-([^\"]+)\"><span>([^<]+)</span>.*?SEK([0-9\\s.,-ÃÂ]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reAccountsUrl = Pattern.compile("_-([^\"]+)\"><img[^>]+><span[^>]+>Konton<",Pattern.CASE_INSENSITIVE);
@@ -50,6 +51,7 @@ public class Handelsbanken extends Bank {
 		super.BANKTYPE_ID = BANKTYPE_ID;
 		super.URL = URL;
 		super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
+		super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
 	}
 
 	public Handelsbanken(String username, String password, Context context) throws BankException, LoginException {

@@ -36,6 +36,7 @@ public class OKQ8 extends Bank {
 	private static final String URL = "https://nettbank.edb.com/Logon/index.jsp?domain=0066&from_page=http://www.okq8.se&to_page=https://nettbank.edb.com/cardpayment/transigo/logon/done/okq8";
 	private static final int BANKTYPE_ID = Bank.OKQ8;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+    private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
 	
 	private Pattern reLoginRedir = Pattern.compile("value=\"([^\"]*)\"", Pattern.CASE_INSENSITIVE);
 	private Pattern reBalance = Pattern.compile("<div class=\"numberpositive\">([^<]*)</div>", Pattern.CASE_INSENSITIVE);
@@ -50,6 +51,7 @@ public class OKQ8 extends Bank {
 		super.BANKTYPE_ID = BANKTYPE_ID;
 		super.URL = URL;
 		super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
+		super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
 	}
 
 	public OKQ8(String username, String password, Context context) throws BankException, LoginException {

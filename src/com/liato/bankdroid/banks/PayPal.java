@@ -97,6 +97,7 @@ public class PayPal extends Bank {
 		urlopen = login();
 		try {
             response = urlopen.open("https://www.paypal.com/en/cgi-bin/webscr?cmd=_login-done&login_access="+((int)(System.currentTimeMillis() / 1000L)));
+            //Helpers.slowDebug(TAG, response);
             Matcher matcher = reBalance.matcher(response);
             if (matcher.find()) {
                 /*

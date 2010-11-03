@@ -2,7 +2,6 @@ package com.liato.bankdroid.banks;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,6 +32,7 @@ public class Nordea extends Bank {
 	private static final int BANKTYPE_ID = Bank.NORDEA;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
+    private static final String INPUT_HINT_USERNAME = "ÅÅMMDD-XXXX";
 	
 	private Pattern reAccounts = Pattern.compile("account\\.html\\?id=konton:([^\"]+)\"[^>]+>\\s*<div[^>]+>([^<]+)<span[^>]+>([^<]+)</span", Pattern.CASE_INSENSITIVE);
 	private Pattern reFundsLoans = Pattern.compile("(?:fund|loan)\\.html\\?id=(?:fonder|lan):([^\"]+)\".*?>.*?>([^<]+).*?>([^<]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
@@ -49,6 +49,7 @@ public class Nordea extends Bank {
 		super.URL = URL;
         super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
         super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
+        super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
 	}
 
 	public Nordea(String username, String password, Context context) throws BankException, LoginException {

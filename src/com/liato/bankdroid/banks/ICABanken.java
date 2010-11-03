@@ -31,6 +31,8 @@ public class ICABanken extends Bank {
 	private static final String URL = "https://mobil.icabanken.se/";
 	private static final int BANKTYPE_ID = Bank.ICABANKEN;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+    private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
+    private static final String INPUT_HINT_USERNAME = "ÅÅMMDD-XXXX";
 
 	private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
 	private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
@@ -46,7 +48,9 @@ public class ICABanken extends Bank {
 		super.NAME_SHORT = NAME_SHORT;
 		super.BANKTYPE_ID = BANKTYPE_ID;
 		super.URL = URL;
-		super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
+        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
+        super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
+        super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
 	}
 
 	public ICABanken(String username, String password, Context context) throws BankException, LoginException {

@@ -92,9 +92,12 @@ public class BankEditActivity extends LockableActivity implements OnClickListene
 	@Override
 	public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int pos, long id) {
 		SELECTED_BANK = (Bank)parentView.getItemAtPosition(pos);
-        ((EditText)findViewById(R.id.edtBankeditUsername)).setInputType(SELECTED_BANK.getInputTypeUsername());
+		EditText edtUsername = (EditText)findViewById(R.id.edtBankeditUsername);
+		edtUsername.setInputType(SELECTED_BANK.getInputTypeUsername());
+		edtUsername.setHint(SELECTED_BANK.getInputHintUsername());
         //Not possible to set a textfield to both PHONE and PASSWORD :\
         //((EditText)findViewById(R.id.edtBankeditPassword)).setInputType(SELECTED_BANK.getInputTypePassword());
+        
 	}
 
 	@Override

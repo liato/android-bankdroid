@@ -36,6 +36,7 @@ public abstract class Bank implements Comparable<Bank> {
 	protected String URL;
     protected int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT;
     protected int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_TEXT;
+    protected String INPUT_HINT_USERNAME = null;
 
 	protected Context context;
 	protected Resources res;
@@ -223,6 +224,10 @@ public abstract class Bank implements Comparable<Bank> {
 
     public int getInputTypePassword() {
         return INPUT_TYPE_PASSWORD;
+    }
+
+    public String getInputHintUsername() {
+        return INPUT_HINT_USERNAME;
     }
 
     public int getImageResource() {

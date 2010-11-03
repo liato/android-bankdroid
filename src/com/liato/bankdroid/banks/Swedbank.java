@@ -31,6 +31,7 @@ public class Swedbank extends Bank {
 	private static final String URL = "https://mobilbank.swedbank.se/";
 	private static final int BANKTYPE_ID = Bank.SWEDBANK;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+    private static final String INPUT_HINT_USERNAME = "ÅÅMMDD-XXXX";
 
 	private Pattern reCSRF = Pattern.compile("csrf_token\".*?value=\"([^\"]+)\"");
 	private Pattern reAccounts = Pattern.compile("(account|loan)\\.html\\?id=([^\"]+)\">\\s*(?:<span.*?/span>)?([^<]+)<.*?secondary\">([^<]+)</span");
@@ -44,6 +45,7 @@ public class Swedbank extends Bank {
 		super.BANKTYPE_ID = BANKTYPE_ID;
 		super.URL = URL;
         super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
+        super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
 	}
 
 	public Swedbank(String username, String password, Context context) throws BankException, LoginException {

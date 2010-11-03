@@ -31,6 +31,7 @@ public class FirstCard extends Bank {
 	private static final String URL = "https://e-saldo.eurocard.se/nis/external/ecse/login.do";
 	private static final int BANKTYPE_ID = Bank.FIRSTCARD;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+    private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
 	
 	private Pattern reAccounts = Pattern.compile("translist\\.jsp\\?p=a&(?:amp;)?cardID=([^\"]+)\">([^<]+)</a>\\s*</td>\\s*<td[^>]+>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
 	private Pattern reTransactions = Pattern.compile("pagecolumns\">(\\d{6})</td>\\s*<td>\\s*</td>\\s*<td>([^<]+)</td>\\s*<td[^>]+>([^<]+)</td>\\s*<td[^>]+>([^<]+)</td>\\s*<td[^>]+>([^<]+)<", Pattern.CASE_INSENSITIVE);
@@ -43,6 +44,7 @@ public class FirstCard extends Bank {
 		super.BANKTYPE_ID = BANKTYPE_ID;
 		super.URL = URL;
 		super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
+		super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
 	}
 
 	public FirstCard(String username, String password, Context context) throws BankException, LoginException {

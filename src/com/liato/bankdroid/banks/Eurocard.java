@@ -32,6 +32,7 @@ public class Eurocard extends Bank {
 	private static final String URL = "https://e-saldo.eurocard.se/nis/external/ecse/login.do";
 	private static final int BANKTYPE_ID = Bank.EUROCARD;
 	private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+    private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
 	
 	private Pattern reAccounts = Pattern.compile("getInvoiceList\\.do\\?id=([^\"]+)\">([^<]+)</a></td>(?:\\s*<td>[^<]+</td>){2}\\s*<td\\s*align=\"right\">([^<]+)<", Pattern.CASE_INSENSITIVE);
 	private Pattern reTransactions = Pattern.compile("<nobr>(\\d\\d-\\d\\d)</nobr>\\s*</td>\\s*<td\\s*valign=\"top\">\\s*<nobr>[^<]+</nobr>\\s*</td>\\s*<td><div\\s*class=\"BreakLine\">([^<]+)</div>\\s*</td>\\s*<td\\s*valign=\"top\">\\s*<nobr>([^<]*)</nobr>\\s*</td>\\s*<td\\s*valign=\"top\">\\s*<nobr>([^<]*)</nobr>\\s*</td>\\s*<td[^>]+>\\s*<nobr>([^>]*)</nobr>\\s*</td>\\s*<td\\s*valign=\"top\">[^<]+</td>\\s*<td[^>]+>\\s*<nobr>([^<]+)</nobr>", Pattern.CASE_INSENSITIVE);
@@ -44,6 +45,7 @@ public class Eurocard extends Bank {
 		super.BANKTYPE_ID = BANKTYPE_ID;
 		super.URL = URL;
 		super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
+		super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
 	}
 
 	public Eurocard(String username, String password, Context context) throws BankException, LoginException {
