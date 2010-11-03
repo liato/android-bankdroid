@@ -37,7 +37,7 @@ public class Nordea extends Bank {
 	private Pattern reAccounts = Pattern.compile("account\\.html\\?id=konton:([^\"]+)\"[^>]+>\\s*<div[^>]+>([^<]+)<span[^>]+>([^<]+)</span", Pattern.CASE_INSENSITIVE);
 	private Pattern reFundsLoans = Pattern.compile("(?:fund|loan)\\.html\\?id=(?:fonder|lan):([^\"]+)\".*?>.*?>([^<]+).*?>([^<]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reCards = Pattern.compile("/card/details\\.html\\?id=(\\d{1,})[^\"]*\".*?>\\s*<span[^>]*>\\s*<span>([^<]+)</span>\\s*<span[^>]+>([^<]+)<", Pattern.CASE_INSENSITIVE);
-	private Pattern reTransactions = Pattern.compile("(\\d{2}.\\d{2})\\s</dt>[^>]+>([^<]+)[^>]+>.*?(?:Positive|Negative)\">([^<]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private Pattern reTransactions = Pattern.compile("(\\d{4}-\\d{2}-\\d{2})\\s</dt>[^>]+>([^<]+)[^>]+>.*?(?:Positive|Negative)\">([^<]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reCSRF = Pattern.compile("csrf_token\".*?value=\"([^\"]+)\"");
 
 	public Nordea(Context context) {
@@ -164,14 +164,8 @@ public class Nordea extends Bank {
 			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/account.html?id=konton:"+account.getId());
 			matcher = reTransactions.matcher(response);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-			String strDate = null;
-			String[] strMonthDay = null;
-			Calendar cal = Calendar.getInstance();
 			while (matcher.find()) {
-				strMonthDay = Html.fromHtml(matcher.group(1)).toString().trim().split("\\.");
-				strDate = ""+cal.get(Calendar.YEAR)+"-"+strMonthDay[1]+"-"+strMonthDay[0];
-				//Log.d(TAG, "Date: "+strDate+"; Trans: "+Html.fromHtml(matcher.group(2)).toString().trim()+"; Amount: "+Helpers.parseBalance(matcher.group(3)).toString());
-				transactions.add(new Transaction(strDate, Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3))));
+				transactions.add(new Transaction(Html.fromHtml(matcher.group(1)).toString().trim(), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3))));
 			}
 			account.setTransactions(transactions);
 		} catch (ClientProtocolException e) {
