@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/RelativeLayout01"
+	android:layout_height="fill_parent"
+	android:background="@drawable/background_repeat"
+	android:layout_width="fill_parent">
+
+	<ScrollView
+
+		android:layout_height="fill_parent"
+		android:layout_width="fill_parent"
+		android:fillViewport="true" android:layout_above="@+id/TableLayout01">
+		<LinearLayout
+			android:id="@+id/LinearLayout01"
+			android:layout_height="wrap_content"
+			android:layout_below="@+id/txtErrorDesc"
+			android:layout_width="wrap_content"
+			android:orientation="vertical"
+			android:layout_alignParentTop="true"
+			android:padding="10dp">
+			<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:typeface="sans" android:textSize="20sp" android:text="@string/bank" /><Spinner android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/spnBankeditBanklist"></Spinner><TextView
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:typeface="sans"
+				android:textSize="20sp"
+				android:text="@string/username" />
+			<EditText
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:id="@+id/edtBankeditUsername" android:inputType="textEmailAddress"></EditText>
+			<TextView
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:typeface="sans"
+				android:textSize="20sp"
+				android:text="@string/password" />
+			<EditText
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:id="@+id/edtBankeditPassword" android:inputType="textPassword"></EditText><TextView
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:typeface="sans"
+				android:textSize="20sp" android:text="@string/custom_name"/><EditText
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:id="@+id/edtBankeditCustomName" android:inputType="textCapWords"></EditText>
+			
+			
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:drawableLeft="@drawable/indicator_input_error"
+				android:text="@string/error_desc"
+				android:textSize="12sp"
+				android:drawablePadding="5dp"
+				android:id="@+id/txtErrorDesc"
+				android:visibility="invisible"></TextView>
+		</LinearLayout>
+	</ScrollView>
+	<TableLayout
+		android:id="@+id/TableLayout01"
+		android:stretchColumns="0,2"
+		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
+		android:layout_alignParentLeft="true"
+		android:layout_alignParentRight="true"
+		android:layout_width="wrap_content"
+		android:layout_below="@+id/LinearLayout01"
+		android:gravity="bottom">
+		<TableRow
+			android:id="@+id/TableRow01"
+			android:layout_height="wrap_content"
+			android:gravity="center_vertical|center_horizontal"
+			android:layout_gravity="center_vertical|center_horizontal"
+			android:layout_width="fill_parent">
+			<Button
+				android:text="@string/cancel"
+				android:drawableLeft="@drawable/button_cancel"
+				android:id="@+id/btnSettingsCancel"
+				style="@style/Menu_Button"></Button>
+			<ImageView
+				android:layout_height="wrap_content"
+				android:focusable="false"
+				android:src="@drawable/menu_separator"
+				android:adjustViewBounds="true"
+				android:scaleType="fitXY"
+				android:minWidth="3dp"
+				android:maxWidth="3dp"
+				android:layout_width="wrap_content"></ImageView>
+			<Button
+				android:id="@+id/btnSettingsOk"
+				android:drawableLeft="@drawable/button_save"
+				android:text="@string/save"
+				style="@style/Menu_Button"></Button>
+		</TableRow>
+	</TableLayout>
+</RelativeLayout>
