@@ -1,170 +1,122 @@
 package com.liato.bankdroid;
 
-import java.util.ArrayList;
-
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.AdapterView.OnItemSelectedListener;
+import android.preference.CheckBoxPreference;
+import android.preference.Preference;
+import android.preference.PreferenceScreen;
+import android.preference.Preference.OnPreferenceClickListener;
+import android.util.Log;
 
-public class SettingsActivity extends LockableActivity implements OnClickListener, OnItemSelectedListener {
-	private SharedPreferences prefs;
-	private Integer refreshrate;
+public class SettingsActivity extends LockablePreferenceActivity implements OnPreferenceClickListener {
+    private final static String TAG = "SettingsActivity";
+    private final static int DISABLE_LOCKPATTERN = 1;
+    private final static int ENABLE_LOCKPATTERN = 2;
+    private final static int CHANGE_LOCKPATTERN = 3;
+    private LockPatternUtils mLockPatternUtils;
+    
+    /** Called when the activity is first created. */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mLockPatternUtils = new LockPatternUtils(this);
+        addPreferencesFromResource(R.xml.settings);
+        getWindow().setBackgroundDrawableResource(R.drawable.background_repeat);
+        ((Preference)findPreference("patternlock_change")).setOnPreferenceClickListener(this);
+        ((Preference)findPreference("patternlock_change")).setOnPreferenceClickListener(this);
+        ((Preference)findPreference("remotenotifier_help")).setOnPreferenceClickListener(this);
+        ((Preference)findPreference("openwatch_help")).setOnPreferenceClickListener(this);
+        ((Preference)findPreference("account_types_screen")).setOnPreferenceClickListener(this);
+        ((Preference)findPreference("remotenotifier_screen")).setOnPreferenceClickListener(this);
+        ((Preference)findPreference("openwatch_screen")).setOnPreferenceClickListener(this);
+        ((Preference)findPreference("autoupdates_enabled")).setOnPreferenceClickListener(this);
+        ((Preference)findPreference("notification_sound")).setOnPreferenceClickListener(this);
+        CheckBoxPreference patternLock = ((CheckBoxPreference)findPreference("patternlock_enabled"));
+        patternLock.setOnPreferenceClickListener(this);
+        // Check the pattern lock check box if the lock pattern is enabled
+        patternLock.setChecked(mLockPatternUtils.isLockPatternEnabled());
+    }
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.settings);
-		prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		ArrayList<Pair<String, Integer>> items = new ArrayList<Pair<String, Integer>>();
-		items.add(new Pair<String, Integer>(getString(R.string.disabled), -1));
-		items.add(new Pair<String, Integer>("15 "+getString(R.string.minutes), 15));
-		items.add(new Pair<String, Integer>("30 "+getString(R.string.minutes), 30));
-		items.add(new Pair<String, Integer>("1 "+getString(R.string.hour), 60));
-		items.add(new Pair<String, Integer>("2 "+getString(R.string.hours), 60*2));
-		items.add(new Pair<String, Integer>("4 "+getString(R.string.hours), 60*4));
-		items.add(new Pair<String, Integer>("8 "+getString(R.string.hours), 60*8));
-		items.add(new Pair<String, Integer>("16 "+getString(R.string.hours), 60*16));
-		items.add(new Pair<String, Integer>(getString(R.string.daily), 60*24));
+    @Override
+    public boolean onPreferenceClick(Preference pref) {
+        String prefKey = pref.getKey();
+        if ("account_types_screen".equals(prefKey) || "openwatch_screen".equals(prefKey) || "remotenotifier_screen".equals(prefKey)) {
+            ((PreferenceScreen)pref).getDialog().getWindow().setBackgroundDrawableResource(R.drawable.background_repeat);
+            return false;            
+        }
+        
+        if ("notification_sound".equals(prefKey)) {
+            this.setLockEnabled(false);
+            return false;
+        }
+        
+        if ("patternlock_enabled".equals(prefKey)) {
+            this.setLockEnabled(false);
+            if (mLockPatternUtils.isLockPatternEnabled()) {
+                // The user is trying to disable the lock pattern,
+                // only disable if the user knows the pattern.
+                startActivityForResult(new Intent(this, ConfirmLockPattern.class), DISABLE_LOCKPATTERN);
+                return true;
+            }
+            else {
+                // No lock pattern has been set yet, let the user choose a new one.
+                startActivityForResult(new Intent(this, ChooseLockPattern.class), ENABLE_LOCKPATTERN);
+                return true;
+            }
+        }
+        else if ("patternlock_change".equals(prefKey)) {
+            this.setLockEnabled(false);
+            startActivityForResult(new Intent(this, ChooseLockPattern.class), CHANGE_LOCKPATTERN);
+            return true;
+        }
+        else if ("remotenotifier_help".equals(prefKey)) {
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("http://code.google.com/p/android-notifier/")));            
+            return true;
+        }
+        else if ("openwatch_help".equals(prefKey)) {
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                                     Uri.parse("http://forum.xda-developers.com/showthread.php?t=554551")));            
+            return true;
+        }
+        return false;
+    }
+    
+    protected void onActivityResult(int requestCode, int resultCode,
+            Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult: req:"+requestCode+"; res:"+resultCode);
+        if (requestCode == DISABLE_LOCKPATTERN) {
+            if (resultCode == RESULT_OK) {
+                mLockPatternUtils.setLockPatternEnabled(false);
+                mLockPatternUtils.saveLockPattern(null);
+                ((CheckBoxPreference)findPreference("patternlock_enabled")).setChecked(false);
+                Log.d(TAG, "Pattern lock has been disabled.");
+            }
+            else {
+                Log.d(TAG, "User was unable to disable pattern lock.");
+            }
+        }
+        else if (requestCode == ENABLE_LOCKPATTERN) {
+            // User attempted to enable the pattern lock, toggle the checkbox.
+            ((CheckBoxPreference)findPreference("patternlock_enabled")).setChecked(mLockPatternUtils.isLockPatternEnabled());
+        }
+        else if (requestCode == CHANGE_LOCKPATTERN) {
+            // Don't do anything special
+        }
+    }
 
-		Spinner spnFrequency = (Spinner)findViewById(R.id.spnUpdateFrequency);
-		ArrayAdapter<Pair<String, Integer>> adapter = new ArrayAdapter<Pair<String, Integer>>(this,
-				android.R.layout.simple_spinner_item, items);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spnFrequency.setAdapter(adapter);
-		int refreshrate = prefs.getInt("refreshrate", -1);
-		for (int i = 0; i < items.size(); i++) {
-			if (items.get(i).getValue() == refreshrate) {
-				spnFrequency.setSelection(i);
-				break;
-			}
-			
-		}
-		spnFrequency.setOnItemSelectedListener(this);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        this.setLockEnabled(true);
+    }
 
-		findViewById(R.id.btnSettingsCancel).setOnClickListener(this);
-		findViewById(R.id.btnSettingsOk).setOnClickListener(this);
-		findViewById(R.id.chkNotifyOnChange).setOnClickListener(this);
-	}
-	
-	private class Pair<T, S> {
-		private T key;
-		private S value;
-		public Pair(T key, S value) { 
-			this.key = key;
-			this.value = value;   
-		}
-
-		public T getKey() {
-			return key;
-		}
-
-		public S getValue() {
-			return value;
-		}
-
-		public String toString() { 
-			return (String) getKey(); 
-		}
-	}
-
-	@Override
-	public void onClick(View v) {
-		if (v.getId() == R.id.btnSettingsCancel) {
-			this.finish();
-		}
-		else if (v.getId() == R.id.btnSettingsOk){
-			if (!(((EditText)findViewById(R.id.edtAccessCode)).getText().toString().equals(((EditText)findViewById(R.id.edtAccessCodeRepeat)).getText().toString()))) {
-				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setMessage(getText(R.string.passwords_mismatch)).setTitle(getText(R.string.passwords_mismatch_title))
-				.setIcon(android.R.drawable.ic_dialog_alert)
-				.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.cancel();
-					}
-				});
-				AlertDialog alert = builder.create();
-				alert.show();
-			}
-			else {
-				Editor editor = prefs.edit();
-				editor.putString("access_code", ((EditText)findViewById(R.id.edtAccessCode)).getText().toString());
-				editor.putBoolean("notify_on_change", ((CheckBox)findViewById(R.id.chkNotifyOnChange)).isChecked());
-				editor.putBoolean("notify_with_sound", ((CheckBox)findViewById(R.id.chkWithSound)).isChecked());
-                editor.putBoolean("notify_with_vibration", ((CheckBox)findViewById(R.id.chkWithVibration)).isChecked());
-                editor.putBoolean("notify_for_deposit", ((CheckBox)findViewById(R.id.chkDeposit)).isChecked());
-                editor.putBoolean("notify_for_funds", ((CheckBox)findViewById(R.id.chkFunds)).isChecked());
-                editor.putBoolean("notify_for_loans", ((CheckBox)findViewById(R.id.chkLoans)).isChecked());
-                editor.putBoolean("notify_for_ccards", ((CheckBox)findViewById(R.id.chkCCards)).isChecked());
-                editor.putBoolean("notify_for_other", ((CheckBox)findViewById(R.id.chkOther)).isChecked());
-                editor.putInt("refreshrate", refreshrate);
-				editor.commit();
-				StartupReceiver.setAlarm(this);
-				this.finish();
-			}
-		}
-		else if (v.getId() == R.id.chkNotifyOnChange) {
-			findViewById(R.id.chkWithSound).setEnabled(((CheckBox)v).isChecked());
-            findViewById(R.id.chkWithVibration).setEnabled(((CheckBox)v).isChecked());
-            findViewById(R.id.chkDeposit).setEnabled(((CheckBox)v).isChecked());
-            findViewById(R.id.chkFunds).setEnabled(((CheckBox)v).isChecked());
-            findViewById(R.id.chkLoans).setEnabled(((CheckBox)v).isChecked());
-            findViewById(R.id.chkCCards).setEnabled(((CheckBox)v).isChecked());
-            findViewById(R.id.chkOther).setEnabled(((CheckBox)v).isChecked());
-		}
-
-	}
-
-	@Override
-	public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int pos, long id) {
-		Pair<String, Integer> pair = (Pair<String, Integer>)parentView.getItemAtPosition(pos);
-		refreshrate = pair.getValue();
-	}
-	
-	
-	@Override
-	public void onNothingSelected(AdapterView<?> arg) {
-	}
-	
-	@Override
-	protected void onResume() {
-		super.onResume();
-		((EditText)findViewById(R.id.edtAccessCode)).setText(prefs.getString("access_code", ""));
-		((EditText)findViewById(R.id.edtAccessCodeRepeat)).setText(prefs.getString("access_code", ""));
-		((CheckBox)findViewById(R.id.chkNotifyOnChange)).setChecked(prefs.getBoolean("notify_on_change", true));
-		((CheckBox)findViewById(R.id.chkWithSound)).setChecked(prefs.getBoolean("notify_with_sound", true));
-		((CheckBox)findViewById(R.id.chkWithSound)).setEnabled(prefs.getBoolean("notify_on_change", true));
-		((CheckBox)findViewById(R.id.chkWithVibration)).setChecked(prefs.getBoolean("notify_with_vibration", true));
-		((CheckBox)findViewById(R.id.chkWithVibration)).setEnabled(prefs.getBoolean("notify_on_change", true));
-        ((CheckBox)findViewById(R.id.chkDeposit)).setChecked(prefs.getBoolean("notify_for_deposit", true));
-        ((CheckBox)findViewById(R.id.chkDeposit)).setEnabled(prefs.getBoolean("notify_on_change", true));
-        ((CheckBox)findViewById(R.id.chkFunds)).setChecked(prefs.getBoolean("notify_for_funds", false));
-        ((CheckBox)findViewById(R.id.chkFunds)).setEnabled(prefs.getBoolean("notify_on_change", true));
-        ((CheckBox)findViewById(R.id.chkLoans)).setChecked(prefs.getBoolean("notify_for_loans", false));
-        ((CheckBox)findViewById(R.id.chkLoans)).setEnabled(prefs.getBoolean("notify_on_change", true));
-        ((CheckBox)findViewById(R.id.chkCCards)).setChecked(prefs.getBoolean("notify_for_ccards", true));
-        ((CheckBox)findViewById(R.id.chkCCards)).setEnabled(prefs.getBoolean("notify_on_change", true));
-        ((CheckBox)findViewById(R.id.chkOther)).setChecked(prefs.getBoolean("notify_for_other", false));
-        ((CheckBox)findViewById(R.id.chkOther)).setEnabled(prefs.getBoolean("notify_on_change", true));
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-	}
-
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-	}   
+    @Override
+    protected void onPause() {
+        super.onPause();
+        StartupReceiver.setAlarm(this);
+    }
+    
 }

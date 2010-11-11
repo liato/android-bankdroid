@@ -1,5 +1,6 @@
 package com.liato.bankdroid;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import android.app.AlertDialog;
@@ -15,6 +16,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
@@ -39,9 +42,10 @@ public class MainActivity extends LockableActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        //Helpers.setActivityAnimation(this, R.anim.zoom_enter, R.anim.zoom_exit);
 
-		setContentView(R.layout.main);
-		Button btnRefresh = (Button)findViewById(R.id.btnAccountsRefresh);
+        setContentView(R.layout.main);
+        Button btnRefresh = (Button)findViewById(R.id.btnAccountsRefresh);
 		btnRefresh.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				new DataRetrieverTask(MainActivity.this).execute();
@@ -55,11 +59,12 @@ public class MainActivity extends LockableActivity {
 			}
 		});
 
-		ListView lv = (ListView)findViewById(R.id.lstAccountsList);
+		//ListView lv = (ListView)findViewById(R.id.lstAccountsList);
 		adapter = new AccountsAdapter(this, showHidden);
 		ArrayList<Bank> banks = new ArrayList<Bank>();//BankFactory.banksFromDb(this, true);
 		adapter.setGroups(banks);
-		lv.setAdapter(adapter);
+        ListView lv = (ListView)findViewById(R.id.lstAccountsList);
+        lv.setAdapter(adapter);
 		lv.setOnItemLongClickListener(new OnItemLongClickListener() {
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d("itemclick", "Parent: "+parent+ "; View: "+view+"; Pos: "+position+"; ID: "+id);
@@ -90,9 +95,11 @@ public class MainActivity extends LockableActivity {
 			}
 		});
 	}
-
+	
 	public void onResume() {
 		super.onResume();
+		// Receive refresh Intent from AutoRefreshService and refresh the main view if changes
+		// have been detected.
 		registerReceiver(receiver, new IntentFilter(AutoRefreshService.BROADCAST_MAIN_REFRESH));		
 		refreshView();
 	}
@@ -163,6 +170,7 @@ public class MainActivity extends LockableActivity {
 		case R.id.settings:
 			intent = new Intent(this, SettingsActivity.class);
 			this.startActivity(intent);
+	        //Helpers.setActivityAnimation(this, R.anim.zoom_enter, R.anim.zoom_exit);
 			return true;
 		case R.id.about:
 			showDialog(0);

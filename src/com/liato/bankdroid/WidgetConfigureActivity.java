@@ -15,7 +15,7 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class WidgetConfigureActivity extends Activity {
+public class WidgetConfigureActivity extends LockableActivity {
     private static final String WIDGET_PREFIX = "widget_";
 	int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 	private static final int LOGIN_ID = 1;
@@ -29,32 +29,15 @@ public class WidgetConfigureActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		Log.d("Widget Configre", "##########################");
-		Intent login = new Intent(this, LoginActivity.class);
-		login.setAction("widgetLogin");
-		startActivityForResult(login, LOGIN_ID);
 	}	
 	
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-        case LOGIN_ID:
-            if (resultCode == Activity.RESULT_OK) {
-            	Log.d("RESULT OK", "WHOOOOO #############");
-            	firstDraw();
-            } else {
-            	finish();
-            }
-            break;
-        }
-    }
-	
-	private void firstDraw() {
+	public void onResume() {
+		super.onResume();
 
-		setContentView(R.layout.main);
-		this.setTitle(this.getString(R.string.choose_an_account));
+        setContentView(R.layout.main);
+        this.setTitle(this.getString(R.string.choose_an_account));
         setResult(RESULT_CANCELED);
-		((View)findViewById(R.id.layMainMenu)).setVisibility(View.GONE);
+        ((View)findViewById(R.id.layMainMenu)).setVisibility(View.GONE);
 
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
@@ -63,38 +46,33 @@ public class WidgetConfigureActivity extends Activity {
         }
         if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
             finish();
-        }		
+        }       
 
         ListView lv = (ListView)findViewById(R.id.lstAccountsList);
-		lv.setOnItemClickListener(new OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				if (adapter.getItemViewType(position) != AccountsAdapter.VIEWTYPE_ACCOUNT) return;
-				final Context context = WidgetConfigureActivity.this;
-	            Account account = (Account)parent.getItemAtPosition(position);
-	            Bank bank = account.getBank();
-	            WidgetConfigureActivity.setAccountBankId(context, mAppWidgetId, account.getId(), bank.getDbId());
-	            SharedPreferences.Editor prefs = context.getSharedPreferences("widget_prefs", 0).edit();
-	            prefs.putBoolean("transperant_background" + mAppWidgetId, ((CheckBox)findViewById(R.id.chkTransperantBackground)).isChecked());
-	            prefs.commit();	            
-	            // Push widget update to surface with newly set prefix
-	            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-	            BankdroidWidgetProvider.updateAppWidget(context, appWidgetManager,
-	                    mAppWidgetId, account);
+        lv.setOnItemClickListener(new OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (adapter.getItemViewType(position) != AccountsAdapter.VIEWTYPE_ACCOUNT) return;
+                final Context context = WidgetConfigureActivity.this;
+                Account account = (Account)parent.getItemAtPosition(position);
+                Bank bank = account.getBank();
+                WidgetConfigureActivity.setAccountBankId(context, mAppWidgetId, account.getId(), bank.getDbId());
+                SharedPreferences.Editor prefs = context.getSharedPreferences("widget_prefs", 0).edit();
+                prefs.putBoolean("transperant_background" + mAppWidgetId, ((CheckBox)findViewById(R.id.chkTransperantBackground)).isChecked());
+                prefs.commit();             
+                // Push widget update to surface with newly set prefix
+                AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+                BankdroidWidgetProvider.updateAppWidget(context, appWidgetManager,
+                        mAppWidgetId, account);
 
-	            Intent resultValue = new Intent();
-	            resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
-	            setResult(RESULT_OK, resultValue);
-	            finish();
-			}
-		});
-		
-		refreshView();
-	}
-	
-//	public void onResume() {
-//		super.onResume();
-//		refreshView();
-//	}
+                Intent resultValue = new Intent();
+                resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
+                setResult(RESULT_OK, resultValue);
+                finish();
+            }
+        });
+        
+        refreshView();
+    }
 	
 	public static void setAccountBankId(Context context, int appWidgetId, String accountId, long bankId) {
         SharedPreferences.Editor prefs = context.getSharedPreferences("widget_prefs", 0).edit();
@@ -134,13 +112,5 @@ public class WidgetConfigureActivity extends Activity {
 		}
 	}
 
-	public void onDestroy() {
-		super.onDestroy();
-	}
-
-	
-	public void onActivityResult() {
-		
-	}
 
 }

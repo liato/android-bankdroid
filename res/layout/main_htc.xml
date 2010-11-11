@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/RelativeLayout01"
+	android:layout_width="wrap_content"
+	android:layout_height="fill_parent"
+	android:background="@drawable/background_repeat">
+	<CheckBox
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/chkTransperantBackground"
+		android:visibility="gone"
+		android:layout_margin="10dp"
+		android:text="@string/transparent_background" />
+	<TextView
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/txtAccountsDesc"
+		android:visibility="visible"
+		android:layout_margin="10dp"
+		android:text="@string/main_instructions" />
+	<com.htc.widget.HtcListView
+		android:layout_width="fill_parent"
+		android:id="@+id/lstAccountsList"
+		android:layout_height="wrap_content"
+		android:cacheColorHint="#00000000"
+		android:layout_above="@+id/layMainMenu"
+		android:layout_below="@+id/chkTransperantBackground"
+		android:layout_alignWithParentIfMissing="true"
+		android:dividerHeight="0dp" />
+	<TableLayout
+		android:stretchColumns="0,2"
+		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
+		android:layout_alignParentLeft="true"
+		android:layout_alignParentRight="true"
+		android:layout_width="wrap_content"
+		android:id="@+id/layMainMenu">
+		<TableRow
+			android:id="@+id/TableRow01"
+			android:layout_height="wrap_content"
+			android:gravity="center_vertical|center_horizontal"
+			android:layout_gravity="center_vertical|center_horizontal"
+			android:layout_width="fill_parent">
+			<Button
+				android:text="@string/add_new_account"
+				android:drawableLeft="@drawable/button_add"
+				android:id="@+id/btnAddBank"
+				style="@style/Menu_Button" />
+			<ImageView
+				android:layout_height="wrap_content"
+				android:focusable="false"
+				android:src="@drawable/menu_separator"
+				android:adjustViewBounds="true"
+				android:scaleType="fitXY"
+				android:minWidth="3dp"
+				android:maxWidth="3dp"
+				android:layout_width="wrap_content" />
+			<Button
+				android:id="@+id/btnAccountsRefresh"
+				android:drawableLeft="@drawable/button_refresh"
+				android:text="@string/refresh_balance"
+				style="@style/Menu_Button" />
+		</TableRow>
+	</TableLayout>
+</RelativeLayout>

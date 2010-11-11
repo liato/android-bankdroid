@@ -1,8 +1,12 @@
 package com.liato.bankdroid;
 
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+
+import android.app.Activity;
+import android.util.Log;
 
 public class Helpers {
 	public static BigDecimal parseBalance(String balance) {
@@ -37,4 +41,27 @@ public class Helpers {
 	public static String formatBalance(Double balance, String curr) {
 		return formatBalance(new BigDecimal(balance), curr);
 	}
+	
+	public static void slowDebug(String TAG, String text) {
+	    for (String s : text.split("\n")) {
+	        Log.d(TAG, s);
+	        try {
+                Thread.sleep(100);
+            }
+            catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+	    }
+	}
+	
+	static public void setActivityAnimation(Activity activity, int in, int out) {
+	    try {
+	        Method method = Activity.class.getMethod("overridePendingTransition", new Class[]{int.class, int.class});
+	        method.invoke(activity, in, out);
+	    } catch (Exception e) {
+	        // Can't change animation, so do nothing
+	    }
+	}
+	
 }

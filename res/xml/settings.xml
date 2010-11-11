@@ -1,0 +1,119 @@
+<PreferenceScreen
+	xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory
+		android:title="Security">
+		<CheckBoxPreference
+			android:key="patternlock_enabled"
+			android:defaultValue="false"
+			android:title="Enable Pattern Lock"
+			android:summary="Lock the app and widgets with a pattern lock" />
+		<Preference
+			android:title="Change pattern"
+			android:summary="Change your current lock pattern"
+			android:key="patternlock_change"
+			android:dependency="patternlock_enabled" />
+	</PreferenceCategory>
+	<PreferenceCategory
+		android:title="Automatic Updates">
+		<CheckBoxPreference
+			android:key="autoupdates_enabled"
+			android:defaultValue="true"
+			android:title="Enable"
+			android:summary="Enable automatic updates" />
+		<ListPreference
+			android:title="Update frequency"
+			android:key="refresh_rate"
+			android:defaultValue="60"
+			android:entries="@array/refreshrateNames"
+			android:entryValues="@array/refreshrateValues"
+			android:dependency="autoupdates_enabled" />
+		<CheckBoxPreference
+			android:key="autoupdates_transactions_enabled"
+			android:defaultValue="true"
+			android:title="Update transaction history"
+			android:summary="Update transaction history when updating automatically" />
+	</PreferenceCategory>
+	<PreferenceCategory
+		android:title="Notifications">
+		<CheckBoxPreference
+			android:key="notify_on_change"
+			android:defaultValue="true"
+			android:title="Enable notifications"
+			android:summary="Notify on account changes" />
+		<CheckBoxPreference
+			android:key="notify_with_vibration"
+			android:defaultValue="true"
+			android:title="Vibrate"
+			android:summary="Vibrate on account changes"
+			android:dependency="notify_on_change" />
+		<RingtonePreference
+			android:key="notification_sound"
+			android:name="Select sound"
+			android:summary="Select notification sound"
+			android:title="Notification sound"
+			android:ringtoneType="notification"
+			android:showDefault="true"
+			android:showSilent="true"
+			
+			android:dependency="notify_on_change" />
+		<PreferenceScreen
+			android:key="account_types_screen"
+			android:title="Account types"
+			android:summary="Only show notifications for selected account types"
+			android:dependency="notify_on_change">
+			<CheckBoxPreference
+				android:key="notify_for_deposit"
+				android:defaultValue="true"
+				android:title="@string/deposit_account" />
+			<CheckBoxPreference
+				android:key="notify_for_funds"
+				android:defaultValue="false"
+				android:title="@string/loans" />
+			<CheckBoxPreference
+				android:key="notify_for_loans"
+				android:defaultValue="false"
+				android:title="@string/funds" />
+			<CheckBoxPreference
+				android:key="notify_for_ccards"
+				android:defaultValue="true"
+				android:title="@string/ccards" />
+			<CheckBoxPreference
+				android:key="notify_for_other"
+				android:defaultValue="false"
+				android:title="@string/other" />
+		</PreferenceScreen>
+		<PreferenceScreen
+			android:key="remotenotifier_screen"
+			android:title="Remote Notifier Integration"
+			android:dependency="notify_on_change">
+			<CheckBoxPreference
+				android:key="notify_remotenotifier"
+				android:defaultValue="false"
+				android:title="Enable"
+				android:summary="Enable Remote Notifier integration" />
+			<Preference
+				android:title="What is Remote Notifier?"
+				android:summary="Read more about Remote Notifier on their website"
+				android:key="remotenotifier_help" />
+		</PreferenceScreen>
+		<PreferenceScreen
+			android:key="openwatch_screen"
+			android:title="OpenWatch Integration"
+			android:dependency="notify_on_change">
+			<CheckBoxPreference
+				android:key="notify_openwatch"
+				android:defaultValue="false"
+				android:title="Enable"
+				android:summary="Enable OpenWatch integration" />
+			<CheckBoxPreference
+				android:key="notify_openwatch_vibrate"
+				android:defaultValue="false"
+				android:title="Vibrate"
+				android:summary="Vibrate the OpenWatch device" />
+			<Preference
+				android:title="What is OpenWatch?"
+				android:summary="Read more about OpenWatch on their website"
+				android:key="openwatch_help" />
+		</PreferenceScreen>
+	</PreferenceCategory>
+</PreferenceScreen>

@@ -1,17 +1,14 @@
 package com.liato.bankdroid;
 
-import com.liato.bankdroid.LockPatternUtils;
-
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
-public class LockableActivity extends Activity {
-    private static String TAG = "LockableActivity";
+public class LockablePreferenceActivity extends PreferenceActivity {
+    private static String TAG = "LockablePreferenceActivity";
     private static int PATTERNLOCK_UNLOCK = 42;
 	private SharedPreferences prefs;
 	private Editor editor;
@@ -27,7 +24,6 @@ public class LockableActivity extends Activity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-        Log.d(TAG, "Pausing...");
 		// Don't do anything if not lock pattern is set
 		if (!mLockPatternUtils.isLockPatternEnabled()) return;
         // Save the current time If a lock pattern has been set
@@ -38,7 +34,7 @@ public class LockableActivity extends Activity {
 	protected void onResume() {
 		super.onResume();
         // Don't do anything if not lock pattern is set
-		if (!mLockPatternUtils.isLockPatternEnabled()) {
+		if (!mLockPatternUtils.isLockPatternEnabled() || !isLockEnabled()) {
 		    return;
 		}
 		// If a lock pattern is set we need to check the time for when the last
@@ -64,9 +60,19 @@ public class LockableActivity extends Activity {
         editor.putLong("locked_at", System.currentTimeMillis());
         editor.commit();	    
 	}
-	
+
+	protected void setLockEnabled(boolean enabled) {
+        editor = prefs.edit();
+        editor.putBoolean("lock_enabled", enabled);
+        editor.commit();        
+	}
+
+    protected boolean isLockEnabled() {
+        return prefs.getBoolean("lock_enabled", true);       
+    }	
     protected void onActivityResult(int requestCode, int resultCode,
             Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PATTERNLOCK_UNLOCK) {
             if (resultCode == RESULT_OK) {
                 writeLockTime();
@@ -75,5 +81,11 @@ public class LockableActivity extends Activity {
                 launchPatternLock();
             }
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        setLockEnabled(true);
     }   	
 }

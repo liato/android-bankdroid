@@ -1,13 +1,16 @@
 package com.liato.bankdroid;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -16,17 +19,24 @@ import android.widget.TextView;
 public class TransactionsActivity extends LockableActivity {
 	final static String TAG = "TransactionActivity";
 	
-	@Override
+    @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.transactions);
+        //Helpers.setActivityAnimation(this, R.anim.zoom_enter, R.anim.zoom_exit);
+		//Use HtcListView if available
+		try {
+		    setContentView(R.layout.transactions_htc);
+		}
+		catch (InflateException e) {
+		    setContentView(R.layout.transactions);
+		}
 		Bundle extras = getIntent().getExtras();
 		Bank bank = BankFactory.bankFromDb(extras.getLong("bank"), this, false);
 		Account account = BankFactory.accountFromDb(this, extras.getLong("bank")+"_"+extras.getString("account"), true);
 		TextView viewBankName = (TextView)findViewById(R.id.txtListitemAccountsGroupAccountname);
 		TextView viewAccountName = (TextView)findViewById(R.id.txtListitemAccountsGroupBankname);
 		TextView viewAccountBalance = (TextView)findViewById(R.id.txtListitemAccountsGroupTotal);
-		ListView viewTransactionsList = (ListView)findViewById(R.id.lstTransactionsList);
+
 		ImageView icon = (ImageView)findViewById(R.id.imgListitemAccountsGroup);
 		viewBankName.setText(bank.getDisplayName());
 		viewAccountName.setText(account.getName());
@@ -37,7 +47,16 @@ public class TransactionsActivity extends LockableActivity {
 		if (transactions.size() > 0) {
 			findViewById(R.id.txtTranDesc).setVisibility(View.GONE);
 			TransactionsAdapter adapter = new TransactionsAdapter(transactions);
-			viewTransactionsList.setAdapter(adapter);
+	        try {
+	            Class<?> c = Class.forName("com.htc.widget.HtcListView");
+	            Object viewTransactionsList = c.cast(findViewById(R.id.lstTransactionsList));
+	            Method  method = c.getDeclaredMethod("setAdapter", Adapter.class);
+	            method.invoke(viewTransactionsList, adapter);
+	        }
+	        catch (Exception e) {
+	            ListView viewTransactionsList = (ListView)findViewById(R.id.lstTransactionsList);
+	            viewTransactionsList.setAdapter(adapter);
+	        }
 		}
 	}
 

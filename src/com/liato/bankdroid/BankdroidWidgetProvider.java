@@ -90,7 +90,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 		else {
 			views.setViewVisibility(R.id.frmWarning, View.INVISIBLE);
 		}
-		Intent intent = new Intent(context, LoginActivity.class);
+		Intent intent = new Intent(context, MainActivity.class);
 		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 		views.setOnClickPendingIntent(R.id.txtWidgetAccountbalance, pendingIntent);
 		views.setOnClickPendingIntent(R.id.layWidgetContainer, pendingIntent);
@@ -132,7 +132,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 		views.setImageViewResource(R.id.imgWidgetIcon, R.drawable.icon_large);
 		views.setViewVisibility(R.id.frmWarning, View.VISIBLE);
 
-		Intent intent = new Intent(context, LoginActivity.class);
+		Intent intent = new Intent(context, MainActivity.class);
 		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 		views.setOnClickPendingIntent(R.id.txtWidgetAccountbalance, pendingIntent);
 		views.setOnClickPendingIntent(R.id.layWidgetContainer, pendingIntent);
