@@ -31,8 +31,9 @@ public class PayPal extends Bank {
 	private static final int BANKTYPE_ID = Bank.PAYPAL;
 	private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT | + InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
 	
-	private Pattern reBalance = Pattern.compile("PayPal\\s*balance:\\s*<span\\s*class=\"balance\">[^0-9,.-]*([0-9,. ]+)([A-Z]+)</span>", Pattern.CASE_INSENSITIVE);
-	private Pattern reAccounts = Pattern.compile("row\">([^>]+)</td>\\s*<td\\s*class=\"textright\">[^0-9,.-]*([0-9,. ]+)([A-Z]+)</td>", Pattern.CASE_INSENSITIVE);
+	private Pattern reFormAction = Pattern.compile("<form.*?login_form.*?action=\"([^\"]+)\".*?>", Pattern.CASE_INSENSITIVE);
+	private Pattern reBalance = Pattern.compile("PayPal\\s*balance:\\s*<span\\s*class=\"balance\">\\s*<[^<]+>[^0-9,.-]*([0-9,. ]+)([A-Z]+)\\s*<[^<]+>\\s*</span>", Pattern.CASE_INSENSITIVE);
+	private Pattern reAccounts = Pattern.compile("row\">([^>]+)</td>\\s*<td\\s*class=\"textright\">\\s*<[^>]+>\\s*[^0-9,.-]*([0-9,. ]+)([A-Z]+)\\s*<[^>]+>\\s*</td>", Pattern.CASE_INSENSITIVE);
 	private String response = null;
 	public PayPal(Context context) {
 		super(context);
@@ -53,11 +54,18 @@ public class PayPal extends Bank {
 	public Urllib login() throws LoginException, BankException {
 		urlopen = new Urllib(true);
 		try {
-		    //Get cookies
+		    //Get cookies and url to post to
 		    response = urlopen.open("https://www.paypal.com/en");
-
+		    Matcher matcher = reFormAction.matcher(response);
+		    String strPostUrl;
+		    if (matcher.find()) {
+		        strPostUrl = Html.fromHtml(matcher.group(1)).toString();
+		        Log.d(TAG, "Found post url: "+strPostUrl);
+		    }
+		    else {
+		        throw new BankException(res.getText(R.string.unable_to_find).toString()+" post url.");
+		    }
 		    List <NameValuePair> postData = new ArrayList <NameValuePair>();
-			postData.add(new BasicNameValuePair("target", "/nis/ecse/main.do"));				
 			postData.add(new BasicNameValuePair("login_email", username));
 			postData.add(new BasicNameValuePair("login_password", password));
 			postData.add(new BasicNameValuePair("target_page", "0"));
@@ -67,18 +75,22 @@ public class PayPal extends Bank {
 			postData.add(new BasicNameValuePair("browser_version", "undefined"));
 			postData.add(new BasicNameValuePair("operating_system", "Windows"));
 			postData.add(new BasicNameValuePair("bp_mid", "v=1;a1=na~a2=na~a3=na~a4=Mozilla~a5=Netscape~a6=5.0 (Windows; en-US)~a7=20100713~a8=na~a9=true~a10=Windows NT 6.1~a11=true~a12=Win32~a13=na~a14=Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.7) Gecko/20100713 Firefox/3.6.7 ( .NET CLR 3.5.30729; .NET4.0C)~a15=true~a16=en-US~a17=na~a18=www.paypal.com~a19=na~a20=na~a21=na~a22=na~a23=1280~a24=720~a25=24~a26=658~a27=na~a28=Sun Oct 31 2010 18:41:07 GMT 0100~a29=1~a30=def|qt1|qt2|qt3|qt4|qt5|qt6|swf|~a31=yes~a32=na~a33=na~a34=no~a35=no~a36=yes~a37=no~a38=online~a39=no~a40=Windows NT 6.1~a41=no~a42=no~"));
-			postData.add(new BasicNameValuePair("bp_ks1", "v=1;l=16;Di0:1103361Ui0:95Di1:5Ui1:138Di2:171Di3:154Ui2:59Ui3:81Di4:562Ui4:147Di5:369Ui5:118Di6:401Ui6:124Di7:296Ui7:74Di8:71Ui8:101Di9:61Ui9:81Di10:7Ui10:94Di11:666Ui11:131Di12:79Ui12:107Di13:114Ui13:109Di14:5Ui14:152Di15:400Ui15:121"));
+			postData.add(new BasicNameValuePair("bp_ks1", "v=1;l=16;Di0:2663Di1:48Ui0:15Ui1:81Di2:176Di3:48Ui2:32Ui3:96Di4:384Ui4:48Di5:352Ui5:48Di6:128Ui6:80Di7:112Ui7:48Di8:113Ui8:79Di9:125Ui9:51Di10:98Ui10:72Di11:227Ui11:51Di12:80Ui12:80Di13:128Ui13:64Di14:48Ui14:80Di15:416Ui15:80"));
 			postData.add(new BasicNameValuePair("bp_ks2", ""));
 			postData.add(new BasicNameValuePair("bp_ks3", ""));
 			postData.add(new BasicNameValuePair("flow_name", "xpt/Marketing_CommandDriven/homepage/IndividualsHome"));
 			postData.add(new BasicNameValuePair("fso", "k2TDENTlxEJnhbuYDYFmKMyVq0kUZPsdK6j3V1gPUwuZvyAmzzpRs4Cmjet0z19AwlxXfW"));
 			
-			Log.d(TAG, "Posting to https://www.paypal.com/cgi-bin/webscr?cmd=_login-submit&dispatch=5885d80a13c0db1f8e263663d3faee8dc60d77e6184470d515cedf52660ea0cd");
-			response = urlopen.open("https://www.paypal.com/cgi-bin/webscr?cmd=_login-submit&dispatch=5885d80a13c0db1f8e263663d3faee8dc60d77e6184470d515cedf52660ea0cd", postData);
+			Log.d(TAG, "Posting to " + strPostUrl);
+			response = urlopen.open(strPostUrl, postData);
 			Log.d(TAG, "Url after post: "+urlopen.getCurrentURI());
 			if (response.contains("If you still can't log in") || response.contains("both your email address and password")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}
+			if (response.contains("your last action could not be completed")) {
+			    throw new BankException("Error: PPL92");
+			}
+
 			
 		} catch (ClientProtocolException e) {
 			throw new BankException(e.getMessage());
