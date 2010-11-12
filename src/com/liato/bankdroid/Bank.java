@@ -37,6 +37,7 @@ public abstract class Bank implements Comparable<Bank> {
     protected int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT;
     protected int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_TEXT;
     protected String INPUT_HINT_USERNAME = null;
+    protected boolean STATIC_BALANCE = false;
 
 	protected Context context;
 	protected Resources res;
@@ -131,7 +132,20 @@ public abstract class Bank implements Comparable<Bank> {
 	}
 
 	public BigDecimal getBalance() {
-		return balance;
+	    if (STATIC_BALANCE) {
+	        return balance;
+	    }
+	    else {
+	        BigDecimal bal = new BigDecimal(0); 
+	        for (Account account : accounts) {
+	            if (account.getType() == Account.REGULAR || account.getType() == Account.CCARD) {
+	                if (!account.isHidden()) {
+	                    bal = bal.add(account.getBalance());
+	                }
+	            }
+	        }
+	        return bal;
+	    }
 	}
 
 	public int getBanktypeId() {

@@ -30,6 +30,7 @@ public class PayPal extends Bank {
 	private static final String URL = "https://www.paypal.com/";
 	private static final int BANKTYPE_ID = Bank.PAYPAL;
 	private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT | + InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
+	private static final boolean STATIC_BALANCE = true;
 	
 	private Pattern reFormAction = Pattern.compile("<form.*?login_form.*?action=\"([^\"]+)\".*?>", Pattern.CASE_INSENSITIVE);
 	private Pattern reBalance = Pattern.compile("PayPal\\s*balance:\\s*<span\\s*class=\"balance\">\\s*<[^<]+>[^0-9,.-]*([0-9,. ]+)([A-Z]+)\\s*<[^<]+>\\s*</span>", Pattern.CASE_INSENSITIVE);
@@ -43,6 +44,7 @@ public class PayPal extends Bank {
 		super.BANKTYPE_ID = BANKTYPE_ID;
 		super.URL = URL;
 		super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
+		super.STATIC_BALANCE = STATIC_BALANCE;
 	}
 
 	public PayPal(String username, String password, Context context) throws BankException, LoginException {
