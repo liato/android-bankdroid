@@ -1,6 +1,7 @@
 package com.liato.bankdroid.banks;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -34,8 +35,9 @@ public class Eurocard extends Bank {
 	private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
 	
-	private Pattern reAccounts = Pattern.compile("getInvoiceList\\.do\\?id=([^\"]+)\">([^<]+)</a></td>(?:\\s*<td>[^<]+</td>){2}\\s*<td\\s*align=\"right\">([^<]+)<", Pattern.CASE_INSENSITIVE);
-	private Pattern reTransactions = Pattern.compile("<nobr>(\\d\\d-\\d\\d)</nobr>\\s*</td>\\s*<td\\s*valign=\"top\">\\s*<nobr>[^<]+</nobr>\\s*</td>\\s*<td><div\\s*class=\"BreakLine\">([^<]+)</div>\\s*</td>\\s*<td\\s*valign=\"top\">\\s*<nobr>([^<]*)</nobr>\\s*</td>\\s*<td\\s*valign=\"top\">\\s*<nobr>([^<]*)</nobr>\\s*</td>\\s*<td[^>]+>\\s*<nobr>([^>]*)</nobr>\\s*</td>\\s*<td\\s*valign=\"top\">[^<]+</td>\\s*<td[^>]+>\\s*<nobr>([^<]+)</nobr>", Pattern.CASE_INSENSITIVE);
+	private Pattern reAccounts = Pattern.compile("Welcomepagecardimagecontainer\">\\s*[^<]+<br>[^>]+<br>([^>]+)</div>\\s*</div>\\s*</div>.*?indentationwrapper\">\\s*<a\\s*href=\"getPendingTransactions\\.do\\?id=([^\"]+)\">.*?billedamount\">([^<]+)</div>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private Pattern reSaldo = Pattern.compile("Billingunitbalanceamount\">\\s*([^<]+)<", Pattern.CASE_INSENSITIVE);
+	private Pattern reTransactions = Pattern.compile("transcol1\">\\s*<span>([^<]+)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^<]+)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^<]*)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^<]*)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^>]*)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^<]*)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^<]+)</span>", Pattern.CASE_INSENSITIVE);
 	private String response = null;
 	public Eurocard(Context context) {
 		super(context);
@@ -90,10 +92,44 @@ public class Eurocard extends Bank {
 		}
 		urlopen = login();
 		Matcher matcher = reAccounts.matcher(response);
-		while (matcher.find()) {
-			accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), matcher.group(1).trim()));
-			balance = balance.add(Helpers.parseBalance(matcher.group(3)));
+		if (matcher.find()) {
+            /*
+             * Capture groups:
+             * GROUP                     EXAMPLE DATA
+             * 1: account number         **** **** **** 1234
+             * 2: id                     a1c2d3d4e5f6s7b8c9d0
+             * 3: ofakturerat amount     &nbsp;2 988,96
+             * 
+             */
+
+		    // Create a separate account for "Ofakturerat".
+		    // Set the balance for the main account to 0 and update it later
+			accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim(), new BigDecimal(0), matcher.group(2).trim()));
+			accounts.add(new Account("Ofakturerat", Helpers.parseBalance(matcher.group(3)), "o:ofak", Account.OTHER));
 		}
+		try {
+            /*
+             * Capture groups:
+             * GROUP                     EXAMPLE DATA
+             * 1: balance                &nbsp;40 988,96
+             * 
+             */		    
+            response = urlopen.open("https://e-saldo.eurocard.se/nis/ecse/getBillingUnits.do");
+            matcher = reSaldo.matcher(response);
+            if (matcher.find()) {
+                // Update the main account balance
+                if (accounts.isEmpty()) {
+                    accounts.get(0).setBalance(Helpers.parseBalance(matcher.group(1)));
+                }
+            }
+		}
+        catch (ClientProtocolException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
 		if (accounts.isEmpty()) {
 			throw new BankException(res.getText(R.string.no_accounts_found).toString());
@@ -105,27 +141,30 @@ public class Eurocard extends Bank {
 	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
 		super.updateTransactions(account, urlopen);
 		Matcher matcher;
+		// If the account is of type "other" it's probably the fake "Ofakturerat" account.
+		if (account.getType() == Account.OTHER) return;
 		try {
-			Log.d(TAG, "Opening: https://e-saldo.eurocard.se/nis/ecse/getPendingTransactions.do");
-			response = urlopen.open("https://e-saldo.eurocard.se/nis/ecse/getPendingTransactions.do");
+			Log.d(TAG, "Opening: https://e-saldo.eurocard.se/nis/ecse/getPendingTransactions.do?id="+account.getId());
+			response = urlopen.open("https://e-saldo.eurocard.se/nis/ecse/getPendingTransactions.do?id="+account.getId());
 			matcher = reTransactions.matcher(response);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 			String strDate = null;
 			Calendar cal = Calendar.getInstance();
 			while (matcher.find()) {
-				/*
-				 * Capture groups:
-				 * GROUP				EXAMPLE DATA
-				 * 1: date		 		09-26
-				 * 2: specification		ICA Kvantum
-				 * 3: location          Stockholm
-				 * 4: currency			SEK or empty
-				 * 5: tax				12.99 or empty
-				 * 6: amount			118.65
-				 * 
-				 */
+                /*
+                 * Capture groups:
+                 * GROUP                EXAMPLE DATA
+                 * 1: trans. date       10-18
+                 * 2: reg. date         10-19
+                 * 3: specification     ICA Kvantum
+                 * 4: location          Stockholm
+                 * 5: currency          SEK
+                 * 6: amount/tax        147,64
+                 * 7: amount in sek     5791,18
+                 * 
+                 */     			    
 				strDate = ""+cal.get(Calendar.YEAR)+"-"+Html.fromHtml(matcher.group(1)).toString().trim();
-				transactions.add(new Transaction(strDate, Html.fromHtml(matcher.group(2)).toString().trim()+(matcher.group(3).trim().length() > 0 ? " ("+Html.fromHtml(matcher.group(3)).toString().trim()+")" : ""), Helpers.parseBalance(matcher.group(6)).negate()));
+				transactions.add(new Transaction(strDate, Html.fromHtml(matcher.group(3)).toString().trim()+(matcher.group(4).trim().length() > 0 ? " ("+Html.fromHtml(matcher.group(4)).toString().trim()+")" : ""), Helpers.parseBalance(matcher.group(7)).negate()));
 			}
 			account.setTransactions(transactions);
 		} catch (ClientProtocolException e) {
