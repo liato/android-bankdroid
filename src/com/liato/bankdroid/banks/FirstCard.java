@@ -140,7 +140,7 @@ public class FirstCard extends Bank {
 				 */
 				String strDate = Html.fromHtml(matcher.group(1)).toString().trim();
 				strDate = "20"+strDate.charAt(0)+strDate.charAt(1)+"-"+strDate.charAt(2)+strDate.charAt(3)+"-"+strDate.charAt(4)+strDate.charAt(5);
-				transactions.add(new Transaction(strDate, Html.fromHtml(matcher.group(2)).toString().trim()+(matcher.group(3).trim().length() > 0 ? " ("+Html.fromHtml(matcher.group(3)).toString().trim()+")" : ""), Helpers.parseBalance(matcher.group(6)).negate()));
+				transactions.add(new Transaction(strDate, Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(5)).negate()));
 			}
 			account.setTransactions(transactions);
 		} catch (ClientProtocolException e) {
