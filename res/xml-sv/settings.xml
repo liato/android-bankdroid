@@ -1,0 +1,119 @@
+<PreferenceScreen
+	xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory
+		android:title="Säkerhet">
+		<CheckBoxPreference
+			android:key="patternlock_enabled"
+			android:defaultValue="false"
+			android:title="Aktivera grafiskt lösenord"
+			android:summary="Skydda appen och widgets med ett grafiskt lösenord" />
+		<Preference
+			android:title="Ändra grafiskt lösenord"
+			android:summary="Ändra ditt nuvarande grafiska lösenord"
+			android:key="patternlock_change"
+			android:dependency="patternlock_enabled" />
+	</PreferenceCategory>
+	<PreferenceCategory
+		android:title="Automatiska Uppdateringar">
+		<CheckBoxPreference
+			android:key="autoupdates_enabled"
+			android:defaultValue="true"
+			android:title="Aktivera"
+			android:summary="Aktivera automatiska uppdateringar" />
+		<ListPreference
+			android:title="Uppdateringsfrekvens"
+			android:key="refresh_rate"
+			android:defaultValue="60"
+			android:entries="@array/refreshrateNames"
+			android:entryValues="@array/refreshrateValues"
+			android:dependency="autoupdates_enabled" />
+		<CheckBoxPreference
+			android:key="autoupdates_transactions_enabled"
+			android:defaultValue="true"
+			android:title="Uppdatera kontoutdrag"
+			android:summary="Uppdatera kontoutdrag vid automatiska uppdateringar" />
+	</PreferenceCategory>
+	<PreferenceCategory
+		android:title="Notifieringar">
+		<CheckBoxPreference
+			android:key="notify_on_change"
+			android:defaultValue="true"
+			android:title="Aktivera notifieringar"
+			android:summary="Notifiera vid kontoförändringar" />
+		<CheckBoxPreference
+			android:key="notify_with_vibration"
+			android:defaultValue="true"
+			android:title="Vibrera"
+			android:summary="Vibrera vid kontoförändringar"
+			android:dependency="notify_on_change" />
+		<RingtonePreference
+			android:key="notification_sound"
+			android:name="Välj ljud"
+			android:summary="Välj ett notifieringsljud"
+			android:title="Notifieringsljud"
+			android:ringtoneType="notification"
+			android:showDefault="true"
+			android:showSilent="true"
+			
+			android:dependency="notify_on_change" />
+		<PreferenceScreen
+			android:key="account_types_screen"
+			android:title="Kontotyper"
+			android:summary="Visa endast notifieringar för valda kontotyper"
+			android:dependency="notify_on_change">
+			<CheckBoxPreference
+				android:key="notify_for_deposit"
+				android:defaultValue="true"
+				android:title="@string/deposit_account" />
+			<CheckBoxPreference
+				android:key="notify_for_funds"
+				android:defaultValue="false"
+				android:title="@string/loans" />
+			<CheckBoxPreference
+				android:key="notify_for_loans"
+				android:defaultValue="false"
+				android:title="@string/funds" />
+			<CheckBoxPreference
+				android:key="notify_for_ccards"
+				android:defaultValue="true"
+				android:title="@string/ccards" />
+			<CheckBoxPreference
+				android:key="notify_for_other"
+				android:defaultValue="false"
+				android:title="@string/other" />
+		</PreferenceScreen>
+		<PreferenceScreen
+			android:key="remotenotifier_screen"
+			android:title="Remote Notifier-integrering"
+			android:dependency="notify_on_change">
+			<CheckBoxPreference
+				android:key="notify_remotenotifier"
+				android:defaultValue="false"
+				android:title="Aktivera"
+				android:summary="Aktivera Remote Notifier-integrering" />
+			<Preference
+				android:title="Vad är Remote Notifier?"
+				android:summary="Läs mer om Remote Notifier på deras webbsida"
+				android:key="remotenotifier_help" />
+		</PreferenceScreen>
+		<PreferenceScreen
+			android:key="openwatch_screen"
+			android:title="OpenWatch-integrering"
+			android:dependency="notify_on_change">
+			<CheckBoxPreference
+				android:key="notify_openwatch"
+				android:defaultValue="false"
+				android:title="Aktivera"
+				android:summary="Aktivera OpenWatch-integrering" />
+			<CheckBoxPreference
+				android:key="notify_openwatch_vibrate"
+				android:defaultValue="false"
+				android:title="Vibrera"
+				android:summary="Vibrera OpenWatch-enheten" />
+			<Preference
+				android:title="Vad är OpenWatch?"
+				android:summary="Läs mer om OpenWatch på deras webbsida"
+				android:key="openwatch_help" />
+		</PreferenceScreen>
+	</PreferenceCategory>
+</PreferenceScreen>

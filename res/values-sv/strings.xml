@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     
     <string name="about">Om</string>
     <string name="version">Version $version av liato</string>
@@ -100,5 +101,88 @@
 	\ncola (OKQ8)
 	\nRikko (FirstCard)
 	\nnihplod (Eurocard)
-    </string>	    
+    </string>
+    
+
+	<!-- Lock Pattern settings -->
+    <!-- Security & location settings screen, header -->
+    <string name="lock_settings_title">Lås för SIM-kort</string>
+    <!-- Security & location settings screen, setting option name -->
+    <string name="lockpattern_change_lock_pattern_label">Byt grafiskt lösenord</string>
+    <!-- Security & location settings screen, change unlock pattern screen instruction when the user chooses "Change unlock pattern".  We first ask the user toe nter the current pattern, and this is the message seen -->
+    <string name="lockpattern_need_to_unlock">Bekräfta sparat grafiskt lösenord</string>
+    <!-- Do not translate. -->
+    <string name="lockpattern_need_to_unlock_footer"></string>
+    <!-- Security & location settings screen, change unlock pattern screen instruction if user draws incorrect pattern -->
+    <string name="lockpattern_need_to_unlock_wrong">Försök igen:</string>
+    <!-- Do not translate. -->
+    <string name="lockpattern_need_to_unlock_wrong_footer"></string>
+    <!-- Security & location settings screen, change unlock pattern screen instruction on top of screen.  This si when they are supposed to draw a new unlock pattern (for example, if they are changing their unlock patterns)..-->
+    <string name="lockpattern_recording_intro_header">Rita ett grafiskt lösenord</string>
+    <!-- Security & location settings screen, change unlock pattern screen hint on bottom of screen.  We are telling them to press the menu button to see more options or help. -->
+    <string name="lockpattern_recording_intro_footer">Tryck på Meny om du vill ha hjälp.</string>
+    <!-- Security & location settings screen, change unlock pattern screen instruction on top of screen while drawing pattern -->
+    <string name="lockpattern_recording_inprogress">Lyft fingret när du är klar.</string>
+    <!-- Security & location settings screen, change unlock pattern screen instruction on top of screen if user doesn't connect enough dots -->
+    <string name="lockpattern_recording_incorrect_too_short">Anslut minst <xliff:g id="number">%d</xliff:g> punkter. Försök igen:</string>
+    <!-- Security & location settings screen, change unlock pattern screen message on top of screen after drawing pattern -->
+    <string name="lockpattern_pattern_entered_header">Det grafiska lösenordet har registrerats!</string>
+    <!-- Security & location settings screen, change unlock pattern screen instruction on top of screen to confirm pattern -->
+    <string name="lockpattern_need_to_confirm">Rita ditt grafiska lösenord igen för att bekräfta:</string>
+    <string name="lockpattern_pattern_confirmed_header">Ditt nya grafiska lösenord:</string>
+    <!-- Security & location settings screen, change unlock pattern screen button, on bottom of screen.  After they draw a pattern and release their finger, we display the pattern so they remember.  When they are ready to draw it once again to confirm it, they press this button. -->
+    <string name="lockpattern_confirm_button_text">Bekräfta</string>
+    <!-- Security & location settings screen, change unlock pattern screen button, on bottom of screen.  After they draw a pattern and release their finger, we display the pattern so they remember.  If they are nto satisfied with this pattern, they click this button to redraw the pattern. -->
+    <string name="lockpattern_restart_button_text">Rita igen</string>
+    <!-- Security & location settings screen, change unlock pattern screen button, on bottom of screen. If they are supposed to enter their current pattern before being able to draw another one, and they screw up, they hit this button to try again -->
+    <string name="lockpattern_retry_button_text">Försök igen</string>
+    <!-- Security & location settings screen, change unlock pattern screen button, on bottom of screen. Once they draw a new pattern and confirm it by drawing it again, they press this button to exit -->
+    <string name="lockpattern_continue_button_text">Fortsätt</string>
+    <!-- Security & location settings screen, unlock screen activity title -->
+    <string name="lockpattern_settings_title">Grafiskt lösenord</string>
+    <!-- Security & location settings screen, setting check box title if the unlock pattern MUST be drawn everytime they turn on the screen -->
+    <string name="lockpattern_settings_enable_title">Begär grafiskt lösenord</string>
+    <!-- Security & location settings screen, setting summary for the checkbox "Require pattern" -->
+    <string name="lockpattern_settings_enable_summary">Måste rita grafiskt lösenord för att låsa upp skärmen</string>
+    <!-- Security & location settings screen, setting check box title. This setting controls whether a visible green line is drawn as the user moves his finger around while drawing the unlock pattern.  If checked, this line is drawn.  If unchecked, there is nothing drawn so the user does not reveal his pattern while he unlocks the phone.-->
+    <string name="lockpattern_settings_enable_visible_pattern_title">Anv. synligt graf. lös.</string>
+    <!-- Security & location settings screen, setting check box title. This setting controls whether tactile feedback will be produced when the user draws the pattern.-->
+    <string name="lockpattern_settings_enable_tactile_feedback_title">Använd känslig feedback</string>
+    <!-- Security & location settings screen, setting option name when user has never set an unlock pattern -->
+    <string name="lockpattern_settings_choose_lock_pattern">Ange grafiskt lösenord</string>
+    <!-- Security & location settings screen, setting option name when user has previously set an unlock pattern and wants to change to a new pattern -->
+    <string name="lockpattern_settings_change_lock_pattern">Byt grafiskt lösenord</string>
+    <!-- Security & location settings screen, the help instructions (an animation) caption -->
+    <string name="lockpattern_settings_help_how_to_record">Så här ritar du ett grafiskt lösenord</string>
+    <!-- Security & location settings screen, change unlock pattern screen instruction on top of screen after too many incorrect attempts -->
+    <string name="lockpattern_too_many_failed_confirmation_attempts_header">För många felaktiga försök!</string>
+    <!-- Security & location settings screen, change unlock pattern screen countdown hint on bottom of screen after too many incorrect attempts -->
+    <string name="lockpattern_too_many_failed_confirmation_attempts_footer">Försök igen om <xliff:g id="number">%d</xliff:g> sekunder.</string>
+
+    <!-- ChooseLockPatternTutorial --> <skip />
+    <!-- ChooseLockPatternTutorial, button labels: This is to cancel the tutorial -->
+    <string name="skip_button_label">Avbryt</string>
+    <!-- ChooseLockPatternTutorial, button labels: Continue to the next page of the tutorial -->
+    <string name="next_button_label">Nästa</string>
+    <!-- ChooseLockPatternTutorial, tutorial screen title -->
+    <string name="lock_title">Skydda din telefon</string>
+    <!-- ChooseLockPatternTutorial, tutorial screen text -->
+    <string name="lock_intro_message">><font size="17">Skydda din telefon från obehörig användning genom att skapa ett personligt grafiskt lösenord på skärmen.
+		\n<font height="17">\n</font><b>1</b>\u00A0 Se hur ett grafiskt lösenord ritas på nästa skärm.
+		\n<font height="17">\n</font><b>2</b>\u00A0 Rita ditt eget grafiska lösenord. Experimentera med olika grafiska lösenord men anslut minst fyra punkter.
+		\n<font height="17">\n</font><b>3</b>\u00A0 Rita ditt grafiska lösenord igen för att bekräfta.
+		\n<font height="17">\n</font><b>Är du redo att börja? Välj \u201CNästa\u201D</b>.
+		\n<font height="3">\n</font>"Välj \u201CAvbryt\u201D om du vill lämna telefonen oskyddad.</font>
+		
+	</string>
+    <!-- ChooseLockPatternExample --> <skip />
+    <!-- ChooseLockPatternExample, screen title that shows an example pattern -->
+    <string name="lock_example_title">Exempel på grafiskt lösenord</string>
+    <!-- ChooseLockPatternExample, screen hint text at bottom of screen. These are instructions and rules for drawing a good patttern -->
+    <string name="lock_example_message">Anslut minst fyra punkter.
+    \n\nVälj \u201CNästa\u201D när du vill rita ditt eget grafiska lösenord.
+    </string>
+	<string name="lock_cancel">Avbryt</string>
+	<string name="lock_ok">Ok</string>
+    
 </resources>
