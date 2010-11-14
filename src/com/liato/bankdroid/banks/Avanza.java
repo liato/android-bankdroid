@@ -30,7 +30,8 @@ public class Avanza extends Bank {
 	private static final String NAME = "Avanza";
 	private static final String NAME_SHORT = "avanza";
 	private static final String URL = "https://www.avanza.se/";
-	private static final int BANKTYPE_ID = Bank.AVANZA;
+    private static final int BANKTYPE_ID = Bank.AVANZA;
+    private static final boolean BROKEN = true;
 	
 	private Pattern reAccounts = Pattern.compile("depa\\.jsp\\?depotnr=(\\d*).*?(?:width=\"235\">*?)(.*?)<.*?(?:looser|winner).*?>(.*?)<.*?(?:looser|winner).*?>(.*?)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reTransactions = Pattern.compile("(?:warrantguide\\.jsp|aktie\\.jsp)(?:.*?)orderbookId=(?:.*?)>(.*?)<(?:.*?)<nobr>(?:.*?)<nobr>(?:.*?)<nobr>(.*?)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
@@ -41,6 +42,7 @@ public class Avanza extends Bank {
 		super.NAME_SHORT = NAME_SHORT;
 		super.BANKTYPE_ID = BANKTYPE_ID;
 		super.URL = URL;
+		super.BROKEN = BROKEN;
 	}
 
 	public Avanza(String username, String password, Context context) throws BankException, LoginException {

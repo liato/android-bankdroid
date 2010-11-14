@@ -21,14 +21,17 @@ import com.liato.bankdroid.banks.OKQ8;
 import com.liato.bankdroid.banks.PayPal;
 import com.liato.bankdroid.banks.Statoil;
 import com.liato.bankdroid.banks.Swedbank;
+import com.liato.bankdroid.banks.TestBank;
 import com.liato.bankdroid.banks.Villabanken;
 
 public class BankFactory {
 
 	public static Bank fromBanktypeId(int id, Context context) throws BankException {
 		switch (id) {
-		case Bank.SWEDBANK:
-			return new Swedbank(context);
+        case Bank.TESTBANK:
+            return new TestBank(context);
+        case Bank.SWEDBANK:
+            return new Swedbank(context);
 		case Bank.NORDEA:
 			return new Nordea(context);
 		case Bank.LANSFORSAKRINGAR:
@@ -80,6 +83,7 @@ public class BankFactory {
 		banks.add(new Eurocard(context));
         banks.add(new FirstCard(context));
         banks.add(new PayPal(context));
+        banks.add(new TestBank(context));
 		return banks;
 	}
 

@@ -11,7 +11,8 @@ import android.text.InputType;
 import com.liato.urllib.Urllib;
 
 public abstract class Bank implements Comparable<Bank> {
-	public final static int SWEDBANK = 1;
+    public final static int TESTBANK = 0;
+    public final static int SWEDBANK = 1;
 	public final static int NORDEA = 2;
 	public final static int ICABANKEN = 3;
 	public final static int LANSFORSAKRINGAR = 4;
@@ -27,7 +28,7 @@ public abstract class Bank implements Comparable<Bank> {
 	public final static int FIRSTCARD = 14;
 	public final static int PAYPAL = 15;
 	public final static int Payson = 16;
-	
+
 
 	protected String TAG = "Bank";
 	protected String NAME = "Bank";
@@ -38,6 +39,7 @@ public abstract class Bank implements Comparable<Bank> {
     protected int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_TEXT;
     protected String INPUT_HINT_USERNAME = null;
     protected boolean STATIC_BALANCE = false;
+    protected boolean BROKEN = false;
 
 	protected Context context;
 	protected Resources res;
@@ -242,6 +244,10 @@ public abstract class Bank implements Comparable<Bank> {
 
     public String getInputHintUsername() {
         return INPUT_HINT_USERNAME;
+    }
+    
+    public boolean isBroken() {
+        return BROKEN;
     }
 
     public int getImageResource() {

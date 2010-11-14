@@ -99,7 +99,8 @@ public class Nordea extends Bank {
 		String response = null;
 		Matcher matcher;
 		try {
-			Log.d("BankNordea", "Opening: https://mobil.nordea.se/banking-nordea/nordea-c3/accounts.html");
+		    
+		    Log.d("BankNordea", "Opening: https://mobil.nordea.se/banking-nordea/nordea-c3/accounts.html");
 			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/accounts.html");
 			
 			matcher = reAccounts.matcher(response);
@@ -130,6 +131,7 @@ public class Nordea extends Bank {
 				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), "c:"+matcher.group(1).trim(), -1L, Account.CCARD));
 				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
 			}
+
 			if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
 			}
