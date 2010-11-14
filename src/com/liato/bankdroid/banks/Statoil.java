@@ -145,13 +145,13 @@ public class Statoil extends Bank {
 				/*
 				 * Capture groups:
 				 * GROUP				EXAMPLE DATA
-				 * 1: date				10-18
-				 * 2: date				10-19
-				 * 3: specification		ICA Kvantum
-				 * 4: location			Stockholm
-				 * 5: currency			always empty?
-				 * 6: amount			always empty?
-				 * 7: amount in sek		5791,18
+				 * 1: Date				10-18
+				 * 2: Date				10-19
+				 * 3: Specification		ICA Kvantum
+				 * 4: Location			Stockholm
+				 * 5: Currency			always empty?
+				 * 6: Amount			always empty?
+				 * 7: Amount in sek		5791,18
 				 * 
 				 */				
 				transactions.add(new Transaction(""+cal.get(Calendar.YEAR)+"-"+matcher.group(1).trim(), Html.fromHtml(matcher.group(3)).toString().trim()+(matcher.group(4).trim().length() > 0 ? " ("+Html.fromHtml(matcher.group(4)).toString().trim()+")" : ""), Helpers.parseBalance(matcher.group(7)).negate()));
