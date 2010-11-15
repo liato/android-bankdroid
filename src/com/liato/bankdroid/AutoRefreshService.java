@@ -57,7 +57,9 @@ public class AutoRefreshService extends Service {
         //http://www.freesound.org/samplesViewSingle.php?id=75235
         //http://www.freesound.org/samplesViewSingle.php?id=91924
         Log.d(TAG, "Notification sound: "+prefs.getString("notification_sound", "none"));
-        notification.sound = Uri.parse(prefs.getString("notification_sound", null));
+        if (prefs.getString("notification_sound", null) != null) {
+            notification.sound = Uri.parse(prefs.getString("notification_sound", null));
+        }
 		if (prefs.getBoolean("notify_with_vibration", true)) {
 			long[] vib = {0, 90, 130, 80, 350, 190, 20, 380};
 			notification.vibrate = vib;
@@ -121,6 +123,10 @@ public class AutoRefreshService extends Service {
     		HashMap<String, Account> accounts = new HashMap<String, Account>();
     		
     		for (Bank bank : banks) {
+                if (prefs.getBoolean("debug_mode", false) && prefs.getBoolean("debug_only_testbank", false)) {
+                    Log.d(TAG, "Debug::Only_Testbank is ON. Skipping update for "+bank.getName());
+                    continue;
+                }
     			if (bank.isDisabled()) {
     				Log.d(TAG, bank.getName()+" ("+bank.getDisplayName()+") is disabled. Skipping refresh.");
     				continue;

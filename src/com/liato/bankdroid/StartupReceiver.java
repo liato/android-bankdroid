@@ -32,7 +32,11 @@ public class StartupReceiver extends BroadcastReceiver{
         }
         else {
 	        long firstTime = SystemClock.elapsedRealtime();
-	        am.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, firstTime+refreshRate*60*1000, refreshRate*60*1000, alarmSender);
+	        int secondsInMinute = 60;
+	        if (prefs.getBoolean("debug_mode", false) && prefs.getBoolean("debug_refreshrate_in_seconds", false)) {
+	            secondsInMinute = 1;
+	        }
+	        am.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, firstTime+refreshRate*secondsInMinute*1000, refreshRate*secondsInMinute*1000, alarmSender);
         	Log.d(TAG,"Automatic updates set to "+refreshRate.toString()+" minutes.");
         }
 	

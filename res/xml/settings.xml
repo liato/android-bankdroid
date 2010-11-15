@@ -54,7 +54,6 @@
 			android:ringtoneType="notification"
 			android:showDefault="true"
 			android:showSilent="true"
-			
 			android:dependency="notify_on_change" />
 		<PreferenceScreen
 			android:key="account_types_screen"
@@ -114,6 +113,42 @@
 				android:title="What is OpenWatch?"
 				android:summary="Read more about OpenWatch on their website"
 				android:key="openwatch_help" />
+		</PreferenceScreen>
+	</PreferenceCategory>
+	<PreferenceCategory
+		android:title="Debug">
+		<PreferenceScreen
+			android:key="debug_screen_pre"
+			android:title="Debug Settings"
+			android:summary="Don't touch if you don't know what you're doing">
+			<PreferenceScreen
+				android:key="debug_screen"
+				android:title="Seriously"
+				android:summary="You might brake things">
+				<CheckBoxPreference
+					android:key="debug_mode"
+					android:defaultValue="false"
+					android:title="Enable"
+					android:summary="Enable debug mode" />
+				<CheckBoxPreference
+					android:key="debug_refreshrate_in_seconds"
+					android:defaultValue="false"
+					android:title="Update freq. in sec."
+					android:summary="Update frequenzy is given in seconds instead of minutes"
+					android:dependency="debug_mode" />
+				<CheckBoxPreference
+					android:key="debug_only_testbank"
+					android:defaultValue="false"
+					android:title="Testbank only"
+					android:summary="Only auto update 'Testbank' banks"
+					android:dependency="debug_mode" />
+				<CheckBoxPreference
+					android:key="debug_coop_sendmail"
+					android:defaultValue="false"
+					android:title="Coop - Mail on error"
+					android:summary="Open your email client with the html response when Bankdroid fails to login to your Coop account."
+					android:dependency="debug_mode" />					
+			</PreferenceScreen>
 		</PreferenceScreen>
 	</PreferenceCategory>
 </PreferenceScreen>

@@ -106,6 +106,8 @@
      
      
     <!-- Lock Pattern settings -->
+    <!-- Unlock header -->
+    <string name="patternlock_header">Draw pattern to unlock Bankdroid</string>
     <!-- Security & location settings screen, header -->
     <string name="lock_settings_title">Screen unlock pattern</string>
     <!-- Security & location settings screen, setting option name -->

@@ -27,7 +27,6 @@ public class LockableActivity extends Activity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-        Log.d(TAG, "Pausing...");
 		// Don't do anything if not lock pattern is set
 		if (!mLockPatternUtils.isLockPatternEnabled()) return;
         // Save the current time If a lock pattern has been set
@@ -55,7 +54,7 @@ public class LockableActivity extends Activity {
 	private void launchPatternLock() {
         Intent intent = new Intent(this, ConfirmLockPattern.class);
         intent.putExtra(ConfirmLockPattern.DISABLE_BACK_KEY, true);
-        intent.putExtra(ConfirmLockPattern.HEADER_TEXT, "Draw pattern to unlock Bankdroid");
+        intent.putExtra(ConfirmLockPattern.HEADER_TEXT, getText(R.string.patternlock_header));
         startActivityForResult(intent, PATTERNLOCK_UNLOCK);         
 	}
 	

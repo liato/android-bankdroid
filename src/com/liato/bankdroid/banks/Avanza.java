@@ -50,6 +50,7 @@ public class Avanza extends Bank {
 		this.update(username, password);
 	}
 
+	/*
 	@Override
 	public Urllib login() throws LoginException, BankException {
 		urlopen = new Urllib(true, true);
@@ -74,9 +75,16 @@ public class Avanza extends Bank {
 		}
 		return urlopen;
 	}
+	*/
+	
 	@Override
 	public void update() throws BankException, LoginException {
 		super.update();
+		throw new BankException("The implementation of this bank is currently broken.\n" +
+				                "To fix this problem help is needed from you, Avanza users. " +
+				                "Please read the first post at\n" +
+				                "http://j.mp/9GRlt1 for instructions on how you can help.");
+		/*
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
@@ -105,12 +113,15 @@ public class Avanza extends Bank {
         finally {
             super.updateComplete();
         }
+        */
 	}
 
+	
+	/*
 	@Override
 	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
 		super.updateTransactions(account, urlopen);
-
+		
 		String response = null;
 		Matcher matcher;
 		try {						
@@ -135,5 +146,5 @@ public class Avanza extends Bank {
 			e.printStackTrace();
 		}
 	}
-	
+	*/
 }

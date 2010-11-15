@@ -105,6 +105,8 @@
     
 
 	<!-- Lock Pattern settings -->
+    <!-- Unlock header -->
+    <string name="patternlock_header">Rita ditt grafiska lösenord för att låsa upp Bankdroid</string>
     <!-- Security & location settings screen, header -->
     <string name="lock_settings_title">Lås för SIM-kort</string>
     <!-- Security & location settings screen, setting option name -->

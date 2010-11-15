@@ -5,7 +5,9 @@ import java.util.ArrayList;
 
 import net.sf.andhsli.hotspotlogin.SimpleCrypto;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 
 import com.liato.bankdroid.banks.Avanza;
 import com.liato.bankdroid.banks.AvanzaMini;
@@ -83,7 +85,10 @@ public class BankFactory {
 		banks.add(new Eurocard(context));
         banks.add(new FirstCard(context));
         banks.add(new PayPal(context));
-        banks.add(new TestBank(context));
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if (prefs.getBoolean("debug_mode", false)) { 
+            banks.add(new TestBank(context));
+        }
 		return banks;
 	}
 
@@ -139,7 +144,11 @@ public class BankFactory {
 			c.moveToNext();
 			//Log.d("AA", "Refreshing "+c.getString(clmBanktype)+" ("+c.getString(clmUsername)+").");
 			try {
+			    if (c.getInt(c.getColumnIndex("banktype")) == Bank.AVANZA) {
+			        continue;
+			    }
 				Bank bank = fromBanktypeId(c.getInt(c.getColumnIndex("banktype")), context);
+				
 	            String password = "";
                 try {
                     password = SimpleCrypto.decrypt(Crypto.getKey(), c.getString(c.getColumnIndex("password")));
@@ -197,6 +206,7 @@ public class BankFactory {
                                      new BigDecimal(c.getString(c.getColumnIndex("amount"))),
                                      c.getString(c.getColumnIndex("currency"))));
 				}
+				c.close();
 			}
 			account.setTransactions(transactions);
 		}

@@ -42,7 +42,6 @@ public class BetterPopupWindow {
 		this.window.setTouchInterceptor(new OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-			    Log.d("TOCUH", "TOUCH!");
 				if(event.getAction() == MotionEvent.ACTION_OUTSIDE) {
 					BetterPopupWindow.this.window.dismiss();
 					return true;

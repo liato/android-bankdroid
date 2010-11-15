@@ -62,7 +62,7 @@ public class TestBank extends Bank {
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
-		urlopen = new Urllib();
+		urlopen = login();
 		String response = null;
 		Matcher matcher;
 		try {
