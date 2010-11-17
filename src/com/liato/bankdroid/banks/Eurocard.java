@@ -108,17 +108,18 @@ public class Eurocard extends Bank {
 			accounts.add(new Account("Ofakturerat", Helpers.parseBalance(matcher.group(3)), "o:ofak", Account.OTHER));
 		}
 		try {
-            /*
-             * Capture groups:
-             * GROUP                     EXAMPLE DATA
-             * 1: balance                &nbsp;40 988,96
-             * 
-             */		    
             response = urlopen.open("https://e-saldo.eurocard.se/nis/ecse/getBillingUnits.do");
             matcher = reSaldo.matcher(response);
             if (matcher.find()) {
+                /*
+                 * Capture groups:
+                 * GROUP                     EXAMPLE DATA
+                 * 1: balance                &nbsp;40 988,96
+                 * 
+                 */ 
+                
                 // Update the main account balance
-                if (accounts.isEmpty()) {
+                if (!accounts.isEmpty()) {
                     accounts.get(0).setBalance(Helpers.parseBalance(matcher.group(1)));
                 }
             }
