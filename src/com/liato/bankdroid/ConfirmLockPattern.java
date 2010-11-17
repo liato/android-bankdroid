@@ -268,4 +268,10 @@ public class ConfirmLockPattern extends Activity {
             }
         }.start();
     }
+
+    @Override
+    public void finish() {
+        super.finish();
+        Helpers.setActivityAnimation(this, R.anim.zoom_enter, R.anim.zoom_exit);
+    }
 }
