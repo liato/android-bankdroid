@@ -86,10 +86,10 @@ public class AutoRefreshService extends Service {
         if (prefs.getBoolean("notify_openwatch", false)) {
             Intent i;
             if (prefs.getBoolean("notify_openwatch_vibrate", false)) {
-                i = new Intent(BROADCAST_OPENWATCH_TEXT);
+                i = new Intent(BROADCAST_OPENWATCH_VIBRATE);
             }
             else {
-                i = new Intent(BROADCAST_OPENWATCH_VIBRATE);
+                i = new Intent(BROADCAST_OPENWATCH_TEXT);
             }
             i.putExtra("line1", String.format("%s (%s)", bank, title));
             i.putExtra("line2", text);

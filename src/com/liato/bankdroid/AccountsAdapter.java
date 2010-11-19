@@ -65,7 +65,6 @@ public class AccountsAdapter extends BaseAdapter {
 		((TextView)convertView.findViewById(R.id.txtListitemAccountsGroupTotal)).setText(Helpers.formatBalance(bank.getBalance(), bank.getCurrency()));
 		icon.setImageResource(bank.getImageResource());
 		ImageView warning = (ImageView)convertView.findViewById(R.id.imgWarning);
-		Log.d("AccountsAdapter", ""+bank.isDisabled());
 		if (bank.isDisabled()) {
 			warning.setVisibility(View.VISIBLE);
 		}
@@ -87,7 +86,6 @@ public class AccountsAdapter extends BaseAdapter {
         TextView txtBalance = ((TextView)convertView.findViewById(R.id.txtListitemAccountsItemBalance));
 		txtAccountName.setText(account.getName());
 		txtBalance.setText(Helpers.formatBalance(account.getBalance(), account.getCurrency()));
-		Log.d("ACCADDAPTER", "Account: "+account.getName()+"; hidden: "+account.isHidden());
 		if (account.isHidden()) {
             txtAccountName.setTextColor(Color.argb(255, 191, 191, 191));
             txtBalance.setTextColor(Color.argb(255, 191, 191, 191));		    
