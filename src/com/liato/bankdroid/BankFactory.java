@@ -187,7 +187,7 @@ public class BankFactory {
 
 		Account account = new Account(c.getString(c.getColumnIndex("name")),
                                       new BigDecimal(c.getString(c.getColumnIndex("balance"))),
-                                      c.getString(c.getColumnIndex("id")).split("_")[1],
+                                      c.getString(c.getColumnIndex("id")).split("_", 2)[1],
                                       c.getLong(c.getColumnIndex("bankid")),
                                       c.getInt(c.getColumnIndex("acctype")));
         account.setHidden(c.getInt(c.getColumnIndex("hidden")) == 1 ? true : false);
@@ -228,7 +228,7 @@ public class BankFactory {
 			c.moveToNext();
 			Account account = new Account(c.getString(c.getColumnIndex("name")),
                                           new BigDecimal(c.getString(c.getColumnIndex("balance"))),
-                                          c.getString(c.getColumnIndex("id")).split("_")[1],
+                                          c.getString(c.getColumnIndex("id")).split("_", 2)[1],
                                           c.getLong(c.getColumnIndex("bankid")),
                                           c.getInt(c.getColumnIndex("acctype")));
 	        account.setHidden(c.getInt(c.getColumnIndex("hidden")) == 1 ? true : false);

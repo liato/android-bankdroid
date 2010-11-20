@@ -74,7 +74,7 @@ public class Coop extends Bank {
             postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
             response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/", postData);
             Log.d(TAG, urlopen.getCurrentURI());
-            if (response.contains("Felmeddelande")) {
+            if (response.contains("forfarande logga in med ditt personnummer")) {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
                 if (prefs.getBoolean("debug_mode", false) && prefs.getBoolean("debug_coop_sendmail", false)) {
                     Intent i = new Intent(android.content.Intent.ACTION_SEND);

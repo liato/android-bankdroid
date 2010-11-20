@@ -22,7 +22,7 @@ public class TransactionsActivity extends LockableActivity {
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        //Helpers.setActivityAnimation(this, R.anim.zoom_enter, R.anim.zoom_exit);
+
 		//Use HtcListView if available
 		try {
 		    setContentView(R.layout.transactions_htc);
