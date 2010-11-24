@@ -125,7 +125,7 @@
 			<PreferenceScreen
 				android:key="debug_screen"
 				android:title="Seriously"
-				android:summary="You might brake things">
+				android:summary="You might break things">
 				<CheckBoxPreference
 					android:key="debug_mode"
 					android:defaultValue="false"
