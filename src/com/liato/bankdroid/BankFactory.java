@@ -226,15 +226,20 @@ public class BankFactory {
 		}
 		while (!c.isLast() && !c.isAfterLast()) {
 			c.moveToNext();
-			Account account = new Account(c.getString(c.getColumnIndex("name")),
-                                          new BigDecimal(c.getString(c.getColumnIndex("balance"))),
-                                          c.getString(c.getColumnIndex("id")).split("_", 2)[1],
-                                          c.getLong(c.getColumnIndex("bankid")),
-                                          c.getInt(c.getColumnIndex("acctype")));
-	        account.setHidden(c.getInt(c.getColumnIndex("hidden")) == 1 ? true : false);
-	        account.setNotify(c.getInt(c.getColumnIndex("notify")) == 1 ? true : false);			
-	        account.setCurrency(c.getString(c.getColumnIndex("currency")));
-			accounts.add(account);
+			try {
+    			Account account = new Account(c.getString(c.getColumnIndex("name")),
+                                              new BigDecimal(c.getString(c.getColumnIndex("balance"))),
+                                              c.getString(c.getColumnIndex("id")).split("_", 2)[1],
+                                              c.getLong(c.getColumnIndex("bankid")),
+                                              c.getInt(c.getColumnIndex("acctype")));
+    	        account.setHidden(c.getInt(c.getColumnIndex("hidden")) == 1 ? true : false);
+    	        account.setNotify(c.getInt(c.getColumnIndex("notify")) == 1 ? true : false);			
+    	        account.setCurrency(c.getString(c.getColumnIndex("currency")));
+    			accounts.add(account);
+			}
+			catch (ArrayIndexOutOfBoundsException e) {
+			    // Attempted to load an account without and ID, probably an old Avanza account.
+			}
 		}
 		c.close();
 		db.close();
