@@ -2,6 +2,7 @@ package com.liato.bankdroid.banks;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -87,6 +88,7 @@ public class Lansforsakringar extends Bank {
 			postData.add(new BasicNameValuePair("btnLogIn.y", "34"));
 			Log.d("Bankdroid", "Posting data to: " + urlopen.getCurrentURI());
 			response = urlopen.open(urlopen.getCurrentURI(), postData);
+			String a = "https://secure246.lansforsakringar.se:443/lfportal/appmanager/privat/main?_nfpb=true&amp;_pageLabel=bank&newUc=true&isTopLevel=true";
 
 			if (response.contains("Felaktig inloggning")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -103,6 +105,9 @@ public class Lansforsakringar extends Bank {
 				throw new BankException(res.getText(R.string.unable_to_find).toString()+" accounts url.");
 			}
 			accountsUrl = Html.fromHtml(matcher.group(1)).toString() + "&_token=" + token;
+			if (!accountsUrl.contains("https://")) {
+			    accountsUrl = "https://" + urlopen.getCurrentURI().split("/")[2] + accountsUrl;
+			}
 			Log.d("Bankdroid", "Accounts url: " + accountsUrl);
 		}
 		catch (ClientProtocolException e) {
