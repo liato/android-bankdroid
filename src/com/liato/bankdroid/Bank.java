@@ -27,7 +27,7 @@ public abstract class Bank implements Comparable<Bank> {
 	public final static int EUROCARD = 13;
 	public final static int FIRSTCARD = 14;
 	public final static int PAYPAL = 15;
-	public final static int Payson = 16;
+	public final static int PAYSON = 16;
 
 
 	protected String TAG = "Bank";

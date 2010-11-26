@@ -42,7 +42,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
             int appWidgetId) {
         SharedPreferences prefs = context.getSharedPreferences("widget_prefs", 0);  
         Editor e = prefs.edit();
-        e.putBoolean("widget_unblured_"+appWidgetId, true);
+        e.putBoolean("widget_unblurred_"+appWidgetId, true);
         e.commit();
 
         RemoteViews views = buildAppWidget(context, appWidgetManager, appWidgetId);
@@ -59,7 +59,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
             int appWidgetId) {
         SharedPreferences prefs = context.getSharedPreferences("widget_prefs", 0);  
         Editor e = prefs.edit();
-        e.remove("widget_unblured_"+appWidgetId);
+        e.remove("widget_unblurred_"+appWidgetId);
         e.commit();
         RemoteViews views = buildAppWidget(context, appWidgetManager, appWidgetId);
         if (views != null) {
@@ -158,7 +158,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.imgBalanceblur, pendingIntent);
         
         SharedPreferences defprefs = PreferenceManager.getDefaultSharedPreferences(context);
-        if (defprefs.getBoolean("widget_blur_balance", false) && !prefs.getBoolean("widget_unblured_" + appWidgetId, false)) {
+        if (defprefs.getBoolean("widget_blur_balance", false) && !prefs.getBoolean("widget_unblurred_" + appWidgetId, false)) {
             views.setViewVisibility(R.id.imgBalanceblur, View.VISIBLE);
             views.setViewVisibility(R.id.txtWidgetAccountnameBlur, View.VISIBLE);
             views.setViewVisibility(R.id.txtWidgetAccountbalance, View.GONE);
