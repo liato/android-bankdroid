@@ -1,5 +1,6 @@
 package com.liato.bankdroid;
 
+import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
@@ -8,15 +9,22 @@ import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
+import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
 public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 	private final static String TAG = "BankdroidWidgetProvider";
+    private final static String ACTION_WIDGET_BLUR = "com.liato.bankdroid.action.WIDGET_BLUR";
+    private final static String ACTION_WIDGET_UNBLUR = "com.liato.bankdroid.action.WIDGET_UNBLUR";
 	
 	static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
 			int appWidgetId, Account account) {
@@ -29,8 +37,42 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 		RemoteViews views = buildAppWidget(context, appWidgetManager, appWidgetId);
 		if (views != null) appWidgetManager.updateAppWidget(appWidgetId, views);
 	}
+	
+    static void unblurAppWidget(Context context, AppWidgetManager appWidgetManager,
+            int appWidgetId) {
+        SharedPreferences prefs = context.getSharedPreferences("widget_prefs", 0);  
+        Editor e = prefs.edit();
+        e.putBoolean("widget_unblured_"+appWidgetId, true);
+        e.commit();
 
-	static RemoteViews buildAppWidget(Context context, AppWidgetManager appWidgetManager,
+        RemoteViews views = buildAppWidget(context, appWidgetManager, appWidgetId);
+        if (views != null) {
+            views.setViewVisibility(R.id.imgBalanceblur, View.GONE);
+            views.setViewVisibility(R.id.txtWidgetAccountnameBlur, View.GONE);
+            views.setViewVisibility(R.id.txtWidgetAccountbalance, View.VISIBLE);
+            views.setViewVisibility(R.id.txtWidgetAccountname, View.VISIBLE);
+            appWidgetManager.updateAppWidget(appWidgetId, views);
+        }
+    }	
+
+    static void blurAppWidget(Context context, AppWidgetManager appWidgetManager,
+            int appWidgetId) {
+        SharedPreferences prefs = context.getSharedPreferences("widget_prefs", 0);  
+        Editor e = prefs.edit();
+        e.remove("widget_unblured_"+appWidgetId);
+        e.commit();
+        RemoteViews views = buildAppWidget(context, appWidgetManager, appWidgetId);
+        if (views != null) {
+            views.setViewVisibility(R.id.imgBalanceblur, View.VISIBLE);
+            views.setViewVisibility(R.id.txtWidgetAccountnameBlur, View.VISIBLE);
+            views.setViewVisibility(R.id.txtWidgetAccountbalance, View.GONE);
+            views.setViewVisibility(R.id.txtWidgetAccountname, View.GONE);
+            appWidgetManager.updateAppWidget(appWidgetId, views);
+        }
+    }   
+
+    
+    static RemoteViews buildAppWidget(Context context, AppWidgetManager appWidgetManager,
 			int appWidgetId) {
 		Log.d("BankdroidWigetProvider", "Updating widget: "+appWidgetId);
 		String accountId = WidgetConfigureActivity.getAccountId(context, appWidgetId);
@@ -80,7 +122,8 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 		Bank bank = account.getBank();
 		RemoteViews views = new RemoteViews(context.getPackageName(), layoutId);
 		Log.d("buildAppWidget", "WidgetLayout: "+layoutId);
-		views.setTextViewText(R.id.txtWidgetAccountname, account.getName().toUpperCase());
+        views.setTextViewText(R.id.txtWidgetAccountname, account.getName().toUpperCase());
+        views.setTextViewText(R.id.txtWidgetAccountnameBlur, account.getName().toUpperCase());
 		views.setTextViewText(R.id.txtWidgetAccountbalance, Helpers.formatBalance(account.getBalance(), account.getCurrency()));
 		views.setImageViewResource(R.id.imgWidgetIcon, bank.getImageResource());
 		Log.d("Disabled", ""+bank.isDisabled());
@@ -106,8 +149,28 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 		pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		views.setOnClickPendingIntent(R.id.imgWidgetIcon, pendingIntent);
 		views.setOnClickPendingIntent(R.id.hitBox, pendingIntent);
+		
+        intent = new Intent(context, WidgetService.class);
+        intent.setAction(BankdroidWidgetProvider.ACTION_WIDGET_UNBLUR);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        intent.setData(Uri.parse("rofl://copter/widgetunblur/"+appWidgetId+"/"+System.currentTimeMillis()));
+        pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setOnClickPendingIntent(R.id.imgBalanceblur, pendingIntent);
+        
+        SharedPreferences defprefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if (defprefs.getBoolean("widget_blur_balance", false) && !prefs.getBoolean("widget_unblured_" + appWidgetId, false)) {
+            views.setViewVisibility(R.id.imgBalanceblur, View.VISIBLE);
+            views.setViewVisibility(R.id.txtWidgetAccountnameBlur, View.VISIBLE);
+            views.setViewVisibility(R.id.txtWidgetAccountbalance, View.GONE);
+            views.setViewVisibility(R.id.txtWidgetAccountname, View.GONE);          
+        }
+        else {
+            views.setViewVisibility(R.id.imgBalanceblur, View.GONE);
+            views.setViewVisibility(R.id.txtWidgetAccountnameBlur, View.GONE);
+            views.setViewVisibility(R.id.txtWidgetAccountbalance, View.VISIBLE);
+            views.setViewVisibility(R.id.txtWidgetAccountname, View.VISIBLE);            
+        }
 
-		//appWidgetManager.updateAppWidget(appWidgetId, views); 
 		return views;
 	}
 	
@@ -179,16 +242,44 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 	}
 
 	public static class WidgetService extends Service {
+
 		@Override
 		public void onStart(Intent intent, int startId) {
 			int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
 			Log.d("WidgetService", "Updating widget: " + appWidgetId);
-
+			Context context = getApplicationContext();
 			String action = intent.getAction();
+			if (action == null) return; 
 			if (action.equals(AutoRefreshService.BROADCAST_WIDGET_REFRESH)) {
-				Context context = getApplicationContext();
 				new WidgetUpdateTask(context, AppWidgetManager.getInstance(context), appWidgetId).execute();
 			}
+	        else if (action.equals(BankdroidWidgetProvider.ACTION_WIDGET_UNBLUR)) {
+                unblurAppWidget(context, AppWidgetManager.getInstance(context), appWidgetId);
+                
+                Handler blurHandler = new Handler();
+                class BlurRunnable implements Runnable {
+                    private int mAppWidgetId;
+                    
+                    public BlurRunnable(int appWidgetId) {
+                        this.mAppWidgetId = appWidgetId;
+                    }
+    
+                    @Override
+                    public void run() {
+                        Context context = getApplicationContext();
+                        blurAppWidget(context, AppWidgetManager.getInstance(context), mAppWidgetId);
+                    }
+                     
+                 }
+                
+
+                SharedPreferences defprefs = PreferenceManager.getDefaultSharedPreferences(context);
+                Integer unblurTimeout = 1000*Integer.parseInt(defprefs.getString("widget_blur_balance_timeout", "5"));                 
+                blurHandler.postDelayed(new BlurRunnable(appWidgetId), unblurTimeout);
+	        }
+            else if (action.equals(BankdroidWidgetProvider.ACTION_WIDGET_BLUR)) {
+                blurAppWidget(context, AppWidgetManager.getInstance(context), appWidgetId);
+            }
 		}
 
 		@Override

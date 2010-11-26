@@ -22,4 +22,26 @@
 		<item>960</item>
 		<item>1440</item>
 	</string-array>
+	<string-array
+		name="unblurTimeoutNames">
+		<item>1 second</item>
+		<item>2 seconds</item>
+		<item>3 seconds</item>
+		<item>4 seconds</item>
+		<item>5 seconds</item>
+		<item>10 seconds</item>
+		<item>15 seconds</item>
+		<item>20 seconds</item>
+	</string-array>
+	<string-array
+		name="unblurTimeoutValues">
+		<item>1</item>
+		<item>2</item>
+		<item>3</item>
+		<item>4</item>
+		<item>5</item>
+		<item>10</item>
+		<item>15</item>
+		<item>20</item>
+	</string-array>
 </resources>

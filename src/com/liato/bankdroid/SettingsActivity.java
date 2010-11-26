@@ -117,6 +117,8 @@ public class SettingsActivity extends LockablePreferenceActivity implements OnPr
     protected void onPause() {
         super.onPause();
         StartupReceiver.setAlarm(this);
+        // Blur/unblur the widget balance
+        AutoRefreshService.sendWidgetRefresh(this);
     }
     
 }

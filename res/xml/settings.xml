@@ -1,7 +1,7 @@
 <PreferenceScreen
 	xmlns:android="http://schemas.android.com/apk/res/android">
 	<PreferenceCategory
-		android:title="Security">
+		android:title="Security and Privacy">
 		<CheckBoxPreference
 			android:key="patternlock_enabled"
 			android:defaultValue="false"
@@ -12,6 +12,19 @@
 			android:summary="Change your current lock pattern"
 			android:key="patternlock_change"
 			android:dependency="patternlock_enabled" />
+		<CheckBoxPreference
+			android:key="widget_blur_balance"
+			android:defaultValue="false"
+			android:title="Blur widget balance"
+			android:summary="Blur the balance on the widget, click widget to unblur for a few seconds." />
+		<ListPreference
+			android:title="Unblur timeout"
+			android:key="widget_blur_balance_timeout"
+			android:defaultValue="5"
+			android:entries="@array/unblurTimeoutNames"
+			android:entryValues="@array/unblurTimeoutValues"
+			android:summary="Blur the balance again after this many seconds."
+			android:dependency="widget_blur_balance" />
 	</PreferenceCategory>
 	<PreferenceCategory
 		android:title="Automatic Updates">

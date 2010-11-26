@@ -4,9 +4,15 @@
 	android:layout_gravity="center_horizontal"
 	android:background="@drawable/widget_2x1"
 	android:layout_height="100dp"
-	android:layout_width="160dp" android:id="@+id/layWidgetContainer">
+	android:layout_width="160dp"
+	android:id="@+id/layWidgetContainer">
 
-	<FrameLayout android:layout_height="22dp" android:layout_width="fill_parent" android:id="@+id/hitBox" android:focusable="true"></FrameLayout><LinearLayout
+	<FrameLayout
+		android:layout_height="22dp"
+		android:layout_width="fill_parent"
+		android:id="@+id/hitBox"
+		android:focusable="true"></FrameLayout>
+	<LinearLayout
 		android:layout_height="wrap_content"
 		android:layout_width="wrap_content"
 		android:id="@+id/layWidgetRow01"
@@ -28,7 +34,19 @@
 			android:textColor="#a8a3a3"
 			android:textSize="11dp"
 			android:inputType="none"
-			android:layout_marginLeft="2dp" android:text="Bankdroid"></TextView>
+			android:layout_marginLeft="2dp"
+			android:text="Bankdroid"></TextView>
+		<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:id="@+id/txtWidgetAccountnameBlur"
+			android:layout_gravity="center_vertical"
+			android:textColor="#a8a3a3"
+			android:textSize="11dp"
+			android:inputType="none"
+			android:layout_marginLeft="2dp"
+			android:text="Bankdroid"
+			android:visibility="gone"></TextView>
 	</LinearLayout>
 	<LinearLayout
 		android:id="@+id/layWidgetRow02"
@@ -36,6 +54,16 @@
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:layout_marginTop="7dp">
+		<ImageView
+			android:id="@+id/imgBalanceblur"
+			android:src="@drawable/widget_small_balance_blured"
+			android:layout_gravity="center_vertical|center_horizontal"
+			android:layout_height="fill_parent"
+			android:layout_width="fill_parent"
+			android:scaleType="centerInside"
+			android:adjustViewBounds="false"
+			android:paddingTop="5dp"
+			android:visibility="gone"></ImageView>
 		<TextView
 			android:textColor="#fff"
 			android:inputType="none"
@@ -45,7 +73,8 @@
 			android:gravity="center_vertical|center_horizontal"
 			android:textSize="15dp"
 			android:id="@+id/txtWidgetAccountbalance"
-			android:layout_height="fill_parent" android:text="Loading..."/>
+			android:layout_height="fill_parent"
+			android:text="Loading..." />
 	</LinearLayout>
 	<LinearLayout
 		android:id="@+id/layWidgetRow03"
@@ -55,8 +84,25 @@
 		android:gravity="bottom"
 		android:layout_alignParentBottom="true"
 		android:visibility="visible">
-		
-		<FrameLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/frmProgress" android:visibility="invisible"><ProgressBar android:layout_width="wrap_content" android:indeterminateOnly="true" android:indeterminateBehavior="repeat" android:indeterminate="true" android:layout_height="wrap_content" style="@style/Widget_Progress" android:id="@+id/prgProgress" android:maxHeight="2dp" android:minHeight="2dp" android:minWidth="17dp" android:visibility="visible"></ProgressBar></FrameLayout>
+
+		<FrameLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/frmProgress"
+			android:visibility="invisible">
+			<ProgressBar
+				android:layout_width="wrap_content"
+				android:indeterminateOnly="true"
+				android:indeterminateBehavior="repeat"
+				android:indeterminate="true"
+				android:layout_height="wrap_content"
+				style="@style/Widget_Progress"
+				android:id="@+id/prgProgress"
+				android:maxHeight="2dp"
+				android:minHeight="2dp"
+				android:minWidth="17dp"
+				android:visibility="visible"></ProgressBar>
+		</FrameLayout>
 
 
 		<FrameLayout
@@ -74,7 +120,4 @@
 				android:layout_width="wrap_content"></ImageView>
 		</FrameLayout>
 	</LinearLayout>
-	
-
-
 </RelativeLayout>
