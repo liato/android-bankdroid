@@ -12,6 +12,19 @@
 			android:summary="Ändra ditt nuvarande grafiska lösenord"
 			android:key="patternlock_change"
 			android:dependency="patternlock_enabled" />
+		<CheckBoxPreference
+			android:key="widget_blur_balance"
+			android:defaultValue="false"
+			android:title="Dölj widgetsaldo"
+			android:summary="Saldot på widgeten visas endast då du klickat på den" />
+		<ListPreference
+			android:title="Dölj saldot efter"
+			android:key="widget_blur_balance_timeout"
+			android:defaultValue="5"
+			android:entries="@array/unblurTimeoutNames"
+			android:entryValues="@array/unblurTimeoutValues"
+			android:summary="Dölj saldot igen efter angiven tid"
+			android:dependency="widget_blur_balance" />
 	</PreferenceCategory>
 	<PreferenceCategory
 		android:title="Automatiska Uppdateringar">
@@ -54,7 +67,7 @@
 			android:ringtoneType="notification"
 			android:showDefault="true"
 			android:showSilent="true"
-			
+
 			android:dependency="notify_on_change" />
 		<PreferenceScreen
 			android:key="account_types_screen"
@@ -148,8 +161,8 @@
 					android:defaultValue="false"
 					android:title="Coop - Mail on error"
 					android:summary="Open your email client with the html response when Bankdroid fails to login to your Coop account."
-					android:dependency="debug_mode" />					
+					android:dependency="debug_mode" />
 			</PreferenceScreen>
 		</PreferenceScreen>
-	</PreferenceCategory>	
+	</PreferenceCategory>
 </PreferenceScreen>
