@@ -27,7 +27,7 @@ public class Payson extends Bank {
 	private static final String TAG = "Payson";
 	private static final String NAME = "Payson";
 	private static final String NAME_SHORT = "payson";
-	private static final String URL = "https://nettbank.edb.com/Logon/index.jsp?domain=0066&from_page=http://www.okq8.se&to_page=https://nettbank.edb.com/cardpayment/transigo/logon/done/okq8";
+	private static final String URL = "https://www.payson.se/signin/";
 	private static final int BANKTYPE_ID = Bank.PAYSON;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT | + InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
 	
