@@ -39,9 +39,9 @@ public class MainActivity extends LockableActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        //Helpers.setActivityAnimation(this, R.anim.zoom_enter, R.anim.zoom_exit);
 
-        setContentView(R.layout.main);
+
+		setContentView(R.layout.main);
         Button btnRefresh = (Button)findViewById(R.id.btnAccountsRefresh);
 		btnRefresh.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
@@ -91,6 +91,16 @@ public class MainActivity extends LockableActivity {
 				}
 			}
 		});
+		
+		Bundle extras = getIntent().getExtras();
+		// Clicking on widgets opens their transaction history through MainActivity so that
+		// the user can back out to the main window.
+		if (AutoRefreshService.ACTION_MAIN_SHOW_TRANSACTIONS.equals(getIntent().getAction())) {
+            Intent intent = new Intent(this, TransactionsActivity.class);
+            intent.putExtra("account", extras.getString("account"));
+            intent.putExtra("bank", extras.getLong("bank"));
+            startActivity(intent);		    
+		}
 	}
 	
 	public void onResume() {

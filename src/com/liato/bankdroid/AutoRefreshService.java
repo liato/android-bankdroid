@@ -26,6 +26,8 @@ public class AutoRefreshService extends Service {
     final static String BROADCAST_REMOTE_NOTIFIER = "org.damazio.notifier.service.UserReceiver.USER_MESSAGE";
     final static String BROADCAST_OPENWATCH_TEXT = "com.smartmadsoft.openwatch.action.TEXT";
     final static String BROADCAST_OPENWATCH_VIBRATE = "com.smartmadsoft.openwatch.action.VIBRATE";
+    final static String ACTION_MAIN_SHOW_TRANSACTIONS = "com.liato.bankdroid.action.MAIN_SHOW_TRANSACTIONS";
+    
     NotificationManager notificationManager;
 
     @Override

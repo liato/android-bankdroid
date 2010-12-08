@@ -1,6 +1,5 @@
 package com.liato.bankdroid;
 
-import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
@@ -14,8 +13,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -134,9 +131,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 			views.setViewVisibility(R.id.frmWarning, View.INVISIBLE);
 		}
 		Intent intent = new Intent(context, MainActivity.class);
-		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-		views.setOnClickPendingIntent(R.id.txtWidgetAccountbalance, pendingIntent);
-		views.setOnClickPendingIntent(R.id.layWidgetContainer, pendingIntent);
+		PendingIntent pendingIntent;
 
 		//intent = new Intent(context, AccountsActivity.class);
 		pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
@@ -162,13 +157,23 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
             views.setViewVisibility(R.id.imgBalanceblur, View.VISIBLE);
             views.setViewVisibility(R.id.txtWidgetAccountnameBlur, View.VISIBLE);
             views.setViewVisibility(R.id.txtWidgetAccountbalance, View.GONE);
-            views.setViewVisibility(R.id.txtWidgetAccountname, View.GONE);          
+            views.setViewVisibility(R.id.txtWidgetAccountname, View.GONE);
+            views.setOnClickPendingIntent(R.id.layWidgetContainer, pendingIntent);
         }
         else {
             views.setViewVisibility(R.id.imgBalanceblur, View.GONE);
             views.setViewVisibility(R.id.txtWidgetAccountnameBlur, View.GONE);
             views.setViewVisibility(R.id.txtWidgetAccountbalance, View.VISIBLE);
             views.setViewVisibility(R.id.txtWidgetAccountname, View.VISIBLE);            
+
+            intent = new Intent(context, MainActivity.class);
+            intent.setAction(AutoRefreshService.ACTION_MAIN_SHOW_TRANSACTIONS);
+            intent.setData(Uri.parse("rofl://copter/showtransactions/"+appWidgetId+"/"+System.currentTimeMillis()));
+            intent.putExtra("bank", bank.getDbId());
+            intent.putExtra("account", account.getId());
+            pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+            views.setOnClickPendingIntent(R.id.txtWidgetAccountbalance, pendingIntent);
+            views.setOnClickPendingIntent(R.id.layWidgetContainer, pendingIntent);        
         }
 
 		return views;
