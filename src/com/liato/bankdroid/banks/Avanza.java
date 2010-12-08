@@ -33,7 +33,7 @@ public class Avanza extends Bank {
     private static final int BANKTYPE_ID = Bank.AVANZA;
     private static final boolean BROKEN = true;
 	
-	private Pattern reAccounts = Pattern.compile("depa\\.jsp\\?depotnr=(\\d*).*?(?:width=\"235\">*?)(.*?)<.*?(?:looser|winner).*?>(.*?)<.*?(?:looser|winner).*?>(.*?)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private Pattern reAccounts = Pattern.compile("depa\\.jsp\\?depotnr=([^\"]+)[^>]+>[^<]+</a>\\s*</td>\\s*<td[^>]+>([^<]+)<.*?<td[^>]+>([^<]+)</td>\\s*<td[^>]+>([^<]+)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reTransactions = Pattern.compile("(?:warrantguide\\.jsp|aktie\\.jsp)(?:.*?)orderbookId=(?:.*?)>(.*?)<(?:.*?)<nobr>(?:.*?)<nobr>(?:.*?)<nobr>(.*?)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	public Avanza(Context context) {
 		super(context);
