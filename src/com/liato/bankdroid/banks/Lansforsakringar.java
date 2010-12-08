@@ -2,7 +2,6 @@ package com.liato.bankdroid.banks;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,6 +21,7 @@ import com.liato.bankdroid.BankException;
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.LoginException;
 import com.liato.bankdroid.R;
+import com.liato.bankdroid.Transaction;
 import com.liato.urllib.Urllib;
 
 public class Lansforsakringar extends Bank {
@@ -38,8 +38,11 @@ public class Lansforsakringar extends Bank {
 	private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
 	private Pattern reBalance = Pattern.compile("AccountNumber=([0-9]+)[^>]+><span[^>]+>([^<]+)</.*?span></td.*?<span[^>]+>([0-9 .,-]+)</span", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reToken = Pattern.compile("var\\s+token\\s*=\\s*'([^']+)'", Pattern.CASE_INSENSITIVE);
-	private Pattern reUrl = Pattern.compile("<li class=\"bank\">\\s*<a href=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
+    private Pattern reUrl = Pattern.compile("<li class=\"bank\">\\s*<a href=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
+    private Pattern reTransactions = Pattern.compile("td\\s*class=\"leftpadding\"[^>]+><span[^>]+>(\\d{4}-\\d{2}-\\d{2})</span>\\s*<a.*?</a></td><td[^>]+><span[^>]+>(\\d{4}-\\d{2}-\\d{2})</span></td><td[^>]+><span[^>]+>([^<]+)</span></td><td[^>]+><span[^>]+><span[^>]+>([^<]*)</span></span></td><td[^>]+><span[^>]+>([^<]+)</span></td><td[^>]+><span[^>]+>([^<]+)<", Pattern.CASE_INSENSITIVE);
 	private String accountsUrl = null;
+	private String token = null;
+	
 	public Lansforsakringar(Context context) {
 		super(context);
 		super.TAG = TAG;
@@ -86,9 +89,7 @@ public class Lansforsakringar extends Bank {
 			postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
 			postData.add(new BasicNameValuePair("btnLogIn.x", "12"));
 			postData.add(new BasicNameValuePair("btnLogIn.y", "34"));
-			Log.d("Bankdroid", "Posting data to: " + urlopen.getCurrentURI());
 			response = urlopen.open(urlopen.getCurrentURI(), postData);
-			String a = "https://secure246.lansforsakringar.se:443/lfportal/appmanager/privat/main?_nfpb=true&amp;_pageLabel=bank&newUc=true&isTopLevel=true";
 
 			if (response.contains("Felaktig inloggning")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -98,7 +99,7 @@ public class Lansforsakringar extends Bank {
 			if (!matcher.find()) {
 				throw new BankException(res.getText(R.string.unable_to_find).toString()+" token.");
 			}
-			String token = matcher.group(1);
+			token = matcher.group(1);
 
 			matcher = reUrl.matcher(response);
 			if (!matcher.find()) {
@@ -108,7 +109,7 @@ public class Lansforsakringar extends Bank {
 			if (!accountsUrl.contains("https://")) {
 			    accountsUrl = "https://" + urlopen.getCurrentURI().split("/")[2] + accountsUrl;
 			}
-			Log.d("Bankdroid", "Accounts url: " + accountsUrl);
+
 		}
 		catch (ClientProtocolException e) {
 			throw new BankException(e.getMessage());
@@ -154,4 +155,43 @@ public class Lansforsakringar extends Bank {
             super.updateComplete();
         }
 	}
+	
+    @Override
+    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+        super.updateTransactions(account, urlopen);
+        String response = null;
+        Matcher matcher;
+        try {
+ 
+            response = urlopen.open("https://secure246.lansforsakringar.se/lfportal/appmanager/privat/main?_nfpb=true&_pageLabel=bank_konto&dialog=dialog:account.viewAccountTransactions&webapp=edb-account-web&stickyMenu=false&newUc=true&AccountNumber=" + account.getId() + "&_token=" + token);
+            matcher = reTransactions.matcher(response);
+            ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+            while (matcher.find()) {
+                /*
+                 * Capture groups:
+                 * GROUP                EXAMPLE DATA
+                 * 1: Book. date        2009-05-03
+                 * 2: Trans. date       2009-05-03
+                 * 3: Specification     &Ouml;verf&ouml;ring internet ...
+                 * 4: Note              829909945928712
+                 * 5: Amount            -54,00
+                 * 6: Remaining         0,00
+                 *   
+                 */                    
+                transactions.add(new Transaction(matcher.group(2).trim().substring(8),
+                                    Html.fromHtml(matcher.group(3)).toString().trim()+(matcher.group(4).trim().length() > 0 ? " (" + Html.fromHtml(matcher.group(3)).toString().trim() + ")" : ""),
+                                    Helpers.parseBalance(matcher.group(5))));
+            }
+            account.setTransactions(transactions);
+        } catch (ClientProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        finally {
+            super.updateComplete();
+        }
+    }       	
 }
