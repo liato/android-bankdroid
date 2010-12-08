@@ -50,14 +50,12 @@ public class Avanza extends Bank {
 		this.update(username, password);
 	}
 
-	/*
+	
 	@Override
 	public Urllib login() throws LoginException, BankException {
 		urlopen = new Urllib(true, true);
 		String response = null;
 		try {
-			//response = urlopen.open("https://www.avanza.se/aza/login/logout.jsp");
-
 			List <NameValuePair> postData = new ArrayList <NameValuePair>();
 			postData.add(new BasicNameValuePair("username", username));
 			postData.add(new BasicNameValuePair("password", password));
@@ -75,16 +73,11 @@ public class Avanza extends Bank {
 		}
 		return urlopen;
 	}
-	*/
+	
 	
 	@Override
 	public void update() throws BankException, LoginException {
 		super.update();
-		throw new BankException("The implementation of this bank is currently broken.\n" +
-				                "To fix this problem help is needed from you, Avanza users. " +
-				                "Please read the first post at\n" +
-				                "http://j.mp/9GRlt1 for instructions on how you can help.");
-		/*
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
@@ -97,7 +90,16 @@ public class Avanza extends Bank {
 						
 			matcher = reAccounts.matcher(response);
 			while (matcher.find()) {
-				accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim(), Helpers.parseBalance(matcher.group(4)), matcher.group(1).trim()));
+                /*
+                 * Capture groups:
+                 * GROUP                EXAMPLE DATA
+                 * 1: ID                3505060
+                 * 2: Type              Aktie- och fondkonto Premium Silver
+                 * 3: % since purchase  1,90
+                 * 4: Amount in SEK     820
+                 *    
+                 */    
+			    accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim(), Helpers.parseBalance(matcher.group(4)), matcher.group(1).trim()));
 				balance = balance.add(Helpers.parseBalance(matcher.group(4)));
 			}
 			if (accounts.isEmpty()) {
@@ -113,11 +115,9 @@ public class Avanza extends Bank {
         finally {
             super.updateComplete();
         }
-        */
 	}
 
 	
-	/*
 	@Override
 	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
 		super.updateTransactions(account, urlopen);
@@ -134,7 +134,6 @@ public class Avanza extends Bank {
 			strDate = sdf.format(cal.getTime());
 
 			while (matcher.find()) {
-				//Log.d(TAG, "Date: "+strDate+"; Trans: "+Html.fromHtml(matcher.group(2)).toString().trim()+"; Amount: "+Helpers.parseBalance(matcher.group(3)).toString());
 				transactions.add(new Transaction(strDate, Html.fromHtml(matcher.group(1)).toString().trim(), Helpers.parseBalance(matcher.group(2))));
 			}
 			account.setTransactions(transactions);
@@ -146,5 +145,4 @@ public class Avanza extends Bank {
 			e.printStackTrace();
 		}
 	}
-	*/
 }
