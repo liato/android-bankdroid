@@ -79,7 +79,7 @@ public class Coop extends Bank {
                 if (prefs.getBoolean("debug_mode", false) && prefs.getBoolean("debug_coop_sendmail", false)) {
                     Intent i = new Intent(android.content.Intent.ACTION_SEND);
                     i.setType("plain/text");
-                    i.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"android@x00.us"});
+                    i.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"android@nullbyte.eu"});
                     i.putExtra(android.content.Intent.EXTRA_SUBJECT, "Bankdroid - Coop Error");
                     i.putExtra(android.content.Intent.EXTRA_TEXT, response);
                     context.startActivity(i);
@@ -105,12 +105,12 @@ public class Coop extends Bank {
 
         urlopen = login();
         Matcher matcher;
-        try {
-            Account account;
-            matcher = reBalanceVisa.matcher(response);
-            if (matcher.find()) {
-                account = new Account("MedMera Visa", Helpers.parseBalance(matcher.group(1).trim()), "1");
-                balance = balance.add(Helpers.parseBalance(matcher.group(1)));
+        Account account;
+        matcher = reBalanceVisa.matcher(response);
+        if (matcher.find()) {
+            account = new Account("MedMera Visa", Helpers.parseBalance(matcher.group(1).trim()), "1");
+            balance = balance.add(Helpers.parseBalance(matcher.group(1)));
+            try {
                 response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Visa/");
                 matcher = reTransactionsVisa.matcher(response);
                 ArrayList<Transaction> transactions = new ArrayList<Transaction>();
@@ -121,6 +121,14 @@ public class Coop extends Bank {
                 account.setTransactions(transactions);
                 accounts.add(account);
             }
+            catch (ClientProtocolException e) {
+                //404 or 500 response
+            }
+            catch (IOException e) {
+                throw new BankException(e.getMessage());
+            }                
+        }
+        try {
             response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Konto/");
             matcher = reBalanceKonto.matcher(response);
             if (matcher.find()) {
@@ -134,19 +142,15 @@ public class Coop extends Bank {
                 }
                 account.setTransactions(transactions);
                 accounts.add(account);
-            }
-            if (accounts.isEmpty()) {
-                throw new BankException(res.getText(R.string.no_accounts_found).toString());
-            }
-        }
+            }        }
         catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage());
+            //404 or 500 response
         }
         catch (IOException e) {
-            throw new BankException(e.getMessage());
+        }            
+        if (accounts.isEmpty()) {
+            throw new BankException(res.getText(R.string.no_accounts_found).toString());
         }
-        finally {
-            super.updateComplete();
-        }
+        super.updateComplete();
     }
 }
