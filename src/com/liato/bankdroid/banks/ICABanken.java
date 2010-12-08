@@ -63,7 +63,7 @@ public class ICABanken extends Bank {
 		String response = null;
 		Matcher matcher;
 		try {
-			response = urlopen.open("https://mobil.icabanken.se/login/login.aspx");
+			response = urlopen.open("https://mobil2.icabanken.se/login/login.aspx");
 			matcher = reViewState.matcher(response);
 			if (!matcher.find()) {
 				throw new BankException(res.getText(R.string.unable_to_find).toString()+" viewstate.");
@@ -80,8 +80,7 @@ public class ICABanken extends Bank {
 			postData.add(new BasicNameValuePair("btnLogin", "Logga in"));
 			postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
 			postData.add(new BasicNameValuePair("__EVENTVALIDATION", strEventValidation));
-			response = urlopen.open("https://mobil.icabanken.se/login/login.aspx", postData);
-			Log.d("BankICA", urlopen.getCurrentURI());
+			response = urlopen.open("https://mobil2.icabanken.se/login/login.aspx", postData);
 			matcher = reError.matcher(response);
 			if (matcher.find()) {
 				throw new LoginException(Html.fromHtml(matcher.group(1).trim()).toString());
@@ -109,8 +108,7 @@ public class ICABanken extends Bank {
 		String response = null;
 		Matcher matcher;
 		try {
-			response = urlopen.open("https://mobil.icabanken.se/account/overview.aspx");
-			Log.d("BankICA", urlopen.getCurrentURI());
+			response = urlopen.open("https://mobil2.icabanken.se/account/overview.aspx");
 			//response = urlopen.open("http://x.x00.us/android/bankdroid/icabanken_oversikt.htm");
 			matcher = reBalanceSald.matcher(response);
 			while (matcher.find()) {
@@ -140,9 +138,7 @@ public class ICABanken extends Bank {
 		String response = null;
 		Matcher matcher;
 		try {
-			Log.d(TAG, "Opening: https://mobil.icabanken.se/account/account.aspx?id="+account.getId());
-			response = urlopen.open("https://mobil.icabanken.se/account/account.aspx?id="+account.getId());
-			//response = urlopen.open("http://x.x00.us/android/bankdroid/icabanken_kontoutdrag.htm");
+			response = urlopen.open("https://mobil2.icabanken.se/account/account.aspx?id="+account.getId());
 			matcher = reTransactions.matcher(response);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 			while (matcher.find()) {
