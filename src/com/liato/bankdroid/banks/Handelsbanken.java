@@ -50,7 +50,7 @@ public class Handelsbanken extends Bank {
 		super.NAME_SHORT = NAME_SHORT;
 		super.BANKTYPE_ID = BANKTYPE_ID;
 		super.URL = URL;
-		super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
+		//super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
 		super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
 	}
 

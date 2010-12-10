@@ -3,6 +3,7 @@ package com.liato.bankdroid.banks;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,8 +34,9 @@ public class Statoil extends Bank {
 	private static final int BANKTYPE_ID = Bank.STATOIL;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
+    private static final boolean STATIC_BALANCE = true;
 
-	private Pattern reAccounts = Pattern.compile("Welcomepagebillingunitlastdisposableamount\">([^<]+)</div>", Pattern.CASE_INSENSITIVE);
+	private Pattern reAccounts = Pattern.compile("Welcomepagebillingunit(?:last(?:disposable|credit)amount|2rowcol2)\">([^<]+)</(?:div|td)>", Pattern.CASE_INSENSITIVE);
 	private Pattern reTransactions = Pattern.compile("transcol1\">\\s*<span>([^<]+)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^<]+)</span>\\s*</td>\\s*<td[^>]+>\\s*(?:<div[^>]+>\\s*)?<span>([^<]*)</span>\\s*(?:</div>\\s*)?</td>\\s*<td[^>]+>\\s*<span>([^<]*)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^>]*)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^<]*)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^<]+)</span>", Pattern.CASE_INSENSITIVE);
 	private String response = null;
 	public Statoil(Context context) {
@@ -46,6 +48,7 @@ public class Statoil extends Bank {
 		super.URL = URL;
 		super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
 		super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
+		super.STATIC_BALANCE = STATIC_BALANCE;
 	}
 
 	public Statoil(String username, String password, Context context) throws BankException, LoginException {
@@ -100,18 +103,29 @@ public class Statoil extends Bank {
 				response = urlopen.open("https://applications.sebkort.com/nis/stse/main.do");
 			}
 			matcher = reAccounts.matcher(response);
+            /*
+             * Capture groups:
+             * GROUP                EXAMPLE DATA
+             * 1: amount            10 579,43
+             * 
+             */
 			if (matcher.find()) {
-				/*
-				 * Capture groups:
-				 * GROUP				EXAMPLE DATA
-				 * 1: amount			10 579,43
-				 * 
-				 */
-			    Account account = new Account("Statoil MasterCard" , Helpers.parseBalance(matcher.group(1)), "1");
-			    account.setType(Account.CCARD);
-				accounts.add(account);
-				balance = balance.add(Helpers.parseBalance(matcher.group(1)));
+			    Account account = new Account("Köpgräns" , Helpers.parseBalance(matcher.group(1)), "3");
+			    account.setType(Account.OTHER);
+			    accounts.add(account);
 			}
+            if (matcher.find()) {
+                Account account = new Account("Saldo" , Helpers.parseBalance(matcher.group(1)), "2");
+                account.setType(Account.OTHER);
+                accounts.add(account);
+            }
+            if (matcher.find()) {
+                Account account = new Account("Disponibelt belopp" , Helpers.parseBalance(matcher.group(1)), "1");
+                account.setType(Account.CCARD);
+                accounts.add(account);
+                balance = balance.add(Helpers.parseBalance(matcher.group(1)));
+            }
+            Collections.reverse(accounts);
 			if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
 			}
@@ -133,6 +147,7 @@ public class Statoil extends Bank {
 		if (!urlopen.acceptsInvalidCertificates()) { //Should never happen, but we'll check it anyway.
 			urlopen = login();
 		}
+		if (account.getType() != Account.CCARD) return;
 		String response = null;
 		Matcher matcher;
 		try {
@@ -145,8 +160,8 @@ public class Statoil extends Bank {
 				/*
 				 * Capture groups:
 				 * GROUP				EXAMPLE DATA
-				 * 1: Date				10-18
-				 * 2: Date				10-19
+				 * 1: Trans. date		10-18
+				 * 2: Book. date		10-19
 				 * 3: Specification		ICA Kvantum
 				 * 4: Location			Stockholm
 				 * 5: Currency			always empty?
