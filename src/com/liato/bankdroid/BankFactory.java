@@ -24,6 +24,7 @@ import com.liato.bankdroid.banks.OKQ8;
 import com.liato.bankdroid.banks.PayPal;
 import com.liato.bankdroid.banks.Payson;
 import com.liato.bankdroid.banks.Statoil;
+import com.liato.bankdroid.banks.Steam;
 import com.liato.bankdroid.banks.Swedbank;
 import com.liato.bankdroid.banks.TestBank;
 import com.liato.bankdroid.banks.Villabanken;
@@ -68,6 +69,8 @@ public class BankFactory {
             return new Payson(context);
         case Bank.JOJO:
             return new Jojo(context);
+        case Bank.STEAM:
+            return new Steam(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -93,6 +96,7 @@ public class BankFactory {
         banks.add(new PayPal(context));
         banks.add(new Payson(context));
         banks.add(new Jojo(context));
+        banks.add(new Steam(context));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));
