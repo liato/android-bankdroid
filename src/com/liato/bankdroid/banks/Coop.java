@@ -129,7 +129,7 @@ public class Coop extends Bank {
             }                
         }
         try {
-            response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Konto/");
+            response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/MedMera-Konto/");
             matcher = reBalanceKonto.matcher(response);
             if (matcher.find()) {
                 account = new Account("MedMera Konto", Helpers.parseBalance(matcher.group(1).trim()), "2");
