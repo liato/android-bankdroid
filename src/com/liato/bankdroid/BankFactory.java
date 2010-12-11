@@ -156,9 +156,6 @@ public class BankFactory {
 			c.moveToNext();
 			//Log.d("AA", "Refreshing "+c.getString(clmBanktype)+" ("+c.getString(clmUsername)+").");
 			try {
-			    if (c.getInt(c.getColumnIndex("banktype")) == Bank.AVANZA) {
-			        continue;
-			    }
 				Bank bank = fromBanktypeId(c.getInt(c.getColumnIndex("banktype")), context);
 				
 	            String password = "";
