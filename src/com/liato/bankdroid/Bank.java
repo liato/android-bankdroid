@@ -247,7 +247,8 @@ public abstract class Bank implements Comparable<Bank> {
     public String getInputHintUsername() {
         return INPUT_HINT_USERNAME;
     }
-    
+
+    // Returns true if the current implementation of this bank is broken.
     public boolean isBroken() {
         return BROKEN;
     }
