@@ -35,8 +35,8 @@ public class Coop extends Bank {
 
     private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
     private Pattern reBalanceVisa = Pattern.compile("MedMera\\s*Visa</h3>\\s*<h6>Disponibelt\\s*belopp[^<]*</h6>\\s*<ul>(.*?)</ul>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-    private Pattern reBalanceKonto = Pattern.compile("Aktuellt\\s*saldo:</span>[^>]*>([^<]+)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-    private Pattern reTransactionsKonto = Pattern.compile("<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>([^<]+)</td>\\s*<td>[^<]*</td>\\s*<td>([^<]*)</td>\\s*<td[^>]*>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
+    private Pattern reBalanceKonto = Pattern.compile("saldo\">([^<]+)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private Pattern reTransactionsKonto = Pattern.compile("<td>\\s*(\\d{4}-\\d{2}-\\d{2})\\s*</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]*)</td>\\s*<td>([^<]*)</td>\\s*<td[^>]*>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
     private Pattern reTransactionsVisa = Pattern.compile("<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]*)</td>\\s*<td>([^<]*)</td>\\s*<td.*?</td>\\s*<td><s.*?value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
     private String response;
 
@@ -129,7 +129,7 @@ public class Coop extends Bank {
             }                
         }
         try {
-            response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/MedMera-Konto/");
+            response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/MedMera-Konto/Kontoutdrag/");
             matcher = reBalanceKonto.matcher(response);
             if (matcher.find()) {
                 account = new Account("MedMera Konto", Helpers.parseBalance(matcher.group(1).trim()), "2");
@@ -137,8 +137,24 @@ public class Coop extends Bank {
                 matcher = reTransactionsKonto.matcher(response);
                 ArrayList<Transaction> transactions = new ArrayList<Transaction>();
                 while (matcher.find()) {
-                    String title = matcher.group(4).length() > 0 ? matcher.group(4) : matcher.group(3);
-                    transactions.add(new Transaction(matcher.group(1).trim(), Html.fromHtml(title).toString().trim(), Helpers.parseBalance(matcher.group(4))));
+                    /*
+                     * Capture groups:
+                     * GROUP                EXAMPLE DATA
+                     * 1: Date              2010-11-04
+                     * 2: Activity          Köp
+                     * 3: User              John Doe
+                     * 4: Place             Coop Extra Stenungsund
+                     * 5: Amount            -809,37 kr
+                     *                      * 
+                     */
+
+                    String title = Html.fromHtml(matcher.group(4)).toString().trim().length() > 0 ? Html.fromHtml(matcher.group(4)).toString().trim() : Html.fromHtml(matcher.group(2)).toString().trim();
+                    if (Html.fromHtml(matcher.group(3)).toString().trim().length() > 0) {
+                        title = title + " (" + Html.fromHtml(matcher.group(3)).toString().trim() + ")";
+                    }
+                    transactions.add(new Transaction(matcher.group(1).trim(),
+                            title,
+                            Helpers.parseBalance(matcher.group(5))));
                 }
                 account.setTransactions(transactions);
                 accounts.add(account);
