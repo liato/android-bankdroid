@@ -47,6 +47,14 @@
 			android:summary="Update transaction history when updating automatically" />
 	</PreferenceCategory>
 	<PreferenceCategory
+		android:title="Appearance">
+		<CheckBoxPreference
+			android:key="round_widget_balance"
+			android:defaultValue="false"
+			android:title="Round widget balance"
+			android:summary="Display the balance on widgets without decimals" />
+	</PreferenceCategory>
+	<PreferenceCategory
 		android:title="Notifications">
 		<CheckBoxPreference
 			android:key="notify_on_change"

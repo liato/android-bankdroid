@@ -109,6 +109,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 		AppWidgetProviderInfo providerInfo = appWidgetManager.getAppWidgetInfo(appWidgetId);
 		int layoutId = (providerInfo == null) ? R.layout.widget : providerInfo.initialLayout;
         SharedPreferences prefs = context.getSharedPreferences("widget_prefs", 0);		
+        SharedPreferences defprefs = PreferenceManager.getDefaultSharedPreferences(context);
 		if (prefs.getBoolean("transperant_background" + appWidgetId, false) && (providerInfo != null)) {
 			if (providerInfo.initialLayout == R.layout.widget_large) {
 				layoutId = R.layout.widget_large_transparent;
@@ -121,7 +122,12 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 		Log.d("buildAppWidget", "WidgetLayout: "+layoutId);
         views.setTextViewText(R.id.txtWidgetAccountname, account.getName().toUpperCase());
         views.setTextViewText(R.id.txtWidgetAccountnameBlur, account.getName().toUpperCase());
-		views.setTextViewText(R.id.txtWidgetAccountbalance, Helpers.formatBalance(account.getBalance(), account.getCurrency()));
+        if (defprefs.getBoolean("round_widget_balance", false)) {
+            views.setTextViewText(R.id.txtWidgetAccountbalance, Helpers.formatBalance(account.getBalance(), account.getCurrency(), true));
+        }
+        else {
+            views.setTextViewText(R.id.txtWidgetAccountbalance, Helpers.formatBalance(account.getBalance(), account.getCurrency()));
+        }
 		views.setImageViewResource(R.id.imgWidgetIcon, bank.getImageResource());
 		Log.d("Disabled", ""+bank.isDisabled());
 		if (bank.isDisabled()) {
@@ -152,7 +158,6 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
         pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setOnClickPendingIntent(R.id.imgBalanceblur, pendingIntent);
         
-        SharedPreferences defprefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (defprefs.getBoolean("widget_blur_balance", false) && !prefs.getBoolean("widget_unblurred_" + appWidgetId, false)) {
             views.setViewVisibility(R.id.imgBalanceblur, View.VISIBLE);
             views.setViewVisibility(R.id.txtWidgetAccountnameBlur, View.VISIBLE);

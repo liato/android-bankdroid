@@ -27,6 +27,14 @@
 			android:dependency="widget_blur_balance" />
 	</PreferenceCategory>
 	<PreferenceCategory
+		android:title="Utseende">
+		<CheckBoxPreference
+			android:key="round_widget_balance"
+			android:defaultValue="false"
+			android:title="Avrunda saldo på widgets"
+			android:summary="Visa saldot på widgets utan decimaler" />
+	</PreferenceCategory>
+	<PreferenceCategory
 		android:title="Automatiska Uppdateringar">
 		<CheckBoxPreference
 			android:key="autoupdates_enabled"
