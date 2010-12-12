@@ -1,9 +1,11 @@
 package com.liato.bankdroid.banks;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -35,7 +37,7 @@ public class Steam extends Bank {
 	private static final boolean STATIC_BALANCE = true;
 	
     private Pattern reBalance = Pattern.compile("accountBalance\">\\s*<div[^>]+>([^<]+)</div>", Pattern.CASE_INSENSITIVE);
-    private Pattern reTransactions = Pattern.compile("(?:even|odd)\">\\s*<div\\s*class=\"transactionRowDate\">([^<]+)</div>\\s*<div.*?RowPrice\">([^<]+)</div>\\s*<div.*?RowEvent\">([^<]+)</div>.*?RowTitle\">([^<]+)</div>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private Pattern reTransactions = Pattern.compile("(?:even|odd)\">\\s*<div\\s*class=\"transactionRowDate\">([^<]+)</div>\\s*<div.*?RowPrice\">([^<]+)</div>\\s*<div.*?RowEvent\">([^<]+)</div>.*?RowTitle\">([^<]+)</div>\\s*<span[^>]+>([^<]*)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private String response = null;
 	
 	public Steam(Context context) {
@@ -92,7 +94,7 @@ public class Steam extends Bank {
              * 1: Amount            0,--&#8364;
              * 
              */
-		    String amount = Html.fromHtml(matcher.group(1)).toString().trim();
+		    String amount = Html.fromHtml(matcher.group(1)).toString().trim().replace("--", "00");
 		    Account account = new Account("Wallet", Helpers.parseBalance(amount), "1");
 		    String currency = Helpers.parseCurrency(amount, "USD");
 		    this.setCurrency(currency);
@@ -105,9 +107,10 @@ public class Steam extends Bank {
 	             * Capture groups:
 	             * GROUP                EXAMPLE DATA
 	             * 1: Date              18 Oct 2007
-	             * 2: Amount            &#36;62.44
+	             * 2: Amount            0,99&#8364;
 	             * 3: Event             Purchase
-	             * 4: Item              The Orange Box
+	             * 4: Item              Team Fortress 2&nbsp;
+	             * 5: Sub item          Mann Co. Supply Crate Key
 	             * 
 	             */
                 SimpleDateFormat sdfFrom = new SimpleDateFormat("d MMM yyyy");
@@ -116,15 +119,21 @@ public class Steam extends Bank {
                 try {
                     transactionDate = sdfFrom.parse(matcher.group(1).trim());
                     String strDate = sdfTo.format(transactionDate);
+                    BigDecimal price = Helpers.parseBalance(Html.fromHtml(matcher.group(2)).toString().trim().replace("--", "00"));
+                    if ("Purchase".equalsIgnoreCase(matcher.group(3).trim())) {
+                        price = price.negate();
+                    }
                     transactions.add(new Transaction(strDate,
-                                                     Html.fromHtml(matcher.group(4)).toString().trim(),
-                                                     Helpers.parseBalance(Html.fromHtml(matcher.group(2)).toString().trim()),
+                                                     Html.fromHtml(matcher.group(4)).toString().trim() + (Html.fromHtml(matcher.group(5)).toString().trim().length() > 1 ? " (" + Html.fromHtml(matcher.group(5)).toString().trim() + ")" : ""),
+                                                     price,
                                                      Helpers.parseCurrency(Html.fromHtml(matcher.group(2)).toString().trim(), "USD")));
                 }
                 catch (ParseException e) {
                     Log.d(TAG, "Unable to parse date: " + matcher.group(1).trim());
                 }
 		    }
+		    Collections.sort(transactions);
+		    Collections.reverse(transactions);
 		    account.setTransactions(transactions);
 		    accounts.add(account);
 		}
