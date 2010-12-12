@@ -56,9 +56,6 @@ public class Helpers {
     }; 
 
     public static BigDecimal parseBalance(String balance) {
-        //balance = balance.replaceAll("(?:\\.|&nbsp;| )*", "");
-        //balance = balance.replaceAll("[a-zA-Z]*", "");
-        //balance = balance.replaceAll("\\s*", "");
         balance = balance.replaceAll("[^0-9,.-]*", "");
         balance = balance.replace(",", ".");
         if (balance.indexOf(".") != balance.lastIndexOf(".")) {
