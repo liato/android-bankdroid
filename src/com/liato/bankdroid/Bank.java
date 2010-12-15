@@ -38,7 +38,7 @@ public abstract class Bank implements Comparable<Bank> {
 	protected int BANKTYPE_ID = 0;
 	protected String URL;
     protected int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT;
-    protected int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_TEXT;
+    protected int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD;
     protected String INPUT_HINT_USERNAME = null;
     protected boolean STATIC_BALANCE = false;
     protected boolean BROKEN = false;

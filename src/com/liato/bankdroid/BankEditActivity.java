@@ -9,6 +9,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.InputType;
@@ -96,7 +97,10 @@ public class BankEditActivity extends LockableActivity implements OnClickListene
 		edtUsername.setInputType(SELECTED_BANK.getInputTypeUsername());
 		edtUsername.setHint(SELECTED_BANK.getInputHintUsername());
         //Not possible to set a textfield to both PHONE and PASSWORD :\
-        //((EditText)findViewById(R.id.edtBankeditPassword)).setInputType(SELECTED_BANK.getInputTypePassword());
+		EditText edtPassword = (EditText)findViewById(R.id.edtBankeditPassword);
+		edtPassword.setInputType(SELECTED_BANK.getInputTypePassword());
+		edtPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
+		edtPassword.setTypeface(Typeface.MONOSPACE);
         
 	}
 
