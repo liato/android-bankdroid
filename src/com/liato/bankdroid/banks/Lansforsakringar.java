@@ -36,12 +36,15 @@ public class Lansforsakringar extends Bank {
 
 	private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
 	private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
-	private Pattern reBalance = Pattern.compile("AccountNumber=([0-9]+)[^>]+><span[^>]+>([^<]+)</.*?span></td.*?<span[^>]+>([0-9 .,-]+)</span", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private Pattern reAccountsReg = Pattern.compile("AccountNumber=([0-9]+)[^>]+><span[^>]+>([^<]+)</.*?span></td.*?<span[^>]+>([0-9 .,-]+)</span", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private Pattern reAccountsFunds = Pattern.compile("fundsDataTable[^>]+>([^<]+)</span></a></td><td[^>]+></td><td[^>]+><span\\sid=\"fundsDataTable:\\d{1,}:bankoverview_\\d{1,}_([^\"]+)\">([0-9 .,-]+)</span", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private Pattern reAccountsLoans = Pattern.compile("internalLoanDataTable[^>]+>([^<]+)</span></a></span></td><td[^>]+><span[^>]+>[^<]+</span></td><td[^>]+><span\\sid=\"internalLoanDataTable:\\d{1,}:bankoverview_\\d{1,}_([^\"]+)\">([0-9 .,-]+)</spa", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reToken = Pattern.compile("var\\s+token\\s*=\\s*'([^']+)'", Pattern.CASE_INSENSITIVE);
     private Pattern reUrl = Pattern.compile("<li class=\"bank\">\\s*<a href=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
     private Pattern reTransactions = Pattern.compile("td\\s*class=\"leftpadding\"[^>]+><span[^>]+>(\\d{4}-\\d{2}-\\d{2})</span>\\s*<a.*?</a></td><td[^>]+><span[^>]+>(\\d{4}-\\d{2}-\\d{2})</span></td><td[^>]+><span[^>]+>([^<]+)</span></td><td[^>]+><span[^>]+><span[^>]+>([^<]*)</span></span></td><td[^>]+><span[^>]+>([^<]+)</span></td><td[^>]+><span[^>]+>([^<]+)<", Pattern.CASE_INSENSITIVE);
 	private String accountsUrl = null;
 	private String token = null;
+	private String host = null;
 	
 	public Lansforsakringar(Context context) {
 		super(context);
@@ -105,9 +108,11 @@ public class Lansforsakringar extends Bank {
 			if (!matcher.find()) {
 				throw new BankException(res.getText(R.string.unable_to_find).toString()+" accounts url.");
 			}
+			
+			host = urlopen.getCurrentURI().split("/")[2];
 			accountsUrl = Html.fromHtml(matcher.group(1)).toString() + "&_token=" + token;
 			if (!accountsUrl.contains("https://")) {
-			    accountsUrl = "https://" + urlopen.getCurrentURI().split("/")[2] + accountsUrl;
+			    accountsUrl = "https://" + host + accountsUrl;
 			}
 
 		}
@@ -136,11 +141,51 @@ public class Lansforsakringar extends Bank {
 				return;
 			}
 			response = urlopen.open(accountsUrl);
-			matcher = reBalance.matcher(response);
+			matcher = reAccountsReg.matcher(response);
 			while (matcher.find()) {
-				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), matcher.group(1).trim()));
+                /*
+                 * Capture groups:
+                 * GROUP                    EXAMPLE DATA
+                 * 1: Account number        125486547
+                 * 2: Name                  Personkonto
+                 * 3: Amount                25 000 000
+                 * 
+                 */    
+			    accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), matcher.group(1).trim()));
 				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
 			}
+            matcher = reAccountsFunds.matcher(response);
+            while (matcher.find()) {
+                /*
+                 * Capture groups:
+                 * GROUP                    EXAMPLE DATA
+                 * 1: Name                  Fonder
+                 * 2: ID                    idJsp165
+                 * 3: Amount                0,00
+                 * 
+                 */
+                accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), matcher.group(2).trim(), Account.FUNDS));
+            }
+            matcher = reAccountsLoans.matcher(response);
+            while (matcher.find()) {
+                /*
+                 * Capture groups:
+                 * GROUP                    EXAMPLE DATA
+                 * 1: Name                  Privatl&#229;n
+                 * 2: ID                    idJsp207
+                 * 3: Amount                25 000 000
+                 * 
+                 */                
+                accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), matcher.group(2).trim(), Account.LOANS));
+            }
+
+            // Save token for next request
+            matcher = reToken.matcher(response);
+            if (!matcher.find()) {
+                throw new BankException(res.getText(R.string.unable_to_find).toString()+" token.");
+            }
+            token = matcher.group(1);
+            
 			if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
 			}
@@ -159,11 +204,12 @@ public class Lansforsakringar extends Bank {
     @Override
     public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
         super.updateTransactions(account, urlopen);
+        // No transaction history for funds and loans
+        if (account.getType() != Account.REGULAR) return;
         String response = null;
         Matcher matcher;
         try {
- 
-            response = urlopen.open("https://secure246.lansforsakringar.se/lfportal/appmanager/privat/main?_nfpb=true&_pageLabel=bank_konto&dialog=dialog:account.viewAccountTransactions&webapp=edb-account-web&stickyMenu=false&newUc=true&AccountNumber=" + account.getId() + "&_token=" + token);
+            response = urlopen.open("https://" + host + "/lfportal/appmanager/privat/main?_nfpb=true&_pageLabel=bank_konto&dialog=dialog:account.viewAccountTransactions&webapp=edb-account-web&stickyMenu=false&newUc=true&AccountNumber=" + account.getId() + "&_token=" + token);
             matcher = reTransactions.matcher(response);
             ArrayList<Transaction> transactions = new ArrayList<Transaction>();
             while (matcher.find()) {
@@ -183,6 +229,13 @@ public class Lansforsakringar extends Bank {
                                     Helpers.parseBalance(matcher.group(5))));
             }
             account.setTransactions(transactions);
+            
+            // Save token for next request
+            matcher = reToken.matcher(response);
+            if (!matcher.find()) {
+                throw new BankException(res.getText(R.string.unable_to_find).toString()+" token.");
+            }
+            token = matcher.group(1);            
         } catch (ClientProtocolException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
