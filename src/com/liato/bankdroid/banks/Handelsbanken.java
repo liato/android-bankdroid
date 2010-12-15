@@ -37,12 +37,14 @@ public class Handelsbanken extends Bank {
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
 
-	private Pattern reBalance = Pattern.compile("block-link\\s*\"\\s*href=\"/primary/_-([^\"]+)\"><span>([^<]+)</span>.*?SEK([0-9\\s.,-ÃÂ]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-	private Pattern reAccountsUrl = Pattern.compile("_-([^\"]+)\"><img[^>]+><span[^>]+>Konton<",Pattern.CASE_INSENSITIVE);
-	private Pattern reLoginUrl = Pattern.compile("_-([^\"]+)\"><img[^>]*><img[^>]*><span[^>]*>Logga",Pattern.CASE_INSENSITIVE);
+	private Pattern reBalance = Pattern.compile("block-link\\s*\"\\s*href=\"[^\"]*?/primary/_-([^\"]+)\"><span>([^<]+)</span>.*?SEK(?:&nbsp;|\\s*)?([0-9\\s.,-ÃÂ]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private Pattern reAccountsUrl = Pattern.compile("_-([^\"]+)\">(?:<img[^>]+>)?<img[^>]+><span[^>]+>Konton<",Pattern.CASE_INSENSITIVE);
+	private Pattern reLoginUrl = Pattern.compile("_-([^\"]+)\">(?:<img[^>]+>)?<img[^>]+><span[^>]+>Logga",Pattern.CASE_INSENSITIVE);
 	private Pattern reTransactions = Pattern.compile("padding-left\">([^<]+)</span><span[^>]*><span[^>]*>([^<]+)</span><span[^>]*>([^<]+)<", Pattern.CASE_INSENSITIVE);
 
-	private ArrayList<String> accountIds = new ArrayList<String>(); 
+	private ArrayList<String> accountIds = new ArrayList<String>();
+	private String response = null;
+	
 	public Handelsbanken(Context context) {
 		super(context);
 		super.TAG = TAG;
@@ -63,7 +65,6 @@ public class Handelsbanken extends Bank {
 	@Override
 	public Urllib login() throws LoginException, BankException {
 		urlopen = new Urllib();
-		String response = null;
 		Matcher matcher;
 		try {
 			response = urlopen.open("https://m.handelsbanken.se/primary/");
@@ -76,13 +77,7 @@ public class Handelsbanken extends Bank {
 			postData.add(new BasicNameValuePair("username", username));
 			postData.add(new BasicNameValuePair("pin", password));
 			postData.add(new BasicNameValuePair("execute", "true"));
-			Log.d(TAG, "Posting data to: " + strLoginUrl);
 			response = urlopen.open(strLoginUrl, postData);
-			/*
-			for (String s : response.split("<span")) {
-				Log.d(TAG, s);
-			}
-			*/
 
 			if (response.contains("ontrollera dina uppgifter")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -107,17 +102,13 @@ public class Handelsbanken extends Bank {
 		}
 
 		urlopen = login();
-		String response = null;
 		Matcher matcher;
 		try {
-			response = urlopen.open(urlopen.getCurrentURI());
-			//Successful login, find accounts url and retrieve account info.
 			matcher = reAccountsUrl.matcher(response);
 			if (!matcher.find()) {
 				throw new BankException(res.getText(R.string.unable_to_find).toString()+" accounts url.");
 			}
 			String strAccountsUrl = "https://m.handelsbanken.se/primary/_-"+matcher.group(1);			
-			Log.d("TAG", "Accounts url: "+strAccountsUrl);
 			response = urlopen.open(strAccountsUrl);
 			matcher = reBalance.matcher(response);
 			Integer accountId = 0;
@@ -145,7 +136,6 @@ public class Handelsbanken extends Bank {
 
 	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
 		super.updateTransactions(account, urlopen);
-		String response = null;
 		Matcher matcher;
 		try {
 			String accountWebId = accountIds.get(Integer.parseInt(account.getId()));
