@@ -34,10 +34,9 @@ public class Coop extends Bank {
     private static final int BANKTYPE_ID = Bank.COOP;
 
     private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
-    private Pattern reBalanceVisa = Pattern.compile("MedMera\\s*Visa</h3>\\s*<h6>Disponibelt\\s*belopp[^<]*</h6>\\s*<ul>(.*?)</ul>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-    private Pattern reBalanceKonto = Pattern.compile("saldo\">([^<]+)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-    private Pattern reTransactionsKonto = Pattern.compile("<td>\\s*(\\d{4}-\\d{2}-\\d{2})\\s*</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]*)</td>\\s*<td>([^<]*)</td>\\s*<td[^>]*>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
-    private Pattern reTransactionsVisa = Pattern.compile("<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]*)</td>\\s*<td>([^<]*)</td>\\s*<td.*?</td>\\s*<td><s.*?value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
+    //private Pattern reBalanceVisa = Pattern.compile("MedMera\\s*Visa</h3>\\s*<h6>Disponibelt\\s*belopp[^<]*</h6>\\s*<ul>(.*?)</ul>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private Pattern reBalance = Pattern.compile("saldo\">([^<]+)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private Pattern reTransactions = Pattern.compile("<td>\\s*(\\d{4}-\\d{2}-\\d{2})\\s*</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]*)</td>\\s*<td>([^<]*)</td>\\s*<td[^>]*>(?:\\s*<a[^>]+>)?([^<]+)(?:</a>\\s*)?</td>", Pattern.CASE_INSENSITIVE);
     private String response;
 
     public Coop(Context context) {
@@ -106,64 +105,60 @@ public class Coop extends Bank {
         urlopen = login();
         Matcher matcher;
         Account account;
-        matcher = reBalanceVisa.matcher(response);
-        if (matcher.find()) {
-            account = new Account("MedMera Visa", Helpers.parseBalance(matcher.group(1).trim()), "1");
-            balance = balance.add(Helpers.parseBalance(matcher.group(1)));
+
+
+        class RequestDetails {
+            public String url, name, id;
+            public RequestDetails(String url, String name, String id) {
+                this.url = url;
+                this.name = name;
+                this.id = id;
+            }
+        }    
+        ArrayList<RequestDetails> arrRD = new ArrayList<RequestDetails>();
+        arrRD.add(new RequestDetails("https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Visa/", "MedMera Visa", "1"));
+        arrRD.add(new RequestDetails("https://www.coop.se/Mina-sidor/Oversikt/MedMera-Konto/", "MedMera Konto", "2"));
+
+        for (RequestDetails rd : arrRD) {
             try {
-                response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Visa/");
-                matcher = reTransactionsVisa.matcher(response);
-                ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-                while (matcher.find()) {
-                    String title = matcher.group(4).length() > 0 ? matcher.group(4).trim() + " (" + matcher.group(3).trim() + ")" : matcher.group(2);
-                    transactions.add(new Transaction(matcher.group(1).trim(), Html.fromHtml(title).toString().trim(), Helpers.parseBalance(matcher.group(5))));
+                response = urlopen.open(rd.url);
+                matcher = reBalance.matcher(response);
+                if (matcher.find()) {
+                    account = new Account(rd.name, Helpers.parseBalance(matcher.group(1).trim()), rd.id);
+                    balance = balance.add(Helpers.parseBalance(matcher.group(1)));
+                    matcher = reTransactions.matcher(response);
+                    ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+                    while (matcher.find()) {
+                        /*
+                         * Capture groups:
+                         * GROUP                EXAMPLE DATA
+                         * 1: Date              2010-11-04
+                         * 2: Activity          Köp
+                         * 3: User              John Doe
+                         * 4: Place             Coop Extra Stenungsund
+                         * 5: Amount            -809,37 kr
+                         *                      * 
+                         */
+
+                        String title = Html.fromHtml(matcher.group(4)).toString().trim().length() > 0 ? Html.fromHtml(matcher.group(4)).toString().trim() : Html.fromHtml(matcher.group(2)).toString().trim();
+                        if (Html.fromHtml(matcher.group(3)).toString().trim().length() > 0) {
+                            title = title + " (" + Html.fromHtml(matcher.group(3)).toString().trim() + ")";
+                        }
+                        transactions.add(new Transaction(matcher.group(1).trim(),
+                                title,
+                                Helpers.parseBalance(matcher.group(5))));
+                    }
+                    account.setTransactions(transactions);
+                    accounts.add(account);
                 }
-                account.setTransactions(transactions);
-                accounts.add(account);
             }
             catch (ClientProtocolException e) {
                 //404 or 500 response
             }
             catch (IOException e) {
-                throw new BankException(e.getMessage());
-            }                
+            }                        
         }
-        try {
-            response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/MedMera-Konto/");
-            matcher = reBalanceKonto.matcher(response);
-            if (matcher.find()) {
-                account = new Account("MedMera Konto", Helpers.parseBalance(matcher.group(1).trim()), "2");
-                balance = balance.add(Helpers.parseBalance(matcher.group(1)));
-                matcher = reTransactionsKonto.matcher(response);
-                ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-                while (matcher.find()) {
-                    /*
-                     * Capture groups:
-                     * GROUP                EXAMPLE DATA
-                     * 1: Date              2010-11-04
-                     * 2: Activity          Köp
-                     * 3: User              John Doe
-                     * 4: Place             Coop Extra Stenungsund
-                     * 5: Amount            -809,37 kr
-                     *                      * 
-                     */
 
-                    String title = Html.fromHtml(matcher.group(4)).toString().trim().length() > 0 ? Html.fromHtml(matcher.group(4)).toString().trim() : Html.fromHtml(matcher.group(2)).toString().trim();
-                    if (Html.fromHtml(matcher.group(3)).toString().trim().length() > 0) {
-                        title = title + " (" + Html.fromHtml(matcher.group(3)).toString().trim() + ")";
-                    }
-                    transactions.add(new Transaction(matcher.group(1).trim(),
-                            title,
-                            Helpers.parseBalance(matcher.group(5))));
-                }
-                account.setTransactions(transactions);
-                accounts.add(account);
-            }        }
-        catch (ClientProtocolException e) {
-            //404 or 500 response
-        }
-        catch (IOException e) {
-        }            
         if (accounts.isEmpty()) {
             throw new BankException(res.getText(R.string.no_accounts_found).toString());
         }
