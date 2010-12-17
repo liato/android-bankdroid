@@ -51,13 +51,13 @@ public class Lansforsakringar extends Bank {
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDD-XXXX";
 
     private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
-    private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
+    private Pattern reViewState = Pattern.compile("(?:__|javax\\.faces\\.)VIEWSTATE\"\\s+.*?value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
     private Pattern reAccountsReg = Pattern.compile("AccountNumber=([0-9]+)[^>]+><span[^>]+>([^<]+)</.*?span></td.*?<span[^>]+>([0-9 .,-]+)</span", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private Pattern reAccountsFunds = Pattern.compile("fundsDataTable[^>]+>([^<]+)</span></a></td><td[^>]+></td><td[^>]+><span\\sid=\"fundsDataTable:\\d{1,}:bankoverview_\\d{1,}_([^\"]+)\">([0-9 .,-]+)</span", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private Pattern reAccountsLoans = Pattern.compile("internalLoanDataTable[^>]+>([^<]+)</span></a></span></td><td[^>]+><span[^>]+>[^<]+</span></td><td[^>]+><span\\sid=\"internalLoanDataTable:\\d{1,}:bankoverview_\\d{1,}_([^\"]+)\">([0-9 .,-]+)</spa.*?internalLoanDataTable:\\d{1,}:bankoverview_\\d{1,}_(?:[^\"]+)\">([0-9 .,-]+)</spa", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private Pattern reToken = Pattern.compile("var\\s+token\\s*=\\s*'([^']+)'", Pattern.CASE_INSENSITIVE);
     private Pattern reUrl = Pattern.compile("<li class=\"bank\">\\s*<a href=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
-    private Pattern reTransactions = Pattern.compile("td\\s*class=\"leftpadding\"[^>]+><span[^>]+>(\\d{4}-\\d{2}-\\d{2})</span>\\s*<a.*?</a></td><td[^>]+><span[^>]+>(\\d{4}-\\d{2}-\\d{2})</span></td><td[^>]+><span[^>]+>([^<]+)</span></td><td[^>]+><span[^>]+><span[^>]+>([^<]*)</span></span></td><td[^>]+><span[^>]+>([^<]+)</span></td><td[^>]+><span[^>]+>([^<]+)<", Pattern.CASE_INSENSITIVE);
+    private Pattern reTransactions = Pattern.compile("td\\s*class=\"leftpadding\"[^>]+>(?:<a[^>]+>)?<span[^>]+>(\\d{4}-\\d{2}-\\d{2})</span>(?:</a>)?\\s*<a.*?</a></td><td[^>]+><span[^>]+>(\\d{4}-\\d{2}-\\d{2})</span></td><td[^>]+><span[^>]+>([^<]+)</span></td><td[^>]+><span[^>]+><span[^>]+>([^<]*)</span></span></td><td[^>]+><span[^>]+>([^<]+)</span></td><td[^>]+><span[^>]+>([^<]+)<", Pattern.CASE_INSENSITIVE);
     private String accountsUrl = null;
     private String mRequestToken = null;
     private String mViewState = null;
@@ -220,4 +220,107 @@ public class Lansforsakringar extends Bank {
         }
     }
 
+    @Override
+    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+        super.updateTransactions(account, urlopen);
+        // No transaction history for funds and loans
+        if (account.getType() != Account.REGULAR) return;
+        String response = null;
+        Matcher matcher;
+
+        if (mFirstTransactionPage) {
+            try {
+                response = urlopen.open("https://" + host + "/lfportal/appmanager/privat/main?_nfpb=true&_pageLabel=bank_konto&dialog=dialog:account.viewAccountTransactions&webapp=edb-account-web&stickyMenu=false&newUc=true&AccountNumber=" + account.getId() + "&_token=" + mRequestToken);
+                matcher = reViewState.matcher(response);
+                if (!matcher.find()) {
+                    Log.d(TAG,res.getText(R.string.unable_to_find).toString()+" ViewState. L237.");
+                    return;
+                }
+                mViewState = matcher.group(1);
+
+                matcher = reToken.matcher(response);
+                if (!matcher.find()) {
+                    Log.d(TAG,res.getText(R.string.unable_to_find).toString()+" token. L244.");
+                    return;
+                }
+                mRequestToken = matcher.group(1);                  
+            }
+            catch (ClientProtocolException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }            
+        }
+
+        try {
+            List <NameValuePair> postData = new ArrayList <NameValuePair>();
+            if (mFirstTransactionPage) {
+                postData.add(new BasicNameValuePair("dialog-account_viewAccountTransactions", "Submit Query"));            
+                postData.add(new BasicNameValuePair("_token", mRequestToken));            
+                postData.add(new BasicNameValuePair("loginForm_SUBMIT", "1"));            
+                postData.add(new BasicNameValuePair("loginForm:_idcl", ""));            
+                postData.add(new BasicNameValuePair("loginForm:_link_hidden_", ""));            
+                postData.add(new BasicNameValuePair("javax.faces.ViewState", mViewState));            
+                response = urlopen.open("https://" + host + "/lfportal/appmanager/privat/main?_nfpb=true&_windowLabel=account_1&_nffvid=%2Flfportal%2Findex_account.faces", postData);
+                mFirstTransactionPage = false;
+            }
+            else {
+                postData.add(new BasicNameValuePair("_token", mRequestToken));            
+                postData.add(new BasicNameValuePair("viewAccountListTransactionsForm_SUBMIT", "1"));            
+                postData.add(new BasicNameValuePair("viewAccountListTransactionsForm:_idcl", ""));            
+                postData.add(new BasicNameValuePair("viewAccountListTransactionsForm:_link_hidden_", ""));            
+                postData.add(new BasicNameValuePair("javax.faces.ViewState", mViewState));            
+                postData.add(new BasicNameValuePair("accountList", account.getId()));
+                response = urlopen.open("https://" + host + "/lfportal/appmanager/privat/main?_nfpb=true&_windowLabel=account_1&_nffvid=%2Flfportal%2Fjsp%2Faccount%2Fview%2FviewAccountTransactions.faces", postData);
+            }
+            matcher = reTransactions.matcher(response);
+            ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+            while (matcher.find()) {
+                /*
+                 * Capture groups:
+                 * GROUP                EXAMPLE DATA
+                 * 1: Book. date        2009-05-03
+                 * 2: Trans. date       2009-05-03
+                 * 3: Specification     &Ouml;verf&ouml;ring internet ...
+                 * 4: Note              829909945928712
+                 * 5: Amount            -54,00
+                 * 6: Remaining         0,00
+                 *   
+                 */                    
+                transactions.add(new Transaction(matcher.group(2).trim(),
+                        Html.fromHtml(matcher.group(3)).toString().trim()+(matcher.group(4).trim().length() > 0 ? " (" + Html.fromHtml(matcher.group(4)).toString().trim() + ")" : ""),
+                        Helpers.parseBalance(matcher.group(5))));
+            }
+            account.setTransactions(transactions);
+
+            // Save token and viewstate for next request
+            matcher = reViewState.matcher(response);
+            // We need the second match, disregard the first one.
+            matcher.find();
+            if (!matcher.find()) {
+                Log.d(TAG, res.getText(R.string.unable_to_find).toString()+" ViewState. L304.");
+                return;
+            }
+            mViewState = matcher.group(1);
+
+
+            matcher = reToken.matcher(response);
+            if (!matcher.find()) {
+                Log.d(TAG, res.getText(R.string.unable_to_find).toString()+" token. L312.");
+                return;
+            }
+            mRequestToken = matcher.group(1);            
+        } catch (ClientProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        finally {
+            super.updateComplete();
+        }
+    }       	
 }
