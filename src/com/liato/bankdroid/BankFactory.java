@@ -28,6 +28,7 @@ import android.preference.PreferenceManager;
 import com.liato.bankdroid.banks.Avanza;
 import com.liato.bankdroid.banks.AvanzaMini;
 import com.liato.bankdroid.banks.Coop;
+import com.liato.bankdroid.banks.DinersClub;
 import com.liato.bankdroid.banks.Eurocard;
 import com.liato.bankdroid.banks.FirstCard;
 import com.liato.bankdroid.banks.Handelsbanken;
@@ -87,6 +88,8 @@ public class BankFactory {
             return new Jojo(context);
         case Bank.STEAM:
             return new Steam(context);
+        case Bank.DINERSCLUB:
+            return new DinersClub(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -113,6 +116,7 @@ public class BankFactory {
         banks.add(new Payson(context));
         banks.add(new Jojo(context));
         banks.add(new Steam(context));
+        banks.add(new DinersClub(context));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));
