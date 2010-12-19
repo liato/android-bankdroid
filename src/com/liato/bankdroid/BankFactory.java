@@ -34,6 +34,7 @@ import com.liato.bankdroid.banks.FirstCard;
 import com.liato.bankdroid.banks.Handelsbanken;
 import com.liato.bankdroid.banks.ICA;
 import com.liato.bankdroid.banks.ICABanken;
+import com.liato.bankdroid.banks.IkanoBank;
 import com.liato.bankdroid.banks.Jojo;
 import com.liato.bankdroid.banks.Lansforsakringar;
 import com.liato.bankdroid.banks.Nordea;
@@ -90,6 +91,8 @@ public class BankFactory {
             return new Steam(context);
         case Bank.DINERSCLUB:
             return new DinersClub(context);
+        case Bank.IKANOBANK:
+            return new IkanoBank(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -117,6 +120,7 @@ public class BankFactory {
         banks.add(new Jojo(context));
         banks.add(new Steam(context));
         banks.add(new DinersClub(context));
+        banks.add(new IkanoBank(context));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));
