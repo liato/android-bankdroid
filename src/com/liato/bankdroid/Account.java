@@ -95,7 +95,11 @@ public class Account {
 		return name;
 	}
 	
-	public String getId() {
+	public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getId() {
 		return id;
 	}
 	

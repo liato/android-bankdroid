@@ -108,7 +108,7 @@ public class Eurocard extends Bank {
 		}
 		urlopen = login();
 		Matcher matcher = reAccounts.matcher(response);
-		if (matcher.find()) {
+		while (matcher.find()) {
             /*
              * Capture groups:
              * GROUP                     EXAMPLE DATA
@@ -121,12 +121,20 @@ public class Eurocard extends Bank {
 		    // Create a separate account for "Ofakturerat".
 		    // Set the balance for the main account to 0 and update it later
 			accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim(), new BigDecimal(0), matcher.group(2).trim()));
-			accounts.add(new Account("Ofakturerat", Helpers.parseBalance(matcher.group(3)), "o:ofak", Account.OTHER));
+			accounts.add(new Account("Ofakturerat", Helpers.parseBalance(matcher.group(3)), "o:ofak:"+matcher.group(2).trim(), Account.OTHER));
+		}
+		if (accounts.size() > 2) {
+		    boolean s = true;
+		    for (Account a : accounts) {
+		        a.setName(s ? "┌ " : "└ "+ a.getName());
+		        s = !s;
+		    }
 		}
 		try {
             response = urlopen.open("https://e-saldo.eurocard.se/nis/ecse/getBillingUnits.do");
             matcher = reSaldo.matcher(response);
-            if (matcher.find()) {
+            int i = 0;
+            while (matcher.find()) {
                 /*
                  * Capture groups:
                  * GROUP                     EXAMPLE DATA
@@ -135,8 +143,8 @@ public class Eurocard extends Bank {
                  */ 
                 
                 // Update the main account balance
-                if (!accounts.isEmpty()) {
-                    accounts.get(0).setBalance(Helpers.parseBalance(matcher.group(1)));
+                if (accounts.size() >= i*2+1) {
+                    accounts.get(i*2).setBalance(Helpers.parseBalance(matcher.group(1)));
                 }
             }
 		}
@@ -158,7 +166,7 @@ public class Eurocard extends Bank {
 	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
 		super.updateTransactions(account, urlopen);
 		Matcher matcher;
-		// If the account is of type "other" it's probably the fake "Ofakturerat" account.
+		// If the account is of type "other" it's the fake "Ofakturerat" account.
 		if (account.getType() == Account.OTHER) return;
 		try {
 			Log.d(TAG, "Opening: https://e-saldo.eurocard.se/nis/ecse/getPendingTransactions.do?id="+account.getId());
