@@ -50,7 +50,6 @@ public class Coop extends Bank {
     private static final int BANKTYPE_ID = Bank.COOP;
 
     private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
-    //private Pattern reBalanceVisa = Pattern.compile("MedMera\\s*Visa</h3>\\s*<h6>Disponibelt\\s*belopp[^<]*</h6>\\s*<ul>(.*?)</ul>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private Pattern reBalance = Pattern.compile("saldo\">([^<]+)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private Pattern reTransactions = Pattern.compile("<td>\\s*(\\d{4}-\\d{2}-\\d{2})\\s*</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]*)</td>\\s*<td>([^<]*)</td>\\s*<td[^>]*>(?:\\s*<a[^>]+>)?([^<]+)(?:</a>\\s*)?</td>", Pattern.CASE_INSENSITIVE);
     private String response;
@@ -134,6 +133,7 @@ public class Coop extends Bank {
         ArrayList<RequestDetails> arrRD = new ArrayList<RequestDetails>();
         arrRD.add(new RequestDetails("https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Visa/", "MedMera Visa", "1"));
         arrRD.add(new RequestDetails("https://www.coop.se/Mina-sidor/Oversikt/MedMera-Konto/", "MedMera Konto", "2"));
+        arrRD.add(new RequestDetails("https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Faktura/", "MedMera Faktura", "3"));
 
         for (RequestDetails rd : arrRD) {
             try {
