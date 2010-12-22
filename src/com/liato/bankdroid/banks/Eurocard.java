@@ -54,6 +54,7 @@ public class Eurocard extends Bank {
 	private Pattern reAccounts = Pattern.compile("Welcomepagecardimagecontainer\">\\s*[^<]+<br>[^>]+<br>([^>]+)</div>\\s*</div>\\s*</div>.*?indentationwrapper\">\\s*<a\\s*href=\"getPendingTransactions\\.do\\?id=([^\"]+)\">.*?billedamount\">([^<]+)</div>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reSaldo = Pattern.compile("Billingunitbalanceamount\">\\s*([^<]+)<", Pattern.CASE_INSENSITIVE);
 	private Pattern reTransactions = Pattern.compile("transcol1\">\\s*<span>([^<]+)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^<]+)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^<]*)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^<]*)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^>]*)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^<]*)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^<]+)</span>", Pattern.CASE_INSENSITIVE);
+    private ArrayList<String> accountIds = new ArrayList<String>();
 	private String response = null;
 	public Eurocard(Context context) {
 		super(context);
@@ -108,28 +109,25 @@ public class Eurocard extends Bank {
 		}
 		urlopen = login();
 		Matcher matcher = reAccounts.matcher(response);
+        Integer accountId = 0;
 		while (matcher.find()) {
             /*
              * Capture groups:
-             * GROUP                     EXAMPLE DATA
+             * GROUP                     EXAMPLE DATA           NOTES
              * 1: account number         **** **** **** 1234
-             * 2: id                     a1c2d3d4e5f6s7b8c9d0
+             * 2: id                     a1c2d3d4e5f6s7b8c9d0   Changes when session expires
              * 3: ofakturerat amount     &nbsp;2 988,96
              * 
              */
 
 		    // Create a separate account for "Ofakturerat".
 		    // Set the balance for the main account to 0 and update it later
-			accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim(), new BigDecimal(0), matcher.group(2).trim()));
-			accounts.add(new Account("Ofakturerat", Helpers.parseBalance(matcher.group(3)), "o:ofak:"+matcher.group(2).trim(), Account.OTHER));
+			accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim(), new BigDecimal(0), accountId.toString()));
+			accounts.add(new Account("└ " + "Ofakturerat", Helpers.parseBalance(matcher.group(3)), "o:ofak:"+accountId.toString(), Account.OTHER));
+            accountIds.add(matcher.group(2).trim());
+            accountId += 1;			
 		}
-		if (accounts.size() > 2) {
-		    boolean s = true;
-		    for (Account a : accounts) {
-		        a.setName(s ? "┌ " : "└ "+ a.getName());
-		        s = !s;
-		    }
-		}
+
 		try {
             response = urlopen.open("https://e-saldo.eurocard.se/nis/ecse/getBillingUnits.do");
             matcher = reSaldo.matcher(response);
@@ -169,8 +167,9 @@ public class Eurocard extends Bank {
 		// If the account is of type "other" it's the fake "Ofakturerat" account.
 		if (account.getType() == Account.OTHER) return;
 		try {
-			Log.d(TAG, "Opening: https://e-saldo.eurocard.se/nis/ecse/getPendingTransactions.do?id="+account.getId());
-			response = urlopen.open("https://e-saldo.eurocard.se/nis/ecse/getPendingTransactions.do?id="+account.getId());
+		    String accountWebId = accountIds.get(Integer.parseInt(account.getId()));
+			Log.d(TAG, "Opening: https://e-saldo.eurocard.se/nis/ecse/getPendingTransactions.do?id="+accountWebId);
+			response = urlopen.open("https://e-saldo.eurocard.se/nis/ecse/getPendingTransactions.do?id="+accountWebId);
 			matcher = reTransactions.matcher(response);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 			String strDate = null;
