@@ -134,7 +134,7 @@ public class IkanoBank extends Bank {
              * 
              */    
             accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(4).trim()), matcher.group(1).trim()));
-            balance = balance.add(Helpers.parseBalance(matcher.group(3)));
+            balance = balance.add(Helpers.parseBalance(matcher.group(4)));
         }
 
         if (accounts.isEmpty()) {

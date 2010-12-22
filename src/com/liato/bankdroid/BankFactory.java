@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.liato.bankdroid.banks.Avanza;
 import com.liato.bankdroid.banks.AvanzaMini;
@@ -213,6 +214,7 @@ public class BankFactory {
 		DBAdapter db = new DBAdapter(context);
 		db.open();
 		Cursor c = db.getAccount(accountId);
+       
 		if (c == null || c.isClosed() || (c.isBeforeFirst() && c.isAfterLast())) {
 			db.close();
 			return null;

@@ -70,10 +70,15 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
 			}
 			Log.d("AA", "Refreshing "+bank.getName()+" ("+bank.getUsername()+").");
 			try {
-				bank.update();
-				bank.updateAllTransactions();
-				bank.closeConnection();
-				bank.save();
+                //Log.d("AA", "bank.update()");
+                bank.update();
+                //Log.d("AA", "bank.updateAllTransactions()");
+                bank.updateAllTransactions();
+                //Log.d("AA", "bank.closeConnction()");
+                bank.closeConnection();
+                //Log.d("AA", "bank.save()");
+                bank.save();
+                //Log.d("AA", "DONE!");
 				i++;
 			} 
 			catch (BankException e) {
