@@ -75,23 +75,29 @@ public class Handelsbanken extends Bank {
 	}
 
 	
+    
+    @Override
+    protected LoginPackage preLogin() throws BankException,
+            ClientProtocolException, IOException {
+        urlopen = new Urllib();
+        response = urlopen.open("https://m.handelsbanken.se/primary/");
+        Matcher matcher = reLoginUrl.matcher(response);
+        if (!matcher.find()) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString()+" login url.");
+        }
+        String strLoginUrl = "https://m.handelsbanken.se/primary/_-"+matcher.group(1);
+        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+        postData.add(new BasicNameValuePair("username", username));
+        postData.add(new BasicNameValuePair("pin", password));
+        postData.add(new BasicNameValuePair("execute", "true"));
+        return new LoginPackage(urlopen, postData, response, strLoginUrl);
+    }
+
 	@Override
 	public Urllib login() throws LoginException, BankException {
-		urlopen = new Urllib();
-		Matcher matcher;
 		try {
-			response = urlopen.open("https://m.handelsbanken.se/primary/");
-			matcher = reLoginUrl.matcher(response);
-			if (!matcher.find()) {
-				throw new BankException(res.getText(R.string.unable_to_find).toString()+" login url.");
-			}
-			String strLoginUrl = "https://m.handelsbanken.se/primary/_-"+matcher.group(1);
-			List <NameValuePair> postData = new ArrayList <NameValuePair>();
-			postData.add(new BasicNameValuePair("username", username));
-			postData.add(new BasicNameValuePair("pin", password));
-			postData.add(new BasicNameValuePair("execute", "true"));
-			response = urlopen.open(strLoginUrl, postData);
-
+			LoginPackage lp = preLogin();
+			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
 			if (response.contains("ontrollera dina uppgifter")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}

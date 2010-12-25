@@ -65,69 +65,72 @@ public class Villabanken extends Bank {
 		this.update(username, password);
 	}
 
+    
+    @Override
+    protected LoginPackage preLogin() throws BankException,
+            ClientProtocolException, IOException {
+        urlopen = new Urllib();
+        String response = urlopen.open("https://kundportal.cerdo.se/villabankenpub/card/default.aspx");
+        Matcher matcher = reRequestDigest.matcher(response);
+        if (!matcher.find()) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString()+" request digest.");
+        }
+        String requestDigest = matcher.group(1);
+        
+        matcher = reViewState.matcher(response);
+        if (!matcher.find()) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString()+" view state.");
+        }
+        String viewState = matcher.group(1);
+        
+        matcher = reEventValidation.matcher(response);
+        if (!matcher.find()) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString()+" event validation.");
+        }
+        String eventValidation = matcher.group(1);
+
+        matcher = rePageHashCode.matcher(response);
+        if (!matcher.find()) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString()+" page hash code.");
+        }
+        String pageHashCode = matcher.group(1);
+
+        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+        postData.add(new BasicNameValuePair("__spDummyText1", ""));
+        postData.add(new BasicNameValuePair("__spDummyText2", ""));
+        postData.add(new BasicNameValuePair("MSOWebPartPage_PostbackSource", ""));
+        postData.add(new BasicNameValuePair("MSOTlPn_SelectedWpId", ""));
+        postData.add(new BasicNameValuePair("MSOTlPn_View", "0"));
+        postData.add(new BasicNameValuePair("MSOTlPn_ShowSettings", "False"));
+        postData.add(new BasicNameValuePair("MSOGallery_SelectedLibrary", ""));
+        postData.add(new BasicNameValuePair("MSOGallery_FilterString", ""));
+        postData.add(new BasicNameValuePair("MSOTlPn_Button", "none"));
+        postData.add(new BasicNameValuePair("__EVENTTARGET", ""));
+        postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
+        postData.add(new BasicNameValuePair("__LASTFOCUS", ""));
+        postData.add(new BasicNameValuePair("MSOSPWebPartManager_DisplayModeName", "Browse"));
+        postData.add(new BasicNameValuePair("MSOWebPartPage_Shared", ""));
+        postData.add(new BasicNameValuePair("MSOLayout_LayoutChanges", ""));
+        postData.add(new BasicNameValuePair("MSOLayout_InDesignMode", ""));
+        postData.add(new BasicNameValuePair("MSOSPWebPartManager_OldDisplayModeName", "Browse"));
+        postData.add(new BasicNameValuePair("MSOSPWebPartManager_StartWebPartEditingName", "false"));
+        postData.add(new BasicNameValuePair("ctl00$m$g_343be9ea_353d_40bc_bc55_184b89e22861$ctl00", "Logga in"));
+        
+        postData.add(new BasicNameValuePair("__REQUESTDIGEST", requestDigest));
+        postData.add(new BasicNameValuePair("__VIEWSTATE", viewState));
+        postData.add(new BasicNameValuePair("__EVENTVALIDATION", eventValidation));
+        postData.add(new BasicNameValuePair("MSO_PageHashCode", pageHashCode));
+        postData.add(new BasicNameValuePair("ctl00$m$g_343be9ea_353d_40bc_bc55_184b89e22861$accountNumber", username));
+        postData.add(new BasicNameValuePair("ctl00$m$g_343be9ea_353d_40bc_bc55_184b89e22861$password", password));
+        
+        return new LoginPackage(urlopen, postData, response, "https://kundportal.cerdo.se/villabankenpub/card/default.aspx");
+    }
+
 	@Override
 	public Urllib login() throws LoginException, BankException {
-		urlopen = new Urllib();
-		String response = null;
-		Matcher matcher;
 		try {
-			response = urlopen.open("https://kundportal.cerdo.se/villabankenpub/card/default.aspx");
-			matcher = reRequestDigest.matcher(response);
-			if (!matcher.find()) {
-				throw new BankException(res.getText(R.string.unable_to_find).toString()+" request digest.");
-			}
-			String requestDigest = matcher.group(1);
-			
-			matcher = reViewState.matcher(response);
-			if (!matcher.find()) {
-				throw new BankException(res.getText(R.string.unable_to_find).toString()+" view state.");
-			}
-			String viewState = matcher.group(1);
-			
-			matcher = reEventValidation.matcher(response);
-			if (!matcher.find()) {
-				throw new BankException(res.getText(R.string.unable_to_find).toString()+" event validation.");
-			}
-			String eventValidation = matcher.group(1);
-
-			matcher = rePageHashCode.matcher(response);
-			if (!matcher.find()) {
-				throw new BankException(res.getText(R.string.unable_to_find).toString()+" page hash code.");
-			}
-			String pageHashCode = matcher.group(1);
-
-			List <NameValuePair> postData = new ArrayList <NameValuePair>();
-			postData.add(new BasicNameValuePair("__spDummyText1", ""));
-			postData.add(new BasicNameValuePair("__spDummyText2", ""));
-			postData.add(new BasicNameValuePair("MSOWebPartPage_PostbackSource", ""));
-			postData.add(new BasicNameValuePair("MSOTlPn_SelectedWpId", ""));
-			postData.add(new BasicNameValuePair("MSOTlPn_View", "0"));
-			postData.add(new BasicNameValuePair("MSOTlPn_ShowSettings", "False"));
-			postData.add(new BasicNameValuePair("MSOGallery_SelectedLibrary", ""));
-			postData.add(new BasicNameValuePair("MSOGallery_FilterString", ""));
-			postData.add(new BasicNameValuePair("MSOTlPn_Button", "none"));
-			postData.add(new BasicNameValuePair("__EVENTTARGET", ""));
-			postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
-			postData.add(new BasicNameValuePair("__LASTFOCUS", ""));
-			postData.add(new BasicNameValuePair("MSOSPWebPartManager_DisplayModeName", "Browse"));
-			postData.add(new BasicNameValuePair("MSOWebPartPage_Shared", ""));
-			postData.add(new BasicNameValuePair("MSOLayout_LayoutChanges", ""));
-			postData.add(new BasicNameValuePair("MSOLayout_InDesignMode", ""));
-			postData.add(new BasicNameValuePair("MSOSPWebPartManager_OldDisplayModeName", "Browse"));
-			postData.add(new BasicNameValuePair("MSOSPWebPartManager_StartWebPartEditingName", "false"));
-			postData.add(new BasicNameValuePair("ctl00$m$g_343be9ea_353d_40bc_bc55_184b89e22861$ctl00", "Logga in"));
-			
-			postData.add(new BasicNameValuePair("__REQUESTDIGEST", requestDigest));
-			postData.add(new BasicNameValuePair("__VIEWSTATE", viewState));
-			postData.add(new BasicNameValuePair("__EVENTVALIDATION", eventValidation));
-			postData.add(new BasicNameValuePair("MSO_PageHashCode", pageHashCode));
-			postData.add(new BasicNameValuePair("ctl00$m$g_343be9ea_353d_40bc_bc55_184b89e22861$accountNumber", username));
-			postData.add(new BasicNameValuePair("ctl00$m$g_343be9ea_353d_40bc_bc55_184b89e22861$password", password));
-			
-			Log.d(TAG, "Posting to https://kundportal.cerdo.se/villabankenpub/card/default.aspx");
-			response = urlopen.open("https://kundportal.cerdo.se/villabankenpub/card/default.aspx", postData);
-			Log.d(TAG, "Url after post: "+urlopen.getCurrentURI());
-			
+			LoginPackage lp = preLogin();
+			String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
 			if (response.contains("misslyckades")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}

@@ -68,35 +68,40 @@ public class Payson extends Bank {
 		this.update(username, password);
 	}
 
-	public Urllib login() throws LoginException, BankException {
-		urlopen = new Urllib(true);
-		Matcher matcher;
-		
-		try {
-			response = urlopen.open("https://www.payson.se/signin/");
-            matcher = reViewState.matcher(response);
-            if (!matcher.find()) {
-                throw new BankException(res.getText(R.string.unable_to_find).toString()+" ViewState.");
-            }
-            String strViewState = matcher.group(1);
-            matcher = reEventValidation.matcher(response);
-            if (!matcher.find()) {
-                throw new BankException(res.getText(R.string.unable_to_find).toString()+" EventValidation.");
-            }
-            String strEventValidation = matcher.group(1);
+    
+    @Override
+    protected LoginPackage preLogin() throws BankException,
+            ClientProtocolException, IOException {
+        urlopen = new Urllib(true);
+        response = urlopen.open("https://www.payson.se/signin/");
+        Matcher matcher = reViewState.matcher(response);
+        if (!matcher.find()) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString()+" ViewState.");
+        }
+        String strViewState = matcher.group(1);
+        matcher = reEventValidation.matcher(response);
+        if (!matcher.find()) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString()+" EventValidation.");
+        }
+        String strEventValidation = matcher.group(1);
 
-            List <NameValuePair> postData = new ArrayList <NameValuePair>();
-			postData.add(new BasicNameValuePair("__LASTFOCUS", ""));
-			postData.add(new BasicNameValuePair("__EVENTTARGET", ""));
-			postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
-			postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
-			postData.add(new BasicNameValuePair("__EVENTVALIDATION", strEventValidation));
-            postData.add(new BasicNameValuePair("ctl00$MainContent$SignIn1$txtEmail", username));
-            postData.add(new BasicNameValuePair("ctl00$MainContent$SignIn1$txtPassword", password));
-            postData.add(new BasicNameValuePair("ctl00$MainContent$SignIn1$btnLogin", "Logga in"));
-			response = urlopen.open("https://www.payson.se/signin/", postData);
-			//Helpers.slowDebug(TAG, response);
-			
+        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+        postData.add(new BasicNameValuePair("__LASTFOCUS", ""));
+        postData.add(new BasicNameValuePair("__EVENTTARGET", ""));
+        postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
+        postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
+        postData.add(new BasicNameValuePair("__EVENTVALIDATION", strEventValidation));
+        postData.add(new BasicNameValuePair("ctl00$MainContent$SignIn1$txtEmail", username));
+        postData.add(new BasicNameValuePair("ctl00$MainContent$SignIn1$txtPassword", password));
+        postData.add(new BasicNameValuePair("ctl00$MainContent$SignIn1$btnLogin", "Logga in"));
+        return new LoginPackage(urlopen, postData, response, "https://www.payson.se/signin/");
+    }
+
+    @Override
+	public Urllib login() throws LoginException, BankException {
+		try {
+            LoginPackage lp = preLogin();
+			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
 			if (response.contains("Felaktig E-postadress") || response.contains("Lösenord saknas") ||
 			        response.contains("E-postadress saknas"))  {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());

@@ -74,33 +74,38 @@ public class IkanoBank extends Bank {
     }
 
 
-    public Urllib login() throws LoginException, BankException {
+    
+    @Override
+    protected LoginPackage preLogin() throws BankException,
+            ClientProtocolException, IOException {
         urlopen = new Urllib(true);
-        String response = null;
-        Matcher matcher;
+        response = urlopen.open("https://secure.ikanobank.se/login");
+        Matcher matcher = reViewState.matcher(response);
+        if (!matcher.find()) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString()+" ViewState.");
+        }
+        String strViewState = matcher.group(1);
+        matcher = reEventValidation.matcher(response);
+        if (!matcher.find()) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString()+" EventValidation.");
+        }
+        String strEventValidation = matcher.group(1);
+
+        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+        postData.add(new BasicNameValuePair("__LASTFOCUS", ""));
+        postData.add(new BasicNameValuePair("__EVENTTARGET", "ctl02$lbLogin"));
+        postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
+        postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
+        postData.add(new BasicNameValuePair("ctl02$txtSocialSecurityNumber", username));
+        postData.add(new BasicNameValuePair("ctl02$txtPinCode", password));
+        postData.add(new BasicNameValuePair("__EVENTVALIDATION", strEventValidation));
+        return new LoginPackage(urlopen, postData, response, "https://secure.ikanobank.se/engines/page.aspx?structid=1895");
+    }
+
+    public Urllib login() throws LoginException, BankException {
         try {
-            response = urlopen.open("https://secure.ikanobank.se/login");
-            matcher = reViewState.matcher(response);
-            if (!matcher.find()) {
-                throw new BankException(res.getText(R.string.unable_to_find).toString()+" ViewState.");
-            }
-            String strViewState = matcher.group(1);
-            matcher = reEventValidation.matcher(response);
-            if (!matcher.find()) {
-                throw new BankException(res.getText(R.string.unable_to_find).toString()+" EventValidation.");
-            }
-            String strEventValidation = matcher.group(1);
-
-            List <NameValuePair> postData = new ArrayList <NameValuePair>();
-            postData.add(new BasicNameValuePair("__LASTFOCUS", ""));
-            postData.add(new BasicNameValuePair("__EVENTTARGET", "ctl02$lbLogin"));
-            postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
-            postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
-            postData.add(new BasicNameValuePair("ctl02$txtSocialSecurityNumber", username));
-            postData.add(new BasicNameValuePair("ctl02$txtPinCode", password));
-            postData.add(new BasicNameValuePair("__EVENTVALIDATION", strEventValidation));
-            response = urlopen.open("https://secure.ikanobank.se/engines/page.aspx?structid=1895", postData);
-
+            LoginPackage lp = preLogin();
+            response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
             if (response.contains("Ogiltigt personnummer eller")) {
                 throw new LoginException(res.getText(R.string.invalid_username_password).toString());
             }

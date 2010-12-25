@@ -73,24 +73,32 @@ public class Nordea extends Bank {
 		this.update(username, password);
 	}
 
+    @Override
+    protected LoginPackage preLogin() throws BankException,
+            ClientProtocolException, IOException {
+        urlopen = new Urllib();
+        Matcher matcher;
+        String response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/login.html");
+        matcher = reCSRF.matcher(response);
+        if (!matcher.find()) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString()+" CSRF token.");
+        }
+        String csrftoken = matcher.group(1);
+        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+        postData.add(new BasicNameValuePair("xyz", username));
+        postData.add(new BasicNameValuePair("zyx", password));
+        postData.add(new BasicNameValuePair("_csrf_token", csrftoken));
+        return new LoginPackage(urlopen, postData, response, "https://mobil.nordea.se/banking-nordea/nordea-c3/login.html");
+    }
+
 	@Override
 	public Urllib login() throws LoginException, BankException {
 		urlopen = new Urllib();
 		String response = null;
-		Matcher matcher;
 		try {
-			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/login.html");
-			matcher = reCSRF.matcher(response);
-			if (!matcher.find()) {
-				throw new BankException(res.getText(R.string.unable_to_find).toString()+" CSRF token.");
-			}
-			String csrftoken = matcher.group(1);
-			List <NameValuePair> postData = new ArrayList <NameValuePair>();
-			postData.add(new BasicNameValuePair("xyz", username));
-			postData.add(new BasicNameValuePair("zyx", password));
-			postData.add(new BasicNameValuePair("_csrf_token", csrftoken));
+		    LoginPackage lp = preLogin();
 			Log.d("BankNordea", "Posting to https://mobil.nordea.se/banking-nordea/nordea-c3/login.html");
-			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/login.html", postData);
+			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
 			Log.d("BankNordea", "Url after post: "+urlopen.getCurrentURI());
 			
 			if (response.contains("felaktiga uppgifter")) {
@@ -194,6 +202,5 @@ public class Nordea extends Bank {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
+	}	
 }

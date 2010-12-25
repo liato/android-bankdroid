@@ -74,30 +74,36 @@ public class ICABanken extends Bank {
 		this.update(username, password);
 	}
 
+    
+    @Override
+    protected LoginPackage preLogin() throws BankException,
+            ClientProtocolException, IOException {
+        urlopen = new Urllib();
+        String response = urlopen.open("https://mobil2.icabanken.se/login/login.aspx");
+        Matcher matcher = reViewState.matcher(response);
+        if (!matcher.find()) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString()+" viewstate.");
+        }
+        String strViewState = matcher.group(1);
+        matcher = reEventValidation.matcher(response);
+        if (!matcher.find()) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString()+" eventvalidation.");
+        }
+        String strEventValidation = matcher.group(1);
+        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+        postData.add(new BasicNameValuePair("pnr_phone", username));
+        postData.add(new BasicNameValuePair("pwd_phone", password));
+        postData.add(new BasicNameValuePair("btnLogin", "Logga in"));
+        postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
+        postData.add(new BasicNameValuePair("__EVENTVALIDATION", strEventValidation));
+        return new LoginPackage(urlopen, postData, response, "https://mobil2.icabanken.se/login/login.aspx");
+    }
+
 	public Urllib login() throws LoginException, BankException {
-		urlopen = new Urllib();
-		String response = null;
-		Matcher matcher;
 		try {
-			response = urlopen.open("https://mobil2.icabanken.se/login/login.aspx");
-			matcher = reViewState.matcher(response);
-			if (!matcher.find()) {
-				throw new BankException(res.getText(R.string.unable_to_find).toString()+" viewstate.");
-			}
-			String strViewState = matcher.group(1);
-			matcher = reEventValidation.matcher(response);
-			if (!matcher.find()) {
-				throw new BankException(res.getText(R.string.unable_to_find).toString()+" eventvalidation.");
-			}
-			String strEventValidation = matcher.group(1);
-			List <NameValuePair> postData = new ArrayList <NameValuePair>();
-			postData.add(new BasicNameValuePair("pnr_phone", username));
-			postData.add(new BasicNameValuePair("pwd_phone", password));
-			postData.add(new BasicNameValuePair("btnLogin", "Logga in"));
-			postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
-			postData.add(new BasicNameValuePair("__EVENTVALIDATION", strEventValidation));
-			response = urlopen.open("https://mobil2.icabanken.se/login/login.aspx", postData);
-			matcher = reError.matcher(response);
+			LoginPackage lp = preLogin();
+			String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+			Matcher matcher = reError.matcher(response);
 			if (matcher.find()) {
 				throw new LoginException(Html.fromHtml(matcher.group(1).trim()).toString());
 			}

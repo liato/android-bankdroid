@@ -44,10 +44,11 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 
 public class Urllib {
-	private DefaultHttpClient httpclient;
+    public final static String USER_AGENT = "Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17";
+
+    private DefaultHttpClient httpclient;
 	private HttpContext context;
 	private String currentURI;
-	private final static String USER_AGENT = "Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17";
 	private boolean acceptInvalidCertificates = false;
 	
 	public Urllib() {

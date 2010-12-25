@@ -82,41 +82,46 @@ public class Lansforsakringar extends Bank {
     }
 
 
-    public Urllib login() throws LoginException, BankException {
+    
+    @Override
+    protected LoginPackage preLogin() throws BankException,
+            ClientProtocolException, IOException {
         urlopen = new Urllib();
-        String response = null;
-        Matcher matcher;
+        String response = urlopen.open("https://secure246.lansforsakringar.se/lfportal/login/privat");
+        Matcher matcher = reViewState.matcher(response);
+        if (!matcher.find()) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString()+" ViewState.");
+        }
+        mViewState = matcher.group(1);
+        matcher = reEventValidation.matcher(response);
+        if (!matcher.find()) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString()+" EventValidation.");
+        }
+        String strEventValidation = matcher.group(1);
+
+        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+        postData.add(new BasicNameValuePair("inputPersonalNumber", username));
+        postData.add(new BasicNameValuePair("inputPinCode", password));
+        postData.add(new BasicNameValuePair("selMechanism", "PIN-kod"));
+        postData.add(new BasicNameValuePair("__VIEWSTATE", mViewState));
+        postData.add(new BasicNameValuePair("__EVENTVALIDATION", strEventValidation));
+        postData.add(new BasicNameValuePair("__LASTFOCUS", ""));
+        postData.add(new BasicNameValuePair("__EVENTTARGET", ""));
+        postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
+        postData.add(new BasicNameValuePair("btnLogIn.x", "12"));
+        postData.add(new BasicNameValuePair("btnLogIn.y", "34"));
+        return new LoginPackage(urlopen, postData, response, urlopen.getCurrentURI());
+    }
+
+    public Urllib login() throws LoginException, BankException {
         try {
-            response = urlopen.open("https://secure246.lansforsakringar.se/lfportal/login/privat");
-            matcher = reViewState.matcher(response);
-            if (!matcher.find()) {
-                throw new BankException(res.getText(R.string.unable_to_find).toString()+" ViewState.");
-            }
-            mViewState = matcher.group(1);
-            matcher = reEventValidation.matcher(response);
-            if (!matcher.find()) {
-                throw new BankException(res.getText(R.string.unable_to_find).toString()+" EventValidation.");
-            }
-            String strEventValidation = matcher.group(1);
-
-            List <NameValuePair> postData = new ArrayList <NameValuePair>();
-            postData.add(new BasicNameValuePair("inputPersonalNumber", username));
-            postData.add(new BasicNameValuePair("inputPinCode", password));
-            postData.add(new BasicNameValuePair("selMechanism", "PIN-kod"));
-            postData.add(new BasicNameValuePair("__VIEWSTATE", mViewState));
-            postData.add(new BasicNameValuePair("__EVENTVALIDATION", strEventValidation));
-            postData.add(new BasicNameValuePair("__LASTFOCUS", ""));
-            postData.add(new BasicNameValuePair("__EVENTTARGET", ""));
-            postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
-            postData.add(new BasicNameValuePair("btnLogIn.x", "12"));
-            postData.add(new BasicNameValuePair("btnLogIn.y", "34"));
-            response = urlopen.open(urlopen.getCurrentURI(), postData);
-
+            LoginPackage lp = preLogin();
+            String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
             if (response.contains("Felaktig inloggning")) {
                 throw new LoginException(res.getText(R.string.invalid_username_password).toString());
             }
 
-            matcher = reToken.matcher(response);
+            Matcher matcher = reToken.matcher(response);
             if (!matcher.find()) {
                 throw new BankException(res.getText(R.string.unable_to_find).toString()+" token.");
             }

@@ -20,6 +20,9 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.List;
+
+import org.apache.http.NameValuePair;
 
 import android.app.Activity;
 import android.util.Log;
@@ -140,6 +143,23 @@ public class Helpers {
             if (text.contains(symCur[0])) return symCur[1];
         }
         return def;
+    }
+    
+    public static String renderForm(String action, List <NameValuePair> postData) {
+        StringBuilder form = new StringBuilder();
+        form.append("<form id=\"submitform\" method=\"POST\" action=\"")
+        .append(action)
+        .append("\">");
+        for (NameValuePair p : postData) {
+            form.append("<input type=\"hidden\" name=\"")
+            .append(p.getName())
+            .append("\" value=\"")
+            .append(p.getValue())
+            .append("\" />");
+        }
+        form.append("</form>");
+        return form.toString();
+        
     }
 
 }

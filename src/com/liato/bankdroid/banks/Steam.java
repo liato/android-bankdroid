@@ -71,14 +71,23 @@ public class Steam extends Bank {
 		this.update(username, password);
 	}
 
-	public Urllib login() throws LoginException, BankException {
-		urlopen = new Urllib(true);
+    
+    @Override
+    protected LoginPackage preLogin() throws BankException,
+            ClientProtocolException, IOException {
+        urlopen = new Urllib(true);
+        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+        postData.add(new BasicNameValuePair("redir", "account"));
+        postData.add(new BasicNameValuePair("username", username));
+        postData.add(new BasicNameValuePair("password", password));
+        return new LoginPackage(urlopen, postData, null, "https://store.steampowered.com/login/");
+    }
+
+    @Override
+    public Urllib login() throws LoginException, BankException {
 		try {
-            List <NameValuePair> postData = new ArrayList <NameValuePair>();
-			postData.add(new BasicNameValuePair("redir", "account"));
-            postData.add(new BasicNameValuePair("username", username));
-            postData.add(new BasicNameValuePair("password", password));
-			response = urlopen.open("https://store.steampowered.com/login/", postData);
+		    LoginPackage lp = preLogin();
+			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
             if (response.contains("Enter the characters above")) {
                 throw new BankException("You have entered the wrong username/password too many times and Steam now requires you to enter a CAPTCHA.\nPlease wait 10 minutes before logging in again.");
             }

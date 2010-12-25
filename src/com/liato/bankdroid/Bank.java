@@ -16,13 +16,20 @@
 
 package com.liato.bankdroid;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.CookieStore;
 
 import android.content.Context;
 import android.content.res.Resources;
 import android.text.InputType;
+import android.util.Log;
 
 import com.liato.urllib.Urllib;
 
@@ -62,7 +69,6 @@ public abstract class Bank implements Comparable<Bank> {
 
 	protected Context context;
 	protected Resources res;
-
 	
 	protected String username;
 	protected String password;
@@ -74,7 +80,6 @@ public abstract class Bank implements Comparable<Bank> {
 	protected Urllib urlopen = null;
 	protected String customName;
 	protected String currency = "SEK";
-
 
 	public Urllib getUrlopen() {
 		return urlopen;
@@ -290,6 +295,90 @@ public abstract class Bank implements Comparable<Bank> {
             }
             a.setBank(this);
         }
-    }	
-	
+    }
+    
+    public SessionPackage getSessionPackage() {
+        String loginHtmlTemplate = "<html><head>" +
+                                    "<script type=\"text/javascript\">" +
+                                    "function go(){document.getElementById('submitform').submit(); }" +
+                                    "</script>" +
+                                    "</head><body>" +
+                                    "Bankdroid..." +
+                                    "%s" +
+                                    "<script type=\"text/javascript\">" +
+                                    "go();" +
+                                    "</script></body></html>";
+        String redirectHtmlTemplate = "<html><head>" +
+                                        "<script type=\"text/javascript\">" +
+                                        "function go(){window.location=\"%s\" }" +
+                                        "</script></head><body>" +
+                                        "Bankdroid..." +
+                                        "<script type=\"text/javascript\">" +
+                                        "go();" +
+                                        "</script></body></html>";        
+        try {
+            LoginPackage lp = preLogin();
+            if (lp == null) {
+                throw new BankException("No automatic login for this bank. preLogin() is not implemented.");
+            }
+            CookieStore cookies = urlopen.getHttpclient().getCookieStore();
+            return new SessionPackage(String.format(loginHtmlTemplate, Helpers.renderForm(lp.getLoginTarget(), lp.getPostData())), cookies);
+        }
+        catch (ClientProtocolException e) {
+            Log.d(TAG, e.getMessage());
+        }
+        catch (IOException e) {
+            Log.d(TAG, e.getMessage());
+        }
+        catch (BankException e) {
+            Log.d(TAG, e.getMessage());
+        }
+        
+        return new SessionPackage(String.format(redirectHtmlTemplate, this.URL), null);
+    }
+
+    protected LoginPackage preLogin() throws BankException, ClientProtocolException, IOException {
+        return null;
+    }
+
+    public static class SessionPackage {
+        private String html;
+        private CookieStore cookiestore;
+        public SessionPackage(String html, CookieStore cookiestore) {
+            this.html = html;
+            this.cookiestore = cookiestore;
+        }
+        public String getHtml() {
+            return html;
+        }
+        public CookieStore getCookiestore() {
+            return cookiestore;
+        }
+    }    
+
+    public static class LoginPackage {
+        private String response;
+        private Urllib urllib;
+        private List<NameValuePair> postData;
+        private String loginTarget;
+        public LoginPackage(Urllib urllib, List<NameValuePair> postData, String response, String loginTarget) {
+            this.urllib = urllib;
+            this.postData = postData;
+            this.response = response;
+            this.loginTarget = loginTarget;
+        }
+        public String getResponse() {
+            return response;
+        }
+        public Urllib getUrllib() {
+            return urllib;
+        }
+        public List<NameValuePair> getPostData() {
+            return postData;
+        }
+        public String getLoginTarget() {
+            return loginTarget;
+        }
+    }    
+
 }

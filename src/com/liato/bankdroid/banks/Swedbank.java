@@ -48,7 +48,7 @@ public class Swedbank extends Bank {
 	private static final int BANKTYPE_ID = Bank.SWEDBANK;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDD-XXXX";
-
+    
 	private Pattern reCSRF = Pattern.compile("csrf_token\".*?value=\"([^\"]+)\"");
 	private Pattern reAccounts = Pattern.compile("(account|loan)\\.html\\?id=([^\"]+)\">\\s*(?:<span.*?/span>)?([^<]+)<.*?secondary\">([^<]+)</span");
 	private Pattern reLinklessAccounts = Pattern.compile("<li>\\s*([^<]+)<br/?><span\\sclass=\"secondary\">([^<]+)</span>\\s*</li>", Pattern.CASE_INSENSITIVE);
@@ -70,22 +70,29 @@ public class Swedbank extends Bank {
 	}
 
 	@Override
+    protected LoginPackage preLogin() throws BankException,
+            ClientProtocolException, IOException {
+        urlopen = new Urllib();
+        Matcher matcher;
+        String response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/login.html");
+        matcher = reCSRF.matcher(response);
+        if (!matcher.find()) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString()+" CSRF token.");
+        }
+        String csrftoken = matcher.group(1);
+        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+        postData.add(new BasicNameValuePair("xyz", username));
+        postData.add(new BasicNameValuePair("zyx", password));
+        postData.add(new BasicNameValuePair("_csrf_token", csrftoken));
+        return new LoginPackage(urlopen, postData, response, "https://mobilbank.swedbank.se/banking/swedbank/login.html");
+    }
+
+    @Override
 	public Urllib login() throws LoginException, BankException {
-		urlopen = new Urllib();
-		String response = null;
-		Matcher matcher;
-		try {
-			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/login.html");
-			matcher = reCSRF.matcher(response);
-			if (!matcher.find()) {
-				throw new BankException(res.getText(R.string.unable_to_find).toString()+" CSRF token.");
-			}
-			String csrftoken = matcher.group(1);
-			List <NameValuePair> postData = new ArrayList <NameValuePair>();
-			postData.add(new BasicNameValuePair("xyz", username));
-			postData.add(new BasicNameValuePair("zyx", password));
-			postData.add(new BasicNameValuePair("_csrf_token", csrftoken));
-			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/login.html", postData);
+	    
+	    try {
+	        LoginPackage lp = preLogin();
+	        String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
 
 			if (response.contains("misslyckats")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -111,7 +118,6 @@ public class Swedbank extends Bank {
 		Matcher matcher;
 		try {
 			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/accounts.html");
-			
 			matcher = reAccounts.matcher(response);
 			while (matcher.find()) {
 				Account account = new Account(Html.fromHtml(matcher.group(3)).toString(), Helpers.parseBalance(matcher.group(4)), matcher.group(1).trim() == "loan" ? "l:" + matcher.group(2).trim() : matcher.group(2).trim());
@@ -172,5 +178,5 @@ public class Swedbank extends Bank {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}	
+	}
 }

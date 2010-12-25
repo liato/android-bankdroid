@@ -74,30 +74,31 @@ public class OKQ8 extends Bank {
 		this.update(username, password);
 	}
 
+    
+    @Override
+    protected LoginPackage preLogin() throws BankException,
+            ClientProtocolException, IOException {
+        urlopen = new Urllib(true);
+        Date d = new Date();
+        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+        response = urlopen.open("https://nettbank.edb.com/Logon/index.jsp?domain=0066&from_page=http://www.okq8.se&to_page=https://nettbank.edb.com/cardpayment/transigo/logon/done/okq8");
+        //p_tranid is the epoch time in milliseconds
+        postData.add(new BasicNameValuePair("p_tranid", Long.toString(d.getTime())));
+        postData.add(new BasicNameValuePair("p_errorScreen", "LOGON_REPOST_ERROR"));
+        postData.add(new BasicNameValuePair("n_bank", ""));
+        postData.add(new BasicNameValuePair("empty_pwd", ""));
+        postData.add(new BasicNameValuePair("user_id", username.toUpperCase()));
+        postData.add(new BasicNameValuePair("password", password));
+        return new LoginPackage(urlopen, postData, response, "https://nettbank.edb.com/Logon/logon/step1");
+    }
+
 	public Urllib login() throws LoginException, BankException {
-		urlopen = new Urllib(true);
-		Matcher matcher;
-		Date d = new Date();
-		String value = null;
-		
+        Matcher matcher;
+        String value = null;
 		try {
-			List <NameValuePair> postData = new ArrayList <NameValuePair>();
-			
-			response = urlopen.open("https://nettbank.edb.com/Logon/index.jsp?domain=0066&from_page=http://www.okq8.se&to_page=https://nettbank.edb.com/cardpayment/transigo/logon/done/okq8");
-			
-			/*
-			 * Post the login information to the login page.
-			 */
-			postData.clear();
-			//p_tranid is the epoch time in milliseconds
-			postData.add(new BasicNameValuePair("p_tranid", Long.toString(d.getTime())));
-			postData.add(new BasicNameValuePair("p_errorScreen", "LOGON_REPOST_ERROR"));
-			postData.add(new BasicNameValuePair("n_bank", ""));
-			postData.add(new BasicNameValuePair("empty_pwd", ""));
-			postData.add(new BasicNameValuePair("user_id", username.toUpperCase()));
-			postData.add(new BasicNameValuePair("password", password));
-			response = urlopen.open("https://nettbank.edb.com/Logon/logon/step1", postData);
-			
+			LoginPackage lp = preLogin();
+			List <NameValuePair> postData = lp.getPostData();
+			response = urlopen.open(lp.getLoginTarget(), postData);
 			if (!response.contains("LOGON_OK")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}

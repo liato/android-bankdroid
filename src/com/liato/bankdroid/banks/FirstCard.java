@@ -68,22 +68,26 @@ public class FirstCard extends Bank {
 		this.update(username, password);
 	}
 
+    
+    @Override
+    protected LoginPackage preLogin() throws BankException,
+            ClientProtocolException, IOException {
+        urlopen = new Urllib(true);
+        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+        postData.add(new BasicNameValuePair("op", "login"));                
+        postData.add(new BasicNameValuePair("searchIndex", ""));                
+        postData.add(new BasicNameValuePair("country", "0"));               
+        postData.add(new BasicNameValuePair("soktext", "Skriv sökord här"));                
+        postData.add(new BasicNameValuePair("pnr", username));
+        postData.add(new BasicNameValuePair("intpwd", password));
+        return new LoginPackage(urlopen, postData, null, "https://www.firstcard.se/valkom.jsp");
+    }
+
 	@Override
 	public Urllib login() throws LoginException, BankException {
-		urlopen = new Urllib(true);
 		try {
-			List <NameValuePair> postData = new ArrayList <NameValuePair>();
-			postData.add(new BasicNameValuePair("op", "login"));				
-			postData.add(new BasicNameValuePair("searchIndex", ""));				
-			postData.add(new BasicNameValuePair("country", "0"));				
-			postData.add(new BasicNameValuePair("soktext", "Skriv sökord här"));				
-			postData.add(new BasicNameValuePair("pnr", username));
-			postData.add(new BasicNameValuePair("intpwd", password));
-			
-			Log.d(TAG, "Posting to https://www.firstcard.se/valkom.jsp");
-			response = urlopen.open("https://www.firstcard.se/valkom.jsp", postData);
-			Log.d(TAG, "Url after post: "+urlopen.getCurrentURI());
-			
+			LoginPackage lp = preLogin();
+			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
 			if (response.contains("felaktig identitet") || response.contains("obligatoriskt") || response.contains("ange en internetkod")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}

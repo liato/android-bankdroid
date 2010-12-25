@@ -72,23 +72,27 @@ public class Eurocard extends Bank {
 		this.update(username, password);
 	}
 
+    
+    @Override
+    protected LoginPackage preLogin() throws BankException,
+            ClientProtocolException, IOException {
+        urlopen = new Urllib(true);
+        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+        postData.add(new BasicNameValuePair("target", "/nis/ecse/main.do"));                
+        postData.add(new BasicNameValuePair("prodgroup", "0005"));              
+        postData.add(new BasicNameValuePair("USERNAME", "0005"+username));              
+        postData.add(new BasicNameValuePair("METHOD", "LOGIN"));                
+        postData.add(new BasicNameValuePair("CURRENT_METHOD", "PWD"));              
+        postData.add(new BasicNameValuePair("uname", username));
+        postData.add(new BasicNameValuePair("PASSWORD", password));
+        return new LoginPackage(urlopen, postData, response, "https://e-saldo.eurocard.se/siteminderagent/forms/generic.fcc");
+    }
+
 	@Override
 	public Urllib login() throws LoginException, BankException {
-		urlopen = new Urllib(true);
 		try {
-			List <NameValuePair> postData = new ArrayList <NameValuePair>();
-			postData.add(new BasicNameValuePair("target", "/nis/ecse/main.do"));				
-			postData.add(new BasicNameValuePair("prodgroup", "0005"));				
-			postData.add(new BasicNameValuePair("USERNAME", "0005"+username));				
-			postData.add(new BasicNameValuePair("METHOD", "LOGIN"));				
-			postData.add(new BasicNameValuePair("CURRENT_METHOD", "PWD"));				
-			postData.add(new BasicNameValuePair("uname", username));
-			postData.add(new BasicNameValuePair("PASSWORD", password));
-			
-			Log.d(TAG, "Posting to https://e-saldo.eurocard.se/siteminderagent/forms/generic.fcc");
-			response = urlopen.open("https://e-saldo.eurocard.se/siteminderagent/forms/generic.fcc", postData);
-			Log.d(TAG, "Url after post: "+urlopen.getCurrentURI());
-			
+			LoginPackage lp = preLogin();
+			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
 			if (response.contains("Felaktig kombination")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}

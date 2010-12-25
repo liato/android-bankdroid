@@ -63,32 +63,40 @@ public class DinersClub extends Bank {
 		this.update(username, password);
 	}
 
+    
+    @Override
+    protected LoginPackage preLogin() throws BankException,
+            ClientProtocolException, IOException {
+        urlopen = new Urllib(true);
+        response = urlopen.open("https://www.dinersclub.se/dcs/login.aspx");
+        Matcher matcher = reViewState.matcher(response);
+        if (!matcher.find()) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString()+" ViewState.");
+        }
+        String viewState = matcher.group(1);
+
+        matcher = reEventValidation.matcher(response);
+        if (!matcher.find()) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString()+" EventValidation.");
+        }
+        String eventValidation = matcher.group(1);            
+        
+        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+        postData.add(new BasicNameValuePair("__EVENTTARGET", ""));
+        postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
+        postData.add(new BasicNameValuePair("__EVENTVALIDATION", eventValidation));
+        postData.add(new BasicNameValuePair("__VIEWSTATE", viewState));
+        postData.add(new BasicNameValuePair("ctl00$MainContent$Login1$UserName", username));
+        postData.add(new BasicNameValuePair("ctl00$MainContent$Login1$Password", password));
+        postData.add(new BasicNameValuePair("ctl00$MainContent$Login1$LoginButton", "Logga in"));
+
+        return new LoginPackage(urlopen, postData, response, "https://www.dinersclub.se/dcs/login.aspx");
+    }
+
 	public Urllib login() throws LoginException, BankException {
-		urlopen = new Urllib(true);
 		try {
-            response = urlopen.open("https://www.dinersclub.se/dcs/login.aspx");
-            Matcher matcher = reViewState.matcher(response);
-            if (!matcher.find()) {
-                throw new BankException(res.getText(R.string.unable_to_find).toString()+" ViewState.");
-            }
-            String viewState = matcher.group(1);
-
-            matcher = reEventValidation.matcher(response);
-            if (!matcher.find()) {
-                throw new BankException(res.getText(R.string.unable_to_find).toString()+" EventValidation.");
-            }
-            String eventValidation = matcher.group(1);            
-            
-            List <NameValuePair> postData = new ArrayList <NameValuePair>();
-            postData.add(new BasicNameValuePair("__EVENTTARGET", ""));
-            postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
-            postData.add(new BasicNameValuePair("__EVENTVALIDATION", eventValidation));
-            postData.add(new BasicNameValuePair("__VIEWSTATE", viewState));
-            postData.add(new BasicNameValuePair("ctl00$MainContent$Login1$UserName", username));
-            postData.add(new BasicNameValuePair("ctl00$MainContent$Login1$Password", password));
-            postData.add(new BasicNameValuePair("ctl00$MainContent$Login1$LoginButton", "Logga in"));
-
-            response = urlopen.open("https://www.dinersclub.se/dcs/login.aspx", postData);		    
+		    LoginPackage lp = preLogin();
+            response = urlopen.open(lp.getLoginTarget(), lp.getPostData());		    
 			if (response.contains("Har du glömt ditt lösenord")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}

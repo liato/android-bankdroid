@@ -31,7 +31,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.Html;
-import android.util.Log;
 
 import com.liato.bankdroid.Account;
 import com.liato.bankdroid.Bank;
@@ -69,25 +68,31 @@ public class Coop extends Bank {
     }
 
     @Override
-    public Urllib login() throws LoginException, BankException {
+    protected LoginPackage preLogin() throws BankException,
+            ClientProtocolException, IOException {
         urlopen = new Urllib();
-        Matcher matcher;
+        response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/");
+        Matcher matcher = reViewState.matcher(response);
+        if (!matcher.find()) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString()+" viewstate.");
+        }
+        String strViewState = matcher.group(1);
+        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+        postData.add(new BasicNameValuePair("ctl00$ContentPlaceHolderTodo$ContentPlaceHolderMainPageContainer$ContentPlaceHolderMainPageWithNavigationAndGlobalTeaser$ContentPlaceHolderPreContent$RegisterMediumUserForm$TextBoxUserName", username));
+        postData.add(new BasicNameValuePair("ctl00$ContentPlaceHolderTodo$ContentPlaceHolderMainPageContainer$ContentPlaceHolderMainPageWithNavigationAndGlobalTeaser$ContentPlaceHolderPreContent$RegisterMediumUserForm$TextBoxPassword", password));
+        postData.add(new BasicNameValuePair("ctl00$ContentPlaceHolderTodo$ContentPlaceHolderMainPageContainer$ContentPlaceHolderMainPageWithNavigationAndGlobalTeaser$ContentPlaceHolderPreContent$RegisterMediumUserForm$ButtonLogin", "Logga in"));
+        postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
+        postData.add(new BasicNameValuePair("__EVENTTARGET", ""));
+        postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
+        return new LoginPackage(urlopen, postData, response, "https://www.coop.se/Mina-sidor/Oversikt/");
+    }
+
+
+    @Override
+    public Urllib login() throws LoginException, BankException {
         try {
-            response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/");
-            matcher = reViewState.matcher(response);
-            if (!matcher.find()) {
-                throw new BankException(res.getText(R.string.unable_to_find).toString()+" viewstate.");
-            }
-            String strViewState = matcher.group(1);
-            List <NameValuePair> postData = new ArrayList <NameValuePair>();
-            postData.add(new BasicNameValuePair("ctl00$ContentPlaceHolderTodo$ContentPlaceHolderMainPageContainer$ContentPlaceHolderMainPageWithNavigationAndGlobalTeaser$ContentPlaceHolderPreContent$RegisterMediumUserForm$TextBoxUserName", username));
-            postData.add(new BasicNameValuePair("ctl00$ContentPlaceHolderTodo$ContentPlaceHolderMainPageContainer$ContentPlaceHolderMainPageWithNavigationAndGlobalTeaser$ContentPlaceHolderPreContent$RegisterMediumUserForm$TextBoxPassword", password));
-            postData.add(new BasicNameValuePair("ctl00$ContentPlaceHolderTodo$ContentPlaceHolderMainPageContainer$ContentPlaceHolderMainPageWithNavigationAndGlobalTeaser$ContentPlaceHolderPreContent$RegisterMediumUserForm$ButtonLogin", "Logga in"));
-            postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
-            postData.add(new BasicNameValuePair("__EVENTTARGET", ""));
-            postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
-            response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/", postData);
-            Log.d(TAG, urlopen.getCurrentURI());
+            LoginPackage lp = preLogin();
+            response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
             if (response.contains("forfarande logga in med ditt personnummer")) {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
                 if (prefs.getBoolean("debug_mode", false) && prefs.getBoolean("debug_coop_sendmail", false)) {

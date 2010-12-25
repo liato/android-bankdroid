@@ -245,8 +245,10 @@ public class MainActivity extends LockableActivity {
 			switch (id) {
 			case R.id.btnWWW:
 				if (selected_bank != null) {
-					Uri uri = Uri.parse(selected_bank.getURL());
-					Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+					//Uri uri = Uri.parse(selected_bank.getURL());
+					//Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+				    Intent intent = new Intent(context, WebViewActivity.class);
+	                intent.putExtra("bankid", selected_bank.getDbId());
 					context.startActivity(intent);
 				}
 				this.dismiss();

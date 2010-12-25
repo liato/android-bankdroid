@@ -30,7 +30,6 @@ import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
 import android.text.Html;
-import android.util.Log;
 
 import com.liato.bankdroid.Account;
 import com.liato.bankdroid.Bank;
@@ -65,18 +64,22 @@ public class Avanza extends Bank {
 	}
 
 	
+    @Override
+    protected LoginPackage preLogin() throws BankException,
+            ClientProtocolException, IOException {
+        urlopen = new Urllib(true, true);
+        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+        postData.add(new BasicNameValuePair("username", username));
+        postData.add(new BasicNameValuePair("password", password));
+        return new LoginPackage(urlopen, postData, null, "https://www.avanza.se/aza/login/login.jsp");
+    }
+
 	@Override
 	public Urllib login() throws LoginException, BankException {
-		urlopen = new Urllib(true, true);
 		String response = null;
 		try {
-			List <NameValuePair> postData = new ArrayList <NameValuePair>();
-			postData.add(new BasicNameValuePair("username", username));
-			postData.add(new BasicNameValuePair("password", password));
-
-			Log.d("BankAvanza", "Posting to https://www.avanza.se/aza/login/login.jsp");
-			response = urlopen.open("https://www.avanza.se/aza/login/login.jsp", postData);
-			Log.d("BankAvanza", "Url after post: "+urlopen.getCurrentURI());
+		    LoginPackage lp = preLogin();
+			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
 			if (response.contains("Felaktigt") && !response.contains("Logga ut")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}
@@ -99,7 +102,6 @@ public class Avanza extends Bank {
 		String response = null;
 		Matcher matcher;
 		try {
-			Log.d("BankAvanza", "Opening: https://www.avanza.se/aza/depa/sammanfattning/sammanfattning.jsp");
 			response = urlopen.open("https://www.avanza.se/aza/depa/sammanfattning/sammanfattning.jsp");
 						
 			matcher = reAccounts.matcher(response);

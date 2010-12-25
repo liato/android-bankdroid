@@ -72,27 +72,35 @@ public class Statoil extends Bank {
 		this.update(username, password);
 	}
 
+    
+    @Override
+    protected LoginPackage preLogin() throws BankException,
+            ClientProtocolException, IOException {
+        urlopen = new Urllib(true);
+        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+        response = urlopen.open("https://applications.sebkort.com/nis/external/stse/login.do");
+        List<NameValuePair> parameters = new ArrayList<NameValuePair>(3);
+        parameters.add(new BasicNameValuePair("USERNAME", "0122"+username.toUpperCase()));
+        parameters.add(new BasicNameValuePair("referer", "login.jsp"));
+        response = urlopen.open("https://applications.sebkort.com/nis/external/hidden.jsp", postData);
+        
+        postData.clear();
+        postData.add(new BasicNameValuePair("choice", "PWD"));
+        postData.add(new BasicNameValuePair("uname", username.toUpperCase()));
+        postData.add(new BasicNameValuePair("PASSWORD", password));
+        postData.add(new BasicNameValuePair("target", "/nis/stse/main.do"));
+        postData.add(new BasicNameValuePair("prodgroup", "0122"));
+        postData.add(new BasicNameValuePair("USERNAME", "0122"+username.toUpperCase()));
+        postData.add(new BasicNameValuePair("METHOD", "LOGIN"));
+        postData.add(new BasicNameValuePair("CURRENT_METHOD", "PWD"));
+        return new LoginPackage(urlopen, postData, response, "https://applications.sebkort.com/siteminderagent/forms/generic.fcc");
+    }
+
 	@Override
 	public Urllib login() throws LoginException, BankException {
-		urlopen = new Urllib(true);
 		try {
-			List <NameValuePair> postData = new ArrayList <NameValuePair>();
-			response = urlopen.open("https://applications.sebkort.com/nis/external/stse/login.do");
-			List<NameValuePair> parameters = new ArrayList<NameValuePair>(3);
-            parameters.add(new BasicNameValuePair("USERNAME", "0122"+username.toUpperCase()));
-            parameters.add(new BasicNameValuePair("referer", "login.jsp"));
-            response = urlopen.open("https://applications.sebkort.com/nis/external/hidden.jsp", postData);
-            
-			postData.clear();
-			postData.add(new BasicNameValuePair("choice", "PWD"));
-			postData.add(new BasicNameValuePair("uname", username.toUpperCase()));
-			postData.add(new BasicNameValuePair("PASSWORD", password));
-			postData.add(new BasicNameValuePair("target", "/nis/stse/main.do"));
-			postData.add(new BasicNameValuePair("prodgroup", "0122"));
-			postData.add(new BasicNameValuePair("USERNAME", "0122"+username.toUpperCase()));
-			postData.add(new BasicNameValuePair("METHOD", "LOGIN"));
-			postData.add(new BasicNameValuePair("CURRENT_METHOD", "PWD"));
-			response = urlopen.open("https://applications.sebkort.com/siteminderagent/forms/generic.fcc", postData);
+			LoginPackage lp = preLogin();
+			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
 			if (response.contains("elaktig kombination")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}
