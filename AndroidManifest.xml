@@ -21,7 +21,8 @@
 			android:label="@string/app_name"
 			android:multiprocess="false"
 			android:alwaysRetainTaskState="false"
-			android:configChanges="keyboardHidden|orientation">
+			android:configChanges="keyboardHidden|orientation"
+			android:theme="@style/BankdroidTheme">
 			<intent-filter>
 				<action
 					android:name="android.intent.action.MAIN" />
@@ -31,32 +32,39 @@
 		</activity>
 		<activity
 			android:name=".TransactionsActivity"
-			android:label="@string/app_name">
+			android:label="@string/app_name"
+			android:theme="@style/BankdroidTheme">
 		</activity>
 		<activity
 			android:name=".WebViewActivity"
-			android:label="@string/app_name">
+			android:label="@string/app_name"
+			android:theme="@style/BankdroidTheme">
 		</activity>
 		<activity
 			android:name=".BankEditActivity"
 			android:label="@string/app_name"
-			android:configChanges="keyboardHidden|orientation">
+			android:configChanges="keyboardHidden|orientation"
+			android:theme="@style/BankdroidTheme">
 		</activity>
 		<activity
 			android:name=".SettingsActivity"
-			android:label="@string/app_name">
+			android:label="@string/app_name"
+			android:theme="@style/BankdroidTheme">
 		</activity>
 		<activity
 			android:name=".ChooseLockPattern"
-			android:label="@string/app_name">
+			android:label="@string/app_name"
+			android:theme="@style/BankdroidTheme">
 		</activity>
 		<activity
 			android:name=".ChooseLockPatternExample"
-			android:label="@string/app_name">
+			android:label="@string/app_name"
+			android:theme="@style/BankdroidTheme">
 		</activity>
 		<activity
 			android:name=".ChooseLockPatternTutorial"
-			android:label="@string/app_name">
+			android:label="@string/app_name"
+			android:theme="@style/BankdroidTheme">
 		</activity>
 		<activity
 			android:name=".ConfirmLockPattern"

@@ -3,15 +3,15 @@
 	xmlns:android="http://schemas.android.com/apk/res/android">
 	<item
 		android:state_pressed="true"
-		android:drawable="@drawable/button_bg_pressed">
+		android:drawable="@drawable/title_logo_focused">
 	</item>
 
 	<item
 		android:state_focused="true"
-		android:drawable="@drawable/button_bg_pressed">
+		android:drawable="@drawable/title_logo_focused">
 	</item>
 
 	<item
-		android:drawable="@drawable/button_bg">
+		android:drawable="@drawable/title_logo_normal">
 	</item>
 </selector>

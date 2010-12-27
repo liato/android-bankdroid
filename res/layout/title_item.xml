@@ -1,0 +1,25 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content"
+	android:id="@+id/layTitleItem"
+	android:layout_height="fill_parent"
+	android:layout_gravity="right">
+	<ImageView
+		android:layout_width="wrap_content"
+		android:background="@drawable/title_separator"
+		android:layout_height="fill_parent"
+		android:maxWidth="1dp"
+		android:minWidth="1dp"></ImageView>
+	<ImageButton
+		android:layout_width="wrap_content"
+		android:adjustViewBounds="true"
+		android:id="@+id/imgItemIcon"
+		android:paddingLeft="5dp"
+		android:src="@drawable/title_icon_add"
+		android:paddingRight="5dp"
+		android:layout_height="fill_parent"
+		android:layout_gravity="center_vertical|center"
+		android:background="@drawable/title_item_background"
+		android:paddingBottom="0dp"></ImageButton>
+
+</LinearLayout>

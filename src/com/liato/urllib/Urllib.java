@@ -29,9 +29,11 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
@@ -69,11 +71,15 @@ public class Urllib {
 	        SchemeRegistry registry = new SchemeRegistry();
 	        registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
 	        registry.register(new Scheme("https", new EasySSLSocketFactory(), 443));
-	        ThreadSafeClientConnManager manager = new ThreadSafeClientConnManager(params, registry);
+	        ClientConnectionManager manager = new ThreadSafeClientConnManager(params, registry);
 	        httpclient = new DefaultHttpClient(manager, params);
 		}
 		else {
-			httpclient = new DefaultHttpClient();
+            SchemeRegistry registry = new SchemeRegistry();
+            registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+            registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+            ClientConnectionManager  manager = new ThreadSafeClientConnManager(params, registry);
+			httpclient = new DefaultHttpClient(manager, params);
 		}
     	context = new BasicHttpContext();
     }

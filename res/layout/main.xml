@@ -33,7 +33,7 @@
 		android:layout_alignParentLeft="true"
 		android:layout_alignParentRight="true"
 		android:layout_width="wrap_content"
-		android:id="@+id/layMainMenu">
+		android:id="@+id/layMainMenu" android:visibility="gone">
 		<TableRow
 			android:id="@+id/TableRow01"
 			android:layout_height="wrap_content"

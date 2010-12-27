@@ -28,7 +28,6 @@ import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,14 +35,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
 
 public class MainActivity extends LockableActivity {
 	private final static String TAG = "MainActivity";
@@ -56,23 +55,22 @@ public class MainActivity extends LockableActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-
-		setContentView(R.layout.main);
-        Button btnRefresh = (Button)findViewById(R.id.btnAccountsRefresh);
-		btnRefresh.setOnClickListener(new View.OnClickListener() {
+        
+        setContentView(R.layout.main);
+        OnClickListener listener = new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intentAccount = new Intent(MainActivity.this, BankEditActivity.class);
+                startActivity(intentAccount);
+            }
+        };
+		OnClickListener listener2 = new View.OnClickListener() {
 			public void onClick(View v) {
 				new DataRetrieverTask(MainActivity.this).execute();
 			}
-		});		
-		Button btnAddBank = (Button)findViewById(R.id.btnAddBank);
-		btnAddBank.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				Intent intentAccount = new Intent(MainActivity.this, BankEditActivity.class);
-				startActivity(intentAccount);
-			}
-		});
+		};
+        this.addTitleButton(R.drawable.title_icon_add, "add", listener);
+		this.addTitleButton(R.drawable.title_icon_refresh, "refresh", listener2);
 
-		//ListView lv = (ListView)findViewById(R.id.lstAccountsList);
 		adapter = new AccountsAdapter(this, showHidden);
 		ArrayList<Bank> banks = new ArrayList<Bank>();//BankFactory.banksFromDb(this, true);
 		adapter.setGroups(banks);
@@ -139,10 +137,12 @@ public class MainActivity extends LockableActivity {
 		Log.d(TAG, "Bank count: "+banks.size());
 		if (banks.size() > 0) {
 			findViewById(R.id.txtAccountsDesc).setVisibility(View.GONE);
+            showTitleButton("refresh");
 			//findViewById(R.id.btnAccountsRefresh).setClickable(true);
 		}
 		else {
 			findViewById(R.id.txtAccountsDesc).setVisibility(View.VISIBLE);
+            hideTitleButton("refresh");
 			//findViewById(R.id.btnAccountsRefresh).setClickable(false);
 		}
 

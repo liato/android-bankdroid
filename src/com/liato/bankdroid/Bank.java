@@ -22,12 +22,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.content.res.Resources.NotFoundException;
 import android.text.InputType;
 import android.util.Log;
 
@@ -297,32 +299,32 @@ public abstract class Bank implements Comparable<Bank> {
         }
     }
     
-    public SessionPackage getSessionPackage() {
-        String loginHtmlTemplate = "<html><head>" +
-                                    "<script type=\"text/javascript\">" +
-                                    "function go(){document.getElementById('submitform').submit(); }" +
-                                    "</script>" +
-                                    "</head><body>" +
-                                    "Bankdroid..." +
-                                    "%s" +
-                                    "<script type=\"text/javascript\">" +
-                                    "go();" +
-                                    "</script></body></html>";
-        String redirectHtmlTemplate = "<html><head>" +
-                                        "<script type=\"text/javascript\">" +
-                                        "function go(){window.location=\"%s\" }" +
-                                        "</script></head><body>" +
-                                        "Bankdroid..." +
-                                        "<script type=\"text/javascript\">" +
-                                        "go();" +
-                                        "</script></body></html>";        
+    public SessionPackage getSessionPackage(Context context) {
+        String preloader = "Error...";
+        try {
+            preloader = IOUtils.toString(context.getResources().openRawResource(R.raw.loading));
+        }
+        catch (NotFoundException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+        catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+ 
         try {
             LoginPackage lp = preLogin();
             if (lp == null) {
-                throw new BankException("No automatic login for this bank. preLogin() is not implemented.");
+                throw new BankException("No automatic login for this bank. preLogin() is not implemented or has failed.");
             }
+            String html = String.format(preloader,
+                                        "function go(){document.getElementById('submitform').submit(); }", // Javascript function
+                                        Helpers.renderForm(lp.getLoginTarget(), lp.getPostData())+"<script type=\"text/javascript\">setTimeout('go()', 1000);</script>" // HTML
+                                        );        
+            
             CookieStore cookies = urlopen.getHttpclient().getCookieStore();
-            return new SessionPackage(String.format(loginHtmlTemplate, Helpers.renderForm(lp.getLoginTarget(), lp.getPostData())), cookies);
+            return new SessionPackage(html, cookies);
         }
         catch (ClientProtocolException e) {
             Log.d(TAG, e.getMessage());
@@ -333,8 +335,11 @@ public abstract class Bank implements Comparable<Bank> {
         catch (BankException e) {
             Log.d(TAG, e.getMessage());
         }
-        
-        return new SessionPackage(String.format(redirectHtmlTemplate, this.URL), null);
+        String html = String.format(preloader,
+                String.format("function go(){window.location=\"%s\" }", this.URL), // Javascript function
+                "<script type=\"text/javascript\">setTimeout('go()', 1000);</script>" // HTML
+                );          
+        return new SessionPackage(html, null);
     }
 
     protected LoginPackage preLogin() throws BankException, ClientProtocolException, IOException {

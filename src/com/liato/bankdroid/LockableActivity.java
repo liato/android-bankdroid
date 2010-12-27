@@ -17,26 +17,82 @@
 package com.liato.bankdroid;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 public class LockableActivity extends Activity {
     private static int PATTERNLOCK_UNLOCK = 42;
 	private SharedPreferences prefs;
 	private Editor editor;
 	private LockPatternUtils mLockPatternUtils;
+	
+	private LinearLayout mTitlebarButtons;
+	private LayoutInflater mInflater;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		mLockPatternUtils = new LockPatternUtils(this);		
+        requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+    }
+	
+	@Override
+    public void setContentView(int layoutResID) {
+        super.setContentView(layoutResID);
+        getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title);
+        View titlebar = findViewById(R.id.layTitle);
+        mTitlebarButtons = (LinearLayout)titlebar.findViewById(R.id.layTitleButtons);
+        mInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        ImageView homeButton = (ImageView)titlebar.findViewById(R.id.imgTitle);
+        OnClickListener listener = new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(LockableActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        };        
+        homeButton.setOnClickListener(listener);
+        homeButton.setFocusable(true);
+        homeButton.setClickable(true);
+    }
+
+    protected void addTitleButton(int imageResourceId, String tag, OnClickListener listener) {
+        View child = mInflater.inflate(R.layout.title_item, mTitlebarButtons, false);
+        ImageButton button = (ImageButton)child.findViewById(R.id.imgItemIcon);
+        button.setImageResource(imageResourceId);
+        button.setTag(tag);
+        child.setTag("item_"+tag);
+        button.setOnClickListener(listener);
+        mTitlebarButtons.addView(child);
 	}
 
-	@Override
+    protected void hideTitleButton(String tag) {
+        View v = mTitlebarButtons.findViewWithTag("item_"+tag);
+        if (v != null) {
+            v.setVisibility(View.GONE);
+        }
+    }
+    
+    protected void showTitleButton(String tag) {
+        View v = mTitlebarButtons.findViewWithTag("item_"+tag);
+        if (v != null) {
+            v.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
 	protected void onPause() {
 		super.onPause();
 		// Don't do anything if not lock pattern is set

@@ -1,0 +1,73 @@
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
+		<style type="text/css">
+			body {
+				/*background: #1a1a1a url(file:///android_asset/background_repeat.png) no-repeat;*/
+				background: transparent;
+				background-size: 100%%;
+				margin: 0;
+				padding: 0;
+				height: 100%%;
+			}
+			#content {
+				margin-left: 12%%;
+				width: 76%%;
+				position: absolute;
+				top: 45%%;
+			}
+			#logo {
+				width: 100%%;
+				display: block;
+			}
+			#loading {
+			        float:right;
+			}
+			.c {
+			    background-color: #59b1f9; /*Preload: #CCC; Presubmit: #59b1f9*/
+			    float:left;
+			    height:6px;
+			    margin-left:5px;
+			    width:6px;
+			    -webkit-animation-name: bounce_circle;
+			    -webkit-border-radius:3px;
+			    -webkit-animation-duration: 2.5s;
+			    -webkit-animation-iteration-count: infinite;
+			    -webkit-animation-direction: linear;
+			    opacity:0.3;
+			}
+			#c1{
+			    -webkit-animation-delay: .0s;
+			 }
+			#c2{
+			    -webkit-animation-delay: .4s;
+			}
+			#c3{
+			    -webkit-animation-delay: .8s;
+			}
+			#c4{
+			    -webkit-animation-delay: 1.2s;
+			}
+			@-webkit-keyframes bounce_circle{
+			    0%%{opacity:0.3;}
+			    50%%{opacity:1;background-color:#111}
+			    100%%{opacity:0.3;}
+			}
+		</style>
+		<script type="text/javascript">
+		%s
+		</script>
+	</head>
+	<body>
+		<div id="content">
+			<img id="logo" src="file:///android_asset/logo_text_big.png" alt="Bankdroid" />
+			<div id="loading">
+				<div id="c1" class="c"></div>
+				<div id="c2" class="c"></div>
+				<div id="c3" class="c"></div>
+				<div id="c4" class="c"></div>
+			</div>
+		</div>
+		%s
+	</body>
+</html> 
