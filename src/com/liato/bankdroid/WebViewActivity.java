@@ -34,8 +34,11 @@ import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.liato.bankdroid.Bank.SessionPackage;
-import com.liato.urllib.Urllib;
+import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.BankFactory;
+import com.liato.bankdroid.banking.Bank.SessionPackage;
+
+import eu.nullbyte.android.urllib.Urllib;
 
 public class WebViewActivity extends LockableActivity implements OnClickListener {
     private final static String TAG = "WebViewActivity";

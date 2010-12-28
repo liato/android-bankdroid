@@ -20,6 +20,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.liato.bankdroid.appwidget.AutoRefreshService;
+import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.BankFactory;
+import com.liato.bankdroid.banking.exceptions.BankException;
+import com.liato.bankdroid.banking.exceptions.LoginException;
+
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;

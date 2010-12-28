@@ -16,6 +16,9 @@
 
 package com.liato.bankdroid;
 
+import com.liato.bankdroid.lockpattern.ConfirmLockPattern;
+import com.liato.bankdroid.lockpattern.LockPatternUtils;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;

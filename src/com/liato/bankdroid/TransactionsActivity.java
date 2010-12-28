@@ -19,6 +19,11 @@ package com.liato.bankdroid;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+import com.liato.bankdroid.banking.Account;
+import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.BankFactory;
+import com.liato.bankdroid.banking.Transaction;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;

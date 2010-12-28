@@ -18,6 +18,13 @@ package com.liato.bankdroid;
 
 import java.util.ArrayList;
 
+import com.liato.bankdroid.adapters.AccountsAdapter;
+import com.liato.bankdroid.appwidget.AutoRefreshService;
+import com.liato.bankdroid.banking.Account;
+import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.BankFactory;
+import com.liato.bankdroid.db.DBAdapter;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;

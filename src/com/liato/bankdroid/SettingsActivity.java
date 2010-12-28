@@ -16,6 +16,11 @@
 
 package com.liato.bankdroid;
 
+import com.liato.bankdroid.appwidget.AutoRefreshService;
+import com.liato.bankdroid.lockpattern.ChooseLockPattern;
+import com.liato.bankdroid.lockpattern.ConfirmLockPattern;
+import com.liato.bankdroid.lockpattern.LockPatternUtils;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;

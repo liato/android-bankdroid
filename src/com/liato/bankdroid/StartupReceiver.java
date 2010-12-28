@@ -16,6 +16,8 @@
 
 package com.liato.bankdroid;
 
+import com.liato.bankdroid.appwidget.AutoRefreshService;
+
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;

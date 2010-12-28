@@ -3,22 +3,80 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical"
 	android:layout_height="fill_parent"
-	android:layout_width="fill_parent" android:paddingBottom="20dp">
+	android:layout_width="fill_parent"
+	android:paddingBottom="20dp">
 	<ScrollView
 		android:fillViewport="true"
-		android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_weight="1">
-		<LinearLayout android:id="@+id/LinearLayout03" android:orientation="vertical" android:layout_height="fill_parent" android:layout_width="wrap_content" android:paddingLeft="20dp" android:paddingRight="20dp"><TextView android:id="@+id/TextView01" android:layout_height="wrap_content" android:typeface="sans" android:gravity="center_horizontal" android:text="BANKDROID" android:layout_width="fill_parent" android:visibility="visible" android:textColor="#fff" android:textSize="42dp" android:ellipsize="none" android:inputType="none" android:layout_gravity="center_horizontal"></TextView><LinearLayout android:id="@+id/LinearLayout01" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_width="fill_parent">
-			<ImageView android:id="@+id/ImageView01" android:layout_width="100dp" android:layout_height="100dp" android:layout_gravity="center_horizontal" android:visibility="visible" android:src="@drawable/icon_large" android:maxHeight="100dp" android:maxWidth="100dp" android:minHeight="100dp" android:minWidth="100dp" android:scaleType="fitXY"></ImageView>
-			<LinearLayout android:id="@+id/LinearLayout02" android:layout_height="wrap_content" android:orientation="vertical" android:layout_width="fill_parent">
-				<TextView android:layout_height="wrap_content" android:id="@+id/txtVersion" android:layout_width="fill_parent" android:textSize="17dp" android:text="@string/version"></TextView>
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:layout_weight="1">
+		<LinearLayout
+			android:id="@+id/LinearLayout03"
+			android:orientation="vertical"
+			android:layout_height="fill_parent"
+			android:layout_width="wrap_content"
+			android:paddingLeft="20dp"
+			android:paddingRight="20dp">
+			
+			<ImageView android:id="@+id/ImageView02" android:layout_height="wrap_content" android:src="@drawable/logo_text_big" android:adjustViewBounds="true" android:layout_width="fill_parent" android:scaleType="fitXY"></ImageView><LinearLayout
+				android:id="@+id/LinearLayout01"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:layout_width="fill_parent">
+				<ImageView
+					android:id="@+id/ImageView01"
+					android:layout_width="100dp"
+					android:layout_height="100dp"
+					android:layout_gravity="center_horizontal"
+					android:visibility="visible"
+					android:src="@drawable/icon_large"
+					android:maxHeight="100dp"
+					android:maxWidth="100dp"
+					android:minHeight="100dp"
+					android:minWidth="100dp"
+					android:scaleType="fitXY"></ImageView>
+				<LinearLayout
+					android:id="@+id/LinearLayout02"
+					android:layout_height="wrap_content"
+					android:orientation="vertical"
+					android:layout_width="fill_parent">
+					<TextView
+						android:layout_height="wrap_content"
+						android:id="@+id/txtVersion"
+						android:layout_width="fill_parent"
+						android:textSize="17dp"
+						android:text="@string/version"></TextView>
 
 
-				<TextView android:id="@+id/TextView02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="http://liato.github.com/android-bankdroid/" android:autoLink="web" android:fitsSystemWindows="false"></TextView>
+					<TextView
+						android:id="@+id/TextView02"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="http://liato.github.com/android-bankdroid/"
+						android:autoLink="web"
+						android:fitsSystemWindows="false"></TextView>
+				</LinearLayout>
+
+
 			</LinearLayout>
-
-
-		</LinearLayout><TextView android:id="@+id/TextView04" android:layout_height="wrap_content" android:text="@string/thanks_to" android:textSize="20sp" android:textStyle="bold" android:layout_marginTop="10dp" android:layout_width="fill_parent"></TextView><TextView android:id="@+id/TextView03" android:layout_height="wrap_content" android:text="@string/thanks" android:layout_width="fill_parent" android:paddingLeft="10dp" android:typeface="serif" android:textSize="12sp"></TextView></LinearLayout>
+			<TextView
+				android:id="@+id/TextView04"
+				android:layout_height="wrap_content"
+				android:text="@string/thanks_to"
+				android:textSize="20sp"
+				android:textStyle="bold"
+				android:layout_marginTop="10dp"
+				android:layout_width="fill_parent"></TextView>
+			<TextView
+				android:id="@+id/TextView03"
+				android:layout_height="wrap_content"
+				android:text="@string/thanks"
+				android:layout_width="fill_parent"
+				android:paddingLeft="10dp"
+				android:typeface="serif"
+				android:textSize="12sp"></TextView>
 		
+</LinearLayout>
 
 
 
@@ -27,8 +85,9 @@
 
 
 
-		
-		
+
+
+
 
 
 	</ScrollView>
