@@ -2,7 +2,7 @@
 <manifest
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	package="com.liato.bankdroid"
-	android:versionName="1.5.4-RC1" android:versionCode="61">
+	android:versionName="1.6.0-RC1" android:versionCode="63">
 	<application
 		android:icon="@drawable/icon"
 		android:label="@string/app_name"
@@ -52,35 +52,29 @@
 			android:theme="@style/BankdroidTheme">
 		</activity>
 		<activity
-			android:name=".ChooseLockPattern"
 			android:label="@string/app_name"
-			android:theme="@style/BankdroidTheme">
+			android:theme="@style/BankdroidTheme" android:name=".lockpattern.ChooseLockPattern">
 		</activity>
 		<activity
-			android:name=".ChooseLockPatternExample"
 			android:label="@string/app_name"
-			android:theme="@style/BankdroidTheme">
+			android:theme="@style/BankdroidTheme" android:name=".lockpattern.ChooseLockPatternExample">
 		</activity>
 		<activity
-			android:name=".ChooseLockPatternTutorial"
 			android:label="@string/app_name"
-			android:theme="@style/BankdroidTheme">
+			android:theme="@style/BankdroidTheme" android:name=".lockpattern.ChooseLockPatternTutorial">
 		</activity>
 		<activity
-			android:name=".ConfirmLockPattern"
-			android:label="@string/app_name">
+			android:label="@string/app_name" android:name=".lockpattern.ConfirmLockPattern">
 		</activity>
 		<activity
-			android:name=".WidgetConfigureActivity"
-			android:theme="@android:style/Theme.Dialog">
+			android:theme="@android:style/Theme.Dialog" android:name=".appwidget.WidgetConfigureActivity">
 			<intent-filter>
 				<action
 					android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
 			</intent-filter>
 		</activity>
 		<receiver
-			android:name="BankdroidWidgetProvider_2x1"
-			android:label="@string/widget_name_small">
+			android:label="@string/widget_name_small" android:name=".appwidget.BankdroidWidgetProvider_2x1">
 			<intent-filter>
 				<action
 					android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -93,8 +87,7 @@
 		</receiver>
 
 		<receiver
-			android:name="BankdroidWidgetProvider_4x1"
-			android:label="@string/widget_name_large">
+			android:label="@string/widget_name_large" android:name=".appwidget.BankdroidWidgetProvider_2x1">
 			<intent-filter>
 				<action
 					android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -107,11 +100,9 @@
 		</receiver>
 
 		<service
-			android:enabled="true"
-			android:name=".AutoRefreshService" />
+			android:enabled="true" android:name=".appwidget.AutoRefreshService"/>
 		<service
-			android:enabled="true"
-			android:name=".BankdroidWidgetProvider$WidgetService" />
+			android:enabled="true" android:name=".appwidget.BankdroidWidgetProvider$WidgetService"/>
 		<receiver
 			android:name="StartupReceiver">
 			<intent-filter>
