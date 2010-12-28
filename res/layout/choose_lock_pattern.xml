@@ -13,7 +13,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<com.liato.bankdroid.LinearLayoutWithDefaultTouchRecepient
+<com.liato.bankdroid.lockpattern.LinearLayoutWithDefaultTouchRecepient
         xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/topLayout"
     android:orientation="vertical"
@@ -32,7 +32,7 @@
          android:background="@*android:drawable/code_lock_top"
          android:layout_width="fill_parent"
          android:layout_height="2dip" />
-    <com.liato.bankdroid.LockPatternView android:id="@+id/lockPattern"
+    <com.liato.bankdroid.lockpattern.LockPatternView android:id="@+id/lockPattern"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content" />
     <View
@@ -80,4 +80,4 @@
 
     </LinearLayout>
 
-</com.liato.bankdroid.LinearLayoutWithDefaultTouchRecepient>
+</com.liato.bankdroid.lockpattern.LinearLayoutWithDefaultTouchRecepient>

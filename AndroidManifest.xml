@@ -2,20 +2,11 @@
 <manifest
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	package="com.liato.bankdroid"
-	android:versionName="1.6.0-RC1" android:versionCode="63">
+	android:versionCode="64" android:versionName="1.6.0-RC2">
 	<application
 		android:icon="@drawable/icon"
 		android:label="@string/app_name"
 		android:debuggable="false">
-		<!--
-			<activity android:label="@string/app_name"
-			android:multiprocess="false" android:name=".MainActivity"
-			android:alwaysRetainTaskState="false"
-			android:theme="@android:style/Theme.Dialog"> <intent-filter> <action
-			android:name="android.intent.action.MAIN" /> <category
-			android:name="android.intent.category.LAUNCHER" /> </intent-filter>
-			</activity>
-		-->
 		<activity
 			android:name=".MainActivity"
 			android:label="@string/app_name"
@@ -87,7 +78,7 @@
 		</receiver>
 
 		<receiver
-			android:label="@string/widget_name_large" android:name=".appwidget.BankdroidWidgetProvider_2x1">
+			android:label="@string/widget_name_large" android:name=".appwidget.BankdroidWidgetProvider_4x1">
 			<intent-filter>
 				<action
 					android:name="android.appwidget.action.APPWIDGET_UPDATE" />

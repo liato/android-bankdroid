@@ -4,5 +4,5 @@
     android:minHeight="72dp"
     android:updatePeriodMillis="0"
     android:initialLayout="@layout/widget"
-    android:configure="com.liato.bankdroid.WidgetConfigureActivity" >
+    android:configure="com.liato.bankdroid.appwidget.WidgetConfigureActivity" >
 </appwidget-provider>
