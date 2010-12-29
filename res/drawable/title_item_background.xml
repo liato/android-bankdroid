@@ -12,6 +12,8 @@
 	</item>
 
 	<item
-		android:drawable="@android:id/empty">
+		android:drawable="@android:color/transparent"
+		android:state_focused="false"
+		android:state_pressed="false">
 	</item>
 </selector>

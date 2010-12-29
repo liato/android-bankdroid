@@ -60,15 +60,19 @@ public class LockableActivity extends Activity {
         mInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         ImageView homeButton = (ImageView)titlebar.findViewById(R.id.imgTitle);
+        View homeButtonCont = titlebar.findViewById(R.id.layLogoContainer);
         OnClickListener listener = new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(LockableActivity.this, MainActivity.class);
                 startActivity(intent);
             }
-        };        
+        };
         homeButton.setOnClickListener(listener);
         homeButton.setFocusable(true);
         homeButton.setClickable(true);
+        homeButtonCont.setOnClickListener(listener);
+        homeButtonCont.setFocusable(true);
+        homeButtonCont.setClickable(true);
     }
 
     protected void addTitleButton(int imageResourceId, String tag, OnClickListener listener) {
