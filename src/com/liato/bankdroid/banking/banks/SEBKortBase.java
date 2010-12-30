@@ -43,12 +43,7 @@ import com.liato.bankdroid.banking.exceptions.LoginException;
 
 import eu.nullbyte.android.urllib.Urllib;
 
-public class Statoil extends Bank {
-	private static final String TAG = "Statoil";
-	private static final String NAME = "Statoil";
-	private static final String NAME_SHORT = "statoil";
-	private static final String URL = "https://applications.sebkort.com/nis/external/stse/login.do";
-	private static final int BANKTYPE_ID = Bank.STATOIL;
+public abstract class SEBKortBase extends Bank {
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
     private static final boolean STATIC_BALANCE = true;
@@ -56,42 +51,43 @@ public class Statoil extends Bank {
 	private Pattern reAccounts = Pattern.compile("Welcomepagebillingunit(?:last(?:disposable|credit)amount|2rowcol2)\">([^<]+)</(?:div|td)>", Pattern.CASE_INSENSITIVE);
 	private Pattern reTransactions = Pattern.compile("transcol1\">\\s*<span>([^<]+)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^<]+)</span>\\s*</td>\\s*<td[^>]+>\\s*(?:<div[^>]+>\\s*)?<span>([^<]*)</span>\\s*(?:</div>\\s*)?</td>\\s*<td[^>]+>\\s*<span>([^<]*)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^>]*)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^<]*)</span>\\s*</td>\\s*<td[^>]+>\\s*<span>([^<]+)</span>", Pattern.CASE_INSENSITIVE);
 	private String response = null;
-	public Statoil(Context context) {
+	private String provider_part;
+	private String prodgroup;
+	public SEBKortBase(Context context, String provider_part, String prodgroup) {
 		super(context);
-		super.TAG = TAG;
-		super.NAME = NAME;
-		super.NAME_SHORT = NAME_SHORT;
-		super.BANKTYPE_ID = BANKTYPE_ID;
-		super.URL = URL;
 		super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
 		super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
 		super.STATIC_BALANCE = STATIC_BALANCE;
+		this.provider_part = provider_part;
+		this.prodgroup = prodgroup;
+		super.URL = String.format("https://applications.sebkort.com/nis/external/%s/login.do", provider_part);
 	}
 
-	public Statoil(String username, String password, Context context) throws BankException, LoginException {
-		this(context);
+	public SEBKortBase(String username, String password, Context context, String url, String prodgroup) throws BankException, LoginException {
+		this(context, url, prodgroup);
 		this.update(username, password);
 	}
-
     
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
         urlopen = new Urllib(true);
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
-        response = urlopen.open("https://applications.sebkort.com/nis/external/stse/login.do");
+        response = urlopen.open(String.format("https://applications.sebkort.com/nis/external/%s/login.do", provider_part));
         List<NameValuePair> parameters = new ArrayList<NameValuePair>(3);
-        parameters.add(new BasicNameValuePair("USERNAME", "0122"+username.toUpperCase()));
+        parameters.add(new BasicNameValuePair("USERNAME", prodgroup+username.toUpperCase()));
         parameters.add(new BasicNameValuePair("referer", "login.jsp"));
         response = urlopen.open("https://applications.sebkort.com/nis/external/hidden.jsp", postData);
         
         postData.clear();
         postData.add(new BasicNameValuePair("choice", "PWD"));
+        postData.add(new BasicNameValuePair("CURRENT_METHOD", "PWD"));
+        postData.add(new BasicNameValuePair("METHOD", "LOGIN"));
         postData.add(new BasicNameValuePair("uname", username.toUpperCase()));
         postData.add(new BasicNameValuePair("PASSWORD", password));
-        postData.add(new BasicNameValuePair("target", "/nis/stse/main.do"));
-        postData.add(new BasicNameValuePair("prodgroup", "0122"));
-        postData.add(new BasicNameValuePair("USERNAME", "0122"+username.toUpperCase()));
+        postData.add(new BasicNameValuePair("target", String.format("/nis/%s/main.do", provider_part)));
+        postData.add(new BasicNameValuePair("prodgroup", prodgroup));
+        postData.add(new BasicNameValuePair("USERNAME", prodgroup+username.toUpperCase()));
         postData.add(new BasicNameValuePair("METHOD", "LOGIN"));
         postData.add(new BasicNameValuePair("CURRENT_METHOD", "PWD"));
         return new LoginPackage(urlopen, postData, response, "https://applications.sebkort.com/siteminderagent/forms/generic.fcc");
@@ -124,8 +120,8 @@ public class Statoil extends Bank {
 		urlopen = login();
 		Matcher matcher;
 		try {
-			if (!"https://applications.sebkort.com/nis/stse/main.do".equals(urlopen.getCurrentURI())) {
-				response = urlopen.open("https://applications.sebkort.com/nis/stse/main.do");
+			if (!String.format("https://applications.sebkort.com/nis/%s/main.do", provider_part).equals(urlopen.getCurrentURI())) {
+				response = urlopen.open(String.format("https://applications.sebkort.com/nis/%s/main.do", provider_part));
 			}
 			matcher = reAccounts.matcher(response);
             /*
@@ -176,8 +172,8 @@ public class Statoil extends Bank {
 		String response = null;
 		Matcher matcher;
 		try {
-			Log.d(TAG, "Opening: https://applications.sebkort.com/nis/stse/getPendingTransactions.do");
-			response = urlopen.open("https://applications.sebkort.com/nis/stse/getPendingTransactions.do");
+			Log.d(TAG, String.format("Opening: https://applications.sebkort.com/nis/%s/getPendingTransactions.do", provider_part));
+			response = urlopen.open(String.format("https://applications.sebkort.com/nis/%s/getPendingTransactions.do", provider_part));
 			matcher = reTransactions.matcher(response);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 			Calendar cal = Calendar.getInstance();
