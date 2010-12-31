@@ -29,6 +29,7 @@ import com.liato.bankdroid.banking.banks.Avanza;
 import com.liato.bankdroid.banking.banks.AvanzaMini;
 import com.liato.bankdroid.banking.banks.Coop;
 import com.liato.bankdroid.banking.banks.DinersClub;
+import com.liato.bankdroid.banking.banks.EurobonusMastercard;
 import com.liato.bankdroid.banking.banks.Eurocard;
 import com.liato.bankdroid.banking.banks.FirstCard;
 import com.liato.bankdroid.banking.banks.Handelsbanken;
@@ -96,6 +97,8 @@ public class BankFactory {
             return new DinersClub(context);
         case Bank.IKANOBANK:
             return new IkanoBank(context);
+        case Bank.EUROBONUSMASTERCARD:
+        	return new EurobonusMastercard(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -124,6 +127,7 @@ public class BankFactory {
         banks.add(new Steam(context));
         banks.add(new DinersClub(context));
         banks.add(new IkanoBank(context));
+        banks.add(new EurobonusMastercard(context));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));
