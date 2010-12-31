@@ -185,8 +185,8 @@ public abstract class SEBKortBase extends Bank {
 				 * 2: Book. date		10-19
 				 * 3: Specification		ICA Kvantum
 				 * 4: Location			Stockholm
-				 * 5: Currency			always empty?
-				 * 6: Amount			always empty?
+				 * 5: Currency			currency code (e.g. EUR) for transactions in non-SEK
+				 * 6: Amount			local currency amount (in $currency) for transactions in non-SEK
 				 * 7: Amount in sek		5791,18
 				 * 
 				 */				
