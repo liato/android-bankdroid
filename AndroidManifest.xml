@@ -110,7 +110,9 @@
 					android:path="com.liato.bankdroid" />
 			</intent-filter>
 		</receiver>
-	</application>
+	<provider android:name=".provider.BankTransactionsProvider" android:syncable="false" android:authorities="com.liato.bankdroid.provider.BankTransactionsProvider">
+</provider>
+</application>
 	<uses-sdk
 		android:targetSdkVersion="4"
 		android:minSdkVersion="4" />

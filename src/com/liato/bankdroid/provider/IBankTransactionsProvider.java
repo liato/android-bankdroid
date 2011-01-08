@@ -44,6 +44,13 @@ public interface IBankTransactionsProvider {
 
 	/**
 	 * <p>
+	 * MIME-type for Transactions. Not use today (no inserts) added for clarity.
+	 * </p>
+	 */
+	String TRANSACTIONS_MIME = "vnd.android.cursor.dir/vnd.bankdroid.transactions";
+
+	/**
+	 * <p>
 	 * A category part of the URI.
 	 * </p>
 	 */
