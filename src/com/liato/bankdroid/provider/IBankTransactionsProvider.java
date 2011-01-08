@@ -101,10 +101,10 @@ public interface IBankTransactionsProvider {
 
 	/**
 	 * <p>
-	 * The projection map that works with the {@link #TRANSACTIONS_CAT}
+	 * The projection (ie. 'view') that works with the {@link #TRANSACTIONS_CAT}
 	 * category.
 	 * </p>
 	 */
-	String[] transactionsProjectionMap = { TRANS_ID, TRANS_DATE, TRANS_DESC,
+	String[] TRANSACTIONS_PROJECTION = { TRANS_ID, TRANS_DATE, TRANS_DESC,
 			TRANS_AMT, TRANS_CUR };
 }
