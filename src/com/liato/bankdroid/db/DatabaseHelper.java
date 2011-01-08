@@ -25,9 +25,9 @@ import android.util.Log;
  * 
  * @since 8 jan 2011
  */
-final class DatabaseHelper extends SQLiteOpenHelper {
+final public class DatabaseHelper extends SQLiteOpenHelper {
 
-	DatabaseHelper(final Context context) {
+	public DatabaseHelper(final Context context) {
 		super(context, DBAdapter.DATABASE_NAME, null,
 				DBAdapter.DATABASE_VERSION);
 	}

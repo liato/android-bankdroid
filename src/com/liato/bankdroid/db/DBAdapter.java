@@ -30,65 +30,19 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 
 public class DBAdapter {
 
-    private static final String TAG = "DBAdapter";
+    static final String TAG = "DBAdapter";
     private DatabaseHelper mDbHelper;
     private SQLiteDatabase mDb;
     
-    private static final String DATABASE_NAME = "data";
-    private static final int DATABASE_VERSION = 9;
+    static final String DATABASE_NAME = "data";
+    static final int DATABASE_VERSION = 9;
 
     private final Context mCtx;
-
-    private static class DatabaseHelper extends SQLiteOpenHelper {
-
-        DatabaseHelper(Context context) {
-            super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        }
-
-        @Override
-        public void onCreate(SQLiteDatabase db) {
-            db.execSQL("create table banks (_id integer primary key autoincrement, " +
-            		   "balance text not null, " +
-                       "banktype integer not null, " +
-                       "username text not null, " +
-                       "password text not null, " +
-                       "custname text, " +
-                       "updated text, " +
-                       "sortorder real, " +
-                       "currency text, " +
-                       "disabled integer);");
-            db.execSQL("create table accounts (bankid integer not null, " +
-            		   "id text not null, " +
-                       "balance text not null, " +
-                       "acctype integer not null, " +
-                       "hidden integer not null, " +
-                       "notify integer not null, " +
-                       "currency text, " +
-            		   "name text not null);");
-            db.execSQL("create table transactions (_id integer primary key autoincrement, " +
-            		   "transdate text not null, " +
-            		   "btransaction text not null, " +
-            		   "amount text not null, " +
-            		   "currency text, " +
-            		   "account text not null);");
-        }
-
-        @Override
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
-                    + newVersion + ", which will destroy all old data");
-            db.execSQL("DROP TABLE IF EXISTS banks;");
-            db.execSQL("DROP TABLE IF EXISTS accounts;");
-            db.execSQL("DROP TABLE IF EXISTS transactions;");
-            onCreate(db);
-        }
-    }
 
     /**
      * Constructor - takes the context to allow the database to be
