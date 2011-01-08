@@ -33,6 +33,7 @@ import com.liato.bankdroid.R.raw;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.db.DBAdapter;
+import com.liato.bankdroid.provider.IBankTypes;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -42,30 +43,8 @@ import android.util.Log;
 
 import eu.nullbyte.android.urllib.Urllib;
 
-public abstract class Bank implements Comparable<Bank> {
-    public final static int TESTBANK = 0;
-    public final static int SWEDBANK = 1;
-	public final static int NORDEA = 2;
-	public final static int ICABANKEN = 3;
-	public final static int LANSFORSAKRINGAR = 4;
-	public final static int HANDELSBANKEN = 5;
-	public final static int COOP = 6;
-	public final static int ICA = 7;
-	public final static int STATOIL = 8;
-	public final static int AVANZA = 9;
-	public final static int VILLABANKEN = 10;
-	public final static int AVANZAMINI = 11;
-	public final static int OKQ8 = 12;
-	public final static int EUROCARD = 13;
-	public final static int FIRSTCARD = 14;
-	public final static int PAYPAL = 15;
-    public final static int PAYSON = 16;
-    public final static int JOJO = 17;
-    public final static int IKANOBANK = 18;
-    public final static int STEAM = 19;
-    public final static int DINERSCLUB = 20;
-
-	protected String TAG = "Bank";
+public abstract class Bank implements Comparable<Bank>, IBankTypes {
+    protected String TAG = "Bank";
 	protected String NAME = "Bank";
 	protected String NAME_SHORT = "bank";
 	protected int BANKTYPE_ID = 0;

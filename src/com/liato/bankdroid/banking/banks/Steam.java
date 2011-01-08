@@ -42,6 +42,7 @@ import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.provider.IBankTypes;
 
 import eu.nullbyte.android.urllib.Urllib;
 
@@ -50,7 +51,7 @@ public class Steam extends Bank {
 	private static final String NAME = "Steam Wallet";
 	private static final String NAME_SHORT = "steam";
 	private static final String URL = "https://store.steampowered.com/login/?redir=account";
-	private static final int BANKTYPE_ID = Bank.STEAM;
+	private static final int BANKTYPE_ID = IBankTypes.STEAM;
 	private static final boolean STATIC_BALANCE = true;
 	
     private Pattern reBalance = Pattern.compile("accountBalance\">\\s*<div[^>]+>([^<]+)</div>", Pattern.CASE_INSENSITIVE);

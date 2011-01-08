@@ -35,6 +35,7 @@ import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.provider.IBankTypes;
 
 import eu.nullbyte.android.urllib.Urllib;
 
@@ -43,7 +44,7 @@ public class DinersClub extends Bank {
 	private static final String NAME = "Diners Club";
 	private static final String NAME_SHORT = "dinersclub";
 	private static final String URL = "https://www.dinersclub.se/dcs/login.aspx";
-	private static final int BANKTYPE_ID = Bank.DINERSCLUB;
+	private static final int BANKTYPE_ID = IBankTypes.DINERSCLUB;
 	
     private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
     private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");

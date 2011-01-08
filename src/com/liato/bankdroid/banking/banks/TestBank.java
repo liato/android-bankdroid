@@ -34,6 +34,7 @@ import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.provider.IBankTypes;
 
 import eu.nullbyte.android.urllib.Urllib;
 
@@ -42,7 +43,7 @@ public class TestBank extends Bank {
 	private static final String NAME = "Testbank";
 	private static final String NAME_SHORT = "testbank";
 	private static final String URL = "http://www.nullbyte.eu/";
-	private static final int BANKTYPE_ID = Bank.TESTBANK;
+	private static final int BANKTYPE_ID = IBankTypes.TESTBANK;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDD-XXXX";

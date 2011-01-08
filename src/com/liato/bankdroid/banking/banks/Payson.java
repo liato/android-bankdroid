@@ -37,6 +37,7 @@ import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.provider.IBankTypes;
 
 import eu.nullbyte.android.urllib.Urllib;
 
@@ -45,7 +46,7 @@ public class Payson extends Bank {
 	private static final String NAME = "Payson";
 	private static final String NAME_SHORT = "payson";
 	private static final String URL = "https://www.payson.se/signin/";
-	private static final int BANKTYPE_ID = Bank.PAYSON;
+	private static final int BANKTYPE_ID = IBankTypes.PAYSON;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT | + InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
 	
     private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");

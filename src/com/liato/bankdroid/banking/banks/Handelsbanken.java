@@ -39,6 +39,7 @@ import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.provider.IBankTypes;
 
 import eu.nullbyte.android.urllib.Urllib;
 
@@ -47,7 +48,7 @@ public class Handelsbanken extends Bank {
 	private static final String NAME = "Handelsbanken";
 	private static final String NAME_SHORT = "handelsbanken";
 	private static final String URL = "https://m.handelsbanken.se/";
-	private static final int BANKTYPE_ID = Bank.HANDELSBANKEN;
+	private static final int BANKTYPE_ID = IBankTypes.HANDELSBANKEN;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
 

@@ -40,6 +40,7 @@ import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.provider.IBankTypes;
 
 import eu.nullbyte.android.urllib.Urllib;
 
@@ -48,7 +49,7 @@ public class OKQ8 extends Bank {
 	private static final String NAME = "OKQ8 VISA";
 	private static final String NAME_SHORT = "okq8";
 	private static final String URL = "https://nettbank.edb.com/Logon/index.jsp?domain=0066&from_page=http://www.okq8.se&to_page=https://nettbank.edb.com/cardpayment/transigo/logon/done/okq8";
-	private static final int BANKTYPE_ID = Bank.OKQ8;
+	private static final int BANKTYPE_ID = IBankTypes.OKQ8;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
     private static final boolean STATIC_BALANCE = true;

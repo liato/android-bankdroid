@@ -40,6 +40,7 @@ import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.provider.IBankTypes;
 
 import eu.nullbyte.android.urllib.Urllib;
 
@@ -48,7 +49,7 @@ public class Statoil extends Bank {
 	private static final String NAME = "Statoil";
 	private static final String NAME_SHORT = "statoil";
 	private static final String URL = "https://applications.sebkort.com/nis/external/stse/login.do";
-	private static final int BANKTYPE_ID = Bank.STATOIL;
+	private static final int BANKTYPE_ID = IBankTypes.STATOIL;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
     private static final boolean STATIC_BALANCE = true;
