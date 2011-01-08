@@ -24,6 +24,7 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
 import com.liato.bankdroid.db.DatabaseHelper;
@@ -42,6 +43,7 @@ public class BankTransactionsProvider extends ContentProvider implements
 		IBankTransactionsProvider {
 
 	private final static int TRANSACTIONS = 1;
+	private static final String TRANSACTIONS_TABLE = "transactions";
 
 	private DatabaseHelper dbHelper;
 	private final static UriMatcher uriMatcher;
@@ -77,8 +79,12 @@ public class BankTransactionsProvider extends ContentProvider implements
 	 */
 	@Override
 	public String getType(final Uri uri) {
-		// TODO Auto-generated method stub
-		return null;
+		switch (uriMatcher.match(uri)) {
+		case TRANSACTIONS:
+			return TRANSACTIONS_MIME;
+		default:
+			throw new IllegalArgumentException("Unsupported URI:" + uri);
+		}
 	}
 
 	/**
@@ -107,9 +113,25 @@ public class BankTransactionsProvider extends ContentProvider implements
 			final String selection, final String[] selectionArgs,
 			final String sortOrder) {
 
-		final SQLiteDatabase db = dbHelper.getReadableDatabase();
+		// Only the chosen ones may enter
+		if (uriMatcher.match(uri) != TRANSACTIONS) {
+			throw new IllegalArgumentException("Unknown URI" + uri);
+		}
 
-		return null;
+		// TODO: Fetch the BANK_ACCOUNT_ID from the URI.
+
+		final SQLiteDatabase db = dbHelper.getReadableDatabase();
+		final SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+		qb.setTables(TRANSACTIONS_TABLE);
+		qb.setProjectionMap(transProjectionMap);
+
+		// TODO: Add use the BANK_ACCOUNT_ID to limit hits.
+		final Cursor cur = qb.query(db, projection, selection, selectionArgs,
+				null, null, sortOrder);
+
+		cur.setNotificationUri(getContext().getContentResolver(), uri);
+
+		return cur;
 	}
 
 	/**
