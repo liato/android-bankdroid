@@ -147,7 +147,7 @@ public class BankTransactionsProvider extends ContentProvider implements
 
 		if (apiKey == null) {
 			throw new IllegalAccessError("The supplied API_KEY does not exist");
-			// TODO: Implement property loader here.
+			// TODO: API_KEY: Implement property loader here.
 		}
 
 		final SQLiteDatabase db = dbHelper.getReadableDatabase();
