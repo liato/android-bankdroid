@@ -78,7 +78,7 @@ public interface IBankTransactionsProvider {
 	 * A category part of the URI.
 	 * </p>
 	 */
-	String BANK_ACCOUNTS_CAT = "banksaccounts";
+	String BANK_ACCOUNTS_CAT = "bankaccounts";
 
 	/**
 	 * <p>

@@ -26,6 +26,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.util.Log;
 
 import com.liato.bankdroid.db.DatabaseHelper;
 
@@ -42,10 +43,13 @@ import com.liato.bankdroid.db.DatabaseHelper;
 public class BankTransactionsProvider extends ContentProvider implements
 		IBankTransactionsProvider {
 
+	private final static String TAG = "BankTransactionsProvider";
+
 	private final static int TRANSACTIONS = 0;
 	private static final int BANK_ACCOUNTS = 1;
 
-	private static final String BANK_ACCOUNT_TABLES = "banks, accounts";
+	private static final String BANK_ACCOUNT_TABLES = "banks LEFT JOIN accounts ON banks."
+			+ BANK_ID + " = accounts.bankid";
 	private static final String TRANSACTIONS_TABLE = "transactions";
 
 	private DatabaseHelper dbHelper;
@@ -140,6 +144,8 @@ public class BankTransactionsProvider extends ContentProvider implements
 			qb = new SQLiteQueryBuilder();
 			qb.setTables(BANK_ACCOUNT_TABLES);
 			qb.setProjectionMap(bankAccountProjectionMap);
+			qb.setDistinct(true);
+			Log.d(TAG, "");
 		} else if (TRANSACTIONS_MIME.equals(getType(uri))) {
 			qb = new SQLiteQueryBuilder();
 			qb.setTables(TRANSACTIONS_TABLE);
