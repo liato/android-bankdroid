@@ -44,9 +44,9 @@ public class BankTransactionsProvider extends ContentProvider implements
 		IBankTransactionsProvider {
 
 	private final static String TAG = "BankTransactionsProvider";
-
 	private final static int TRANSACTIONS = 0;
-	private static final int BANK_ACCOUNTS = 1;
+	private final static int BANK_ACCOUNTS = 1;
+	private static final String WILD_CARD = "*";
 
 	private static final String BANK_ACCOUNT_TABLES = "banks LEFT JOIN accounts ON banks."
 			+ BANK_ID + " = accounts.bankid";
@@ -59,8 +59,10 @@ public class BankTransactionsProvider extends ContentProvider implements
 
 	static {
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-		uriMatcher.addURI(AUTHORITY, TRANSACTIONS_CAT, TRANSACTIONS);
-		uriMatcher.addURI(AUTHORITY, BANK_ACCOUNTS_CAT, BANK_ACCOUNTS);
+		uriMatcher.addURI(AUTHORITY, TRANSACTIONS_CAT + "/" + WILD_CARD,
+				TRANSACTIONS);
+		uriMatcher.addURI(AUTHORITY, BANK_ACCOUNTS_CAT + "/" + WILD_CARD,
+				BANK_ACCOUNTS);
 
 		// Projections are "Poor mans views" of the data.
 		bankAccountProjectionMap = new HashMap<String, String>();
@@ -102,6 +104,8 @@ public class BankTransactionsProvider extends ContentProvider implements
 	 */
 	@Override
 	public String getType(final Uri uri) {
+		Log.d(TAG, "Got URI " + uri.toString());
+
 		switch (uriMatcher.match(uri)) {
 		case BANK_ACCOUNTS:
 			return BANK_ACCOUNTS_MIME;
@@ -138,14 +142,22 @@ public class BankTransactionsProvider extends ContentProvider implements
 			final String selection, final String[] selectionArgs,
 			final String sortOrder) {
 
+		final String apiKey = uri.getPathSegments().get(1);
+		Log.d(TAG, "Trying to access database with " + apiKey);
+
+		if (apiKey == null) {
+			throw new IllegalAccessError("The supplied API_KEY does not exist");
+			// TODO: Implement property loader here.
+		}
+
 		final SQLiteDatabase db = dbHelper.getReadableDatabase();
 		SQLiteQueryBuilder qb;
+
 		if (BANK_ACCOUNTS_MIME.equals(getType(uri))) {
 			qb = new SQLiteQueryBuilder();
 			qb.setTables(BANK_ACCOUNT_TABLES);
 			qb.setProjectionMap(bankAccountProjectionMap);
 			qb.setDistinct(true);
-			Log.d(TAG, "");
 		} else if (TRANSACTIONS_MIME.equals(getType(uri))) {
 			qb = new SQLiteQueryBuilder();
 			qb.setTables(TRANSACTIONS_TABLE);
@@ -153,12 +165,7 @@ public class BankTransactionsProvider extends ContentProvider implements
 		} else {
 			throw new IllegalArgumentException("Unsupported URI: " + uri);
 		}
-		/*
-		 * Select Statement to build: SELECT banks._id, banks.custname,
-		 * banks.banktype, banks.updated, accounts.id, accounts.name,
-		 * accounts.acctype FROM banks, accounts WHERE banks._id =
-		 * accounts.bankid AND accounts.hidden = 0;
-		 */
+
 		final Cursor cur = qb.query(db, projection, selection, selectionArgs,
 				null, null, sortOrder);
 

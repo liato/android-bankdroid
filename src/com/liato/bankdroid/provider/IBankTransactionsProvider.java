@@ -26,7 +26,9 @@ import java.math.BigDecimal;
  * <p>
  * Uri format for querying for all transaction of a given bank/account
  * combination:<br/>
- * <code><b>content://{{@link #AUTHORITY}}/{{@link #TRANSACTIONS_CAT}}</code>
+ * <code><b>content://{{@link #AUTHORITY}}/{{@link #TRANSACTIONS_CAT}}/{{@link #API_KEY}}={yourkey}</code>
+ * <br>
+ * <code><b>Would result in: content://com.liato.bankdroid.provider.BankTransactionsProvider/transactions/API_KEY=AAABBBCCC111222</code>
  * </b>
  * </p>
  * 
@@ -56,6 +58,13 @@ public interface IBankTransactionsProvider {
 	 * </p>
 	 */
 	String AUTHORITY = "com.liato.bankdroid.provider.BankTransactionsProvider";
+
+	/**
+	 * <p>
+	 * The API Key part of the URI.
+	 * </p>
+	 */
+	String API_KEY = "API_KEY=";
 
 	// ====================================MIME-TYPES======================================
 	/**
