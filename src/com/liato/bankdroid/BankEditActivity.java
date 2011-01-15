@@ -34,6 +34,7 @@ import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -114,14 +115,42 @@ public class BankEditActivity extends LockableActivity implements OnClickListene
 	@Override
 	public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int pos, long id) {
 		SELECTED_BANK = (Bank)parentView.getItemAtPosition(pos);
-		EditText edtUsername = (EditText)findViewById(R.id.edtBankeditUsername);
-		edtUsername.setInputType(SELECTED_BANK.getInputTypeUsername());
-		edtUsername.setHint(SELECTED_BANK.getInputHintUsername());
-        //Not possible to set a textfield to both PHONE and PASSWORD :\
-		EditText edtPassword = (EditText)findViewById(R.id.edtBankeditPassword);
-		edtPassword.setInputType(SELECTED_BANK.getInputTypePassword());
-		edtPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
-		edtPassword.setTypeface(Typeface.MONOSPACE);
+		
+		if (SELECTED_BANK.getBanktypeId() == Bank.RIKSLUNCHEN)
+		{
+			//Remove Username
+			EditText edtUsername = (EditText)findViewById(R.id.edtBankeditUsername);			
+			edtUsername.setVisibility(EditText.GONE);			
+			TextView txtUsername = (TextView)findViewById(R.id.txtBankeditUsername);
+			txtUsername.setVisibility(TextView.GONE);
+			
+			EditText edtPassword = (EditText)findViewById(R.id.edtBankeditPassword);
+			edtPassword.setInputType(SELECTED_BANK.getInputTypePassword());
+			
+			//Change Password to Card ID
+			TextView txtBankeditPassword = (TextView)findViewById(R.id.txtBankeditPassword);
+			txtBankeditPassword.setText(R.string.card_id);
+			
+			// Max 8 numeric characters
+			InputFilter[] filterArray = new InputFilter[1];
+			filterArray[0] = new InputFilter.LengthFilter(8);
+			edtPassword.setFilters(filterArray);			
+			
+			edtPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
+			edtPassword.setTypeface(Typeface.MONOSPACE);			
+		}
+		else
+		{		
+			SELECTED_BANK = (Bank)parentView.getItemAtPosition(pos);
+			EditText edtUsername = (EditText)findViewById(R.id.edtBankeditUsername);
+			edtUsername.setInputType(SELECTED_BANK.getInputTypeUsername());
+			edtUsername.setHint(SELECTED_BANK.getInputHintUsername());
+	        //Not possible to set a textfield to both PHONE and PASSWORD :\
+			EditText edtPassword = (EditText)findViewById(R.id.edtBankeditPassword);
+			edtPassword.setInputType(SELECTED_BANK.getInputTypePassword());
+			edtPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
+			edtPassword.setTypeface(Typeface.MONOSPACE);
+		}
         
 	}
 
