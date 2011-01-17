@@ -28,11 +28,13 @@ import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
 import android.text.Html;
+import android.util.Log;
 
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
@@ -48,7 +50,11 @@ public class DinersClub extends Bank {
     private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
     private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
 	private Pattern reBalance = Pattern.compile("class=\"card\"[^>]+>\\s*<div[^>]+>\\s*<b>([^<]+)</b>\\s*<br ?/>\\s*<span[^>]+>([^<]+)</span>\\s*</div>\\s*<div[^>]+>\\s*<strong[^>]+>[^<]+</strong>([^<]+)</div>", Pattern.CASE_INSENSITIVE);
+	private Pattern reInvoices = Pattern.compile("<tr[^>]+>\\s*<td class=\"right\">\\s*<a href='((Invoice|Nonbilled).aspx\\?card=\\d+&bdate=[\\d-]+)'>", Pattern.CASE_INSENSITIVE);
+	private Pattern reTransactions = Pattern.compile("<tr[^>]+>\\s*<td>\\s*<a.*? href='Transact[^']+'>\\s*([\\d-]+)\\s*</a>\\s*</td><td>\\s*<a.*? href='Transact[^']+'>\\s*(.*?)\\s*</a>\\s*</td><td class=\"right\">\\s*(.*?)\\s*</td><td class=\"right\">\\s*<a.*? href='Transact[^']+'>\\s*(.*?)\\s*</a>\\s*</td>\\s*</tr>");
+
 	private String response = null;
+	private String invoiceUrl;
 	
 	public DinersClub(Context context) {
 		super(context);
@@ -145,7 +151,55 @@ public class DinersClub extends Bank {
 		}
         if (accounts.isEmpty()) {
             throw new BankException(res.getText(R.string.no_accounts_found).toString());
-        }		
+        }
+
+        /* Detect invoice dates - needed to find the transactions */
+        matcher = reInvoices.matcher(response);
+        if (matcher.find()) {
+        	invoiceUrl = matcher.group(1);
+        }
+        else {
+        	invoiceUrl = null;
+        }
+
         super.updateComplete();
+	}
+
+	@Override
+	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+		super.updateTransactions(account, urlopen);
+		if (!urlopen.acceptsInvalidCertificates()) { //Should never happen, but we'll check it anyway.
+			urlopen = login();
+		}
+
+		String response = null;
+		Matcher matcher;
+		try {
+			/* We're going to look at all the pages until we find one that has transactions on it */
+			Log.d(TAG, String.format("Opening: https://www.dinersclub.se/dcs/eSaldo/%s", invoiceUrl));
+			response = urlopen.open(String.format("https://www.dinersclub.se/dcs/eSaldo/%s", invoiceUrl));
+			matcher = reTransactions.matcher(response);
+			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+
+			while (matcher.find()) {
+				/*
+				 * Capture groups:
+				 * GROUP				EXAMPLE DATA
+				 * 1: Trans. date		2010-10-06
+				 * 2: Specifications	Skyways Express Ab
+				 * 3: Foreign amount	30,30 EUR
+				 * 4: Amount			2.462,00 kr
+				 */
+
+				transactions.add(new Transaction(matcher.group(1), matcher.group(2), Helpers.parseBalance(matcher.group(4))));
+			}
+			account.setTransactions(transactions);
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
