@@ -21,11 +21,14 @@ import java.util.Map;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.liato.bankdroid.db.DatabaseHelper;
@@ -41,7 +44,10 @@ import com.liato.bankdroid.db.DatabaseHelper;
  * @see IBankTransactionsProvider
  */
 public class BankTransactionsProvider extends ContentProvider implements
-		IBankTransactionsProvider {
+IBankTransactionsProvider {
+
+	private static final String CONTENT_PROVIDER_ENABLED = "content_provider_enabled";
+	private static final String CONTENT_PROVIDER_API_KEY = "content_provider_api_key";
 
 	private final static String TAG = "BankTransactionsProvider";
 	private final static int TRANSACTIONS = 0;
@@ -49,7 +55,7 @@ public class BankTransactionsProvider extends ContentProvider implements
 	private static final String WILD_CARD = "*";
 
 	private static final String BANK_ACCOUNT_TABLES = "banks LEFT JOIN accounts ON banks."
-			+ BANK_ID + " = accounts.bankid";
+		+ BANK_ID + " = accounts.bankid";
 	private static final String TRANSACTIONS_TABLE = "transactions";
 
 	private DatabaseHelper dbHelper;
@@ -96,7 +102,7 @@ public class BankTransactionsProvider extends ContentProvider implements
 	public int delete(final Uri uri, final String selection,
 			final String[] selectionArgs) {
 		throw new UnsupportedOperationException(
-				"This provider does not implement the delete method");
+		"This provider does not implement the delete method");
 	}
 
 	/**
@@ -122,7 +128,7 @@ public class BankTransactionsProvider extends ContentProvider implements
 	@Override
 	public Uri insert(final Uri uri, final ContentValues values) {
 		throw new UnsupportedOperationException(
-				"This provider does not implement the insert method");
+		"This provider does not implement the insert method");
 	}
 
 	/**
@@ -143,11 +149,17 @@ public class BankTransactionsProvider extends ContentProvider implements
 			final String sortOrder) {
 
 		final String apiKey = uri.getPathSegments().get(1);
+
 		Log.d(TAG, "Trying to access database with " + apiKey);
 
-		if (apiKey == null) {
+		if( !apiKey.startsWith(API_KEY, 0 )) {
+			throw new IllegalArgumentException(API_KEY + "<API-KEY> must be a part of the URI!");
+		}
+
+		final String key = apiKey.replace(API_KEY,"");
+
+		if( !key.equals(getApiKey(getContext())) ) {
 			throw new IllegalAccessError("The supplied API_KEY does not exist");
-			// TODO: API_KEY: Implement property loader here.
 		}
 
 		final SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -180,7 +192,21 @@ public class BankTransactionsProvider extends ContentProvider implements
 	public int update(final Uri uri, final ContentValues values,
 			final String selection, final String[] selectionArgs) {
 		throw new UnsupportedOperationException(
-				"This provider does not implement the update method");
+		"This provider does not implement the update method");
 	}
 
+	private static String getApiKey(final Context ctx) {
+		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+		if(!prefs.getBoolean(CONTENT_PROVIDER_ENABLED, false)) {
+			throw new IllegalArgumentException("Access to Content Provider is not enabled.");
+		}
+
+		final String apiKey = prefs.getString(CONTENT_PROVIDER_API_KEY, "");
+
+		if(apiKey.equals("")) {
+			throw new IllegalArgumentException("The API-Key must be set.");
+		}
+
+		return apiKey;
+	}
 }
