@@ -44,7 +44,7 @@ import com.liato.bankdroid.db.DatabaseHelper;
  * @see IBankTransactionsProvider
  */
 public class BankTransactionsProvider extends ContentProvider implements
-IBankTransactionsProvider {
+		IBankTransactionsProvider {
 
 	private static final String CONTENT_PROVIDER_ENABLED = "content_provider_enabled";
 	private static final String CONTENT_PROVIDER_API_KEY = "content_provider_api_key";
@@ -55,7 +55,7 @@ IBankTransactionsProvider {
 	private static final String WILD_CARD = "*";
 
 	private static final String BANK_ACCOUNT_TABLES = "banks LEFT JOIN accounts ON banks."
-		+ BANK_ID + " = accounts.bankid";
+			+ BANK_ID + " = accounts.bankid";
 	private static final String TRANSACTIONS_TABLE = "transactions";
 
 	private DatabaseHelper dbHelper;
@@ -102,7 +102,7 @@ IBankTransactionsProvider {
 	public int delete(final Uri uri, final String selection,
 			final String[] selectionArgs) {
 		throw new UnsupportedOperationException(
-		"This provider does not implement the delete method");
+				"This provider does not implement the delete method");
 	}
 
 	/**
@@ -128,7 +128,7 @@ IBankTransactionsProvider {
 	@Override
 	public Uri insert(final Uri uri, final ContentValues values) {
 		throw new UnsupportedOperationException(
-		"This provider does not implement the insert method");
+				"This provider does not implement the insert method");
 	}
 
 	/**
@@ -152,14 +152,18 @@ IBankTransactionsProvider {
 
 		Log.d(TAG, "Trying to access database with " + apiKey);
 
-		if( !apiKey.startsWith(API_KEY, 0 )) {
-			throw new IllegalArgumentException(API_KEY + "<API-KEY> must be a part of the URI!");
+		if (!apiKey.startsWith(API_KEY, 0)) {
+			return null;
+			// throw new IllegalArgumentException(API_KEY +
+			// "<API-KEY> must be a part of the URI!");
 		}
 
-		final String key = apiKey.replace(API_KEY,"");
+		final String key = apiKey.replace(API_KEY, "");
 
-		if( !key.equals(getApiKey(getContext())) ) {
-			throw new IllegalAccessError("The supplied API_KEY does not exist");
+		if (!key.equals(getApiKey(getContext()))) {
+			return null;
+			// throw new
+			// IllegalAccessError("The supplied API_KEY does not exist");
 		}
 
 		final SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -192,18 +196,20 @@ IBankTransactionsProvider {
 	public int update(final Uri uri, final ContentValues values,
 			final String selection, final String[] selectionArgs) {
 		throw new UnsupportedOperationException(
-		"This provider does not implement the update method");
+				"This provider does not implement the update method");
 	}
 
 	private static String getApiKey(final Context ctx) {
-		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
-		if(!prefs.getBoolean(CONTENT_PROVIDER_ENABLED, false)) {
-			throw new IllegalArgumentException("Access to Content Provider is not enabled.");
+		final SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(ctx);
+		if (!prefs.getBoolean(CONTENT_PROVIDER_ENABLED, false)) {
+			throw new IllegalArgumentException(
+					"Access to Content Provider is not enabled.");
 		}
 
 		final String apiKey = prefs.getString(CONTENT_PROVIDER_API_KEY, "");
 
-		if(apiKey.equals("")) {
+		if (apiKey.equals("")) {
 			throw new IllegalArgumentException("The API-Key must be set.");
 		}
 

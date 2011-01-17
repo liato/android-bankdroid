@@ -37,7 +37,8 @@ import java.math.BigDecimal;
  * interface:</b>
  * 
  * <pre>
- * final Uri uri = Uri.parse(&quot;content://&quot; + AUTHORITY + &quot;/&quot; + TRANSACTIONS_CAT);
+ * final Uri uri = Uri.parse(&quot;content://&quot; + AUTHORITY + &quot;/&quot; + TRANSACTIONS_CAT
+ * 		+ &quot;/&quot; + API_KEY + apiKey);
  * final Cursor cur = managedQuery(uri, TRANSACTIONS_PROJECTION,
  * 		ACCOUNT_SELECTION_FILTER, new String[] { currentAccountId }, null);
  * startManagingCursor(cur);
