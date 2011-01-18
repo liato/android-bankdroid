@@ -148,6 +148,10 @@ public class BankTransactionsProvider extends ContentProvider implements
 			final String selection, final String[] selectionArgs,
 			final String sortOrder) {
 
+		if (!isApiKeyEnabled(getContext())) {
+			return null;
+		}
+
 		final String apiKey = uri.getPathSegments().get(1);
 
 		Log.d(TAG, "Trying to access database with " + apiKey);
@@ -203,7 +207,7 @@ public class BankTransactionsProvider extends ContentProvider implements
 		final SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(ctx);
 		if (!prefs.getBoolean(CONTENT_PROVIDER_ENABLED, false)) {
-			throw new IllegalArgumentException(
+			throw new IllegalStateException(
 					"Access to Content Provider is not enabled.");
 		}
 
@@ -214,5 +218,11 @@ public class BankTransactionsProvider extends ContentProvider implements
 		}
 
 		return apiKey;
+	}
+
+	private boolean isApiKeyEnabled(final Context ctx) {
+		final SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(ctx);
+		return prefs.getBoolean(CONTENT_PROVIDER_ENABLED, false);
 	}
 }
