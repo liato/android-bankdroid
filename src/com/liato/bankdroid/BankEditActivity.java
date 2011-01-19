@@ -118,31 +118,17 @@ public class BankEditActivity extends LockableActivity implements OnClickListene
 		
 		if (SELECTED_BANK.getBanktypeId() == Bank.RIKSLUNCHEN)
 		{
-			//Remove Username
-			EditText edtUsername = (EditText)findViewById(R.id.edtBankeditUsername);			
-			edtUsername.setVisibility(EditText.GONE);			
-			TextView txtUsername = (TextView)findViewById(R.id.txtBankeditUsername);
-			txtUsername.setVisibility(TextView.GONE);
-			
-			EditText edtPassword = (EditText)findViewById(R.id.edtBankeditPassword);
-			edtPassword.setInputType(SELECTED_BANK.getInputTypePassword());
-			
-			//Change Password to Card ID
-			TextView txtBankeditPassword = (TextView)findViewById(R.id.txtBankeditPassword);
-			txtBankeditPassword.setText(R.string.card_id);
-			
-			// Max 8 numeric characters
-			InputFilter[] filterArray = new InputFilter[1];
-			filterArray[0] = new InputFilter.LengthFilter(8);
-			edtPassword.setFilters(filterArray);			
-			
-			edtPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
-			edtPassword.setTypeface(Typeface.MONOSPACE);			
+			displayOnlyCardID();			
 		}
 		else
 		{		
-			SELECTED_BANK = (Bank)parentView.getItemAtPosition(pos);
 			EditText edtUsername = (EditText)findViewById(R.id.edtBankeditUsername);
+			
+			if (edtUsername.getVisibility() == EditText.GONE)
+			{			
+				restoreLayout();
+			}
+			
 			edtUsername.setInputType(SELECTED_BANK.getInputTypeUsername());
 			edtUsername.setHint(SELECTED_BANK.getInputHintUsername());
 	        //Not possible to set a textfield to both PHONE and PASSWORD :\
@@ -152,6 +138,31 @@ public class BankEditActivity extends LockableActivity implements OnClickListene
 			edtPassword.setTypeface(Typeface.MONOSPACE);
 		}
         
+	}
+
+	private void restoreLayout() {
+		findViewById(R.id.edtBankeditUsername).setVisibility(EditText.VISIBLE);
+		findViewById(R.id.txtBankeditUsername).setVisibility(TextView.VISIBLE);
+		TextView txtBankeditPassword = (TextView)findViewById(R.id.txtBankeditPassword);
+		txtBankeditPassword.setText(R.string.password);
+	}
+
+	private void displayOnlyCardID() {
+		//Remove Username
+		EditText edtUsername = (EditText)findViewById(R.id.edtBankeditUsername);			
+		edtUsername.setVisibility(EditText.GONE);	
+		edtUsername.setText("");
+		TextView txtUsername = (TextView)findViewById(R.id.txtBankeditUsername);
+		txtUsername.setVisibility(TextView.GONE);		
+		EditText edtPassword = (EditText)findViewById(R.id.edtBankeditPassword);
+		edtPassword.setInputType(SELECTED_BANK.getInputTypePassword());
+		
+		//Change Password to Card ID
+		TextView txtBankeditPassword = (TextView)findViewById(R.id.txtBankeditPassword);
+		txtBankeditPassword.setText(R.string.card_id);
+					
+		edtPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
+		edtPassword.setTypeface(Typeface.MONOSPACE);
 	}
 
 	@Override
