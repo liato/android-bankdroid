@@ -139,7 +139,7 @@
 		android:title="Share data">
 		
 	<CheckBoxPreference android:title="Enable Sharing Data" android:summary="Enable other installed apps access to your transaction history" android:key="content_provider_enabled"></CheckBoxPreference>
-<EditTextPreference android:title="API Key" android:key="content_provider_api_key" android:summary="Use this key into trusted applications" android:dependency="content_provider_enabled"></EditTextPreference>
+<EditTextPreference android:title="API Key" android:key="content_provider_api_key" android:dependency="content_provider_enabled" android:summary="Use this key to allow access for trusted applications"></EditTextPreference>
 </PreferenceCategory>
 	<PreferenceCategory
 		android:title="Debug">
