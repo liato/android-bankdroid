@@ -33,6 +33,7 @@ import com.liato.bankdroid.banking.banks.EurobonusMastercard;
 import com.liato.bankdroid.banking.banks.Eurocard;
 import com.liato.bankdroid.banking.banks.FirstCard;
 import com.liato.bankdroid.banking.banks.Handelsbanken;
+import com.liato.bankdroid.banking.banks.Hemkop;
 import com.liato.bankdroid.banking.banks.ICA;
 import com.liato.bankdroid.banking.banks.ICABanken;
 import com.liato.bankdroid.banking.banks.IkanoBank;
@@ -99,10 +100,12 @@ public class BankFactory {
             return new DinersClub(context);
         case IBankTypes.IKANOBANK:
             return new IkanoBank(context);
-        case Bank.EUROBONUSMASTERCARD:
+        case IBankTypes.EUROBONUSMASTERCARD:
         	return new EurobonusMastercard(context);
-        case Bank.RIKSLUNCHEN:
+        case IBankTypes.RIKSLUNCHEN:
             return new Rikslunchen(context);            
+        case IBankTypes.HEMKOP:
+            return new Hemkop(context);            
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -133,6 +136,7 @@ public class BankFactory {
         banks.add(new IkanoBank(context));
         banks.add(new EurobonusMastercard(context));
         banks.add(new Rikslunchen(context));
+        banks.add(new Hemkop(context));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));
