@@ -107,7 +107,13 @@ public class ICABanken extends Bank {
 			String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
 			Matcher matcher = reError.matcher(response);
 			if (matcher.find()) {
-				throw new LoginException(Html.fromHtml(matcher.group(1).trim()).toString());
+			    String errormsg = Html.fromHtml(matcher.group(1).trim()).toString();
+			    if (errormsg.contains("ord eller personnummer") || errormsg.contains("et alternativ") || errormsg.contains("fyra siffror")) {
+			        throw new LoginException(errormsg);    
+			    }
+			    else {
+	                 throw new BankException(errormsg);    
+			    }
 			}
 		}
 		catch (ClientProtocolException e) {
@@ -133,7 +139,6 @@ public class ICABanken extends Bank {
 		Matcher matcher;
 		try {
 			response = urlopen.open("https://mobil2.icabanken.se/account/overview.aspx");
-			//response = urlopen.open("http://x.x00.us/android/bankdroid/icabanken_oversikt.htm");
 			matcher = reBalanceSald.matcher(response);
 			while (matcher.find()) {
 				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), matcher.group(1).trim()));
