@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 
 import android.content.Context;
 import android.text.Html;
@@ -75,6 +76,7 @@ public class Swedbank extends Bank {
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
         urlopen = new Urllib();
+        urlopen.setContentCharset(HTTP.ISO_8859_1);
         Matcher matcher;
         String response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/login.html");
         matcher = reCSRF.matcher(response);

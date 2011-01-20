@@ -52,6 +52,7 @@ public class Urllib {
 	private HttpContext context;
 	private String currentURI;
 	private boolean acceptInvalidCertificates = false;
+	private String charset = HTTP.UTF_8;
 	
 	public Urllib() {
 		this(false);
@@ -64,7 +65,7 @@ public class Urllib {
 		this.acceptInvalidCertificates = acceptInvalidCertificates;
     	HttpParams params = new BasicHttpParams(); 
     	HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
-        HttpProtocolParams.setContentCharset(params, "UTF-8");
+        HttpProtocolParams.setContentCharset(params, this.charset);
         params.setBooleanParameter("http.protocol.expect-continue", false);
         if (allowCircularRedirects) params.setBooleanParameter("http.protocol.allow-circular-redirects", true);
 		if (acceptInvalidCertificates) {
@@ -100,7 +101,7 @@ public class Urllib {
     	}
     	else {
     		HttpPost urlConnection = new HttpPost(url);
-    		urlConnection.setEntity(new UrlEncodedFormEntity(postData, HTTP.UTF_8));
+    		urlConnection.setEntity(new UrlEncodedFormEntity(postData, this.charset));
     		urlConnection.addHeader("User-Agent", USER_AGENT);
     		response = httpclient.execute(urlConnection, responseHandler, context); 
     	}
@@ -127,6 +128,11 @@ public class Urllib {
     public DefaultHttpClient getHttpclient() {
         return httpclient;
     }
+
+    public void setContentCharset(String charset) {
+        this.charset = charset;
+        HttpProtocolParams.setContentCharset(httpclient.getParams(), this.charset);
+    }    
     public boolean acceptsInvalidCertificates() {
     	return acceptInvalidCertificates;
     }
