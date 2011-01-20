@@ -117,7 +117,7 @@
 		android:multiprocess="true"
 		android:exported="true"
 		android:authorities="com.liato.bankdroid.provider.BankTransactionsProvider" 
-		android:permission="com.liato.bankdroid.premission.READ_ACCESS_BANK_TRANSACTIONS"/>
+		android:permission="com.liato.bankdroid.permission.READ_ACCESS_BANK_TRANSACTIONS"/>
 </application>
 	<uses-sdk
 		android:targetSdkVersion="4"
@@ -134,7 +134,7 @@
 		android:smallScreens="true"
 		android:anyDensity="true" />
 	<permission 
-		android:name="com.liato.bankdroid.premission.READ_ACCESS_BANK_TRANSACTIONS" 
+		android:name="com.liato.bankdroid.permission.READ_ACCESS_BANK_TRANSACTIONS" 
 		android:label="@string/permission_provider_label" 
 		android:description="@string/permission_provider_desc"
 		android:protectionLevel="dangerous"/>
