@@ -116,8 +116,8 @@ public class BankEditActivity extends LockableActivity implements OnClickListene
 		SELECTED_BANK = (Bank)parentView.getItemAtPosition(pos);
 		EditText edtUsername = (EditText)findViewById(R.id.edtBankeditUsername);
         EditText edtPassword = (EditText)findViewById(R.id.edtBankeditPassword);
-        TextView txtUsername = (EditText)findViewById(R.id.txtBankeditUsername);
-        TextView txtPassword = (EditText)findViewById(R.id.txtBankeditPassword);
+        TextView txtUsername = (TextView)findViewById(R.id.txtBankeditUsername);
+        TextView txtPassword = (TextView)findViewById(R.id.txtBankeditPassword);
         
 		edtUsername.setInputType(SELECTED_BANK.getInputTypeUsername());
 		edtUsername.setHint(SELECTED_BANK.getInputHintUsername());

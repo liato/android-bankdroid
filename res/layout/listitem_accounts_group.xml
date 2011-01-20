@@ -30,17 +30,13 @@
 	<TextView
 		android:id="@+id/txtListitemAccountsGroupBankname"
 
-		android:layout_height="26dip"
-
 		android:layout_toRightOf="@id/imgListitemAccountsGroup"
-		android:layout_alignParentBottom="true"
 		android:singleLine="true"
 		android:ellipsize="marquee"
-		android:gravity="center_vertical"
 		android:text="Banknamn"
 		android:textColor="#000"
 		android:layout_width="wrap_content"
-		android:layout_alignParentRight="false" />
+		android:layout_alignParentRight="false" android:layout_alignParentBottom="true" android:layout_height="21dip" android:gravity="top"/>
 
 	<TextView
 		android:layout_height="wrap_content"
@@ -52,11 +48,9 @@
 
 		android:gravity="center_vertical"
 		android:id="@+id/txtListitemAccountsGroupAccountname"
-		android:textSize="23sp"
-		android:text="Personnummer"
 		android:textColor="#000"
 		android:layout_width="wrap_content"
-		android:layout_alignParentRight="false" />
+		android:layout_alignParentRight="false" android:includeFontPadding="true" android:textSize="23dp" android:text="Personnummer"/>
 	<ImageView
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
@@ -67,15 +61,13 @@
 		android:visibility="invisible"></ImageView>
 	<TextView
 		android:id="@+id/txtListitemAccountsGroupTotal"
-		android:layout_height="26dip"
 		android:layout_alignParentBottom="true"
 		android:singleLine="true"
 		android:ellipsize="marquee"
-		android:gravity="center_vertical"
 		android:text="00000 SEK"
 		android:layout_width="wrap_content"
 		android:layout_alignParentRight="true"
-		android:textColor="#333" />
+		android:textColor="#333" android:layout_height="21dp" android:gravity="top"/>
         
 
 </RelativeLayout>
