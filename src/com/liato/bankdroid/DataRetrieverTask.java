@@ -18,115 +18,145 @@ package com.liato.bankdroid;
 
 import java.util.ArrayList;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.os.AsyncTask;
+import android.preference.PreferenceManager;
+import android.util.Log;
+
 import com.liato.bankdroid.appwidget.AutoRefreshService;
+import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.BankFactory;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.res.Resources;
-import android.os.AsyncTask;
-import android.util.Log;
-
 public class DataRetrieverTask extends AsyncTask<String, String, Void> {
-	private ProgressDialog dialog;
+	private final ProgressDialog dialog;
 	private ArrayList<String> errors;
-	private MainActivity parent;
+	private final MainActivity parent;
 	private int bankcount;
-	private Resources res;
+	private final Resources res;
 	private long bankId = -1;
 
-	public DataRetrieverTask(MainActivity parent) {
+	public DataRetrieverTask(final MainActivity parent) {
 		this.parent = parent;
 		this.res = parent.getResources();
-		this.dialog =  new ProgressDialog(parent);
+		this.dialog = new ProgressDialog(parent);
 	}
-	public DataRetrieverTask(MainActivity parent, long bankId) {
+
+	public DataRetrieverTask(final MainActivity parent, final long bankId) {
 		this(parent);
 		this.bankId = bankId;
-	}	
+	}
+
+	@Override
 	protected void onPreExecute() {
-		this.dialog.setMessage(res.getText(R.string.updating_account_balance)+"\n ");
+		this.dialog.setMessage(res.getText(R.string.updating_account_balance)
+				+ "\n ");
 		this.dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 		this.dialog.setCancelable(false);
 		this.dialog.show();
 	}
 
+	@Override
 	protected Void doInBackground(final String... args) {
 		errors = new ArrayList<String>();
 		ArrayList<Bank> banks;
 		if (bankId != -1) {
 			banks = new ArrayList<Bank>();
 			banks.add(BankFactory.bankFromDb(bankId, parent, true));
-		}
-		else {
-			banks = BankFactory.banksFromDb(parent, true);	
+		} else {
+			banks = BankFactory.banksFromDb(parent, true);
 		}
 		bankcount = banks.size();
 		this.dialog.setMax(bankcount);
 		int i = 0;
-		for (Bank bank : banks) {
-			publishProgress(new String[] {new Integer(i).toString(), bank.getName()+" ("+bank.getUsername()+")"});
+		for (final Bank bank : banks) {
+			publishProgress(new String[] { new Integer(i).toString(),
+					bank.getName() + " (" + bank.getUsername() + ")" });
 			if (bank.isDisabled()) {
-				Log.d("AA", bank.getName()+" ("+bank.getUsername()+") is disabled. Skipping refresh.");
+				Log.d("AA", bank.getName() + " (" + bank.getUsername()
+						+ ") is disabled. Skipping refresh.");
 				continue;
 			}
-			Log.d("AA", "Refreshing "+bank.getName()+" ("+bank.getUsername()+").");
+			Log.d("AA",
+					"Refreshing " + bank.getName() + " (" + bank.getUsername()
+							+ ").");
 			try {
-                //Log.d("AA", "bank.update()");
-                bank.update();
-                //Log.d("AA", "bank.updateAllTransactions()");
-                bank.updateAllTransactions();
-                //Log.d("AA", "bank.closeConnction()");
-                bank.closeConnection();
-                //Log.d("AA", "bank.save()");
-                bank.save();
-                //Log.d("AA", "DONE!");
+				// Log.d("AA", "bank.update()");
+				bank.update();
+				// Log.d("AA", "bank.updateAllTransactions()");
+				bank.updateAllTransactions();
+				// Log.d("AA", "bank.closeConnction()");
+				bank.closeConnection();
+				// Log.d("AA", "bank.save()");
+				bank.save();
+				// Log.d("AA", "DONE!");
 				i++;
-			} 
-			catch (BankException e) {
-				this.errors.add(bank.getName()+" ("+bank.getUsername()+")");
-			} catch (LoginException e) {
-				this.errors.add(bank.getName()+" ("+bank.getUsername()+")");
+			} catch (final BankException e) {
+				this.errors.add(bank.getName() + " (" + bank.getUsername()
+						+ ")");
+			} catch (final LoginException e) {
+				this.errors.add(bank.getName() + " (" + bank.getUsername()
+						+ ")");
 				bank.disable();
 			}
+
+			final SharedPreferences prefs = PreferenceManager
+					.getDefaultSharedPreferences(parent);
+			if (prefs.getBoolean("content_provider_enabled", false)) {
+				final ArrayList<Account> accounts = bank.getAccounts();
+				for (final Account account : accounts) {
+					AutoRefreshService.broadcastTransactionUpdate(parent,
+							account);
+				}
+			}
 		}
-		publishProgress(new String[] {new Integer(i).toString(), ""});
+		publishProgress(new String[] { new Integer(i).toString(), "" });
 		return null;
 	}
 
-	protected void onProgressUpdate(String... args) {
+	@Override
+	protected void onProgressUpdate(final String... args) {
 		this.dialog.setProgress(new Integer(args[0]));
-		this.dialog.setMessage(res.getText(R.string.updating_account_balance)+"\n"+args[1]);
+		this.dialog.setMessage(res.getText(R.string.updating_account_balance)
+				+ "\n" + args[1]);
 	}
+
+	@Override
 	protected void onPostExecute(final Void unused) {
 		parent.refreshView();
 		AutoRefreshService.sendWidgetRefresh(parent);
 		if (this.dialog.isShowing()) {
 			this.dialog.dismiss();
 		}
-		
-		if (this.errors != null && !this.errors.isEmpty()) {
-			StringBuilder errormsg = new StringBuilder();
-			errormsg.append(res.getText(R.string.accounts_were_not_updated)+":\n");
-			for (String err : errors)
-			{
-			  errormsg.append(err);
-			  errormsg.append("\n");
+
+		if ((this.errors != null) && !this.errors.isEmpty()) {
+			final StringBuilder errormsg = new StringBuilder();
+			errormsg.append(res.getText(R.string.accounts_were_not_updated)
+					+ ":\n");
+			for (final String err : errors) {
+				errormsg.append(err);
+				errormsg.append("\n");
 			}
-			AlertDialog.Builder builder = new AlertDialog.Builder(parent);
-			builder.setMessage(errormsg.toString()).setTitle(res.getText(R.string.errors_when_updating))
-			.setIcon(android.R.drawable.ic_dialog_alert)
-			.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int id) {
-					dialog.cancel();
-				}
-			});
-			AlertDialog alert = builder.create();
+			final AlertDialog.Builder builder = new AlertDialog.Builder(parent);
+			builder.setMessage(errormsg.toString())
+					.setTitle(res.getText(R.string.errors_when_updating))
+					.setIcon(android.R.drawable.ic_dialog_alert)
+					.setNeutralButton("Ok",
+							new DialogInterface.OnClickListener() {
+								public void onClick(
+										final DialogInterface dialog,
+										final int id) {
+									dialog.cancel();
+								}
+							});
+			final AlertDialog alert = builder.create();
 			alert.show();
 		}
 	}
-}	
+}
