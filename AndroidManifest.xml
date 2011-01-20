@@ -29,7 +29,8 @@
 		<activity
 			android:name=".WebViewActivity"
 			android:label="@string/app_name"
-			android:theme="@style/BankdroidTheme">
+			android:theme="@style/BankdroidTheme"
+			android:configChanges="keyboardHidden|orientation">
 		</activity>
 		<activity
 			android:name=".BankEditActivity"
