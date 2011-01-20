@@ -199,4 +199,5 @@
 	<string name="lock_cancel">Avbryt</string>
 	<string name="lock_ok">Ok</string>
     
+<string name="card_id">Kort ID</string>
 </resources>

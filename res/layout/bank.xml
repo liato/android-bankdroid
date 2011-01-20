@@ -25,7 +25,8 @@
 				android:layout_height="wrap_content"
 				android:typeface="sans"
 				android:textSize="20sp"
-				android:text="@string/username" />
+				android:text="@string/username"				
+				android:id="@+id/txtBankeditUsername"/>
 			<EditText
 				android:layout_height="wrap_content"
 				android:layout_width="fill_parent"
@@ -34,8 +35,9 @@
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				android:typeface="sans"
-				android:textSize="20sp"
-				android:text="@string/password" />
+				android:textSize="20sp"				
+				android:text="@string/password" 
+				android:id="@+id/txtBankeditPassword"/>
 			<EditText
 				android:layout_height="wrap_content"
 				android:layout_width="fill_parent"

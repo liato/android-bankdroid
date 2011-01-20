@@ -200,4 +200,5 @@
 	<string name="lock_cancel">Cancel</string>
 	<string name="lock_ok">Ok</string>
          
+<string name="card_id">Card ID</string>
 </resources>
