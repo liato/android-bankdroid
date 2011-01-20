@@ -51,52 +51,53 @@ import com.liato.bankdroid.banking.banks.Villabanken;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.db.Crypto;
 import com.liato.bankdroid.db.DBAdapter;
+import com.liato.bankdroid.provider.IBankTypes;
 
 public class BankFactory {
 
 	public static Bank fromBanktypeId(int id, Context context) throws BankException {
 		switch (id) {
-        case Bank.TESTBANK:
+        case IBankTypes.TESTBANK:
             return new TestBank(context);
-        case Bank.SWEDBANK:
+        case IBankTypes.SWEDBANK:
             return new Swedbank(context);
-		case Bank.NORDEA:
+		case IBankTypes.NORDEA:
 			return new Nordea(context);
-		case Bank.LANSFORSAKRINGAR:
+		case IBankTypes.LANSFORSAKRINGAR:
 			return new Lansforsakringar(context);
-		case Bank.ICABANKEN:
+		case IBankTypes.ICABANKEN:
 			return new ICABanken(context);
-		case Bank.HANDELSBANKEN:
+		case IBankTypes.HANDELSBANKEN:
 			return new Handelsbanken(context);
-		case Bank.COOP:
+		case IBankTypes.COOP:
 			return new Coop(context);
-		case Bank.ICA:
+		case IBankTypes.ICA:
 			return new ICA(context);
-		case Bank.STATOIL:
+		case IBankTypes.STATOIL:
 			return new Statoil(context);
-		case Bank.AVANZA:
+		case IBankTypes.AVANZA:
 			return new Avanza(context);
-		case Bank.VILLABANKEN:
+		case IBankTypes.VILLABANKEN:
 			return new Villabanken(context);
-        case Bank.AVANZAMINI:
+        case IBankTypes.AVANZAMINI:
             return new AvanzaMini(context);
-        case Bank.OKQ8:
+        case IBankTypes.OKQ8:
             return new OKQ8(context);
-        case Bank.EUROCARD:
+        case IBankTypes.EUROCARD:
             return new Eurocard(context);
-        case Bank.FIRSTCARD:
+        case IBankTypes.FIRSTCARD:
             return new FirstCard(context);
-        case Bank.PAYPAL:
+        case IBankTypes.PAYPAL:
             return new PayPal(context);
-        case Bank.PAYSON:
+        case IBankTypes.PAYSON:
             return new Payson(context);
-        case Bank.JOJO:
+        case IBankTypes.JOJO:
             return new Jojo(context);
-        case Bank.STEAM:
+        case IBankTypes.STEAM:
             return new Steam(context);
-        case Bank.DINERSCLUB:
+        case IBankTypes.DINERSCLUB:
             return new DinersClub(context);
-        case Bank.IKANOBANK:
+        case IBankTypes.IKANOBANK:
             return new IkanoBank(context);
         case Bank.EUROBONUSMASTERCARD:
         	return new EurobonusMastercard(context);

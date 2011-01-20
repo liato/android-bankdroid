@@ -35,6 +35,7 @@ import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.provider.IBankTypes;
 
 import eu.nullbyte.android.urllib.Urllib;
 
@@ -43,7 +44,7 @@ public class AvanzaMini extends Bank {
 	private static final String NAME = "Avanza Mini";
 	private static final String NAME_SHORT = "avanzamini";
 	private static final String URL = "https://www.avanza.se/mini/hem/";
-	private static final int BANKTYPE_ID = Bank.AVANZAMINI;
+	private static final int BANKTYPE_ID = IBankTypes.AVANZAMINI;
 	
     private Pattern reAvanzaMini = Pattern.compile("w100\\s+azatable\"[^>]+>\\s*<tbody>\\s*(.*)</tbody>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private Pattern accountsAvanzaMini = Pattern.compile("<tr>\\s*<td>([^<]+)</td>\\s*<td\\s+class=\"tright\">([^<]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);

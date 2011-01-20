@@ -69,13 +69,12 @@
 			android:dependency="notify_on_change" />
 		<RingtonePreference
 			android:key="notification_sound"
-			android:name="Select sound"
 			android:summary="Select notification sound"
 			android:title="Notification sound"
 			android:ringtoneType="notification"
 			android:showDefault="true"
 			android:showSilent="true"
-			android:dependency="notify_on_change" />
+			android:dependency="notify_on_change" android:name="Select sound"/>
 		<PreferenceScreen
 			android:key="account_types_screen"
 			android:title="Account types"
@@ -136,6 +135,12 @@
 				android:key="openwatch_help" />
 		</PreferenceScreen>
 	</PreferenceCategory>
+	<PreferenceCategory
+		android:title="Share data">
+		
+	<CheckBoxPreference android:title="Enable Sharing Data" android:summary="Enable other installed apps access to your transaction history" android:key="content_provider_enabled"></CheckBoxPreference>
+<EditTextPreference android:title="API Key" android:key="content_provider_api_key" android:summary="Use this key into trusted applications" android:dependency="content_provider_enabled"></EditTextPreference>
+</PreferenceCategory>
 	<PreferenceCategory
 		android:title="Debug">
 		<PreferenceScreen

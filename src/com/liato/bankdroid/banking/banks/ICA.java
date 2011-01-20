@@ -37,6 +37,7 @@ import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.provider.IBankTypes;
 
 import eu.nullbyte.android.urllib.Urllib;
 
@@ -45,7 +46,7 @@ public class ICA extends Bank {
 	private static final String NAME = "ICA";
 	private static final String NAME_SHORT = "ica";
 	private static final String URL = "http://mobil.ica.se/";
-	private static final int BANKTYPE_ID = Bank.ICA;
+	private static final int BANKTYPE_ID = IBankTypes.ICA;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
 

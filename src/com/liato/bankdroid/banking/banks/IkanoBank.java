@@ -38,6 +38,7 @@ import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.provider.IBankTypes;
 
 import eu.nullbyte.android.urllib.Urllib;
 
@@ -46,7 +47,7 @@ public class IkanoBank extends Bank {
     private static final String NAME = "Ikano Bank";
     private static final String NAME_SHORT = "ikanobank";
     private static final String URL = "https://secure.ikanobank.se/engines/page.aspx?structid=1895";
-    private static final int BANKTYPE_ID = Bank.IKANOBANK;
+    private static final int BANKTYPE_ID = IBankTypes.IKANOBANK;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";

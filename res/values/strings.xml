@@ -200,5 +200,7 @@
 	<string name="lock_cancel">Cancel</string>
 	<string name="lock_ok">Ok</string>
          
-<string name="card_id">Card ID</string>
+	<string name="card_id">Card ID</string>
+	<string name="permission_provider_label">Basic account information  and the transaction history</string>
+	<string name="permission_provider_desc">Allows the application to access what banks and accounts are configured in BankDroids. Your Bank credentials are not exposed. Transaction history can also be accessed.</string>
 </resources>

@@ -19,17 +19,12 @@ package com.liato.bankdroid.banking;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
+import com.liato.bankdroid.provider.IAccountTypes;
 
-public class Account {
-	public final static int REGULAR = 1;
-	public final static int FUNDS = 2;
-	public final static int LOANS = 3;
-	public final static int CCARD = 4;
-	public final static int OTHER = 5;
-	
+public class Account implements IAccountTypes {
 	private String name;
 	private BigDecimal balance;
-	private String id;
+	private final String id;
 	private Bank bank = null;
 	private long bankId = -1;
 	private int type = Account.REGULAR;
@@ -42,12 +37,13 @@ public class Account {
 		return transactions;
 	}
 
-	public void setTransactions(ArrayList<Transaction> transactions) {
+	public void setTransactions(final ArrayList<Transaction> transactions) {
 		this.transactions = transactions;
 	}
 
-	public Account(String name, BigDecimal balance, String id, long bankId,
-	               int type, String currency) {
+	public Account(final String name, final BigDecimal balance,
+			final String id, final long bankId, final int type,
+			final String currency) {
 		this.name = name;
 		this.balance = balance;
 		this.id = id;
@@ -56,35 +52,39 @@ public class Account {
 		this.currency = currency;
 	}
 
-    public Account(String name, BigDecimal balance, String id, long bankId) {
-        this(name, balance, id, bankId, REGULAR, "SEK");
-    }
-    
-	public Account(String name, BigDecimal balance, String id, long bankId, int type) {
-        this(name, balance, id, bankId, type, "SEK");
-    }
-    
-    public Account(String name, BigDecimal balance, String id) {
-        this(name, balance, id, -1L);
-    }
-    
-    public Account(String name, BigDecimal balance, String id, int type) {
-        this(name, balance, id, -1L, type);
-    }	
+	public Account(final String name, final BigDecimal balance,
+			final String id, final long bankId) {
+		this(name, balance, id, bankId, REGULAR, "SEK");
+	}
 
-    public Account(String name, BigDecimal balance, String id, int type, String currency) {
-        this(name, balance, id, -1L, type, currency);
-    }
+	public Account(final String name, final BigDecimal balance,
+			final String id, final long bankId, final int type) {
+		this(name, balance, id, bankId, type, "SEK");
+	}
 
-    public boolean isNotify() {
-        return notify;
-    }
+	public Account(final String name, final BigDecimal balance, final String id) {
+		this(name, balance, id, -1L);
+	}
 
-    public void setNotify(boolean notify) {
-        this.notify = notify;
-    }
-    
-    public void setBalance(BigDecimal balance) {
+	public Account(final String name, final BigDecimal balance,
+			final String id, final int type) {
+		this(name, balance, id, -1L, type);
+	}
+
+	public Account(final String name, final BigDecimal balance,
+			final String id, final int type, final String currency) {
+		this(name, balance, id, -1L, type, currency);
+	}
+
+	public boolean isNotify() {
+		return notify;
+	}
+
+	public void setNotify(final boolean notify) {
+		this.notify = notify;
+	}
+
+	public void setBalance(final BigDecimal balance) {
 		this.balance = balance;
 	}
 
@@ -95,28 +95,28 @@ public class Account {
 	public String getName() {
 		return name;
 	}
-	
-	public void setName(String name) {
-        this.name = name;
-    }
 
-    public String getId() {
+	public void setName(final String name) {
+		this.name = name;
+	}
+
+	public String getId() {
 		return id;
 	}
-	
+
 	public Bank getBank() {
 		return bank;
 	}
-	
-	public void setBank(Bank bank) {
+
+	public void setBank(final Bank bank) {
 		this.bank = bank;
 	}
-	
+
 	public long getBankDbId() {
 		return bankId;
 	}
 
-	public void setType(int type) {
+	public void setType(final int type) {
 		this.type = type;
 	}
 
@@ -124,20 +124,20 @@ public class Account {
 		return type;
 	}
 
-    public boolean isHidden() {
-        return this.hidden;
-    }
-    
-    public void setHidden(boolean hidden) {
-        this.hidden = hidden;
-    }
+	public boolean isHidden() {
+		return this.hidden;
+	}
 
-    public String getCurrency() {
-        return currency;
-    }
+	public void setHidden(final boolean hidden) {
+		this.hidden = hidden;
+	}
 
-    public void setCurrency(String currency) {
-        this.currency = currency;
-    }
-    
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(final String currency) {
+		this.currency = currency;
+	}
+
 }

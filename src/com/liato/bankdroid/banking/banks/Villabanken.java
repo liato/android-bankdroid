@@ -36,6 +36,7 @@ import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.provider.IBankTypes;
 
 import eu.nullbyte.android.urllib.Urllib;
 
@@ -44,7 +45,7 @@ public class Villabanken extends Bank {
 	private static final String NAME = "Villabanken";
 	private static final String NAME_SHORT = "villabanken";
 	private static final String URL = "https://kundportal.cerdo.se/villabankenpub/card/default.aspx";
-	private static final int BANKTYPE_ID = Bank.VILLABANKEN;
+	private static final int BANKTYPE_ID = IBankTypes.VILLABANKEN;
 	
 	private Pattern reAccounts = Pattern.compile("<td[^>]+>((?:utnyttjad|kvar)[^:]+)[^>]+>([^<]+)</span>", Pattern.CASE_INSENSITIVE);
 	private Pattern reRequestDigest = Pattern.compile("__REQUESTDIGEST\".*?value=\"([^\"]+)\"");

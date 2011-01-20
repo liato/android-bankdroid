@@ -39,6 +39,7 @@ import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.provider.IBankTypes;
 
 import eu.nullbyte.android.urllib.Urllib;
 
@@ -47,7 +48,7 @@ public class Coop extends Bank {
     private static final String NAME = "Coop";
     private static final String NAME_SHORT = "coop";
     private static final String URL = "https://www.coop.se/mina-sidor/oversikt/";
-    private static final int BANKTYPE_ID = Bank.COOP;
+    private static final int BANKTYPE_ID = IBankTypes.COOP;
 
     private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
     private Pattern reBalance = Pattern.compile("saldo\">([^<]+)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);

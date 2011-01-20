@@ -35,6 +35,7 @@ import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.provider.IBankTypes;
 
 import eu.nullbyte.android.urllib.Urllib;
 
@@ -43,7 +44,7 @@ public class Jojo extends Bank {
     private static final String NAME = "Jojo Reskassa";
     private static final String NAME_SHORT = "jojo";
     private static final String URL = "https://www.skanetrafiken.se/templates/MSRootPage.aspx?id=2935&epslanguage=SV";
-    private static final int BANKTYPE_ID = Bank.JOJO;
+    private static final int BANKTYPE_ID = IBankTypes.JOJO;
 
     private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
     private Pattern reAccounts = Pattern.compile("1_mRepeaterMyCards_ctl(\\d{2,3})_LinkButton\\d{1,3}\"[^>]+>([^<]+)</a>\\s*</td>\\s*<td[^>]+>\\s*<a\\s*id=\"ctl00_fullRegion_mainRegion_CardInformation1_mRepeaterMyCards_ctl\\d{2,3}_LinkButton\\d{1,3}\"[^>]+>([^<]+)</a>", Pattern.CASE_INSENSITIVE);

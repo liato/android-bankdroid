@@ -37,6 +37,7 @@ import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.provider.IBankTypes;
 
 import eu.nullbyte.android.urllib.Urllib;
 
@@ -45,7 +46,7 @@ public class PayPal extends Bank {
 	private static final String NAME = "PayPal";
 	private static final String NAME_SHORT = "paypal";
 	private static final String URL = "https://www.paypal.com/";
-	private static final int BANKTYPE_ID = Bank.PAYPAL;
+	private static final int BANKTYPE_ID = IBankTypes.PAYPAL;
 	private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT | + InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
 	private static final boolean STATIC_BALANCE = true;
 	

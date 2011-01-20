@@ -17,16 +17,16 @@ package com.liato.bankdroid.banking.banks;
 
 import android.content.Context;
 
-import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.provider.IBankTypes;
 
 
 public class Statoil extends SEBKortBase {
 	private static final String TAG = "Statoil";
 	private static final String NAME = "Statoil";
 	private static final String NAME_SHORT = "statoil";
-	private static final int BANKTYPE_ID = Bank.STATOIL;
+	private static final int BANKTYPE_ID = IBankTypes.STATOIL;
 
 	public Statoil(Context context) {
 		super(context, "stse", "0122");

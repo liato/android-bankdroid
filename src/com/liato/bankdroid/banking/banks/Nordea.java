@@ -38,6 +38,7 @@ import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.provider.IBankTypes;
 
 import eu.nullbyte.android.urllib.Urllib;
 
@@ -46,7 +47,7 @@ public class Nordea extends Bank {
 	private static final String NAME = "Nordea";
 	private static final String NAME_SHORT = "nordea";
 	private static final String URL = "https://mobil.nordea.se/";
-	private static final int BANKTYPE_ID = Bank.NORDEA;
+	private static final int BANKTYPE_ID = IBankTypes.NORDEA;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDD-XXXX";

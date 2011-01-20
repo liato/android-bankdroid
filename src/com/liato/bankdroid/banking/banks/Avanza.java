@@ -38,6 +38,7 @@ import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.provider.IBankTypes;
 
 import eu.nullbyte.android.urllib.Urllib;
 
@@ -46,7 +47,7 @@ public class Avanza extends Bank {
 	private static final String NAME = "Avanza";
 	private static final String NAME_SHORT = "avanza";
 	private static final String URL = "https://www.avanza.se/";
-    private static final int BANKTYPE_ID = Bank.AVANZA;
+    private static final int BANKTYPE_ID = IBankTypes.AVANZA;
 	
 	private Pattern reAccounts = Pattern.compile("depa\\.jsp\\?depotnr=([^\"]+)[^>]+>[^<]+</a>\\s*</td>\\s*<td[^>]+>([^<]+)<.*?<td[^>]+>([^<]+)</td>\\s*<td[^>]+>([^<]+)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reTransactions = Pattern.compile("(?:warrantguide\\.jsp|aktie\\.jsp)(?:.*?)orderbookId=(?:.*?)>(.*?)<(?:.*?)<nobr>(?:.*?)<nobr>(?:.*?)<nobr>(.*?)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
