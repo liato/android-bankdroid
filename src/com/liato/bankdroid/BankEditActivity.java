@@ -20,12 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.liato.bankdroid.appwidget.AutoRefreshService;
-import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.BankFactory;
-import com.liato.bankdroid.banking.exceptions.BankException;
-import com.liato.bankdroid.banking.exceptions.LoginException;
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -34,7 +28,6 @@ import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.InputFilter;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -47,6 +40,12 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.liato.bankdroid.appwidget.AutoRefreshService;
+import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.BankFactory;
+import com.liato.bankdroid.banking.exceptions.BankException;
+import com.liato.bankdroid.banking.exceptions.LoginException;
 
 public class BankEditActivity extends LockableActivity implements OnClickListener, OnItemSelectedListener {
 	private final static String TAG = "AccountActivity";
@@ -115,54 +114,36 @@ public class BankEditActivity extends LockableActivity implements OnClickListene
 	@Override
 	public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int pos, long id) {
 		SELECTED_BANK = (Bank)parentView.getItemAtPosition(pos);
-		
-		if (SELECTED_BANK.getBanktypeId() == Bank.RIKSLUNCHEN)
-		{
-			displayOnlyCardID();			
-		}
-		else
-		{		
-			EditText edtUsername = (EditText)findViewById(R.id.edtBankeditUsername);
-			
-			if (edtUsername.getVisibility() == EditText.GONE)
-			{			
-				restoreLayout();
-			}
-			
-			edtUsername.setInputType(SELECTED_BANK.getInputTypeUsername());
-			edtUsername.setHint(SELECTED_BANK.getInputHintUsername());
-	        //Not possible to set a textfield to both PHONE and PASSWORD :\
-			EditText edtPassword = (EditText)findViewById(R.id.edtBankeditPassword);
-			edtPassword.setInputType(SELECTED_BANK.getInputTypePassword());
-			edtPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
-			edtPassword.setTypeface(Typeface.MONOSPACE);
-		}
+		EditText edtUsername = (EditText)findViewById(R.id.edtBankeditUsername);
+        EditText edtPassword = (EditText)findViewById(R.id.edtBankeditPassword);
+        TextView txtUsername = (EditText)findViewById(R.id.txtBankeditUsername);
+        TextView txtPassword = (EditText)findViewById(R.id.txtBankeditPassword);
         
-	}
-
-	private void restoreLayout() {
-		findViewById(R.id.edtBankeditUsername).setVisibility(EditText.VISIBLE);
-		findViewById(R.id.txtBankeditUsername).setVisibility(TextView.VISIBLE);
-		TextView txtBankeditPassword = (TextView)findViewById(R.id.txtBankeditPassword);
-		txtBankeditPassword.setText(R.string.password);
-	}
-
-	private void displayOnlyCardID() {
-		//Remove Username
-		EditText edtUsername = (EditText)findViewById(R.id.edtBankeditUsername);			
-		edtUsername.setVisibility(EditText.GONE);	
-		edtUsername.setText("");
-		TextView txtUsername = (TextView)findViewById(R.id.txtBankeditUsername);
-		txtUsername.setVisibility(TextView.GONE);		
-		EditText edtPassword = (EditText)findViewById(R.id.edtBankeditPassword);
+		edtUsername.setInputType(SELECTED_BANK.getInputTypeUsername());
+		edtUsername.setHint(SELECTED_BANK.getInputHintUsername());
 		edtPassword.setInputType(SELECTED_BANK.getInputTypePassword());
-		
-		//Change Password to Card ID
-		TextView txtBankeditPassword = (TextView)findViewById(R.id.txtBankeditPassword);
-		txtBankeditPassword.setText(R.string.card_id);
-					
 		edtPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
 		edtPassword.setTypeface(Typeface.MONOSPACE);
+        txtUsername.setText(SELECTED_BANK.getInputTitleUsername());
+        txtPassword.setText(SELECTED_BANK.getInputTitlePassword());
+		
+        if (SELECTED_BANK.isInputUsernameHidden()) {
+            edtUsername.setVisibility(View.GONE);
+            txtUsername.setVisibility(View.GONE);
+        }
+        else {
+            edtUsername.setVisibility(View.VISIBLE);
+            txtUsername.setVisibility(View.VISIBLE);
+        }
+        
+        if (SELECTED_BANK.isInputPasswordHidden()) {
+            edtPassword.setVisibility(View.GONE);
+            txtPassword.setVisibility(View.GONE);
+        }
+        else {
+            edtPassword.setVisibility(View.VISIBLE);
+            txtPassword.setVisibility(View.VISIBLE);
+        }        
 	}
 
 	@Override

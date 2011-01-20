@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2010 Nullbyte <http://nullbyte.eu>
+ * Contributors: PMC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.liato.bankdroid.banking.banks;
 
 import java.io.IOException;
@@ -37,6 +53,8 @@ public class Rikslunchen extends Bank {
 	private static final String URL = "http://www.rikslunchen.se/index.html";
 	private static final int BANKTYPE_ID = Bank.RIKSLUNCHEN;
 	private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
+    protected boolean INPUT_HIDDEN_USERNAME = true;
+    protected int INPUT_TITLETEXT_PASSWORD = R.string.card_id;	
 
 	private String myResponse = "";
 
@@ -49,6 +67,8 @@ public class Rikslunchen extends Bank {
 		super.URL = URL;
 		super.INPUT_HINT_USERNAME = "Rikslunchen";
 		super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
+		super.INPUT_HIDDEN_USERNAME = INPUT_HIDDEN_USERNAME;
+		super.INPUT_TITLETEXT_PASSWORD = INPUT_TITLETEXT_PASSWORD;
 	}
 
 	public Rikslunchen(String username, String password, Context context) throws BankException, LoginException {

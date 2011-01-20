@@ -29,7 +29,6 @@ import org.apache.http.client.CookieStore;
 
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
-import com.liato.bankdroid.R.raw;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.db.DBAdapter;
@@ -45,20 +44,20 @@ import eu.nullbyte.android.urllib.Urllib;
 public abstract class Bank implements Comparable<Bank> {
     public final static int TESTBANK = 0;
     public final static int SWEDBANK = 1;
-	public final static int NORDEA = 2;
-	public final static int ICABANKEN = 3;
-	public final static int LANSFORSAKRINGAR = 4;
-	public final static int HANDELSBANKEN = 5;
-	public final static int COOP = 6;
-	public final static int ICA = 7;
-	public final static int STATOIL = 8;
-	public final static int AVANZA = 9;
-	public final static int VILLABANKEN = 10;
-	public final static int AVANZAMINI = 11;
-	public final static int OKQ8 = 12;
-	public final static int EUROCARD = 13;
-	public final static int FIRSTCARD = 14;
-	public final static int PAYPAL = 15;
+    public final static int NORDEA = 2;
+    public final static int ICABANKEN = 3;
+    public final static int LANSFORSAKRINGAR = 4;
+    public final static int HANDELSBANKEN = 5;
+    public final static int COOP = 6;
+    public final static int ICA = 7;
+    public final static int STATOIL = 8;
+    public final static int AVANZA = 9;
+    public final static int VILLABANKEN = 10;
+    public final static int AVANZAMINI = 11;
+    public final static int OKQ8 = 12;
+    public final static int EUROCARD = 13;
+    public final static int FIRSTCARD = 14;
+    public final static int PAYPAL = 15;
     public final static int PAYSON = 16;
     public final static int JOJO = 17;
     public final static int IKANOBANK = 18;
@@ -67,139 +66,143 @@ public abstract class Bank implements Comparable<Bank> {
     public final static int EUROBONUSMASTERCARD = 21;
     public final static int RIKSLUNCHEN = 22;
 
-	protected String TAG = "Bank";
-	protected String NAME = "Bank";
-	protected String NAME_SHORT = "bank";
-	protected int BANKTYPE_ID = 0;
-	protected String URL;
+    protected String TAG = "Bank";
+    protected String NAME = "Bank";
+    protected String NAME_SHORT = "bank";
+    protected int BANKTYPE_ID = 0;
+    protected String URL;
     protected int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT;
     protected int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD;
     protected String INPUT_HINT_USERNAME = null;
+    protected boolean INPUT_HIDDEN_USERNAME = false;
+    protected boolean INPUT_HIDDEN_PASSWORD = false;
+    protected int INPUT_TITLETEXT_USERNAME = R.string.username;
+    protected int INPUT_TITLETEXT_PASSWORD = R.string.password;
     protected boolean STATIC_BALANCE = false;
     protected boolean BROKEN = false;
 
-	protected Context context;
-	protected Resources res;
-	
-	protected String username;
-	protected String password;
-	protected ArrayList<Account> accounts = new ArrayList<Account>();
-	protected HashMap<String, Account> oldAccounts;
-	protected BigDecimal balance = new BigDecimal(0);
-	protected boolean disabled = false;
-	protected long dbid = -1;
-	protected Urllib urlopen = null;
-	protected String customName;
-	protected String currency = "SEK";
+    protected Context context;
+    protected Resources res;
 
-	public Urllib getUrlopen() {
-		return urlopen;
-	}
+    protected String username;
+    protected String password;
+    protected ArrayList<Account> accounts = new ArrayList<Account>();
+    protected HashMap<String, Account> oldAccounts;
+    protected BigDecimal balance = new BigDecimal(0);
+    protected boolean disabled = false;
+    protected long dbid = -1;
+    protected Urllib urlopen = null;
+    protected String customName;
+    protected String currency = "SEK";
 
-	public void setUrlopen(Urllib urlopen) {
-		this.urlopen = urlopen;
-	}
+    public Urllib getUrlopen() {
+        return urlopen;
+    }
 
-	public void setDbid(long dbid) {
-		this.dbid = dbid;
-	}
+    public void setUrlopen(Urllib urlopen) {
+        this.urlopen = urlopen;
+    }
 
-	public Bank(Context context) {
-		this.context = context;
-		this.res = this.context.getResources();
-	}
+    public void setDbid(long dbid) {
+        this.dbid = dbid;
+    }
 
-	public void update(String username, String password) throws BankException, LoginException {
-		this.username = username;
-		this.password = password;
-		this.update();
-	}
+    public Bank(Context context) {
+        this.context = context;
+        this.res = this.context.getResources();
+    }
 
-	public void update() throws BankException, LoginException {
-		balance = new BigDecimal(0);
-		oldAccounts = new HashMap<String, Account>();
-		for(Account account: accounts) {
-		    oldAccounts.put(account.getId(), account);
-		}
-		accounts = new ArrayList<Account>();
-	}
+    public void update(String username, String password) throws BankException, LoginException {
+        this.username = username;
+        this.password = password;
+        this.update();
+    }
 
-	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
-	}
+    public void update() throws BankException, LoginException {
+        balance = new BigDecimal(0);
+        oldAccounts = new HashMap<String, Account>();
+        for(Account account: accounts) {
+            oldAccounts.put(account.getId(), account);
+        }
+        accounts = new ArrayList<Account>();
+    }
 
-	public void updateAllTransactions() throws LoginException, BankException {
-		if (urlopen == null) {
-			urlopen = login();
-		}
-		for (Account account: accounts) {
-			updateTransactions(account, urlopen);
-		}
-		if (urlopen != null) {
-			urlopen.close();
-		}
-		
-	}
-	
-	public Urllib login() throws LoginException, BankException {
-		return null;
-	}
+    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+    }
 
-	public void closeConnection() {
-		if (urlopen != null) {
-			urlopen.close();
-		}
-	}
-	public ArrayList<Account> getAccounts() {
-		return this.accounts;
-	}
-	
-	public void setAccounts(ArrayList<Account> accounts) {
-		this.accounts = accounts;
-		for (Account a : accounts) {
-		    a.setBank(this);
-		}
-	}
+    public void updateAllTransactions() throws LoginException, BankException {
+        if (urlopen == null) {
+            urlopen = login();
+        }
+        for (Account account: accounts) {
+            updateTransactions(account, urlopen);
+        }
+        if (urlopen != null) {
+            urlopen.close();
+        }
 
-	public String getPassword() {
-		return password;
-	}
+    }
 
-	public String getUsername() {
-		return username;
-	}
+    public Urllib login() throws LoginException, BankException {
+        return null;
+    }
 
-	public BigDecimal getBalance() {
-	    if (STATIC_BALANCE) {
-	        return balance;
-	    }
-	    else {
-	        BigDecimal bal = new BigDecimal(0); 
-	        for (Account account : accounts) {
-	            if (account.getType() == Account.REGULAR || account.getType() == Account.CCARD) {
-	                if (!account.isHidden()) {
-	                    bal = bal.add(account.getBalance());
-	                }
-	            }
-	        }
-	        return bal;
-	    }
-	}
+    public void closeConnection() {
+        if (urlopen != null) {
+            urlopen.close();
+        }
+    }
+    public ArrayList<Account> getAccounts() {
+        return this.accounts;
+    }
 
-	public int getBanktypeId() {
-		return BANKTYPE_ID;
-	}
+    public void setAccounts(ArrayList<Account> accounts) {
+        this.accounts = accounts;
+        for (Account a : accounts) {
+            a.setBank(this);
+        }
+    }
 
-	public String getName() {
-		return NAME;
-	}
+    public String getPassword() {
+        return password;
+    }
 
-	public String getDisplayName() {
-		if (customName != null && customName.length() > 0) return customName;
-		return username;
-	}
+    public String getUsername() {
+        return username;
+    }
 
-	
-	public String getCustomName() {
+    public BigDecimal getBalance() {
+        if (STATIC_BALANCE) {
+            return balance;
+        }
+        else {
+            BigDecimal bal = new BigDecimal(0); 
+            for (Account account : accounts) {
+                if (account.getType() == Account.REGULAR || account.getType() == Account.CCARD) {
+                    if (!account.isHidden()) {
+                        bal = bal.add(account.getBalance());
+                    }
+                }
+            }
+            return bal;
+        }
+    }
+
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    public String getName() {
+        return NAME;
+    }
+
+    public String getDisplayName() {
+        if (customName != null && customName.length() > 0) return customName;
+        return username;
+    }
+
+
+    public String getCustomName() {
         return customName;
     }
 
@@ -208,21 +211,21 @@ public abstract class Bank implements Comparable<Bank> {
     }
 
     public String getShortName() {
-		return NAME_SHORT;
-	}
+        return NAME_SHORT;
+    }
 
-	public void setData(String username, String password, BigDecimal balance,
-			boolean disabled, long dbid, String currency, String customName) {
-		this.username = username;
-		this.password = password;
-		this.balance = balance;
-		this.disabled = disabled;
-		this.dbid = dbid;
-		this.currency = currency;
-		this.customName = customName;
-	}
-	
-	public String getCurrency() {
+    public void setData(String username, String password, BigDecimal balance,
+            boolean disabled, long dbid, String currency, String customName) {
+        this.username = username;
+        this.password = password;
+        this.balance = balance;
+        this.disabled = disabled;
+        this.dbid = dbid;
+        this.currency = currency;
+        this.customName = customName;
+    }
+
+    public String getCurrency() {
         return currency;
     }
 
@@ -231,45 +234,45 @@ public abstract class Bank implements Comparable<Bank> {
     }
 
     public long getDbId() {
-		return dbid;
-	}
+        return dbid;
+    }
 
-	public boolean isDisabled() {
-		return disabled;
-	}
-	
-	public void disable() {
-		DBAdapter db = new DBAdapter(context);
-		db.open();
-		db.disableBank(dbid);
-		db.close();
-	}
-	
-	public void setDisabled(boolean disabled) {
-		this.disabled = disabled;
-	}
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    public void disable() {
+        DBAdapter db = new DBAdapter(context);
+        db.open();
+        db.disableBank(dbid);
+        db.close();
+    }
+
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
 
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
-	
-	public void save() {
-		DBAdapter db = new DBAdapter(context);
-		db.open();
-		db.updateBank(this);
-		db.close();
-	}
-	
-	public String getURL() {
-		return URL;
-	}
-	
-	public int getInputTypeUsername() {
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void save() {
+        DBAdapter db = new DBAdapter(context);
+        db.open();
+        db.updateBank(this);
+        db.close();
+    }
+
+    public String getURL() {
+        return URL;
+    }
+
+    public int getInputTypeUsername() {
         return INPUT_TYPE_USERNAME;
     }
 
@@ -281,18 +284,35 @@ public abstract class Bank implements Comparable<Bank> {
         return INPUT_HINT_USERNAME;
     }
 
+    public boolean isInputUsernameHidden() {
+        return INPUT_HIDDEN_USERNAME;
+    }
+
+    public boolean isInputPasswordHidden() {
+        return INPUT_HIDDEN_PASSWORD;
+    }
+
+    public int getInputTitleUsername() {
+        return INPUT_TITLETEXT_USERNAME;
+    }
+
+    public int getInputTitlePassword() {
+        return INPUT_TITLETEXT_PASSWORD;
+    }
+
+
     // Returns true if the current implementation of this bank is broken.
     public boolean isBroken() {
         return BROKEN;
     }
 
     public int getImageResource() {
-		return res.getIdentifier("logo_"+NAME_SHORT, "drawable", context.getPackageName());	
-	}
+        return res.getIdentifier("logo_"+NAME_SHORT, "drawable", context.getPackageName());	
+    }
 
-	public int compareTo(Bank another) {
-		return this.toString().compareToIgnoreCase(another.toString());
-	}
+    public int compareTo(Bank another) {
+        return this.toString().compareToIgnoreCase(another.toString());
+    }
 
     public void updateComplete() {
         for (Account a : this.accounts) {
@@ -307,7 +327,7 @@ public abstract class Bank implements Comparable<Bank> {
             a.setBank(this);
         }
     }
-    
+
     public SessionPackage getSessionPackage(Context context) {
         String preloader = "Error...";
         try {
@@ -321,17 +341,17 @@ public abstract class Bank implements Comparable<Bank> {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
- 
+
         try {
             LoginPackage lp = preLogin();
             if (lp == null) {
                 throw new BankException("No automatic login for this bank. preLogin() is not implemented or has failed.");
             }
             String html = String.format(preloader,
-                                        "function go(){document.getElementById('submitform').submit(); }", // Javascript function
-                                        Helpers.renderForm(lp.getLoginTarget(), lp.getPostData())+"<script type=\"text/javascript\">setTimeout('go()', 1000);</script>" // HTML
-                                        );        
-            
+                    "function go(){document.getElementById('submitform').submit(); }", // Javascript function
+                    Helpers.renderForm(lp.getLoginTarget(), lp.getPostData())+"<script type=\"text/javascript\">setTimeout('go()', 1000);</script>" // HTML
+            );        
+
             CookieStore cookies = urlopen.getHttpclient().getCookieStore();
             return new SessionPackage(html, cookies);
         }
@@ -347,7 +367,7 @@ public abstract class Bank implements Comparable<Bank> {
         String html = String.format(preloader,
                 String.format("function go(){window.location=\"%s\" }", this.URL), // Javascript function
                 "<script type=\"text/javascript\">setTimeout('go()', 1000);</script>" // HTML
-                );          
+        );          
         return new SessionPackage(html, null);
     }
 
