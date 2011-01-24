@@ -256,6 +256,15 @@ public class AutoRefreshService extends Service {
 					}
 					bank.closeConnection();
 					db.updateBank(bank);
+
+					// Send update for all accounts since we're overwriting the
+					// database transaction history
+					if (prefs.getBoolean("content_provider_enabled", false)) {
+						for (final Account account : bank.getAccounts()) {
+							broadcastTransactionUpdate(getBaseContext(),
+									bank.getDbId(), account.getId());
+						}
+					}
 				} catch (final BankException e) {
 					// Refresh widgets if an update fails
 					Log.d(TAG, "Error while updating bank '" + bank.getDbId()
@@ -268,20 +277,13 @@ public class AutoRefreshService extends Service {
 				}
 			}
 
-			// Sending updates for all accounts, because we overwrite everything
-			// at this point.
-			if (prefs.getBoolean("content_provider_enabled", false)) {
-				for (final Account account : accounts.values()) {
-					broadcastTransactionUpdate(getBaseContext(), account);
-				}
-			}
-
 			if (refreshWidgets) {
 				final Intent updateIntent = new Intent(BROADCAST_MAIN_REFRESH);
 				sendBroadcast(updateIntent);
 				sendWidgetRefresh(AutoRefreshService.this);
 			}
 			db.close();
+
 			return null;
 		}
 
@@ -306,9 +308,9 @@ public class AutoRefreshService extends Service {
 	}
 
 	public static void broadcastTransactionUpdate(final Context context,
-			final Account account) {
+			final long bankId, final String accountId) {
 		final Intent i = new Intent(BROADCAST_TRANSACTIONS_UPDATED);
-		i.putExtra("accountId", account.getId());
+		i.putExtra("accountId", new Long(bankId).toString() + "_" + accountId);
 		context.sendBroadcast(i);
 	}
 

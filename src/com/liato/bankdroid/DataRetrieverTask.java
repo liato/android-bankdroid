@@ -112,7 +112,7 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
 				final ArrayList<Account> accounts = bank.getAccounts();
 				for (final Account account : accounts) {
 					AutoRefreshService.broadcastTransactionUpdate(parent,
-							account);
+							bank.getDbId(), account.getId());
 				}
 			}
 		}
