@@ -202,7 +202,7 @@ public class Lansforsakringar extends Bank {
                  * 4: Debt                  1,00
                  * 
                  */                
-                accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim(), Helpers.parseBalance(matcher.group(4).trim()), matcher.group(2).trim(), Account.LOANS));
+                accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim(), Helpers.parseBalance(matcher.group(4).trim()).negate(), matcher.group(2).trim(), Account.LOANS));
             }
 
             // Save token for next request
