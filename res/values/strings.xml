@@ -84,7 +84,7 @@
     <string name="thanks_to">Thanks to</string>
     <string name="thanks"> 
     Wendell Fernandes (Icon)
-    \nKingcool (ICA Banken)
+    \nKingcool (ICA Banken &amp; SEB)
     \ngrief (Länsförsäkringar)
     \neinand (Länsförsäkringar)
     \nAnders Widén (Länsförsäkringar)
@@ -118,6 +118,7 @@
 	\nmhagander (Diners Club &amp; SAS EuroBonus Mastercard)
 	\nfiretech (Hemköp)
 	\nebjsv (PayPal)
+	\nHenrik (SEB)
      </string>
      
      

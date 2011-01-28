@@ -95,12 +95,10 @@ public class Nordea extends Bank {
 
 	@Override
 	public Urllib login() throws LoginException, BankException {
-		urlopen = new Urllib();
-		String response = null;
 		try {
 		    LoginPackage lp = preLogin();
 			Log.d("BankNordea", "Posting to https://mobil.nordea.se/banking-nordea/nordea-c3/login.html");
-			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+			String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
 			Log.d("BankNordea", "Url after post: "+urlopen.getCurrentURI());
 			
 			if (response.contains("felaktiga uppgifter")) {
