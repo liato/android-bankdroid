@@ -121,38 +121,32 @@ public class Nordea extends Bank {
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
+		
 		urlopen = login();
 		String response = null;
 		Matcher matcher;
 		try {
-		    
-		    Log.d("BankNordea", "Opening: https://mobil.nordea.se/banking-nordea/nordea-c3/accounts.html");
 			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/accounts.html");
-			
 			matcher = reAccounts.matcher(response);
 			while (matcher.find()) {
 				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), matcher.group(1).trim()));
 				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
 			}
 			
-			Log.d("BankNordea", "Opening: https://mobil.nordea.se/banking-nordea/nordea-c3/funds/portfolio/funds.html");
 			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/funds/portfolio/funds.html");
-
 			matcher = reFundsLoans.matcher(response);
 			while (matcher.find()) {
 				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), "f:"+matcher.group(1).trim(), -1L, Account.FUNDS));
 			}
 
-			Log.d("BankNordea", "Opening: https://mobil.nordea.se/banking-nordea/nordea-c3/accounts.html?type=lan");
 			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/accounts.html?type=lan");
-			
 			matcher = reFundsLoans.matcher(response);
 			while (matcher.find()) {
 				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), "l:"+matcher.group(1).trim(), -1L, Account.LOANS));
 			}
-			matcher = reCards.matcher(response);
-			Log.d(TAG, "Opening: https://mobil.nordea.se/banking-nordea/nordea-c3/card/list.html");
+
 			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/card/list.html");
+			matcher = reCards.matcher(response);
 			while (matcher.find()) {
 				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), "c:"+matcher.group(1).trim(), -1L, Account.CCARD));
 				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
@@ -161,10 +155,6 @@ public class Nordea extends Bank {
 			if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
 			}
-			
-			// Konungens konto
-			//accounts.add(new Account("Personkonto", Helpers.parseBalance("568268.37"), "1"));
-			//accounts.add(new Account("Kapitalkonto", Helpers.parseBalance("5789002.00"), "0"));
 		}
 		catch (ClientProtocolException e) {
 			throw new BankException(e.getMessage());
@@ -175,6 +165,11 @@ public class Nordea extends Bank {
 		finally {
 		    super.updateComplete();
 		}
+		
+        // Demo account to use with screenshots
+        //accounts.add(new Account("Personkonto", Helpers.parseBalance("7953.37"), "1"));
+        //accounts.add(new Account("Kapitalkonto", Helpers.parseBalance("28936.08"), "0"));
+
 	}
 
 	@Override

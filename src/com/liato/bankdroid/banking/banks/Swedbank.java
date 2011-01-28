@@ -144,9 +144,6 @@ public class Swedbank extends Bank {
 			if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
 			}
-			// Konungens konto
-			//accounts.add(new Account("Personkonto", Helpers.parseBalance("85351"), "0"));
-			//accounts.add(new Account("Sparkonto", Helpers.parseBalance("8590700"), "1"));
 		}
 		catch (ClientProtocolException e) {
 			throw new BankException(e.getMessage());
@@ -157,6 +154,9 @@ public class Swedbank extends Bank {
 		finally {
 	      super.updateComplete();
 		}
+        // Demo account to use with screenshots
+        //accounts.add(new Account("Personkonto", Helpers.parseBalance("8351"), "0"));
+        //accounts.add(new Account("Sparkonto", Helpers.parseBalance("59070"), "1"));
 	}
 	
 	@Override
@@ -182,5 +182,26 @@ public class Swedbank extends Bank {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		// Demo transactions to use with screenshots
+		/*
+		try {
+            response = IOUtils.toString(context.getResources().openRawResource(R.raw.swedbank_transactions));
+            matcher = reTransactions.matcher(response);
+            ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+            while (matcher.find()) {
+                transactions.add(new Transaction("20"+matcher.group(1).trim(), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3))));
+            }
+            account.setTransactions(transactions);
+        }
+        catch (NotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        */
 	}
 }

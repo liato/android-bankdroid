@@ -52,7 +52,8 @@ public class SettingsActivity extends LockablePreferenceActivity implements OnPr
 		(findPreference("remotenotifier_screen")).setOnPreferenceClickListener(this);
 		(findPreference("openwatch_screen")).setOnPreferenceClickListener(this);
 		(findPreference("autoupdates_enabled")).setOnPreferenceClickListener(this);
-		(findPreference("notification_sound")).setOnPreferenceClickListener(this);
+        (findPreference("notification_sound")).setOnPreferenceClickListener(this);
+        (findPreference("test_notification")).setOnPreferenceClickListener(this);
 		final CheckBoxPreference patternLock = ((CheckBoxPreference)findPreference("patternlock_enabled"));
 		patternLock.setOnPreferenceClickListener(this);
 		// Check the pattern lock check box if the lock pattern is enabled
@@ -100,6 +101,16 @@ public class SettingsActivity extends LockablePreferenceActivity implements OnPr
 			startActivity(new Intent(Intent.ACTION_VIEW,
 					Uri.parse("http://forum.xda-developers.com/showthread.php?t=554551")));
 			return true;
+		}
+		else if ("test_notification".equals(prefKey)) {
+            Log.d(TAG, "Sending test notification.");
+            AutoRefreshService.showNotification(
+                    "Personkonto: -143,50 SEK (8 351,00 SEK)",
+                    R.drawable.logo_swedbank,
+                    "Familjekonto",
+                    "Swedbank",
+                    this);      
+		    return true;
 		}
 		return false;
 	}

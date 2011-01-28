@@ -173,7 +173,11 @@
 					android:defaultValue="false"
 					android:title="Coop - Mail on error"
 					android:summary="Open your email client with the html response when Bankdroid fails to login to your Coop account."
-					android:dependency="debug_mode" />					
+					android:dependency="debug_mode" />
+			<Preference
+				android:title="Test notification"
+				android:summary="A demo notification"
+				android:key="test_notification" />								
 			</PreferenceScreen>
 		</PreferenceScreen>
 	</PreferenceCategory>
