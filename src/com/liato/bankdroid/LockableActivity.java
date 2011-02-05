@@ -65,6 +65,7 @@ public class LockableActivity extends Activity {
             public void onClick(View v) {
                 Intent intent = new Intent(LockableActivity.this, MainActivity.class);
                 startActivity(intent);
+                LockableActivity.this.finish();
             }
         };
         homeButton.setOnClickListener(listener);

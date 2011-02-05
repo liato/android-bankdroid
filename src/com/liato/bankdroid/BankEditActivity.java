@@ -60,7 +60,6 @@ public class BankEditActivity extends LockableActivity implements OnClickListene
 		Collections.sort(items);
 		Spinner spnBanks = (Spinner)findViewById(R.id.spnBankeditBanklist);
 		BankSpinnerAdapter<Bank> adapter = new BankSpinnerAdapter<Bank>(this, android.R.layout.simple_spinner_item, items);
-		//adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spnBanks.setAdapter(adapter);
 		spnBanks.setOnItemSelectedListener(this);
 
@@ -249,5 +248,6 @@ public class BankEditActivity extends LockableActivity implements OnClickListene
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-	}   
+	}
+	
 }
