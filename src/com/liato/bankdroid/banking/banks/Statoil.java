@@ -24,7 +24,7 @@ import com.liato.bankdroid.provider.IBankTypes;
 
 public class Statoil extends SEBKortBase {
 	private static final String TAG = "Statoil";
-	private static final String NAME = "Statoil";
+	private static final String NAME = "Statoil Mastercard";
 	private static final String NAME_SHORT = "statoil";
 	private static final int BANKTYPE_ID = IBankTypes.STATOIL;
 
