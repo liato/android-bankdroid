@@ -25,11 +25,11 @@ import java.util.regex.Pattern;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 
 import android.content.Context;
 import android.text.Html;
 import android.text.InputType;
-import android.util.Log;
 
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
@@ -76,7 +76,9 @@ public class SEB extends Bank {
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
         urlopen = new Urllib();
-        response = urlopen.open("https://m.seb.se/cgi-bin/pts3/mpo/9000/mpo9001.aspx?P1=logon.htm");
+        urlopen.setContentCharset(HTTP.ISO_8859_1);
+        urlopen.addHeader("Referer", "https://m.seb.se/");
+        //response = urlopen.open("https://m.seb.se/cgi-bin/pts3/mpo/9000/mpo9001.aspx?P1=logon.htm");
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         postData.add(new BasicNameValuePair("A1", username));
         postData.add(new BasicNameValuePair("A2", password));
@@ -88,12 +90,10 @@ public class SEB extends Bank {
 		try {
 		    LoginPackage lp = preLogin();
 			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-			Log.d(TAG, "Url after post: "+urlopen.getCurrentURI());
 			
 			if (response.contains("9000/mpo9001.aspx?P1=mps1065.htm")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}
-			
 		} catch (ClientProtocolException e) {
 			throw new BankException(e.getMessage());
 		} catch (IOException e) {
