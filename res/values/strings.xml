@@ -35,6 +35,54 @@
 
 	<string name="choose_an_account">Choose an account</string>
 	
+	
+	<!--  Settings  -->
+	<string name="security_and_privacy">Security and Privacy</string>
+	<string name="enable_patternlock_title">Enable Pattern Lock</string>
+	<string name="enable_patternlock_summary">Lock the app and widgets with a pattern lock</string>
+	<string name="change_patternlock_title">Change lock pattern</string>
+	<string name="change_patternlock_summary">Change your current lock pattern</string>
+	<string name="blur_widget_title">Blur widget balance</string>
+	<string name="blur_widget_summary">Blur the balance on the widget, click widget to unblur for a few seconds</string>
+	<string name="unblur_widget_timeout_title">Unblur timeout</string>
+	<string name="unblur_widget_timeout_summary">Blur the balance again after this many seconds</string>
+	<string name="automatic_updates_title">Automatic Updates</string>
+	<string name="autoupdates_enabled_title">Enable</string>
+	<string name="autoupdates_enabled_summary">Enable automatic updates</string>
+	<string name="update_frequency_title">Update frequency</string>
+	<string name="update_transaction_history_title">Update transaction history</string>
+	<string name="update_transaction_history_summary">Update transaction history when updating automatically</string>
+	<string name="appearance_title">Appearance</string>
+	<string name="round_widget_balance_title">Round widget balance</string>
+	<string name="round_widget_balance_summary">Display the balance on widgets without decimals</string>
+	<string name="notifications_title">Notifications</string>
+	<string name="enable_notifications_title">Enable notifications</string>
+	<string name="enable_notifications_summary">Notify on account changes</string>
+	<string name="vibrate_title">Vibrate</string>
+	<string name="vibrate_summary">Vibrate on account changes</string>
+	<string name="notification_sound_title">Notification sound</string>
+	<string name="notification_sound_summary">Select notification sound</string>
+	<string name="notification_sound_name">Select sound</string>
+	<string name="account_types_title">Account types</string>
+	<string name="account_types_summary">Only show notifications for selected account types</string>
+	<string name="remote_notifier_title">Remote Notifier Integration</string>
+	<string name="remote_notifier_enable_title">Enable</string>
+	<string name="remote_notifier_enable_summary">Enable Remote Notifier integration</string>
+	<string name="remote_notifier_help_title">What is Remote Notifier?</string>
+	<string name="remote_notifier_help_summary">Read more about Remote Notifier on their website</string>
+	<string name="openwatch_title">OpenWatch Integration</string>
+	<string name="openwatch_enable_title">Enable</string>
+	<string name="openwatch_enable_summary">Enable OpenWatch integration</string>
+	<string name="openwatch_vibrate_title">Vibrate</string>
+	<string name="openwatch_vibrate_summary">Vibrate the OpenWatch device</string>
+	<string name="openwatch_help_title">What is OpenWatch?</string>
+	<string name="openwatch_help_summary">Read more about OpenWatch on their website</string>
+	<string name="share_data_title">Share data</string>
+	<string name="share_data_enable_title">Enable data sharing</string>
+	<string name="share_data_enable_summary">Grant other installed apps access to your transaction history</string>
+	<string name="api_key_title">API Key</string>
+	<string name="api_key_summary">Use this key to allow access for trusted applications</string>
+	
 	<string name="update_frequency">Update frequency</string>
 	<string name="access_code">Access code</string>
 	<string name="access_code_repeat">Repeat access code</string>
@@ -50,6 +98,7 @@
 	<string name="loans">Loans</string>
 	<string name="deposit_account">Deposit accounts</string>
 	<string name="other">Other</string>
+	<!--  /Settings  -->
 	
     <string name="login">Login</string>
     <string name="invalid_access_code">Invalid access code. Try again.</string>

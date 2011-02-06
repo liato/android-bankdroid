@@ -1,40 +1,40 @@
 <PreferenceScreen
 	xmlns:android="http://schemas.android.com/apk/res/android">
 	<PreferenceCategory
-		android:title="Security and Privacy">
+		android:title="@string/security_and_privacy">
 		<CheckBoxPreference
 			android:key="patternlock_enabled"
 			android:defaultValue="false"
-			android:title="Enable Pattern Lock"
-			android:summary="Lock the app and widgets with a pattern lock" />
+			android:title="@string/enable_patternlock_title"
+			android:summary="@string/enable_patternlock_summary" />
 		<Preference
-			android:title="Change pattern"
-			android:summary="Change your current lock pattern"
+			android:title="@string/change_patternlock_title"
+			android:summary="@string/change_patternlock_summary"
 			android:key="patternlock_change"
 			android:dependency="patternlock_enabled" />
 		<CheckBoxPreference
 			android:key="widget_blur_balance"
 			android:defaultValue="false"
-			android:title="Blur widget balance"
-			android:summary="Blur the balance on the widget, click widget to unblur for a few seconds" />
+			android:title="@string/blur_widget_title"
+			android:summary="@string/blur_widget_summary" />
 		<ListPreference
-			android:title="Unblur timeout"
+			android:title="@string/unblur_widget_timeout_title"
 			android:key="widget_blur_balance_timeout"
 			android:defaultValue="5"
 			android:entries="@array/unblurTimeoutNames"
 			android:entryValues="@array/unblurTimeoutValues"
-			android:summary="Blur the balance again after this many seconds"
+			android:summary="@string/unblur_widget_timeout_summary"
 			android:dependency="widget_blur_balance" />
 	</PreferenceCategory>
 	<PreferenceCategory
-		android:title="Automatic Updates">
+		android:title="@string/automatic_updates_title">
 		<CheckBoxPreference
 			android:key="autoupdates_enabled"
 			android:defaultValue="true"
-			android:title="Enable"
-			android:summary="Enable automatic updates" />
+			android:title="@string/autoupdates_enabled_title"
+			android:summary="@string/autoupdates_enabled_summary" />
 		<ListPreference
-			android:title="Update frequency"
+			android:title="@string/update_frequency_title"
 			android:key="refresh_rate"
 			android:defaultValue="60"
 			android:entries="@array/refreshrateNames"
@@ -43,42 +43,42 @@
 		<CheckBoxPreference
 			android:key="autoupdates_transactions_enabled"
 			android:defaultValue="true"
-			android:title="Update transaction history"
-			android:summary="Update transaction history when updating automatically" />
+			android:title="@string/update_transaction_history_title"
+			android:summary="@string/update_transaction_history_summary" />
 	</PreferenceCategory>
 	<PreferenceCategory
-		android:title="Appearance">
+		android:title="@string/appearance_title">
 		<CheckBoxPreference
 			android:key="round_widget_balance"
 			android:defaultValue="false"
-			android:title="Round widget balance"
-			android:summary="Display the balance on widgets without decimals" />
+			android:title="@string/round_widget_balance_title"
+			android:summary="@string/round_widget_balance_summary" />
 	</PreferenceCategory>
 	<PreferenceCategory
-		android:title="Notifications">
+		android:title="@string/notifications_title">
 		<CheckBoxPreference
 			android:key="notify_on_change"
 			android:defaultValue="true"
-			android:title="Enable notifications"
-			android:summary="Notify on account changes" />
+			android:title="@string/enable_notifications_title"
+			android:summary="@string/enable_notifications_summary" />
 		<CheckBoxPreference
 			android:key="notify_with_vibration"
 			android:defaultValue="true"
-			android:title="Vibrate"
-			android:summary="Vibrate on account changes"
+			android:title="@string/vibrate_title"
+			android:summary="@string/vibrate_summary"
 			android:dependency="notify_on_change" />
 		<RingtonePreference
 			android:key="notification_sound"
-			android:summary="Select notification sound"
-			android:title="Notification sound"
+			android:title="@string/notification_sound_title"
+			android:summary="@string/notification_sound_summary"
 			android:ringtoneType="notification"
 			android:showDefault="true"
 			android:showSilent="true"
-			android:dependency="notify_on_change" android:name="Select sound"/>
+			android:dependency="notify_on_change" android:name="@string/notification_sound_name"/>
 		<PreferenceScreen
 			android:key="account_types_screen"
-			android:title="Account types"
-			android:summary="Only show notifications for selected account types"
+			android:title="@string/account_types_title"
+			android:summary="@string/account_types_summary"
 			android:dependency="notify_on_change">
 			<CheckBoxPreference
 				android:key="notify_for_deposit"
@@ -103,43 +103,49 @@
 		</PreferenceScreen>
 		<PreferenceScreen
 			android:key="remotenotifier_screen"
-			android:title="Remote Notifier Integration"
+			android:title="@string/remote_notifier_title"
 			android:dependency="notify_on_change">
 			<CheckBoxPreference
 				android:key="notify_remotenotifier"
 				android:defaultValue="false"
-				android:title="Enable"
-				android:summary="Enable Remote Notifier integration" />
+				android:title="@string/remote_notifier_enable_title"
+				android:summary="@string/remote_notifier_enable_summary" />
 			<Preference
-				android:title="What is Remote Notifier?"
-				android:summary="Read more about Remote Notifier on their website"
+				android:title="@string/remote_notifier_help_title"
+				android:summary="@string/remote_notifier_help_summary"
 				android:key="remotenotifier_help" />
 		</PreferenceScreen>
 		<PreferenceScreen
 			android:key="openwatch_screen"
-			android:title="OpenWatch Integration"
+			android:title="@string/openwatch_title"
 			android:dependency="notify_on_change">
 			<CheckBoxPreference
 				android:key="notify_openwatch"
 				android:defaultValue="false"
-				android:title="Enable"
-				android:summary="Enable OpenWatch integration" />
+				android:title="@string/openwatch_enable_title"
+				android:summary="@string/openwatch_enable_summary" />
 			<CheckBoxPreference
 				android:key="notify_openwatch_vibrate"
 				android:defaultValue="false"
-				android:title="Vibrate"
-				android:summary="Vibrate the OpenWatch device" />
+				android:title="@string/openwatch_vibrate_title"
+				android:summary="@string/openwatch_vibrate_summary" />
 			<Preference
-				android:title="What is OpenWatch?"
-				android:summary="Read more about OpenWatch on their website"
+				android:title="@string/openwatch_help_title"
+				android:summary="@string/openwatch_help_summary"
 				android:key="openwatch_help" />
 		</PreferenceScreen>
 	</PreferenceCategory>
 	<PreferenceCategory
-		android:title="Share data">
-		
-	<CheckBoxPreference android:title="Enable Sharing Data" android:summary="Enable other installed apps access to your transaction history" android:key="content_provider_enabled"></CheckBoxPreference>
-<EditTextPreference android:title="API Key" android:key="content_provider_api_key" android:dependency="content_provider_enabled" android:summary="Use this key to allow access for trusted applications"></EditTextPreference>
+		android:title="@string/share_data_title">
+	<CheckBoxPreference
+		android:title="@string/share_data_enable_title"
+		android:summary="@string/share_data_enable_summary"
+		android:key="content_provider_enabled" />
+	<EditTextPreference
+		android:title="@string/api_key_title"
+		android:key="content_provider_api_key"
+		android:dependency="content_provider_enabled"
+		android:summary="@string/api_key_summary" />
 </PreferenceCategory>
 	<PreferenceCategory
 		android:title="Debug">

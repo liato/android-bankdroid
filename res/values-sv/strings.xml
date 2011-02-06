@@ -35,6 +35,53 @@
 
 	<string name="choose_an_account">Välj ett konto</string>
 	
+	<!--  Settings  -->
+	<string name="security_and_privacy">Säkerhet</string>
+	<string name="enable_patternlock_title">Aktivera grafiskt lösenord</string>
+	<string name="enable_patternlock_summary">Skydda appen och widgets med ett grafiskt lösenord</string>
+	<string name="change_patternlock_title">Ändra grafiskt lösenord</string>
+	<string name="change_patternlock_summary">Ändra ditt nuvarande grafiska lösenord</string>
+	<string name="blur_widget_title">Dölj widgetsaldo</string>
+	<string name="blur_widget_summary">Saldot på widgeten visas endast då du klickat på den</string>
+	<string name="unblur_widget_timeout_title">Dölj saldot efter</string>
+	<string name="unblur_widget_timeout_summary">Dölj saldot igen efter angiven tid</string>
+	<string name="automatic_updates_title">Automatiska Uppdateringar</string>
+	<string name="autoupdates_enabled_title">Aktivera</string>
+	<string name="autoupdates_enabled_summary">Aktivera automatiska uppdateringar</string>
+	<string name="update_frequency_title">Uppdateringsfrekvens</string>
+	<string name="update_transaction_history_title">Uppdatera kontoutdrag</string>
+	<string name="update_transaction_history_summary">Uppdatera kontoutdrag vid automatiska uppdateringar</string>
+	<string name="appearance_title">Utseende</string>
+	<string name="round_widget_balance_title">Avrunda saldo på widgets</string>
+	<string name="round_widget_balance_summary">Visa saldot på widgets utan decimaler</string>
+	<string name="notifications_title">Notifieringar</string>
+	<string name="enable_notifications_title">Aktivera notifieringar</string>
+	<string name="enable_notifications_summary">Notifiera vid kontoförändringar</string>
+	<string name="vibrate_title">Vibrera</string>
+	<string name="vibrate_summary">Vibrera vid kontoförändringar</string>
+	<string name="notification_sound_title">Notifieringsljud</string>
+	<string name="notification_sound_summary">Välj ett notifieringsljud</string>
+	<string name="notification_sound_name">Välj ljud</string>
+	<string name="account_types_title">Kontotyper</string>
+	<string name="account_types_summary">Visa endast notifieringar för valda kontotyper</string>
+	<string name="remote_notifier_title">Remote Notifier-integrering</string>
+	<string name="remote_notifier_enable_title">Aktivera</string>
+	<string name="remote_notifier_enable_summary">Aktivera Remote Notifier-integrering</string>
+	<string name="remote_notifier_help_title">Vad är Remote Notifier?</string>
+	<string name="remote_notifier_help_summary">Läs mer om Remote Notifier på deras webbsida</string>
+	<string name="openwatch_title">OpenWatch-integrering</string>
+	<string name="openwatch_enable_title">Aktivera</string>
+	<string name="openwatch_enable_summary">Aktivera OpenWatch-integrering</string>
+	<string name="openwatch_vibrate_title">Vibrera</string>
+	<string name="openwatch_vibrate_summary">Vibrera OpenWatch-enheten</string>
+	<string name="openwatch_help_title">Vad är OpenWatch?</string>
+	<string name="openwatch_help_summary">Läs mer om OpenWatch på deras webbsida</string>
+	<string name="share_data_title">Dela ut data</string>
+	<string name="share_data_enable_title">Aktivera utdelninga av data</string>
+	<string name="share_data_enable_summary">Medge andra installerade applikationer åtkomst till kontoutdrag</string>
+	<string name="api_key_title">API-nyckel</string>
+	<string name="api_key_summary">Använd denna nyckel för för att komma åt kontoutdrag från andra applikationer</string>
+
 	<string name="update_frequency">Uppdateringsfrekvens</string>
 	<string name="access_code">Lösenord</string>
 	<string name="access_code_repeat">Upprepa lösenord</string>
@@ -50,7 +97,8 @@
 	<string name="loans">Lån</string>
 	<string name="deposit_account">Transaktionskonto</string>
 	<string name="other">Andra</string>
-	
+	<!--  /Settings  -->
+		
     <string name="login">Logga in</string>
     <string name="invalid_access_code">Ogiltig PIN-kod. Försök igen.</string>
     
