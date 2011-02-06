@@ -49,7 +49,7 @@ public class SEB extends Bank {
 	private static final String URL = "https://m.seb.se/cgi-bin/pts3/mpo/9000/mpo9001.aspx?P1=logon.htm";
 	private static final int BANKTYPE_ID = IBankTypes.SEB;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
-    private static final String INPUT_HINT_USERNAME = "ÅÅMMDD-XXXX";
+    private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
 	
 	private Pattern reAccounts = Pattern.compile("/cgi-bin/pts3/mps/1100/mps1102\\.aspx\\?M1=show&amp;P1=([^&]+)&amp;P2=1&amp;P4=1\">([^<]+)</a></td>\\s*</tr>\\s*<tr[^>]+>\\s*<td>[^<]+</td>\\s*<td[^>]+>[^<]+</td>\\s*<td[^>]+>([^<]+)</td>\\s*", Pattern.CASE_INSENSITIVE);
 	private Pattern reTransactions = Pattern.compile("<span\\s*id=\"MPSMaster_MainPlaceHolder_repAccountTransactions[^\"]+\"\\s*class=\"name\">([^/]+)/(\\d{2}-\\d{2}-\\d{2})</span>\\s*<span\\s*id=\"MPSMaster_MainPlaceHolder_repAccountTransactions[^\"]+\"\\s*class=\"value\">([^<]+)</span>", Pattern.CASE_INSENSITIVE);
@@ -91,7 +91,7 @@ public class SEB extends Bank {
 		    LoginPackage lp = preLogin();
 			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
 			
-			if (response.contains("9000/mpo9001.aspx?P1=mps1065.htm")) {
+			if (!response.contains("1100/mps1101.aspx?X1=passWord")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}
 		} catch (ClientProtocolException e) {
