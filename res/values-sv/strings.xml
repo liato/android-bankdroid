@@ -113,8 +113,8 @@
     <string name="popup_www">WWW</string>
     <string name="popup_remove">Radera</string>
 
-    <string name="popup_hide">Göm</string>
-    <string name="popup_unhide">Göm ej</string>
+    <string name="popup_hide">Dölj</string>
+    <string name="popup_unhide">Dölj ej</string>
     <string name="popup_enable_notifications">Aktivera notifieringar</string>
     <string name="popup_disable_notifications">Inaktivera notifieringar</string>
 
@@ -123,8 +123,8 @@
     <string name="yes">Ja</string>
     <string name="no">Nej</string>
  
-    <string name="menu_show_hidden">Visa gömda konton</string>
-    <string name="menu_hide_hidden">Göm gömda konton</string>
+    <string name="menu_show_hidden">Visa dolda konton</string>
+    <string name="menu_hide_hidden">Göm dolda konton</string>
     
     <string name="tran_desc">Inget kontoutdrag tillgängligt för detta konto.</string>
 
@@ -164,7 +164,7 @@
 	\nmagnusart (Content Provider)
 	\nPMC (Rikslunchen)
 	\nmhagander (Diners Club &amp; SAS EuroBonus Mastercard)
-	\nfiretech (Hemköp)
+	\nfiretech (Hemköp Kundkort)
 	\nebjsv (PayPal)
 	</string>
     
