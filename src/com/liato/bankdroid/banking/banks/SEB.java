@@ -78,6 +78,7 @@ public class SEB extends Bank {
         urlopen = new Urllib();
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         urlopen.addHeader("Referer", "https://m.seb.se/");
+        urlopen.setKeepAliveTimeout(5);
         //response = urlopen.open("https://m.seb.se/cgi-bin/pts3/mpo/9000/mpo9001.aspx?P1=logon.htm");
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         postData.add(new BasicNameValuePair("A1", username));

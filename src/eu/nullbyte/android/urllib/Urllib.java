@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -31,6 +32,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -146,7 +148,16 @@ public class Urllib {
     }    
     public void addHeader(String key, String value) {
         this.headers.put(key, value);
-    }    
+    }
+    
+    public void setKeepAliveTimeout(final int seconds) {
+        httpclient.setKeepAliveStrategy(new ConnectionKeepAliveStrategy() { 
+            @Override
+            public long getKeepAliveDuration(HttpResponse response, HttpContext arg1) {
+                // TODO Auto-generated method stub
+                return seconds;
+            }});
+    }
 
     public String removeHeader(String key) {
         return this.headers.remove(key);
