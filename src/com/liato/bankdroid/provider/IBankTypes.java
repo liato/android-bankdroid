@@ -21,7 +21,6 @@ package com.liato.bankdroid.provider;
  * @since 8 jan 2011
  */
 public interface IBankTypes {
-
 	public final static int TESTBANK = 0;
 	public final static int SWEDBANK = 1;
 	public final static int NORDEA = 2;
@@ -48,5 +47,5 @@ public interface IBankTypes {
     public final static int HEMKOP = 23;
     public final static int SEB = 24;
     public final static int NORDNET = 25;
-
+    public final static int SEVENDAY = 26;
 }

@@ -25,10 +25,10 @@ import java.util.regex.Pattern;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 
 import android.content.Context;
 import android.text.Html;
+import android.text.InputType;
 
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
@@ -40,28 +40,32 @@ import com.liato.bankdroid.provider.IBankTypes;
 
 import eu.nullbyte.android.urllib.Urllib;
 
-public class Nordnet extends Bank {
-	private static final String TAG = "Nordnet";
-	private static final String NAME = "Nordnet";
-	private static final String NAME_SHORT = "nordnet";
-	private static final String URL = "https://www.nordnet.se/mux/login/startSE.html";
-	private static final int BANKTYPE_ID = IBankTypes.NORDNET;
+public class SevenDay extends Bank {
+	private static final String TAG = "SevenDay";
+	private static final String NAME = "SevenDay";
+	private static final String NAME_SHORT = "sevenday";
+	private static final String URL = "https://www.sevenday.se/mina-sidor/mina-sidor.htm";
+	private static final int BANKTYPE_ID = IBankTypes.SEVENDAY;
+    private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+    private static final String INPUT_HINT_USERNAME = "ÅÅMMDD-XXXX";
 	
     
-	private Pattern reLoginFields = Pattern.compile("class=\"formular\">\\s*<fieldset>\\s*<label>[^<]+</label>\\s*<input.*?name=\"([^\"]+)\"[^>]*>\\s*</fieldset>\\s*<fieldset>\\s*<label>[^<]+</label>\\s*<input.*?name=\"([^\"]+)\"");
-    private Pattern reBalance = Pattern.compile("<a[^>]+>([^<]+)</a>\\s*<span\\s*class=\"bullet\">.*?</span>\\s*<span>([^\\d]+)(\\d{1,})</span>\\s*</div>\\s*</div>\\s*<div\\s*class=\"value\">\\s*([0-9][^<]+)<");
+	private Pattern reViewState = Pattern.compile("ViewState\"\\s+value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
+    private Pattern reAccounts = Pattern.compile("'depositAccountNum':'([^=]+)=='[^>]+>([^<]+)</a></td>\\s*<td[^>]+>\\s*<span[^>]+>\\s*([0-9,]+)[^<]+</span>\\s*</td>\\s*<td[^>]+>\\s*<span[^>]+>\\s*([^<]+)<");
 	private String response = null;
 	
-	public Nordnet(Context context) {
+	public SevenDay(Context context) {
 		super(context);
 		super.TAG = TAG;
 		super.NAME = NAME;
 		super.NAME_SHORT = NAME_SHORT;
 		super.BANKTYPE_ID = BANKTYPE_ID;
 		super.URL = URL;
+        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
+        super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
 	}
 
-	public Nordnet(String username, String password, Context context) throws BankException, LoginException {
+	public SevenDay(String username, String password, Context context) throws BankException, LoginException {
 		this(context);
 		this.update(username, password);
 	}
@@ -71,24 +75,22 @@ public class Nordnet extends Bank {
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
         urlopen = new Urllib();
-        urlopen.setContentCharset(HTTP.ISO_8859_1);
-        response = urlopen.open("https://www.nordnet.se/mux/login/startSE.html");
+        response = urlopen.open("https://www.sevenday.se/mina-sidor/mina-sidor.htm");
         
-        Matcher matcher = reLoginFields.matcher(response);
+        Matcher matcher = reViewState.matcher(response);
         if (!matcher.find()) {
-            throw new BankException(res.getText(R.string.unable_to_find).toString()+" login fields.");
+            throw new BankException(res.getText(R.string.unable_to_find).toString()+" ViewState.");
         }
-        String loginFieldName = matcher.group(1);
-        String loginFieldPassword = matcher.group(2);
+        String viewState = matcher.group(1);
 
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
-        postData.add(new BasicNameValuePair("checksum", ""));
-        postData.add(new BasicNameValuePair("referer", ""));
-        postData.add(new BasicNameValuePair("encryption", "0"));
-        postData.add(new BasicNameValuePair(loginFieldName, username));
-        postData.add(new BasicNameValuePair(loginFieldPassword, password));
+        postData.add(new BasicNameValuePair("loginForm", "loginForm"));
+        postData.add(new BasicNameValuePair("login", "login"));
+        postData.add(new BasicNameValuePair("javax.faces.ViewState", viewState));
+        postData.add(new BasicNameValuePair("ssn", username));
+        postData.add(new BasicNameValuePair("password", password));
         
-        return new LoginPackage(urlopen, postData, response, "https://www.nordnet.se/mux/login/login.html");
+        return new LoginPackage(urlopen, postData, response, "https://www.sevenday.se/mina-sidor/mina-sidor.htm");
     }
 
     @Override
@@ -96,7 +98,7 @@ public class Nordnet extends Bank {
 		try {
             LoginPackage lp = preLogin();
 			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-			if (response.contains("fel vid inloggningen")) {
+			if (response.contains("Logga in med personnummer") || response.contains("kommer automatiskt till startsidan")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}
 		}
@@ -118,21 +120,20 @@ public class Nordnet extends Bank {
 		urlopen = login();
 		try {
 			Matcher matcher;
-			matcher = reBalance.matcher(response);
+			matcher = reAccounts.matcher(response);
 			if (matcher.find()) {
                 /*
                  * Capture groups:
                  * GROUP                EXAMPLE DATA
-                 * 1: Name              Efternamnet Förnamnet
-                 * 2: Account name      Aktie- och fonddepå
-                 * 3: Account number    1234567
-                 * 4: Amount            31 337
+                 * 1: Account id        JigBFAUETrrqVKY+V4Dm3tcoY1n6Usa21IuHxa1BV7MnJT3T6rrGChDcDK0RSuM731uAeB/f9rvPRXRFYCCBcQ
+                 * 2: Account name      Sparkonto: XXX
+                 * 3: Interest          2,55
+                 * 4: Amount            10&nbsp;kr
                  *  
                  */			    
-				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim() + " "
-				        + Html.fromHtml(matcher.group(3)).toString().trim(),
+				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(),
 				        Helpers.parseBalance(matcher.group(4)),
-				        Html.fromHtml(matcher.group(3)).toString().trim(), Account.FUNDS));
+				        Html.fromHtml(matcher.group(1)).toString().trim()));
 				balance = balance.add(Helpers.parseBalance(matcher.group(4)));
 			}
 			
