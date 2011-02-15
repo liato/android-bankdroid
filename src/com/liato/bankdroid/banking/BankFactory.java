@@ -40,6 +40,7 @@ import com.liato.bankdroid.banking.banks.IkanoBank;
 import com.liato.bankdroid.banking.banks.Jojo;
 import com.liato.bankdroid.banking.banks.Lansforsakringar;
 import com.liato.bankdroid.banking.banks.Nordea;
+import com.liato.bankdroid.banking.banks.Nordnet;
 import com.liato.bankdroid.banking.banks.OKQ8;
 import com.liato.bankdroid.banking.banks.PayPal;
 import com.liato.bankdroid.banking.banks.Payson;
@@ -109,6 +110,8 @@ public class BankFactory {
             return new Hemkop(context);            
         case IBankTypes.SEB:
             return new SEB(context);            
+        case IBankTypes.NORDNET:
+            return new Nordnet(context);            
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -141,6 +144,7 @@ public class BankFactory {
         banks.add(new Rikslunchen(context));
         banks.add(new Hemkop(context));
         banks.add(new SEB(context));
+        banks.add(new Nordnet(context));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));

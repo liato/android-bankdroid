@@ -47,5 +47,6 @@ public interface IBankTypes {
     public final static int RIKSLUNCHEN = 22;
     public final static int HEMKOP = 23;
     public final static int SEB = 24;
+    public final static int NORDNET = 25;
 
 }
