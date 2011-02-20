@@ -19,7 +19,7 @@
     android:orientation="vertical"
     android:layout_width="wrap_content"
     android:layout_height="fill_parent"
-    android:background="@color/black">
+    android:background="@drawable/background_repeat">
 
     <TextView android:id="@+id/headerText"
         android:layout_width="fill_parent"
@@ -35,10 +35,10 @@
     <com.liato.bankdroid.lockpattern.LockPatternView android:id="@+id/lockPattern"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content" />
-    <View
+    <!-- <View
          android:background="@*android:drawable/code_lock_bottom"
          android:layout_width="fill_parent"
-         android:layout_height="8dip" />
+         android:layout_height="8dip" /> -->
 
     <TextView android:id="@+id/footerText"
         android:layout_width="fill_parent"

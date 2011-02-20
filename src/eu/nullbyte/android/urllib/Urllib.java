@@ -18,9 +18,11 @@ package eu.nullbyte.android.urllib;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -30,6 +32,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -53,6 +56,7 @@ public class Urllib {
 	private String currentURI;
 	private boolean acceptInvalidCertificates = false;
 	private String charset = HTTP.UTF_8;
+	private HashMap<String, String> headers;
 	
 	public Urllib() {
 		this(false);
@@ -63,6 +67,7 @@ public class Urllib {
 
 	public Urllib(boolean acceptInvalidCertificates, boolean allowCircularRedirects) {
 		this.acceptInvalidCertificates = acceptInvalidCertificates;
+		this.headers = new HashMap<String, String>();
     	HttpParams params = new BasicHttpParams(); 
     	HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
         HttpProtocolParams.setContentCharset(params, this.charset);
@@ -92,17 +97,25 @@ public class Urllib {
     public String open(String url, List<NameValuePair> postData) throws ClientProtocolException, IOException {
     	this.currentURI = url;
     	String response;
+        String[] headerKeys = (String[]) this.headers.keySet().toArray(new String[headers.size()]);
+        String[] headerVals = (String[]) this.headers.values().toArray(new String[headers.size()]);
     	ResponseHandler<String> responseHandler = new BasicResponseHandler();
     	if (postData.isEmpty()) {
     		//URL urli = new URL(url); 
     		HttpGet urlConnection = new HttpGet(url);
     		urlConnection.addHeader("User-Agent", USER_AGENT);
+            for (int i = 0; i < headerKeys.length; i++) {
+                urlConnection.addHeader(headerKeys[i], headerVals[i]);
+            }
     		response = httpclient.execute(urlConnection, responseHandler, context);
     	}
     	else {
     		HttpPost urlConnection = new HttpPost(url);
     		urlConnection.setEntity(new UrlEncodedFormEntity(postData, this.charset));
     		urlConnection.addHeader("User-Agent", USER_AGENT);
+            for (int i = 0; i < headerKeys.length; i++) {
+                urlConnection.addHeader(headerKeys[i], headerVals[i]);
+            }
     		response = httpclient.execute(urlConnection, responseHandler, context); 
     	}
 
@@ -133,6 +146,32 @@ public class Urllib {
         this.charset = charset;
         HttpProtocolParams.setContentCharset(httpclient.getParams(), this.charset);
     }    
+    public void addHeader(String key, String value) {
+        this.headers.put(key, value);
+    }
+    
+    public void setKeepAliveTimeout(final int seconds) {
+        httpclient.setKeepAliveStrategy(new ConnectionKeepAliveStrategy() { 
+            @Override
+            public long getKeepAliveDuration(HttpResponse response, HttpContext arg1) {
+                // TODO Auto-generated method stub
+                return seconds;
+            }});
+    }
+
+    public String removeHeader(String key) {
+        return this.headers.remove(key);
+    }  
+    
+    public void clearHeaders() {
+        this.headers.clear();
+    }
+    
+    public HashMap<String, String> getHeaders() {
+        return this.headers;
+    }
+
+    
     public boolean acceptsInvalidCertificates() {
     	return acceptInvalidCertificates;
     }

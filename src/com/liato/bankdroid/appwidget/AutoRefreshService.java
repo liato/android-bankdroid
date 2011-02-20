@@ -55,11 +55,8 @@ public class AutoRefreshService extends Service {
 	public final static String ACTION_MAIN_SHOW_TRANSACTIONS = "com.liato.bankdroid.action.MAIN_SHOW_TRANSACTIONS";
 	public final static String BROADCAST_TRANSACTIONS_UPDATED = "com.liato.bankdroid.action.TRANSACTIONS";
 
-	NotificationManager notificationManager;
-
 	@Override
 	public void onCreate() {
-		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		new DataRetrieverTask().execute();
 	}
 
@@ -72,14 +69,15 @@ public class AutoRefreshService extends Service {
 		return null;
 	}
 
-	private void showNotification(final String text, final int icon,
-			final String title, final String bank) {
+	public static void showNotification(final String text, final int icon,
+			final String title, final String bank, Context context) {
 		final SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(this);
+				.getDefaultSharedPreferences(context);
 		if (!prefs.getBoolean("notify_on_change", true)) {
 			return;
 		}
 
+        final NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 		final Notification notification = new Notification(icon, text,
 				System.currentTimeMillis());
 		// Remove notification from statusbar when clicked
@@ -99,10 +97,10 @@ public class AutoRefreshService extends Service {
 			notification.vibrate = vib;
 			// notification.defaults |= Notification.DEFAULT_VIBRATE;
 		}
-		final PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-				new Intent(this, MainActivity.class), 0);
+		final PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
+				new Intent(context, MainActivity.class), 0);
 
-		notification.setLatestEventInfo(this, title, text, contentIntent);
+		notification.setLatestEventInfo(context, title, text, contentIntent);
 
 		notificationManager.notify(R.id.about, notification);
 
@@ -112,7 +110,7 @@ public class AutoRefreshService extends Service {
 			final Intent i = new Intent(BROADCAST_REMOTE_NOTIFIER);
 			i.putExtra("title", String.format("%s (%s)", bank, title));
 			i.putExtra("description", text);
-			sendBroadcast(i);
+			context.sendBroadcast(i);
 		}
 
 		// Broadcast to OpenWatch if enabled
@@ -126,7 +124,7 @@ public class AutoRefreshService extends Service {
 			}
 			i.putExtra("line1", String.format("%s (%s)", bank, title));
 			i.putExtra("line2", text);
-			sendBroadcast(i);
+			context.sendBroadcast(i);
 		}
 
 	}
@@ -242,7 +240,8 @@ public class AutoRefreshService extends Service {
 														+ ")",
 												bank.getImageResource(),
 												bank.getDisplayName(),
-												bank.getName());
+												bank.getName(),
+												AutoRefreshService.this);
 									}
 
 									refreshWidgets = true;

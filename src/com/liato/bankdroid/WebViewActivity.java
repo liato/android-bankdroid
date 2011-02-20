@@ -97,12 +97,10 @@ public class WebViewActivity extends LockableActivity implements OnClickListener
                                     cookie.getExpiryDate() == null ? "" : "expires="+cookie.getExpiryDate()+"; ",
                                     cookie.getPath() == null ? "/" : cookie.getPath(),
                                     cookie.getDomain());
-                            Log.d(TAG, "Cookiestring: " + cookieString);
                             cookieManager.setCookie(cookie.getDomain(), cookieString);
                         }
                         csm.sync();
                     }
-                    Log.d("HTML", loginPackage.getHtml());
                     mWebView.loadDataWithBaseURL("what://is/this/i/dont/even", loginPackage.getHtml(), "text/html", "utf-8", null);
                 }
               };

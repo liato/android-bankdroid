@@ -367,8 +367,8 @@ public class ChooseLockPattern extends Activity implements View.OnClickListener{
      * @see #onActivityResult(int, int, android.content.Intent)
      */
     protected void confirmPattern() {
-        final Intent intent = new Intent();
-        intent.setClassName("com.liato.bankdroid", "com.liato.bankdroid.ConfirmLockPattern");
+        final Intent intent = new Intent(this, ConfirmLockPattern.class);
+        //intent.setClassName("com.liato.bankdroid.lockpattern", "com.liato.bankdroid.lockpattern.ConfirmLockPattern");
         startActivityForResult(intent, 55);
     }
 
