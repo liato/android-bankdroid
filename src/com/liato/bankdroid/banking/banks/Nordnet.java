@@ -48,7 +48,7 @@ public class Nordnet extends Bank {
 	private static final int BANKTYPE_ID = IBankTypes.NORDNET;
 	
     
-	private Pattern reLoginFields = Pattern.compile("class=\"formular\">\\s*<fieldset>\\s*<label>[^<]+</label>\\s*<input.*?name=\"([^\"]+)\"[^>]*>\\s*</fieldset>\\s*<fieldset>\\s*<label>[^<]+</label>\\s*<input.*?name=\"([^\"]+)\"");
+	private Pattern reLoginFields = Pattern.compile("class=\"formular\">\\s*<fieldset>\\s*<label>[^<]+</label>\\s*<input.*?name=\"([^\"]+)\"[^>]*>\\s*</fieldset>\\s*<fieldset>\\s*<label>[^<]+</label>\\s*<input.*\\s*<input.*name=\"([^\"]+)");
     private Pattern reBalance = Pattern.compile("<a[^>]+>([^<]+)</a>\\s*<span\\s*class=\"bullet\">.*?</span>\\s*<span>([^\\d]+)(\\d{1,})</span>\\s*</div>\\s*</div>\\s*<div\\s*class=\"value\">\\s*([0-9][^<]+)<");
 	private String response = null;
 	
