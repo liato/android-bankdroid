@@ -24,10 +24,12 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,6 +44,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.liato.bankdroid.appwidget.AutoRefreshService;
+import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.BankFactory;
 import com.liato.bankdroid.banking.exceptions.BankException;
@@ -202,9 +205,20 @@ public class BankEditActivity extends LockableActivity implements OnClickListene
 				bank.closeConnection();
 				Log.d(TAG, "Saving "+bank);
 				bank.save();
-				Log.d(TAG, "Disabled: "+bank.isDisabled());
-			} 
-			catch (BankException e) {
+				Log.d(TAG, "Disabled: " + bank.isDisabled());
+
+				// Transactions updated.
+				final SharedPreferences prefs = PreferenceManager
+						.getDefaultSharedPreferences(getBaseContext());
+				if (prefs.getBoolean("content_provider_enabled", false)) {
+					final ArrayList<Account> accounts = bank.getAccounts();
+					for (final Account account : accounts) {
+						AutoRefreshService.broadcastTransactionUpdate(
+								getBaseContext(), bank.getDbId(),
+								account.getId());
+					}
+				}
+			} catch (BankException e) {
 				this.exc = e;
 			} catch (LoginException e) {
 				this.exc = e;

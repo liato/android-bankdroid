@@ -241,7 +241,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     public void save() {
         DBAdapter db = new DBAdapter(context);
         db.open();
-        db.updateBank(this);
+        dbid = db.updateBank(this); // Update ID on insert as well.
         db.close();
     }
 
