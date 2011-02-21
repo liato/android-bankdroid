@@ -65,8 +65,6 @@ public class MainActivity extends LockableActivity {
 		super.onCreate(savedInstanceState);
 
 		initialSetupApiKey();
-
-
 		setContentView(R.layout.main);
 		final OnClickListener listener = new View.OnClickListener() {
 			public void onClick(final View v) {
@@ -121,10 +119,13 @@ public class MainActivity extends LockableActivity {
 		// Clicking on widgets opens their transaction history through MainActivity so that
 		// the user can back out to the main window.
 		if (AutoRefreshService.ACTION_MAIN_SHOW_TRANSACTIONS.equals(getIntent().getAction())) {
-			final Intent intent = new Intent(this, TransactionsActivity.class);
-			intent.putExtra("account", extras.getString("account"));
-			intent.putExtra("bank", extras.getLong("bank"));
-			startActivity(intent);
+	        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		    if (prefs.getBoolean("widget_opens_transactions", true)) {
+    			final Intent intent = new Intent(this, TransactionsActivity.class);
+    			intent.putExtra("account", extras.getString("account"));
+    			intent.putExtra("bank", extras.getLong("bank"));
+    			startActivity(intent);
+		    }
 		}
 	}
 

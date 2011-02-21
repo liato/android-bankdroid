@@ -53,6 +53,11 @@
 			android:defaultValue="false"
 			android:title="@string/round_widget_balance_title"
 			android:summary="@string/round_widget_balance_summary" />
+		<CheckBoxPreference
+			android:key="widget_opens_transactions"
+			android:defaultValue="true"
+			android:title="@string/widget_opens_transactions_title"
+			android:summary="@string/widget_opens_transactions_summary" />
 	</PreferenceCategory>
 	<PreferenceCategory
 		android:title="@string/notifications_title">

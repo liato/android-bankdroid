@@ -54,6 +54,8 @@
 	<string name="appearance_title">Utseende</string>
 	<string name="round_widget_balance_title">Avrunda saldo på widgets</string>
 	<string name="round_widget_balance_summary">Visa saldot på widgets utan decimaler</string>
+	<string name="widget_opens_transactions_title">Widget-klick öppnar kontoutdrag</string>
+	<string name="widget_opens_transactions_summary">Öppna kontoutdraget för kontot när du klickar på en widget.</string>
 	<string name="notifications_title">Notifieringar</string>
 	<string name="enable_notifications_title">Aktivera notifieringar</string>
 	<string name="enable_notifications_summary">Notifiera vid kontoförändringar</string>
