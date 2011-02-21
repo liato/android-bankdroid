@@ -48,4 +48,5 @@ public interface IBankTypes {
     public final static int SEB = 24;
     public final static int NORDNET = 25;
     public final static int SEVENDAY = 26;
+    public final static int OSUUSPANKKI = 27;
 }

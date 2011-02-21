@@ -20,6 +20,8 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
@@ -160,6 +162,44 @@ public class Helpers {
         form.append("</form>");
         return form.toString();
         
+    }
+    
+
+    /**
+     * Determines what year a transaction belongs to.
+     * 
+     * If the given <code>day</code> of the given <code>month</code> for the current year
+     * is in the future the transaction is probably from last year.
+     * 
+     * @param month     The month, where January is 1.
+     * @param day       The day of the month, starting from 1.
+     * @return          An ISO 8601 formatted date.
+     */
+    public static String getTransactionDate(String month, String day) {
+        return getTransactionDate(Integer.parseInt(month), Integer.parseInt(day));
+    }
+
+    /**
+     * Determines what year a transaction belongs to.
+     * 
+     * If the given <code>day</code> of the given <code>month</code> for the current year
+     * is in the future the transaction is probably from last year.
+     * 
+     * @param month     The month, where January is 1.
+     * @param day       The day of the month, starting from 1.
+     * @return          An ISO 8601 formatted date.
+     */
+    public static String getTransactionDate(int month, int day) {
+        month--; // Java-months start at 0
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar cal = Calendar.getInstance(); 
+        int currentYear = cal.get(Calendar.YEAR);
+        cal.set(currentYear, month, day, 0, 0);
+        if (cal.getTime().after(Calendar.getInstance().getTime())) {
+            //If the transaction is in the future the year is probably of by +1.
+            cal.add(Calendar.YEAR, -1);
+        }
+        return sdf.format(cal.getTime());
     }
 
 }
