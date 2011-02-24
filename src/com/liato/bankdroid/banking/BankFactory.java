@@ -53,6 +53,7 @@ import com.liato.bankdroid.banking.banks.Steam;
 import com.liato.bankdroid.banking.banks.Swedbank;
 import com.liato.bankdroid.banking.banks.TestBank;
 import com.liato.bankdroid.banking.banks.Villabanken;
+import com.liato.bankdroid.banking.banks.Volvofinans;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.db.Crypto;
 import com.liato.bankdroid.db.DBAdapter;
@@ -118,6 +119,8 @@ public class BankFactory {
             return new SevenDay(context);
         case IBankTypes.OSUUSPANKKI:
             return new Osuuspankki(context);
+        case IBankTypes.VOLVOFINANS:
+            return new Volvofinans(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -153,6 +156,7 @@ public class BankFactory {
         banks.add(new Nordnet(context));
         banks.add(new SevenDay(context));
         banks.add(new Osuuspankki(context));
+        banks.add(new Volvofinans(context));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));

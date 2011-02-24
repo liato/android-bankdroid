@@ -16,6 +16,7 @@
     <string name="unable_to_find">Unable to find</string>
     <string name="no_accounts_found">No accounts found</string>
     <string name="transparent_background">Transparent background</string>
+    <string name="bank_closed">The bank is currently closed.</string>
     
     <string name="username">Username</string>
     <string name="password">Password</string>
