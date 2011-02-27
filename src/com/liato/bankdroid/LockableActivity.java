@@ -64,6 +64,7 @@ public class LockableActivity extends Activity {
         OnClickListener listener = new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(LockableActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 LockableActivity.this.finish();
             }
