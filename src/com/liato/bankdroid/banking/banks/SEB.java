@@ -52,7 +52,7 @@ public class SEB extends Bank {
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
 	
 	private Pattern reAccounts = Pattern.compile("/cgi-bin/pts3/mps/1100/mps1102\\.aspx\\?M1=show&amp;P1=([^&]+)&amp;P2=1&amp;P4=1\">([^<]+)</a></td>\\s*</tr>\\s*<tr[^>]+>\\s*<td>[^<]+</td>\\s*<td[^>]+>[^<]+</td>\\s*<td[^>]+>([^<]+)</td>\\s*", Pattern.CASE_INSENSITIVE);
-	private Pattern reTransactions = Pattern.compile("<span\\s*id=\"MPSMaster_MainPlaceHolder_repAccountTransactions[^\"]+\"\\s*class=\"name\">([^/]+)/(\\d{2}-\\d{2}-\\d{2})</span>\\s*<span\\s*id=\"MPSMaster_MainPlaceHolder_repAccountTransactions[^\"]+\"\\s*class=\"value\">([^<]+)</span>", Pattern.CASE_INSENSITIVE);
+	private Pattern reTransactions = Pattern.compile("(\\d{6})\\s*<br\\s?/>\\s*<span\\s*id=\"MPSMaster_MainPlaceHolder_repAccountTransactions[^\"]+\"\\s*class=\"name\">([^/]+)(?:/(\\d{2}-\\d{2}-\\d{2}))?</span>\\s*<span\\s*id=\"MPSMaster_MainPlaceHolder_repAccountTransactions[^\"]+\"\\s*class=\"value\">([^<]+)</span>", Pattern.CASE_INSENSITIVE);
 	
 	private String response = null;
 
@@ -160,12 +160,21 @@ public class SEB extends Bank {
                 /*
                  * Capture groups:
                  * GROUP                    EXAMPLE DATA
-                 * 1: Transaction           Swedbank Atm
-                 * 2: Date                  11-01-14
-                 * 3: Amount                -100,00 
+                 * 1: Book. date            101214
+                 * 2: Transaction           St1
+                 * 3: Trans. date           10-12-11
+                 * 4: Amount                -200,07  
                  * 
-                 */                 
-				transactions.add(new Transaction("20"+Html.fromHtml(matcher.group(2)).toString().trim(), Html.fromHtml(matcher.group(1)).toString().trim(), Helpers.parseBalance(matcher.group(3))));
+                 */
+			    String date;
+			    if (matcher.group(3) == null || matcher.group(3).length() == 0) {
+			        date = Html.fromHtml(matcher.group(1)).toString().trim();
+			        date = String.format("%s-%s-%s", date.substring(0,2), date.substring(2,4), date.substring(4,6));
+			    }
+			    else {
+			        date = Html.fromHtml(matcher.group(3)).toString().trim();
+			    }
+				transactions.add(new Transaction("20"+date, Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(4))));
 			}
 			account.setTransactions(transactions);
 		} catch (ClientProtocolException e) {
