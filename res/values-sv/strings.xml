@@ -17,6 +17,7 @@
     <string name="unable_to_find">Kunde ej hitta</string>
     <string name="no_accounts_found">Inga konton funna</string>
     <string name="transparent_background">Transparent bakgrund</string>
+    <string name="bank_closed">Banken är för närvarande stängd.</string>
     
     <string name="username">Användarnamn</string>
     <string name="password">Lösenord</string>
