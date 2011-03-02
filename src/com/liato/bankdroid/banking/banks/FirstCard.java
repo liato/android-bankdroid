@@ -46,7 +46,7 @@ public class FirstCard extends Bank {
 	private static final String TAG = "FirstCard";
 	private static final String NAME = "First Card";
 	private static final String NAME_SHORT = "firstcard";
-	private static final String URL = "https://e-saldo.eurocard.se/nis/external/ecse/login.do";
+	private static final String URL = "https://www.firstcard.se/login.jsp";
 	private static final int BANKTYPE_ID = IBankTypes.FIRSTCARD;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
@@ -75,14 +75,13 @@ public class FirstCard extends Bank {
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
         urlopen = new Urllib(true);
+        response = urlopen.open("https://www.firstcard.se/login.jsp");
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         postData.add(new BasicNameValuePair("op", "login"));                
-        postData.add(new BasicNameValuePair("searchIndex", ""));                
-        postData.add(new BasicNameValuePair("country", "0"));               
-        postData.add(new BasicNameValuePair("soktext", "Skriv sökord här"));                
+        postData.add(new BasicNameValuePair("errorpage", "login.jsp"));                
         postData.add(new BasicNameValuePair("pnr", username));
         postData.add(new BasicNameValuePair("intpwd", password));
-        return new LoginPackage(urlopen, postData, null, "https://www.firstcard.se/valkom.jsp");
+        return new LoginPackage(urlopen, postData, null, "https://www.firstcard.se/login.jsp");
     }
 
 	@Override
@@ -90,7 +89,7 @@ public class FirstCard extends Bank {
 		try {
 			LoginPackage lp = preLogin();
 			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-			if (response.contains("felaktig identitet") || response.contains("obligatoriskt") || response.contains("ange en internetkod")) {
+			if (response.contains("Logga in med din kod")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}
 			
