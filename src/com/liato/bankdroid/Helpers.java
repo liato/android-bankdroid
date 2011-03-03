@@ -116,10 +116,13 @@ public class Helpers {
     }
 
     public static void slowDebug(String TAG, String text) {
+        slowDebug(TAG, text, 100);
+    }
+    public static void slowDebug(String TAG, String text, int sleep) {
         for (String s : text.split("\n")) {
             Log.d(TAG, s);
             try {
-                Thread.sleep(100);
+                Thread.sleep(sleep);
             }
             catch (InterruptedException e) {
                 // TODO Auto-generated catch block

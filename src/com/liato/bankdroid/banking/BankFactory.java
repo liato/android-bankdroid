@@ -27,6 +27,7 @@ import android.preference.PreferenceManager;
 
 import com.liato.bankdroid.banking.banks.Avanza;
 import com.liato.bankdroid.banking.banks.AvanzaMini;
+import com.liato.bankdroid.banking.banks.CSN;
 import com.liato.bankdroid.banking.banks.Coop;
 import com.liato.bankdroid.banking.banks.DinersClub;
 import com.liato.bankdroid.banking.banks.EurobonusMastercard;
@@ -121,6 +122,8 @@ public class BankFactory {
             return new Osuuspankki(context);
         case IBankTypes.VOLVOFINANS:
             return new Volvofinans(context);
+        case IBankTypes.CSN:
+            return new CSN(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -157,6 +160,7 @@ public class BankFactory {
         banks.add(new SevenDay(context));
         banks.add(new Osuuspankki(context));
         banks.add(new Volvofinans(context));
+        banks.add(new CSN(context));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));
