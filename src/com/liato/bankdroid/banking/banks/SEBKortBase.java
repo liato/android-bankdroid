@@ -176,7 +176,6 @@ public abstract class SEBKortBase extends Bank {
 			response = urlopen.open(String.format("https://applications.sebkort.com/nis/%s/getPendingTransactions.do", provider_part));
 			matcher = reTransactions.matcher(response);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-			Calendar cal = Calendar.getInstance();
 			while (matcher.find()) {
 				/*
 				 * Capture groups:
@@ -189,8 +188,13 @@ public abstract class SEBKortBase extends Bank {
 				 * 6: Amount			local currency amount (in $currency) for transactions in non-SEK
 				 * 7: Amount in sek		5791,18
 				 * 
-				 */				
-				transactions.add(new Transaction(""+cal.get(Calendar.YEAR)+"-"+matcher.group(1).trim(), Html.fromHtml(matcher.group(3)).toString().trim()+(matcher.group(4).trim().length() > 0 ? " ("+Html.fromHtml(matcher.group(4)).toString().trim()+")" : ""), Helpers.parseBalance(matcher.group(7)).negate()));
+				 */
+			    String[] monthday = matcher.group(1).trim().split("-");
+				transactions.add(new Transaction(Helpers.getTransactionDate(monthday[0], monthday[1]),
+				        Html.fromHtml(matcher.group(3)).toString().trim()+(matcher.group(4).trim().length() > 0 ? " ("+Html.fromHtml(matcher.group(4)).toString().trim()+")" : ""),
+				        Helpers.parseBalance(matcher.group(7)).negate()));
+	            Collections.sort(transactions);
+	            Collections.reverse(transactions);
 			}
 			account.setTransactions(transactions);
 		} catch (ClientProtocolException e) {
