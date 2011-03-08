@@ -178,8 +178,6 @@ public class Eurocard extends Bank {
 			response = urlopen.open("https://e-saldo.eurocard.se/nis/ecse/getPendingTransactions.do?id="+accountWebId);
 			matcher = reTransactions.matcher(response);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-			String strDate = null;
-			Calendar cal = Calendar.getInstance();
 			while (matcher.find()) {
                 /*
                  * Capture groups:
@@ -192,9 +190,11 @@ public class Eurocard extends Bank {
                  * 6: amount/tax        147,64
                  * 7: amount in sek     5791,18
                  * 
-                 */     			    
-				strDate = ""+cal.get(Calendar.YEAR)+"-"+Html.fromHtml(matcher.group(1)).toString().trim();
-				transactions.add(new Transaction(strDate, Html.fromHtml(matcher.group(3)).toString().trim()+(matcher.group(4).trim().length() > 0 ? " ("+Html.fromHtml(matcher.group(4)).toString().trim()+")" : ""), Helpers.parseBalance(matcher.group(7)).negate()));
+                 */
+			    String[] monthday = matcher.group(1).trim().split("-");
+				transactions.add(new Transaction(Helpers.getTransactionDate(monthday[0], monthday[1]),
+				        Html.fromHtml(matcher.group(3)).toString().trim()+(matcher.group(4).trim().length() > 0 ? " ("+Html.fromHtml(matcher.group(4)).toString().trim()+")" : ""),
+				        Helpers.parseBalance(matcher.group(7)).negate()));
 			}
 			account.setTransactions(transactions);
 		} catch (ClientProtocolException e) {

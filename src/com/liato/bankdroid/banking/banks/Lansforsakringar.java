@@ -57,6 +57,7 @@ public class Lansforsakringar extends Bank {
     private Pattern reAccountsReg = Pattern.compile("AccountNumber=([0-9]+)[^>]+><span[^>]+>([^<]+)</.*?span></td.*?<span[^>]+>([0-9 .,-]+)</span", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private Pattern reAccountsFunds = Pattern.compile("fundsDataTable[^>]+>([^<]+)</span></a></td><td[^>]+></td><td[^>]+><span\\sid=\"fundsDataTable:\\d{1,}:bankoverview_\\d{1,}_([^\"]+)\">([0-9 .,-]+)</span", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private Pattern reAccountsLoans = Pattern.compile("internalLoanDataTable[^>]+>([^<]+)</span></a></span></td><td[^>]+><span[^>]+>[^<]+</span></td><td[^>]+><span\\sid=\"internalLoanDataTable:\\d{1,}:bankoverview_\\d{1,}_([^\"]+)\">([0-9 .,-]+)</spa.*?internalLoanDataTable:\\d{1,}:bankoverview_\\d{1,}_(?:[^\"]+)\">([0-9 .,-]+)</spa", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private Pattern rePension = Pattern.compile("occupationalPensionDataTable:\\d{1,}:pension_overview_\\d{1,}_([^>]+)>([^<]+)</span></a></span><span[^>]+>\\s*<sup>\\s*</span><span[^>]+></span><span[^>]+>\\s*</sup>\\s*</span>\\s*<table[^>]+>\\s*<tbody[^>]+></tbody></table>\\s*</td><td[^>]+><span[^>]+>([^<]+)</span>", Pattern.CASE_INSENSITIVE);
     private Pattern reToken = Pattern.compile("var\\s+token\\s*=\\s*'([^']+)'", Pattern.CASE_INSENSITIVE);
     private Pattern reUrl = Pattern.compile("<li class=\"bank\">\\s*<a href=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
     private Pattern reTransactions = Pattern.compile("td\\s*class=\"leftpadding\"[^>]+>(?:<a[^>]+>)?<span[^>]+>(\\d{4}-\\d{2}-\\d{2})</span>(?:</a>)?\\s*<a.*?</a></td><td[^>]+><span[^>]+>(\\d{4}-\\d{2}-\\d{2})</span></td><td[^>]+><span[^>]+>([^<]+)</span></td><td[^>]+><span[^>]+><span[^>]+>([^<]*)</span></span></td><td[^>]+><span[^>]+>([^<]+)</span></td><td[^>]+><span[^>]+>([^<]+)<", Pattern.CASE_INSENSITIVE);
@@ -212,6 +213,27 @@ public class Lansforsakringar extends Bank {
             }
             mRequestToken = matcher.group(1);
 
+            response = urlopen.open("https://" + host + "/lfportal/appmanager/privat/main?_nfpb=true&_pageLabel=pension_undermenyosynlig&newUc=true&isTopLevel=true&_token=" + mRequestToken);
+            matcher = rePension.matcher(response);
+            while (matcher.find()) {
+                /*
+                 * Capture groups:
+                 * GROUP                    EXAMPLE DATA
+                 * 1: ID                    idJsp71
+                 * 2: Name                  Avtalspension ITP - Fond
+                 * 3: Amount                10 587,40
+                 * 
+                 */                
+                accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), matcher.group(1).trim()));
+            }            
+
+            // Save token for next request
+            matcher = reToken.matcher(response);
+            if (!matcher.find()) {
+                throw new BankException(res.getText(R.string.unable_to_find).toString()+" token.");
+            }
+            mRequestToken = matcher.group(1);
+            
             if (accounts.isEmpty()) {
                 throw new BankException(res.getText(R.string.no_accounts_found).toString());
             }
