@@ -49,7 +49,7 @@ public class ResursBank extends Bank {
 	private static final int BANKTYPE_ID = IBankTypes.RESURSBANK;
 	
 	private Pattern reAccounts = Pattern.compile("kontonummer</td>\\s*<td>([^<]+)</td>\\s*</tr>\\s*<tr>\\s*<td[^>]+>Beviljad\\s*kredit</td>\\s*<td>([^<]+)</td>\\s*</tr>\\s*<tr>\\s*<td[^>]+>Utnyttjad\\s*kredit</td>\\s*<td>([^<]+)</td>\\s*</tr>\\s*<tr>\\s*<td[^>]+>Reserverat\\s*belopp</td>\\s*<td>([^<]+)</td>\\s*</tr>\\s*<tr>\\s*<td[^>]+>Kvar\\s*att\\s*utnyttja</td>\\s*<td>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
-	private Pattern reTransactions = Pattern.compile("(\\d{6})\\s*<br\\s?/>\\s*<span\\s*id=\"MPSMaster_MainPlaceHolder_repAccountTransactions[^\"]+\"\\s*class=\"name\">([^/]+)(?:/(\\d{2}-\\d{2}-\\d{2}))?</span>\\s*<span\\s*id=\"MPSMaster_MainPlaceHolder_repAccountTransactions[^\"]+\"\\s*class=\"value\">([^<]+)</span>", Pattern.CASE_INSENSITIVE);
+	private Pattern reTransactions = Pattern.compile("<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]*)</td>\\s*<td>([^<]+)</", Pattern.CASE_INSENSITIVE);
 	
 	private String response = null;
 

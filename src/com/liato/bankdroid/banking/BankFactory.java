@@ -25,6 +25,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.preference.PreferenceManager;
 
+import com.liato.bankdroid.banking.banks.AmericanExpress;
 import com.liato.bankdroid.banking.banks.Avanza;
 import com.liato.bankdroid.banking.banks.AvanzaMini;
 import com.liato.bankdroid.banking.banks.CSN;
@@ -127,6 +128,8 @@ public class BankFactory {
             return new CSN(context);
         case IBankTypes.RESURSBANK:
             return new ResursBank(context);
+        case IBankTypes.AMERICANEXPRESS:
+            return new AmericanExpress(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -165,6 +168,7 @@ public class BankFactory {
         banks.add(new Volvofinans(context));
         banks.add(new CSN(context));
         banks.add(new ResursBank(context));
+        banks.add(new AmericanExpress(context));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));
