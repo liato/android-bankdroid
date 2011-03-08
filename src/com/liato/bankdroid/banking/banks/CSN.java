@@ -19,6 +19,7 @@ package com.liato.bankdroid.banking.banks;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -191,6 +192,8 @@ public class CSN extends Bank {
                         Html.fromHtml(matcher.group(2)).toString().trim()+ " ("+Html.fromHtml(matcher.group(3)).toString().trim()+")",
                         Helpers.parseBalance(matcher.group(4).replace(",", ""))));
             }
+            Collections.sort(transactions);
+            Collections.reverse(transactions);
             account.setTransactions(transactions);
         } catch (ClientProtocolException e) {
             // TODO Auto-generated catch block
