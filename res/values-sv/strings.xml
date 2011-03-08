@@ -132,45 +132,6 @@
     <string name="tran_desc">Inget kontoutdrag tillgängligt för detta konto.</string>
 
     <string name="thanks_to">Tack till</string>
-    <string name="thanks"> 
-    Wendell Fernandes (Ikon)
-    \nKingcool (ICA Banken)
-    \ngrief (Länsförsäkringar)
-    \neinand (Länsförsäkringar)
-    \nAnders Widén (Länsförsäkringar)
-    \nHund (Handelsbanken)
-    \nTravolta (Coop)
-    \nDaniel Malmgren (Coop)
-    \nisocron (ICA)
-    \nDustin (ICA)
-    \ndimaZ (Statoil)
-    \nOxygen (Statoil)
-    \nOxygen (Nordea)
-	\nOzzy (Avanza)
-	\nasperon (Transparent widget)
-	\nDEGE (Handelsbanken)
-	\ncola (OKQ8)
-	\nRikko (FirstCard)
-	\nnihplod (Eurocard)
-	\nDaniel (Avanza)
-	\nRadioman62 (Coop)
-	\ns3 (Steam Wallet)
-	\nVarazir (Jojo Reskassa)
-	\nJohan (Länsförsäkringar)
-	\nRadioman62 (Handelsbanken)
-	\nLibodido (Coop)
-	\ngust (Handelsbanken)
-	\nbernard (Diners Club)
-	\npilang (Länsförsäkringar)
-	\nMidde (Ikano Bank)
-	\nweppe (Coop)
-	\nmagnusart (Content Provider)
-	\nPMC (Rikslunchen)
-	\nmhagander (Diners Club &amp; SAS EuroBonus Mastercard)
-	\nfiretech (Hemköp Kundkort)
-	\nebjsv (PayPal)
-	</string>
-    
 
 	<!-- Lock Pattern settings -->
     <!-- Unlock header -->
