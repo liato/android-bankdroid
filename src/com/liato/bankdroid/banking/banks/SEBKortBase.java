@@ -192,8 +192,7 @@ public abstract class SEBKortBase extends Bank {
 				transactions.add(new Transaction(Helpers.getTransactionDate(monthday[0], monthday[1]),
 				        Html.fromHtml(matcher.group(3)).toString().trim()+(matcher.group(4).trim().length() > 0 ? " ("+Html.fromHtml(matcher.group(4)).toString().trim()+")" : ""),
 				        Helpers.parseBalance(matcher.group(7)).negate()));
-	            Collections.sort(transactions);
-	            Collections.reverse(transactions);
+	            Collections.sort(transactions, Collections.reverseOrder());
 			}
 			account.setTransactions(transactions);
 		} catch (ClientProtocolException e) {

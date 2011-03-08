@@ -192,8 +192,7 @@ public class CSN extends Bank {
                         Html.fromHtml(matcher.group(2)).toString().trim()+ " ("+Html.fromHtml(matcher.group(3)).toString().trim()+")",
                         Helpers.parseBalance(matcher.group(4).replace(",", ""))));
             }
-            Collections.sort(transactions);
-            Collections.reverse(transactions);
+            Collections.sort(transactions, Collections.reverseOrder());
             account.setTransactions(transactions);
         } catch (ClientProtocolException e) {
             // TODO Auto-generated catch block

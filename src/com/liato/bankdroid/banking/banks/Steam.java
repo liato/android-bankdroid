@@ -159,8 +159,7 @@ public class Steam extends Bank {
                     Log.d(TAG, "Unable to parse date: " + matcher.group(1).trim());
                 }
 		    }
-		    Collections.sort(transactions);
-		    Collections.reverse(transactions);
+		    Collections.sort(transactions, Collections.reverseOrder());
 		    account.setTransactions(transactions);
 		    accounts.add(account);
 		}
