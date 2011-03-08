@@ -51,4 +51,5 @@ public interface IBankTypes {
     public final static int OSUUSPANKKI = 27;
     public final static int VOLVOFINANS = 28;
     public final static int CSN = 29;
+    public final static int RESURSBANK = 30;
 }

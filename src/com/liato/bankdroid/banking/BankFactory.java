@@ -46,6 +46,7 @@ import com.liato.bankdroid.banking.banks.OKQ8;
 import com.liato.bankdroid.banking.banks.Osuuspankki;
 import com.liato.bankdroid.banking.banks.PayPal;
 import com.liato.bankdroid.banking.banks.Payson;
+import com.liato.bankdroid.banking.banks.ResursBank;
 import com.liato.bankdroid.banking.banks.Rikslunchen;
 import com.liato.bankdroid.banking.banks.SEB;
 import com.liato.bankdroid.banking.banks.SevenDay;
@@ -124,6 +125,8 @@ public class BankFactory {
             return new Volvofinans(context);
         case IBankTypes.CSN:
             return new CSN(context);
+        case IBankTypes.RESURSBANK:
+            return new ResursBank(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -161,6 +164,7 @@ public class BankFactory {
         banks.add(new Osuuspankki(context));
         banks.add(new Volvofinans(context));
         banks.add(new CSN(context));
+        banks.add(new ResursBank(context));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));
