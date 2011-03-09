@@ -50,7 +50,7 @@ public class Volvofinans extends Bank {
 	private static final String URL = "https://secure.volvokort.com/";
 	private static final int BANKTYPE_ID = IBankTypes.VOLVOFINANS;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
-    private static final String INPUT_HINT_USERNAME = "ÅÅÅÅMMDD-XXXX";
+    private static final String INPUT_HINT_USERNAME = "ÅÅÅÅMMDDXXXX";
     
 	public Volvofinans(Context context) {
 		super(context);
