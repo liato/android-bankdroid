@@ -32,6 +32,9 @@ public class Account implements IAccountTypes {
 	private boolean notify = true;
 	private String currency;
 	private ArrayList<Transaction> transactions;
+	private String customName;
+	private String uid;
+	private boolean fullInit = false;
 
 	public ArrayList<Transaction> getTransactions() {
 		return transactions;

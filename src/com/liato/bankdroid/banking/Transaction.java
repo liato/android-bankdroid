@@ -19,10 +19,21 @@ package com.liato.bankdroid.banking;
 import java.math.BigDecimal;
 
 public class Transaction implements Comparable<Transaction> {
-	private String date;
+    /**
+     * The transaction has been completed.
+     */
+    public final int STATUS_COMPLETED = 0;
+    /**
+     * The transaction is still in progress.
+     */
+    public final int STATUS_IN_PROGRESS = 1;
+
+    private String date;
 	private String transaction;
 	private BigDecimal amount;
 	private String currency;
+	private int status = STATUS_COMPLETED;
+	private String uid = null;
 	
 	public Transaction(String date, String transaction, BigDecimal amount, String currency) {
 		this.date = date;
@@ -73,4 +84,22 @@ public class Transaction implements Comparable<Transaction> {
 		Integer thatdate = Integer.parseInt((another).getDate().replaceAll("-", ""));
 		return thisdate - thatdate;
 	}
+
+    /**
+     * Set the status of the transaction.
+     * Either {@link STATUS_IN_PROGRESS} if the transaction hasn't been completed
+     * or {@link STATUS_COMPLETED} if it has.
+     *  
+     * @param status The status of the transaction.
+     */
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    /**
+     * @return The status of the transaction. Either {@link STATUS_IN_PROGRESS} or {@link STATUS_COMPLETED}.
+     */
+    public int getStatus() {
+        return status;
+    }
 }

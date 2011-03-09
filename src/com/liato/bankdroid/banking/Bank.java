@@ -71,6 +71,9 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     protected Urllib urlopen = null;
     protected String customName;
     protected String currency = "SEK";
+    protected HashMap<String, String> extras = null;
+    protected ArrayList<String> removeExtras = null;
+    
 
     public Urllib getUrlopen() {
         return urlopen;
@@ -304,7 +307,26 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
             a.setBank(this);
         }
     }
+    
 
+    public HashMap<String, String> getExtras() {
+        return this.extras;
+    }
+    public String getExtra(String key, String def) {
+        if (this.extras != null && this.extras.containsKey(key)) {
+            return this.extras.get(key);
+        }
+        return def;
+    }
+
+    public void setExtra(String key, String value) {
+        this.extras.put(key, value);
+    }
+    
+    public void removeExtra(String key) {
+        this.removeExtras.add(key);
+    }
+    
     public SessionPackage getSessionPackage(Context context) {
         String preloader = "Error...";
         try {

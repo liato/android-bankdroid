@@ -42,20 +42,20 @@ public class DBAdapter {
     static final String DATABASE_NAME = "data";
     static final int DATABASE_VERSION = 9;
 
-    private final Context mCtx;
+    private final Context context;
 
     /**
      * Constructor - takes the context to allow the database to be
      * opened/created
      * 
-     * @param ctx the Context within which to work
+     * @param context the Context within which to work
      */
-    public DBAdapter(Context ctx) {
-        this.mCtx = ctx;
+    public DBAdapter(Context context) {
+        this.context = context;
     }
 
     /**
-     * Open the notes database. If it cannot be opened, try to create a new
+     * Open the database. If it cannot be opened, try to create a new
      * instance of the database. If it cannot be created, throw an exception to
      * signal the failure
      * 
@@ -64,24 +64,22 @@ public class DBAdapter {
      * @throws SQLException if the database could be neither opened or created
      */
     public DBAdapter open() throws SQLException {
-        mDbHelper = new DatabaseHelper(mCtx);
+        mDbHelper = new DatabaseHelper(context);
         mDb = mDbHelper.getWritableDatabase();
         return this;
     }
     
+    /**
+     * Close the database.
+     */
     public void close() {
         mDbHelper.close();
         mDb.close();
     }
 
 
-    public long createBank(Bank bank) {
-    	return updateBank(bank);
-    }
-
-    
     /**
-     * Delete the bank with the given bankId
+     * Delete the bank with the given bankId.
      * 
      * @param bankId id of bank to delete
      */
@@ -130,6 +128,23 @@ public class DBAdapter {
         return mDb.query("transactions", new String[] {"transdate", "btransaction", "amount", "currency"}, "account='"+account+"'", null, null, null, null);
     }    
 
+    
+    /**
+     * Create a new bank in the database.
+     * 
+     * @param bank  The {@link Bank} to save to the database.
+     * @return      An ID identifying this bank in the current database.
+     */
+    public long createBank(Bank bank) {
+        return updateBank(bank);
+    }
+
+    /**
+     * Store changes made to the bank in the database.
+     * 
+     * @param bank  The {@link Bank} to save.
+     * @return      An ID identifying this bank in the current database.
+     */
     public long updateBank(Bank bank) {
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
