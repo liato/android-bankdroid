@@ -18,6 +18,7 @@ package com.liato.bankdroid.banking.banks;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -176,6 +177,7 @@ public class SEB extends Bank {
 			    }
 				transactions.add(new Transaction("20"+date, Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(4))));
 			}
+			Collections.sort(transactions, Collections.reverseOrder());
 			account.setTransactions(transactions);
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
