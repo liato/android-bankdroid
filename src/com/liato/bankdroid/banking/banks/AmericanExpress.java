@@ -74,7 +74,7 @@ public class AmericanExpress extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib();
+        urlopen = new Urllib(true, true);
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         response = urlopen.open("https://home.americanexpress.com/home/se/home_c.shtml");
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
