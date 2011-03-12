@@ -17,7 +17,9 @@
 package com.liato.bankdroid.banking.banks;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,6 +58,7 @@ public class Swedbank extends Bank {
 	private Pattern reAccounts = Pattern.compile("(account|loan)\\.html\\?id=([^\"]+)\">\\s*(?:<span.*?/span>)?([^<]+)<.*?secondary\">([^<]+)</span");
 	private Pattern reLinklessAccounts = Pattern.compile("<li>\\s*([^<]+)<br/?><span\\sclass=\"secondary\">([^<]+)</span>\\s*</li>", Pattern.CASE_INSENSITIVE);
 	private Pattern reTransactions = Pattern.compile("trans-date\">([^<]+)</div>.*?trans-subject\">([^<]+)</div>.*?trans-amount\">([^<]+)</div>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private Pattern reLoanData = Pattern.compile("<li[^>]*>([^<]+)<br/><span\\s*class=\"secondary\">([^<]+)</span></li>");
 	public Swedbank(Context context) {
 		super(context);
 		super.TAG = TAG;
@@ -162,18 +165,42 @@ public class Swedbank extends Bank {
 	@Override
 	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
 		super.updateTransactions(account, urlopen);
-		if (account.getType() == Account.LOANS || account.getType() == Account.OTHER) return; //No transaction history for loans
+		if (account.getType() == Account.OTHER) return; //No transaction history for loans
 
 		String response = null;
 		Matcher matcher;
 		try {
-			Log.d(TAG, "Opening: https://mobilbank.swedbank.se/banking/swedbank/account.html?id="+account.getId());
-			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/account.html?id="+account.getId());
-			matcher = reTransactions.matcher(response);
-			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-			while (matcher.find()) {
-				transactions.add(new Transaction("20"+matcher.group(1).trim(), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3))));
-			}
+            ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+		    if (account.getType() == Account.LOANS) {
+		        String [] accountId = account.getId().split(":", 2);
+		        if (accountId.length < 2) return;
+	            Log.d(TAG, "Opening: https://mobilbank.swedbank.se/banking/swedbank/loan.html?id="+accountId[1]);
+	            response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/loan.html?id="+accountId[1]);
+	            matcher = reLoanData.matcher(response);
+	            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	            Calendar cal = Calendar.getInstance(); 
+	            String date = sdf.format(cal.getTime());
+	            while (matcher.find()) {
+	                /*
+	                 * Capture groups:
+	                 * GROUP                    EXAMPLE DATA
+	                 * 1: Title                 Totalt | Clearingnummer
+	                 * 2: Value                 12 345 | 8032-5
+	                 * 
+	                 */
+	                Transaction transaction = new Transaction(date, Html.fromHtml(matcher.group(1)).toString().trim(), Helpers.parseBalance(matcher.group(2)));
+	                transaction.setCurrency("");
+	                transactions.add(transaction);
+	            }
+		    }
+		    else {
+	            Log.d(TAG, "Opening: https://mobilbank.swedbank.se/banking/swedbank/account.html?id="+account.getId());
+	            response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/account.html?id="+account.getId());
+	            matcher = reTransactions.matcher(response);
+	            while (matcher.find()) {
+	                transactions.add(new Transaction("20"+matcher.group(1).trim(), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3))));
+	            }
+		    }
 			account.setTransactions(transactions);
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
