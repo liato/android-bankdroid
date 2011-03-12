@@ -60,7 +60,7 @@ public class AutoRefreshService extends Service {
 		new DataRetrieverTask().execute();
 	}
 
-	@Override
+    @Override
 	public void onDestroy() {
 	}
 

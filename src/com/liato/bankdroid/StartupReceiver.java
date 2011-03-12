@@ -39,7 +39,7 @@ public class StartupReceiver extends BroadcastReceiver{
 	
 	public static void setAlarm(Context context) {
 		PendingIntent alarmSender;
-		alarmSender = PendingIntent.getService(context, 0, new Intent(context, AutoRefreshService.class), 0);
+		alarmSender = PendingIntent.getService(context, 0, new Intent(context, AutoRefreshService.class), PendingIntent.FLAG_UPDATE_CURRENT);
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean autoUpdatesEnabled = prefs.getBoolean("autoupdates_enabled", true);
         Integer refreshRate = Integer.parseInt(prefs.getString("refresh_rate", "0")); 
