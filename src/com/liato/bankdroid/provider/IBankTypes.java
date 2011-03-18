@@ -53,4 +53,5 @@ public interface IBankTypes {
     public final static int CSN = 29;
     public final static int RESURSBANK = 30;
     public final static int AMERICANEXPRESS = 31;
+    public final static int MCDONALDS = 32;
 }

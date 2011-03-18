@@ -13,6 +13,7 @@
     <string name="menu_edit">Edit</string>
     <string name="menu_remove">Remove</string>
     <string name="invalid_username_password">Invalid username or password.</string>
+    <string name="invalid_card_number">Invalid card number.</string>
     <string name="unable_to_find">Unable to find</string>
     <string name="no_accounts_found">No accounts found</string>
     <string name="transparent_background">Transparent background</string>
@@ -265,6 +266,8 @@
 	<string name="lock_ok">Ok</string>
          
 	<string name="card_id">Card ID</string>
+	<string name="card_number">Card number</string>
+	
 	<string name="permission_provider_label">Basic account information  and the transaction history</string>
 	<string name="permission_provider_desc">Allows the application to access what banks and accounts are configured in BankDroids. Your Bank credentials are not exposed. Transaction history can also be accessed.</string>
 </resources>
