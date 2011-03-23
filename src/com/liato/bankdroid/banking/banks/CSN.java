@@ -58,6 +58,7 @@ public class CSN extends Bank {
     private Pattern reLoginError = Pattern.compile("<h3>Observera</h3>\\s*<ul>\\s*<li>([^<]+)</li>", Pattern.CASE_INSENSITIVE);
     private Pattern reBalance = Pattern.compile("aktuellStudieskuld\\.do\\?metod=init&(?:amp;)?SpecNr=(\\d{1,})\">([^<]+)</a>\\s*</td>\\s*<td[^>]+>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
     private Pattern reTransactions = Pattern.compile("<td>\\s*(\\d{4}-\\d{2}-\\d{2})\\s*</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]+)</td>.*?startHideInfoBoxTimer\\(\\d{1,}\\);\">([^<]+)</", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private Pattern reCompletedPayments = Pattern.compile("<td>\\s*(\\d{4}-\\d{2}-\\d{2})\\s*</td>\\s*<td>([^<]+)</td>.*?startHideInfoBoxTimer\\(\\d{1,}\\);\"[^>]+>([^<]+)</", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private String response = null;
 	
 	public CSN(Context context) {
@@ -208,7 +209,22 @@ public class CSN extends Bank {
                         Html.fromHtml(matcher.group(2)).toString().trim()+ " ("+Html.fromHtml(matcher.group(3)).toString().trim()+")",
                         Helpers.parseBalance(matcher.group(4).replace(",", "")).negate()));
             }
-
+            
+            response = urlopen.open("https://www.csn.se/aterbetalning/harMinaInbetalningarKommitIn/registreradeInbetalningar.do?javascript=off");
+            matcher = reCompletedPayments.matcher(response);
+            while (matcher.find()) {
+                /*
+                 * Capture groups:
+                 * GROUP                        EXAMPLE DATA
+                 * 1: Date                      2006-08-21
+                 * 2: Specification             Återkrav första halvåret 2006 lån 1
+                 * 3: Amount                    1,050
+                 * 
+                 */
+                transactions.add(new Transaction(matcher.group(1).trim(),
+                        Html.fromHtml(matcher.group(2)).toString().trim(),
+                        Helpers.parseBalance(matcher.group(3).replace(",", "")).negate()));
+            }            
             
             Collections.sort(transactions, Collections.reverseOrder());
             account.setTransactions(transactions);
