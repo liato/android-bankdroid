@@ -49,7 +49,7 @@ public class Nordnet extends Bank {
 	
     
 	private Pattern reLoginFields = Pattern.compile("class=\"formular\">\\s*<fieldset>\\s*<label>[^<]+</label>\\s*<input.*?name=\"([^\"]+)\"[^>]*>\\s*</fieldset>\\s*<fieldset>\\s*<label>[^<]+</label>\\s*<input.*\\s*<input.*name=\"([^\"]+)");
-    private Pattern reBalance = Pattern.compile("<a[^>]+>([^<]+)</a>\\s*<span\\s*class=\"bullet\">.*?</span>\\s*<span>([^\\d]+)(\\d{1,})</span>\\s*</div>\\s*</div>\\s*<div\\s*class=\"value\">\\s*([0-9][^<]+)<");
+    private Pattern reBalance = Pattern.compile("<a[^>]+>([^<]+)</a>\\s*<span\\s*class=\"bullet\">.*?</span>\\s*<span>([^\\d]+)([0-9 ]{1,})</span>\\s*</div>\\s*</div>\\s*<div\\s*class=\"value\">\\s*([0-9][^<]+)<");
 	private String response = null;
 	
 	public Nordnet(Context context) {
@@ -123,16 +123,22 @@ public class Nordnet extends Bank {
                 /*
                  * Capture groups:
                  * GROUP                EXAMPLE DATA
-                 * 1: Name              Efternamnet Förnamnet
-                 * 2: Account name      Aktie- och fonddepå
-                 * 3: Account number    1234567
-                 * 4: Amount            31 337
+                 * 1: Name              Efternamnet Förnamnet | Sparkonto
+                 * 2: Account name      Aktie- och fonddepå   | Sparkonto
+                 * 3: Account number    1234567               | 1234 567890 1
+                 * 4: Amount            31 337                | 123
                  *  
-                 */			    
-				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim() + " "
-				        + Html.fromHtml(matcher.group(3)).toString().trim(),
-				        Helpers.parseBalance(matcher.group(4)),
-				        Html.fromHtml(matcher.group(3)).toString().trim(), Account.FUNDS));
+                 */
+			    Account account = new Account(Html.fromHtml(matcher.group(2)).toString().trim() + " "
+                        + Html.fromHtml(matcher.group(3)).toString().trim(),
+                        Helpers.parseBalance(matcher.group(4)),
+                        Html.fromHtml(matcher.group(3)).toString().trim().replaceAll(" ", ""));
+
+			    // Saving accounts contain white space characters in the account number
+			    if (!matcher.group(3).trim().contains(" ")) {
+			        account.setType(Account.FUNDS);
+			    }
+				accounts.add(account);
 				balance = balance.add(Helpers.parseBalance(matcher.group(4)));
 			}
 			
