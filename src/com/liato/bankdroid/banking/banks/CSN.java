@@ -192,6 +192,24 @@ public class CSN extends Bank {
                         Html.fromHtml(matcher.group(2)).toString().trim()+ " ("+Html.fromHtml(matcher.group(3)).toString().trim()+")",
                         Helpers.parseBalance(matcher.group(4).replace(",", ""))));
             }
+            response = urlopen.open("https://www.csn.se/aterbetalning/vadSkallJagBetalUnderAret/betalningstillfallen.do?javascript=off");
+            matcher = reTransactions.matcher(response);
+            while (matcher.find()) {
+                /*
+                 * Capture groups:
+                 * GROUP                        EXAMPLE DATA
+                 * 1: Date                      2010-11-25
+                 * 2: Specification             Bankgiro 5580-3084
+                 * 3: OCR-number                4576225900
+                 * 4: Amount                    1,234
+                 * 
+                 */
+                transactions.add(new Transaction(matcher.group(1).trim(),
+                        Html.fromHtml(matcher.group(2)).toString().trim()+ " ("+Html.fromHtml(matcher.group(3)).toString().trim()+")",
+                        Helpers.parseBalance(matcher.group(4).replace(",", "")).negate()));
+            }
+
+            
             Collections.sort(transactions, Collections.reverseOrder());
             account.setTransactions(transactions);
         } catch (ClientProtocolException e) {
