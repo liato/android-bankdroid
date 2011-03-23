@@ -139,8 +139,12 @@ public class Nordea extends Bank {
              *   
              */
 			matcher = reBalance.matcher(response);
-            balance = Helpers.parseBalance(matcher.group(2));
-            this.setCurrency(Html.fromHtml(matcher.group(1)).toString().trim());
+			String currency = "SEK";
+			if (matcher.find()) {
+			    balance = Helpers.parseBalance(matcher.group(2));
+			    currency = Html.fromHtml(matcher.group(1)).toString().trim();
+			}
+			this.setCurrency(currency);
 			
 			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/funds/portfolio/funds.html");
 			matcher = reFundsLoans.matcher(response);
