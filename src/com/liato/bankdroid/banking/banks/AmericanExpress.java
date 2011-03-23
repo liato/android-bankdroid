@@ -121,7 +121,10 @@ public class AmericanExpress extends Bank {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		
+		Log.d(TAG, "Logging in...");
 		urlopen = login();
+        Log.d(TAG, "Url after login: " + urlopen.getCurrentURI());
+		
 		Matcher matcher = reAccounts.matcher(response);
 		while (matcher.find()) {
             /*
