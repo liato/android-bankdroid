@@ -57,7 +57,7 @@ public class Lansforsakringar extends Bank {
     private Pattern reAccountsReg = Pattern.compile("AccountNumber=([0-9]+)[^>]+><span[^>]+>([^<]+)</.*?span></td.*?<span[^>]+>([0-9 .,-]+)</span", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private Pattern reAccountsFunds = Pattern.compile("fundsDataTable[^>]+>([^<]+)</span></a></td><td[^>]+></td><td[^>]+><span\\sid=\"fundsDataTable:\\d{1,}:bankoverview_\\d{1,}_([^\"]+)\">([0-9 .,-]+)</span", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private Pattern reAccountsLoans = Pattern.compile("internalLoanDataTable[^>]+>([^<]+)</span></a></span></td><td[^>]+><span[^>]+>[^<]+</span></td><td[^>]+><span\\sid=\"internalLoanDataTable:\\d{1,}:bankoverview_\\d{1,}_([^\"]+)\">([0-9 .,-]+)</spa.*?internalLoanDataTable:\\d{1,}:bankoverview_\\d{1,}_(?:[^\"]+)\">([0-9 .,-]+)</spa", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-    private Pattern rePension = Pattern.compile("occupationalPensionDataTable:\\d{1,}:pension_overview_\\d{1,}_([^>]+)>([^<]+)</span></a></span><span[^>]+>\\s*<sup>\\s*</span><span[^>]+></span><span[^>]+>\\s*</sup>\\s*</span>\\s*<table[^>]+>\\s*<tbody[^>]+></tbody></table>\\s*</td><td[^>]+><span[^>]+>([^<]+)</span>", Pattern.CASE_INSENSITIVE);
+    private Pattern rePension = Pattern.compile("AvtalsID=([0-9_]+)[^<]+><span\\s*id=\"occupationalPensionDataTable:\\d{1,}:pension_overview_\\d{1,}_[^>]+>([^<]+)</span></a></span><span[^>]+>\\s*<sup>\\s*</span><span[^>]+></span><span[^>]+>\\s*</sup>\\s*</span>\\s*<table[^>]+>\\s*<tbody[^>]+></tbody></table>\\s*</td><td[^>]+><span[^>]+>([^<]+)</span>", Pattern.CASE_INSENSITIVE);
     private Pattern reToken = Pattern.compile("var\\s+token\\s*=\\s*'([^']+)'", Pattern.CASE_INSENSITIVE);
     private Pattern reUrl = Pattern.compile("<li class=\"bank\">\\s*<a href=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
     private Pattern reTransactions = Pattern.compile("td\\s*class=\"leftpadding\"[^>]+>(?:<a[^>]+>)?<span[^>]+>(\\d{4}-\\d{2}-\\d{2})</span>(?:</a>)?\\s*<a.*?</a></td><td[^>]+><span[^>]+>(\\d{4}-\\d{2}-\\d{2})</span></td><td[^>]+><span[^>]+>([^<]+)</span></td><td[^>]+><span[^>]+><span[^>]+>([^<]*)</span></span></td><td[^>]+><span[^>]+>([^<]+)</span></td><td[^>]+><span[^>]+>([^<]+)<", Pattern.CASE_INSENSITIVE);
@@ -219,12 +219,14 @@ public class Lansforsakringar extends Bank {
                 /*
                  * Capture groups:
                  * GROUP                    EXAMPLE DATA
-                 * 1: ID                    idJsp71
+                 * 1: ID                    00835742_0
                  * 2: Name                  Avtalspension ITP - Fond
                  * 3: Amount                10 587,40
                  * 
-                 */                
-                accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), matcher.group(1).trim()));
+                 */
+                Account account = new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), matcher.group(1).trim());
+                account.setType(Account.OTHER);
+                accounts.add(account);
             }            
 
             // Save token for next request
@@ -329,7 +331,7 @@ public class Lansforsakringar extends Bank {
             // We need the second match, disregard the first one.
             matcher.find();
             if (!matcher.find()) {
-                Log.d(TAG, res.getText(R.string.unable_to_find).toString()+" ViewState. L304.");
+                Log.d(TAG, res.getText(R.string.unable_to_find).toString()+" ViewState. L334.");
                 return;
             }
             mViewState = matcher.group(1);
@@ -337,7 +339,7 @@ public class Lansforsakringar extends Bank {
 
             matcher = reToken.matcher(response);
             if (!matcher.find()) {
-                Log.d(TAG, res.getText(R.string.unable_to_find).toString()+" token. L312.");
+                Log.d(TAG, res.getText(R.string.unable_to_find).toString()+" token. L342.");
                 return;
             }
             mRequestToken = matcher.group(1);            

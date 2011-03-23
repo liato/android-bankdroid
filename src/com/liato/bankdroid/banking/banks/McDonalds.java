@@ -35,7 +35,6 @@ import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
-import com.liato.bankdroid.banking.Bank.LoginPackage;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
