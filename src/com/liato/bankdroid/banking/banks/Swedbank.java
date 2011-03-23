@@ -127,8 +127,8 @@ public class Swedbank extends Bank {
 			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/accounts.html");
 			matcher = reAccounts.matcher(response);
 			while (matcher.find()) {
-				Account account = new Account(Html.fromHtml(matcher.group(3)).toString(), Helpers.parseBalance(matcher.group(4)), matcher.group(1).trim() == "loan" ? "l:" + matcher.group(2).trim() : matcher.group(2).trim());
-				if (matcher.group(1).trim() == "loan") {
+				Account account = new Account(Html.fromHtml(matcher.group(3)).toString(), Helpers.parseBalance(matcher.group(4)), "loan".equalsIgnoreCase(matcher.group(1).trim()) ? "l:" + matcher.group(2).trim() : matcher.group(2).trim());
+				if ("loan".equalsIgnoreCase(matcher.group(1).trim())) {
 				    account.setType(Account.LOANS);
 				}
 				else {
@@ -165,7 +165,7 @@ public class Swedbank extends Bank {
 	@Override
 	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
 		super.updateTransactions(account, urlopen);
-		if (account.getType() == Account.OTHER) return; //No transaction history for loans
+		if (account.getType() == Account.OTHER) return;
 
 		String response = null;
 		Matcher matcher;
