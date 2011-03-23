@@ -51,8 +51,10 @@ public class Nordea extends Bank {
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDD-XXXX";
-	
-	private Pattern reAccounts = Pattern.compile("account\\.html\\?id=konton:([^\"]+)\"[^>]+>\\s*<div[^>]+>([^<]+)<span[^>]+>([^<]+)</span", Pattern.CASE_INSENSITIVE);
+
+    private Pattern reCurrency = Pattern.compile("list-left\">\\s*Valuta\\s*</dt>\\s*<dd[^>]+>([^<]+)</dd>", Pattern.CASE_INSENSITIVE);
+    private Pattern reBalance = Pattern.compile("list-left\">\\s*Summa\\s*([a-zA-Z]{3})\\s*</dt>\\s*<dd[^>]+>([^<]+)</", Pattern.CASE_INSENSITIVE);
+    private Pattern reAccounts = Pattern.compile("account\\.html\\?id=konton:([^\"]+)\"[^>]+>\\s*<div[^>]+>([^<]+)<span[^>]+>([^<]+)</span", Pattern.CASE_INSENSITIVE);
 	private Pattern reFundsLoans = Pattern.compile("(?:fund|loan)\\.html\\?id=(?:fonder|lan):([^\"]+)\".*?>.*?>([^<]+).*?>([^<]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reCards = Pattern.compile("/card/details\\.html\\?id=(\\d{1,})[^\"]*\".*?>\\s*<span[^>]*>\\s*<span>([^<]+)</span>\\s*<span[^>]+>([^<]+)<", Pattern.CASE_INSENSITIVE);
 	private Pattern reTransactions = Pattern.compile("(\\d{4}-\\d{2}-\\d{2})\\s</dt>[^>]+>([^<]+)[^>]+>.*?(?:Positive|Negative)\">([^<]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
@@ -128,8 +130,17 @@ public class Nordea extends Bank {
 			matcher = reAccounts.matcher(response);
 			while (matcher.find()) {
 				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), matcher.group(1).trim()));
-				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
 			}
+            /*
+             * Capture groups:
+             * GROUP                EXAMPLE DATA
+             * 1: Currency          SEK
+             * 2: Amount            56,78  
+             *   
+             */
+			matcher = reBalance.matcher(response);
+            balance = Helpers.parseBalance(matcher.group(2));
+            this.setCurrency(Html.fromHtml(matcher.group(1)).toString().trim());
 			
 			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/funds/portfolio/funds.html");
 			matcher = reFundsLoans.matcher(response);
@@ -147,7 +158,6 @@ public class Nordea extends Bank {
 			matcher = reCards.matcher(response);
 			while (matcher.find()) {
 				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), "c:"+matcher.group(1).trim(), -1L, Account.CCARD));
-				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
 			}
 
 			if (accounts.isEmpty()) {
@@ -184,12 +194,29 @@ public class Nordea extends Bank {
 			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/accounts.html");
 			Log.d(TAG, "Opening: https://mobil.nordea.se/banking-nordea/nordea-c3/account.html?id=konton:"+account.getId());
 			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/account.html?id=konton:"+account.getId());
+			matcher = reCurrency.matcher(response);
+            /*
+             * Capture groups:
+             * GROUP                EXAMPLE DATA
+             * 1: Currency          SEK 
+             *   
+             */
+			String currency = "SEK";
+			if (matcher.find()) {
+			    currency = matcher.group(1).trim();
+			}
+			else {
+			    Log.d(TAG, "Unable to find currency, assuming SEK.");
+			}
 			matcher = reTransactions.matcher(response);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 			while (matcher.find()) {
-				transactions.add(new Transaction(Html.fromHtml(matcher.group(1)).toString().trim(), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3))));
+                Transaction transaction = new Transaction(Html.fromHtml(matcher.group(1)).toString().trim(), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)));
+                transaction.setCurrency(currency);
+				transactions.add(transaction);
 			}
 			account.setTransactions(transactions);
+			account.setCurrency(currency);
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

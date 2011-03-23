@@ -299,6 +299,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
                 if (oa != null) {
                     a.setHidden(oa.isHidden());
                     a.setNotify(oa.isNotify());
+                    a.setCurrency(oa.getCurrency());
                 }
             }
             a.setBank(this);
