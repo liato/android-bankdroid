@@ -30,27 +30,31 @@
 			android:baselineAlignBottom="true"
 			android:src="@drawable/icon"
 			android:scaleType="fitXY"></ImageView>
-		<TextView
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:id="@+id/txtWidgetAccountname"
-			android:layout_gravity="center_vertical"
-			android:textColor="#a8a3a3"
-			android:textSize="11dp"
-			android:inputType="none"
-			android:layout_marginLeft="2dp"
-			android:text="Bankdroid"></TextView>
-		<TextView
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:id="@+id/txtWidgetAccountnameBlur"
-			android:layout_gravity="center_vertical"
-			android:textColor="#a8a3a3"
-			android:textSize="11dp"
-			android:inputType="none"
-			android:layout_marginLeft="2dp"
-			android:text="Bankdroid"
-			android:visibility="gone"></TextView>			
+	<TextView
+		android:id="@+id/txtWidgetAccountname"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:layout_gravity="center_vertical"
+		android:textColor="#a8a3a3"
+		android:textSize="11dp"
+		android:inputType="none"
+		android:layout_marginLeft="2dp"
+		android:layout_marginRight="2dp"
+		android:text="Bankdroid"
+		android:lines="1"></TextView>
+	<TextView
+		android:id="@+id/txtWidgetAccountnameBlur"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:layout_gravity="center_vertical"
+		android:textColor="#a8a3a3"
+		android:textSize="11dp"
+		android:inputType="none"
+		android:layout_marginLeft="2dp"
+		android:layout_marginRight="2dp"
+		android:text="Bankdroid"
+		android:lines="1"
+		android:visibility="gone"></TextView>		
 	</LinearLayout>
 	<LinearLayout
 		android:id="@+id/layWidgetRow02"
