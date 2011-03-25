@@ -171,7 +171,8 @@ public class BankFactory {
         banks.add(new Volvofinans(context));
         banks.add(new CSN(context));
         banks.add(new ResursBank(context));
-        banks.add(new AmericanExpress(context));
+        //American Express doesn't work yet
+        //banks.add(new AmericanExpress(context));
         banks.add(new McDonalds(context));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
