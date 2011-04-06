@@ -53,7 +53,7 @@ public class DinersClub extends Bank {
     private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
 	private Pattern reBalance = Pattern.compile("class=\"card\"[^>]+>\\s*<div[^>]+>\\s*<b>([^<]+)</b>\\s*<br ?/>\\s*<span[^>]+>([^<]+)</span>\\s*</div>\\s*<div[^>]+>\\s*<strong[^>]+>[^<]+</strong>([^<]+)</div>", Pattern.CASE_INSENSITIVE);
 	private Pattern reInvoices = Pattern.compile("<tr[^>]+>\\s*<td class=\"right\">\\s*<a href='((Invoice|Nonbilled).aspx\\?card=\\d+&bdate=[\\d-]+)'>", Pattern.CASE_INSENSITIVE);
-	private Pattern reTransactions = Pattern.compile("<tr[^>]+>\\s*<td>\\s*<a.*? href='Transact[^']+'>\\s*([\\d-]+)\\s*</a>\\s*</td><td>\\s*<a.*? href='Transact[^']+'>\\s*(.*?)\\s*</a>\\s*</td><td class=\"right\">\\s*(.*?)\\s*</td><td class=\"right\">\\s*<a.*? href='Transact[^']+'>\\s*(.*?)\\s*</a>\\s*</td>\\s*</tr>");
+	private Pattern reTransactions = Pattern.compile("<tr[^>]+>\\s*<td>\\s*<a.*? href=[\"']Transact[^'\"]+[\"']>\\s*([\\d-]+)\\s*</a>\\s*</td><td>\\s*<a.*? href=[\"']Transact[^'\"]+[\"']>\\s*(.*?)\\s*</a>\\s*</td><td class=\"right\">\\s*(?:<span[^>]+>\\s*<a[^>]+>([^<]+)</a></span>\\s*)?</td><td class=\"right\">\\s*<a.*? href=[\"']Transact[^'\"]+[\"']>\\s*(.*?)\\s*</a>\\s*</td>\\s*</tr>", Pattern.CASE_INSENSITIVE);
 
 	private String response = null;
 	private String invoiceUrl;
