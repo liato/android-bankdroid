@@ -51,7 +51,7 @@ public class Payson extends Bank {
 	
     private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
     private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
-    private Pattern reBalance = Pattern.compile("Saldo:\\s*<strong>([^<]+)<", Pattern.CASE_INSENSITIVE);
+    private Pattern reBalance = Pattern.compile("Saldo:\\s*<strong>([^<+]+)[<+]", Pattern.CASE_INSENSITIVE);
 	private Pattern reTransactions = Pattern.compile("href=\"details/Default\\.aspx\\?\\d{1,}\">\\s*<span\\s*title=\"(\\d{4}-\\d{2}-\\d{2})[^\"]+\">.*?Grid1_0_3_\\d{1,}_Hy[^>]+>([^<]+)<.*?Grid1_0_5_\\d{1,}_Hy[^>]+>([^<]+)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private String response = null;
 	
@@ -134,8 +134,12 @@ public class Payson extends Bank {
                  * GROUP                EXAMPLE DATA
                  * 1: Balance           0,00 kr
                  *  
-                 */			    
-				accounts.add(new Account("Konto" , Helpers.parseBalance(matcher.group(1)), "1"));
+                 */
+			    Account account = new Account("Konto" , Helpers.parseBalance(matcher.group(1)), "1");
+			    String currency = Helpers.parseCurrency(matcher.group(1).trim(), "SEK");
+			    account.setCurrency(currency);
+			    this.setCurrency(currency);
+				accounts.add(account);
 				balance = balance.add(Helpers.parseBalance(matcher.group(1)));
 			}
 			
