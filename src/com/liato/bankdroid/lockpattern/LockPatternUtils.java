@@ -35,7 +35,6 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.common.collect.Lists;
-import com.liato.bankdroid.lockpattern.LockPatternView.Cell;
 
 /**
  * Utilities for the lock patten and its settings.

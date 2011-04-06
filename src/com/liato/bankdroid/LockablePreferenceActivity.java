@@ -36,7 +36,9 @@ public class LockablePreferenceActivity extends PreferenceActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		mLockPatternUtils = new LockPatternUtils(this);		
+		mLockPatternUtils = new LockPatternUtils(this);
+        mLockPatternUtils.setVisiblePatternEnabled(prefs.getBoolean("patternlock_visible_pattern", true));
+        mLockPatternUtils.setTactileFeedbackEnabled(prefs.getBoolean("patternlock_tactile_feedback", false));
 	}
 
 	@Override
@@ -51,7 +53,7 @@ public class LockablePreferenceActivity extends PreferenceActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-        // Don't do anything if not lock pattern is set
+        // Don't do anything if lock pattern is not set
 		if (!mLockPatternUtils.isLockPatternEnabled() || !isLockEnabled()) {
 		    return;
 		}

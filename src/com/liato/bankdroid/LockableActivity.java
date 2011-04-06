@@ -48,6 +48,8 @@ public class LockableActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		mLockPatternUtils = new LockPatternUtils(this);		
+        mLockPatternUtils.setVisiblePatternEnabled(prefs.getBoolean("patternlock_visible_pattern", true));
+        mLockPatternUtils.setTactileFeedbackEnabled(prefs.getBoolean("patternlock_tactile_feedback", false));
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
     }
 	

@@ -13,6 +13,16 @@
 			android:key="patternlock_change"
 			android:dependency="patternlock_enabled" />
 		<CheckBoxPreference
+			android:key="patternlock_visible_pattern"
+			android:defaultValue="true"
+			android:title="@string/lockpattern_settings_enable_visible_pattern_title"
+			android:dependency="patternlock_enabled" />
+		<CheckBoxPreference
+			android:key="patternlock_tactile_feedback"
+			android:defaultValue="false"
+			android:title="@string/lockpattern_settings_enable_tactile_feedback_title"
+			android:dependency="patternlock_enabled" />
+		<CheckBoxPreference
 			android:key="widget_blur_balance"
 			android:defaultValue="false"
 			android:title="@string/blur_widget_title"

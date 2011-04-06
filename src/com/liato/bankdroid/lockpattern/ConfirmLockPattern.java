@@ -114,6 +114,7 @@ public class ConfirmLockPattern extends Activity {
         }
 
         mLockPatternView.setTactileFeedbackEnabled(mLockPatternUtils.isTactileFeedbackEnabled());
+        mLockPatternView.setInStealthMode(!mLockPatternUtils.isVisiblePatternEnabled());
         mLockPatternView.setOnPatternListener(mConfirmExistingLockPatternListener);
         updateStage(Stage.NeedToUnlock);
 
