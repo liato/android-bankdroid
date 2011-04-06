@@ -16,9 +16,6 @@
 
 package com.liato.bankdroid;
 
-import com.liato.bankdroid.lockpattern.ConfirmLockPattern;
-import com.liato.bankdroid.lockpattern.LockPatternUtils;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -33,6 +30,9 @@ import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
+import com.liato.bankdroid.lockpattern.ConfirmLockPattern;
+import com.liato.bankdroid.lockpattern.LockPatternUtils;
 
 public class LockableActivity extends Activity {
     private static int PATTERNLOCK_UNLOCK = 42;

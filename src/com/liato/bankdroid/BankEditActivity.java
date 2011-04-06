@@ -40,6 +40,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -62,7 +63,7 @@ public class BankEditActivity extends LockableActivity implements OnClickListene
 		ArrayList<Bank> items = BankFactory.listBanks(this);
 		Collections.sort(items);
 		Spinner spnBanks = (Spinner)findViewById(R.id.spnBankeditBanklist);
-		BankSpinnerAdapter<Bank> adapter = new BankSpinnerAdapter<Bank>(this, android.R.layout.simple_spinner_item, items);
+		BankSpinnerAdapter<Bank> adapter = new BankSpinnerAdapter<Bank>(this, items);
 		spnBanks.setAdapter(adapter);
 		spnBanks.setOnItemSelectedListener(this);
 
@@ -153,28 +154,31 @@ public class BankEditActivity extends LockableActivity implements OnClickListene
 	}
 
 	private class BankSpinnerAdapter<T> extends ArrayAdapter<T> {
-		private int resource;
+		private LayoutInflater inflater;
+
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			if (convertView == null) {
-				convertView = ((LayoutInflater)super.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(resource, parent, false);
+				convertView = inflater.inflate(R.layout.bank_spinner_item, parent, false);
 			}
-			((TextView)convertView).setText(((Bank)getItem(position)).getName());
+            ((TextView)convertView.findViewById(R.id.txtBank)).setText(((Bank)getItem(position)).getName());
+            ((ImageView)convertView.findViewById(R.id.imgBank)).setImageResource(((Bank)getItem(position)).getImageResource());
 			return convertView;			
 		}
 
-		public BankSpinnerAdapter(Context context, int textViewResourceId, List<T> items) {
-			super(context, textViewResourceId, items);
-			resource = textViewResourceId;
+		public BankSpinnerAdapter(Context context, List<T> items) {
+		    super(context, R.layout.bank_spinner_item, R.id.txtBank, items);
+			inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		}
 
 		@Override
 		public View getDropDownView(int position, View convertView,
 				ViewGroup parent) {
 			if (convertView == null) {
-				convertView = ((LayoutInflater)super.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(android.R.layout.simple_spinner_dropdown_item, parent, false);
+				convertView = inflater.inflate(R.layout.bank_spinner_dropdown_item, parent, false);
 			}
-			((TextView)convertView).setText(((Bank)getItem(position)).getName());
+            ((TextView)convertView.findViewById(R.id.txtBank)).setText(((Bank)getItem(position)).getName());
+            ((ImageView)convertView.findViewById(R.id.imgBank)).setImageResource(((Bank)getItem(position)).getImageResource());
 			return convertView;
 		}
 
