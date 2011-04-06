@@ -116,7 +116,7 @@ public class CSN extends Bank {
 			    throw new LoginException(Html.fromHtml(matcher.group(1)).toString().trim());
 			}
 			if (!response.contains("Inloggad&nbsp;som")) {
-				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+				throw new BankException(res.getText(R.string.unable_to_login).toString());
 			}
 		}
 		catch (ClientProtocolException e) {
