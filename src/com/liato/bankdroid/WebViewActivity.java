@@ -23,8 +23,8 @@ import org.apache.http.client.CookieStore;
 import org.apache.http.cookie.Cookie;
 
 import android.content.res.Resources.NotFoundException;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -35,11 +35,10 @@ import android.webkit.CookieSyncManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ProgressBar;
 
 import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.BankFactory;
 import com.liato.bankdroid.banking.Bank.SessionPackage;
+import com.liato.bankdroid.banking.BankFactory;
 
 import eu.nullbyte.android.urllib.Urllib;
 
@@ -47,7 +46,7 @@ public class WebViewActivity extends LockableActivity implements OnClickListener
     private final static String TAG = "WebViewActivity";
     private static WebView mWebView;
     private boolean mFirstPageLoaded = false;
-    private static ProgressBar mProgressBar;
+    private final LockableActivity activity = this;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,8 +55,6 @@ public class WebViewActivity extends LockableActivity implements OnClickListener
         this.addTitleButton(R.drawable.title_icon_back, "back", this);
         this.addTitleButton(R.drawable.title_icon_forward, "forward", this);
         this.addTitleButton(R.drawable.title_icon_refresh, "refresh", this);
-        mProgressBar = (ProgressBar)findViewById(R.id.progressBar);
-        mProgressBar.setVisibility(View.GONE);
 
         final CookieSyncManager csm = CookieSyncManager.createInstance(this);
         mWebView = (WebView)findViewById(R.id.wvBank);
@@ -66,14 +63,23 @@ public class WebViewActivity extends LockableActivity implements OnClickListener
         mWebView.getSettings().setBuiltInZoomControls(true); 
         mWebView.getSettings().setUserAgentString(Urllib.USER_AGENT);
         mWebView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+        
         mWebView.setWebChromeClient(new WebChromeClient() {
             public void onProgressChanged(WebView view, int progress) {
-                mProgressBar.setProgress(progress);
+                activity.setProgressBar(progress);
                 if (progress == 100) {
-                    mProgressBar.setVisibility(View.GONE);
+                    Handler handler = new Handler();
+                    Runnable runnable = new Runnable() {
+                        public void run() {
+                            activity.hideProgressBar();
+                        }
+                    };
+                    // Let the progress bar hit 100% before we hide it.
+                    handler.postDelayed(runnable, 100);
+                    
                 }
-                else if (mFirstPageLoaded && mProgressBar.getVisibility() == View.GONE) {
-                    mProgressBar.setVisibility(View.VISIBLE);
+                else if (mFirstPageLoaded) {
+                    activity.showProgressBar();
                 }
             }
           });

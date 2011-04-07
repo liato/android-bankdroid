@@ -27,9 +27,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import com.liato.bankdroid.lockpattern.ConfirmLockPattern;
 import com.liato.bankdroid.lockpattern.LockPatternUtils;
@@ -42,6 +46,7 @@ public class LockableActivity extends Activity {
 	
 	private LinearLayout mTitlebarButtons;
 	private LayoutInflater mInflater;
+	private ProgressBar mProgressBar;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +68,7 @@ public class LockableActivity extends Activity {
 
         ImageView homeButton = (ImageView)titlebar.findViewById(R.id.imgTitle);
         View homeButtonCont = titlebar.findViewById(R.id.layLogoContainer);
+        mProgressBar = (ProgressBar)titlebar.findViewById(R.id.progressBar);
         OnClickListener listener = new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(LockableActivity.this, MainActivity.class);
@@ -102,7 +108,33 @@ public class LockableActivity extends Activity {
             v.setVisibility(View.VISIBLE);
         }
     }
+    
+    protected void setProgressBar(int progress) {
+        mProgressBar.setProgress(progress);
+    }
 
+    protected void showProgressBar() {
+        mProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    protected void hideProgressBar() {
+        AlphaAnimation animation = new AlphaAnimation(1, 0);
+        animation.setDuration(350);
+        animation.setAnimationListener(new AnimationListener() {
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mProgressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+
+            @Override
+            public void onAnimationStart(Animation animation) {}
+        });
+        mProgressBar.startAnimation(animation);
+    }
+    
     @Override
 	protected void onPause() {
 		super.onPause();
