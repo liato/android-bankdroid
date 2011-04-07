@@ -55,6 +55,9 @@ public class WebViewActivity extends LockableActivity implements OnClickListener
         this.addTitleButton(R.drawable.title_icon_back, "back", this);
         this.addTitleButton(R.drawable.title_icon_forward, "forward", this);
         this.addTitleButton(R.drawable.title_icon_refresh, "refresh", this);
+        this.setTitleButtonEnabled("forward", false);
+        this.setTitleButtonEnabled("back", false);
+        this.setTitleButtonEnabled("refresh", false);
 
         final CookieSyncManager csm = CookieSyncManager.createInstance(this);
         mWebView = (WebView)findViewById(R.id.wvBank);
@@ -137,6 +140,14 @@ public class WebViewActivity extends LockableActivity implements OnClickListener
 
     // Make sure clicked links are loaded in our webview.
     private class BankWebViewClient extends WebViewClient {
+
+        @Override
+        public void onLoadResource(WebView view, String url) {
+            super.onLoadResource(view, url);
+            if (mFirstPageLoaded) handleHistoryChange();
+        }
+
+
         @Override
         public void onPageFinished(WebView view, String url) {
             Log.d(TAG, "Finished loading: "+url);
@@ -149,6 +160,7 @@ public class WebViewActivity extends LockableActivity implements OnClickListener
                 //Remove the generated page from history.
                 mWebView.clearHistory();
                 mFirstPageLoaded = true;
+                activity.setTitleButtonEnabled("refresh", true);
                 return;
             }
         }
@@ -166,6 +178,11 @@ public class WebViewActivity extends LockableActivity implements OnClickListener
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             view.loadUrl(url);
             return true;
+        }
+        
+        public void handleHistoryChange() {
+            activity.setTitleButtonEnabled("back", mWebView.canGoBack());
+            activity.setTitleButtonEnabled("forward", mWebView.canGoForward());
         }
     }	
 

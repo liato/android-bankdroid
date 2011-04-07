@@ -108,6 +108,19 @@ public class LockableActivity extends Activity {
             v.setVisibility(View.VISIBLE);
         }
     }
+
+    protected void setTitleButtonEnabled(String tag, boolean enabled) {
+        View v = mTitlebarButtons.findViewWithTag("item_"+tag);
+        if (v != null) {
+            ImageButton button = (ImageButton)v.findViewById(R.id.imgItemIcon);
+            if (button != null) {
+                v.setEnabled(enabled);
+                v.setFocusable(enabled);
+                button.setEnabled(enabled);
+                button.setAlpha(enabled ? 255 : 50);
+            }
+        }
+    }
     
     protected void setProgressBar(int progress) {
         mProgressBar.setProgress(progress);
