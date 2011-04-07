@@ -7,5 +7,14 @@
 		android:id="@+id/wvBank"
 		android:layout_height="fill_parent"
 		android:layout_width="fill_parent"
-		android:scrollbarAlwaysDrawHorizontalTrack="false" android:scrollbarAlwaysDrawVerticalTrack="false" android:background="@drawable/background_repeat"/>
+		android:scrollbarAlwaysDrawHorizontalTrack="false"
+		android:scrollbarAlwaysDrawVerticalTrack="false"
+		android:background="@drawable/background_repeat" />
+	<ProgressBar
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/progressBar"
+		android:focusable="false"
+		android:indeterminateOnly="false"
+		android:progressDrawable="@drawable/progress_horizontal" android:minHeight="7dp" android:maxHeight="7dp" android:progress="0"></ProgressBar>
 </FrameLayout>
