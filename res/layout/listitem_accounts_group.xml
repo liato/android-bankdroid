@@ -49,8 +49,7 @@
 		android:gravity="center_vertical"
 		android:id="@+id/txtListitemAccountsGroupAccountname"
 		android:textColor="#000"
-		android:layout_width="wrap_content"
-		android:layout_alignParentRight="false" android:includeFontPadding="true" android:textSize="23dp" android:text="Personnummer"/>
+		android:layout_alignParentRight="false" android:includeFontPadding="true" android:textSize="23dp" android:text="Personnummer" android:lines="1" android:marqueeRepeatLimit="marquee_forever" android:scrollHorizontally="true" android:layout_width="fill_parent" android:ellipsize="marquee"/>
 	<ImageView
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
