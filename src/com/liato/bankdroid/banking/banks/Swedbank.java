@@ -55,7 +55,7 @@ public class Swedbank extends Bank {
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDD-XXXX";
     
 	private Pattern reCSRF = Pattern.compile("csrf_token\".*?value=\"([^\"]+)\"");
-	private Pattern reAccounts = Pattern.compile("(account|loan)\\.html\\?id=([^\"]+)\">\\s*(?:<span.*?/span>)?([^<]+)<.*?secondary\">([^<]+)</span");
+	private Pattern reAccounts = Pattern.compile("(account|loan)\\.html\\?id=([^\"]+)\"[^>]*>\\s*(?:<span\\sclass=\"icon\">[^<]*</span>\\s*)?<span\\s*class=\"name\">([^<]+)</span>\\s*(?:<br/>\\s*)?<span\\s*class=\"amount\">([^<]+)</");
 	private Pattern reLinklessAccounts = Pattern.compile("<li>\\s*([^<]+)<br/?><span\\sclass=\"secondary\">([^<]+)</span>\\s*</li>", Pattern.CASE_INSENSITIVE);
 	private Pattern reTransactions = Pattern.compile("trans-date\">([^<]+)</div>.*?trans-subject\">([^<]+)</div>.*?trans-amount\">([^<]+)</div>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private Pattern reLoanData = Pattern.compile("<li[^>]*>([^<]+)<br/><span\\s*class=\"secondary\">([^<]+)</span></li>");
@@ -89,6 +89,16 @@ public class Swedbank extends Bank {
         String csrftoken = matcher.group(1);
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         postData.add(new BasicNameValuePair("xyz", username));
+        postData.add(new BasicNameValuePair("auth-method", "code"));
+        postData.add(new BasicNameValuePair("_csrf_token", csrftoken));
+        response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/loginNext.html", postData);
+
+        matcher = reCSRF.matcher(response);
+        if (!matcher.find()) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString()+" CSRF token.");
+        }
+        csrftoken = matcher.group(1);
+        postData.clear();
         postData.add(new BasicNameValuePair("zyx", password));
         postData.add(new BasicNameValuePair("_csrf_token", csrftoken));
         return new LoginPackage(urlopen, postData, response, "https://mobilbank.swedbank.se/banking/swedbank/login.html");
@@ -127,6 +137,15 @@ public class Swedbank extends Bank {
 			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/accounts.html");
 			matcher = reAccounts.matcher(response);
 			while (matcher.find()) {
+                /*
+                 * Capture groups:
+                 * GROUP                EXAMPLE DATA
+                 * 1: Type              account|loan
+                 * 2: ID                0
+                 * 3: Name              Privatkonto
+                 * 4: Amount            5 678 
+                 *  
+                 */			    
 				Account account = new Account(Html.fromHtml(matcher.group(3)).toString(), Helpers.parseBalance(matcher.group(4)), "loan".equalsIgnoreCase(matcher.group(1).trim()) ? "l:" + matcher.group(2).trim() : matcher.group(2).trim());
 				if ("loan".equalsIgnoreCase(matcher.group(1).trim())) {
 				    account.setType(Account.LOANS);
