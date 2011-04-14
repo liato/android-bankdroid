@@ -16,18 +16,6 @@
 
 package com.liato.bankdroid.appwidget;
 
-import com.liato.bankdroid.Helpers;
-import com.liato.bankdroid.MainActivity;
-import com.liato.bankdroid.R;
-import com.liato.bankdroid.R.drawable;
-import com.liato.bankdroid.R.id;
-import com.liato.bankdroid.R.layout;
-import com.liato.bankdroid.banking.Account;
-import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.BankFactory;
-import com.liato.bankdroid.banking.exceptions.BankException;
-import com.liato.bankdroid.banking.exceptions.LoginException;
-
 import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
@@ -45,6 +33,15 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
+
+import com.liato.bankdroid.Helpers;
+import com.liato.bankdroid.MainActivity;
+import com.liato.bankdroid.R;
+import com.liato.bankdroid.banking.Account;
+import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.BankFactory;
+import com.liato.bankdroid.banking.exceptions.BankException;
+import com.liato.bankdroid.banking.exceptions.LoginException;
 
 public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 	private final static String TAG = "BankdroidWidgetProvider";
@@ -340,11 +337,13 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 			private Context context;
 			private AppWidgetManager appWidgetManager;
 			private int appWidgetId;
+			private SharedPreferences prefs;
 
 			public WidgetUpdateTask(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
 				this.context = context;
 				this.appWidgetManager = appWidgetManager;
 				this.appWidgetId = appWidgetId;
+				this.prefs = PreferenceManager.getDefaultSharedPreferences(context);
 			}
 
 			@Override
@@ -363,6 +362,9 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 				try {
 					if (!bank.isDisabled()) {
 						bank.update();
+						if (prefs.getBoolean("widget_updates_transactions", false)) {
+						    bank.updateAllTransactions();
+						}
 						bank.closeConnection();
 						bank.save();
 					}
