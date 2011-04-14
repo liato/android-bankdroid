@@ -57,7 +57,7 @@ public class Swedbank extends Bank {
 	private Pattern reCSRF = Pattern.compile("csrf_token\".*?value=\"([^\"]+)\"");
 	private Pattern reAccounts = Pattern.compile("(account|loan)\\.html\\?id=([^\"]+)\"[^>]*>\\s*(?:<span\\sclass=\"icon\">[^<]*</span>\\s*)?<span\\s*class=\"name\">([^<]+)</span>\\s*(?:<br/>\\s*)?<span\\s*class=\"amount\">([^<]+)</");
 	private Pattern reLinklessAccounts = Pattern.compile("<li>\\s*([^<]+)<br/?><span\\sclass=\"secondary\">([^<]+)</span>\\s*</li>", Pattern.CASE_INSENSITIVE);
-	private Pattern reTransactions = Pattern.compile("trans-date\">([^<]+)</div>.*?trans-subject\">([^<]+)</div>.*?trans-amount\">([^<]+)</div>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private Pattern reTransactions = Pattern.compile("date\">([^<]+)</span>\\s*<br\\s?/>\\s*<span\\s*class=\"receiver\">([^<]+)</span>\\s*<br\\s?/>\\s*<span\\s*class=\"amount\">([^<]+)</span>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private Pattern reLoanData = Pattern.compile("<li[^>]*>([^<]+)<br/><span\\s*class=\"secondary\">([^<]+)</span></li>");
 	public Swedbank(Context context) {
 		super(context);
@@ -217,6 +217,14 @@ public class Swedbank extends Bank {
 	            response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/account.html?id="+account.getId());
 	            matcher = reTransactions.matcher(response);
 	            while (matcher.find()) {
+                    /*
+                     * Capture groups:
+                     * GROUP                    EXAMPLE DATA
+                     * 1: Date                  11-04-06
+                     * 2: Specification         Pressbyran
+                     * 3: Amount                -20
+                     * 
+                     */	                
 	                transactions.add(new Transaction("20"+matcher.group(1).trim(), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3))));
 	            }
 		    }
