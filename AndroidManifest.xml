@@ -2,7 +2,7 @@
 <manifest
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	package="com.liato.bankdroid"
-	android:versionName="1.7.1" android:versionCode="107">
+	android:versionCode="108" android:versionName="1.7.2-RC1">
 	<application
 		android:icon="@drawable/icon"
 		android:label="@string/app_name"

@@ -113,6 +113,7 @@ public class Lansforsakringar extends Bank {
         postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
         postData.add(new BasicNameValuePair("btnLogIn.x", "12"));
         postData.add(new BasicNameValuePair("btnLogIn.y", "34"));
+        Log.d(TAG, "Posting to: "+urlopen.getCurrentURI());
         return new LoginPackage(urlopen, postData, response, urlopen.getCurrentURI());
     }
 
@@ -213,7 +214,7 @@ public class Lansforsakringar extends Bank {
             }
             mRequestToken = matcher.group(1);
 
-            response = urlopen.open("https://" + host + "/lfportal/appmanager/privat/main?_nfpb=true&_pageLabel=pension_undermenyosynlig&newUc=true&isTopLevel=true&_token=" + mRequestToken);
+            response = urlopen.open("https://" + host + "/lfportal/privat.portal?_nfpb=true&_pageLabel=pension_undermenyosynlig&newUc=true&isTopLevel=true&_token=" + mRequestToken);
             matcher = rePension.matcher(response);
             while (matcher.find()) {
                 /*
@@ -261,7 +262,7 @@ public class Lansforsakringar extends Bank {
 
         if (mFirstTransactionPage) {
             try {
-                response = urlopen.open("https://" + host + "/lfportal/appmanager/privat/main?_nfpb=true&_pageLabel=bank_konto&dialog=dialog:account.viewAccountTransactions&webapp=edb-account-web&stickyMenu=false&newUc=true&AccountNumber=" + account.getId() + "&_token=" + mRequestToken);
+                response = urlopen.open("https://" + host + "/lfportal/privat.portal?_nfpb=true&_pageLabel=bank_konto&dialog=dialog:account.viewAccountTransactions&webapp=edb-account-web&stickyMenu=false&newUc=true&isPortalLogLink=true&AccountNumber=" + account.getId() + "&_token=" + mRequestToken);
                 matcher = reViewState.matcher(response);
                 if (!matcher.find()) {
                     Log.d(TAG,res.getText(R.string.unable_to_find).toString()+" ViewState. L237.");
@@ -294,7 +295,7 @@ public class Lansforsakringar extends Bank {
                 postData.add(new BasicNameValuePair("loginForm:_idcl", ""));            
                 postData.add(new BasicNameValuePair("loginForm:_link_hidden_", ""));            
                 postData.add(new BasicNameValuePair("javax.faces.ViewState", mViewState));            
-                response = urlopen.open("https://" + host + "/lfportal/appmanager/privat/main?_nfpb=true&_windowLabel=account_1&_nffvid=%2Flfportal%2Findex_account.faces", postData);
+                response = urlopen.open("https://" + host + "/lfportal/privat.portal?_nfpb=true&_windowLabel=account_1&_nffvid=%2Flfportal%2Findex_account.faces", postData);
                 mFirstTransactionPage = false;
             }
             else {
@@ -304,7 +305,7 @@ public class Lansforsakringar extends Bank {
                 postData.add(new BasicNameValuePair("viewAccountListTransactionsForm:_link_hidden_", ""));            
                 postData.add(new BasicNameValuePair("javax.faces.ViewState", mViewState));            
                 postData.add(new BasicNameValuePair("accountList", account.getId()));
-                response = urlopen.open("https://" + host + "/lfportal/appmanager/privat/main?_nfpb=true&_windowLabel=account_1&_nffvid=%2Flfportal%2Fjsp%2Faccount%2Fview%2FviewAccountTransactions.faces", postData);
+                response = urlopen.open("https://" + host + "/lfportal/privat.portal?_nfpb=true&_windowLabel=account_1&_nffvid=%2Flfportal%2Fjsp%2Faccount%2Fview%2FviewAccountTransactions.faces", postData);
             }
             matcher = reTransactions.matcher(response);
             ArrayList<Transaction> transactions = new ArrayList<Transaction>();
