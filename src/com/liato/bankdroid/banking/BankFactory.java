@@ -29,6 +29,7 @@ import com.liato.bankdroid.banking.banks.AmericanExpress;
 import com.liato.bankdroid.banking.banks.Avanza;
 import com.liato.bankdroid.banking.banks.AvanzaMini;
 import com.liato.bankdroid.banking.banks.CSN;
+import com.liato.bankdroid.banking.banks.Chevrolet;
 import com.liato.bankdroid.banking.banks.Coop;
 import com.liato.bankdroid.banking.banks.DinersClub;
 import com.liato.bankdroid.banking.banks.EurobonusMastercard;
@@ -139,6 +140,8 @@ public class BankFactory {
             return new Saab(context);
         case IBankTypes.WALLET:
             return new Wallet(context);
+        case IBankTypes.CHEVROLET:
+            return new Chevrolet(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -182,6 +185,7 @@ public class BankFactory {
         banks.add(new McDonalds(context));
         banks.add(new Saab(context));
         banks.add(new Wallet(context));
+        banks.add(new Chevrolet(context));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));
