@@ -55,4 +55,5 @@ public interface IBankTypes {
     public final static int AMERICANEXPRESS = 31;
     public final static int MCDONALDS = 32;
     public final static int SAAB = 33;
+    public final static int WALLET = 34;
 }

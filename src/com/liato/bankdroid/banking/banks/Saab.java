@@ -24,7 +24,7 @@ import com.liato.bankdroid.banking.exceptions.LoginException;
 
 
 public class Saab extends SEBKortBase {
-	private static final String TAG = "SAB";
+	private static final String TAG = "SAAB";
 	private static final String NAME = "SaabKortet";
 	private static final String NAME_SHORT = "saab";
 	private static final int BANKTYPE_ID = Bank.SAAB;

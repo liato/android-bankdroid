@@ -59,6 +59,7 @@ import com.liato.bankdroid.banking.banks.Swedbank;
 import com.liato.bankdroid.banking.banks.TestBank;
 import com.liato.bankdroid.banking.banks.Villabanken;
 import com.liato.bankdroid.banking.banks.Volvofinans;
+import com.liato.bankdroid.banking.banks.Wallet;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.db.Crypto;
 import com.liato.bankdroid.db.DBAdapter;
@@ -136,6 +137,8 @@ public class BankFactory {
             return new McDonalds(context);
         case IBankTypes.SAAB:
             return new Saab(context);
+        case IBankTypes.WALLET:
+            return new Wallet(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -178,6 +181,7 @@ public class BankFactory {
         //banks.add(new AmericanExpress(context));
         banks.add(new McDonalds(context));
         banks.add(new Saab(context));
+        banks.add(new Wallet(context));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));
