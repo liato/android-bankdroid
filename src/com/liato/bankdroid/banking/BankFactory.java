@@ -52,6 +52,7 @@ import com.liato.bankdroid.banking.banks.Payson;
 import com.liato.bankdroid.banking.banks.ResursBank;
 import com.liato.bankdroid.banking.banks.Rikslunchen;
 import com.liato.bankdroid.banking.banks.SEB;
+import com.liato.bankdroid.banking.banks.SJPrio;
 import com.liato.bankdroid.banking.banks.Saab;
 import com.liato.bankdroid.banking.banks.SevenDay;
 import com.liato.bankdroid.banking.banks.Statoil;
@@ -142,6 +143,8 @@ public class BankFactory {
             return new Wallet(context);
         case IBankTypes.CHEVROLET:
             return new Chevrolet(context);
+        case IBankTypes.SJPRIO:
+            return new SJPrio(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -186,6 +189,7 @@ public class BankFactory {
         banks.add(new Saab(context));
         banks.add(new Wallet(context));
         banks.add(new Chevrolet(context));
+        banks.add(new SJPrio(context));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));
