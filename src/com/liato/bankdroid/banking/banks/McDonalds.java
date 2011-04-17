@@ -52,7 +52,7 @@ public class McDonalds extends Bank {
 	private static final int INPUT_TITLETEXT_USERNAME = R.string.card_number;	
 
     private Pattern reBalance = Pattern.compile("saldo:\\s*([0-9,. -]+)\\s*kronor");
-    private Pattern reTransactions = Pattern.compile(    "<tr><td>(\\d{2}-\\d{2}-\\d{2})\\s*\\d{2}:\\d{2}</td><td>([^<]+)</tr><td>[^<]+</tr><td>([^<]+)</td></tr>");
+    private Pattern reTransactions = Pattern.compile("<tr><td>(\\d{2}-\\d{2}-\\d{2})\\s*\\d{2}:\\d{2}</td><td>([^<]+)</td><td>[^<]+</td><td>([^<]+)</td></tr>");
 	private String response = "";
 
 	public McDonalds(Context context) {
