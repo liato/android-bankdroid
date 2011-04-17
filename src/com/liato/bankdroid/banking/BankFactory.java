@@ -51,6 +51,7 @@ import com.liato.bankdroid.banking.banks.Opel;
 import com.liato.bankdroid.banking.banks.Osuuspankki;
 import com.liato.bankdroid.banking.banks.PayPal;
 import com.liato.bankdroid.banking.banks.Payson;
+import com.liato.bankdroid.banking.banks.Quintessentially;
 import com.liato.bankdroid.banking.banks.ResursBank;
 import com.liato.bankdroid.banking.banks.Rikslunchen;
 import com.liato.bankdroid.banking.banks.SEB;
@@ -151,6 +152,8 @@ public class BankFactory {
             return new Opel(context);
         case IBankTypes.DJURGARDEN:
             return new Djurgarden(context);
+        case IBankTypes.QUINTESSENTIALLY:
+            return new Quintessentially(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -198,6 +201,7 @@ public class BankFactory {
         banks.add(new SJPrio(context));
         banks.add(new Opel(context));
         banks.add(new Djurgarden(context));
+        banks.add(new Quintessentially(context));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));

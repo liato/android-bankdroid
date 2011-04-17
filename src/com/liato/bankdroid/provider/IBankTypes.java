@@ -60,4 +60,5 @@ public interface IBankTypes {
     public final static int SJPRIO = 36;
     public final static int OPEL = 37;
     public final static int DJURGARDEN = 38;
+    public final static int QUINTESSENTIALLY = 39;
 }
