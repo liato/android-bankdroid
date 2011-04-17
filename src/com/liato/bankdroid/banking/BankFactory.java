@@ -32,6 +32,7 @@ import com.liato.bankdroid.banking.banks.CSN;
 import com.liato.bankdroid.banking.banks.Chevrolet;
 import com.liato.bankdroid.banking.banks.Coop;
 import com.liato.bankdroid.banking.banks.DinersClub;
+import com.liato.bankdroid.banking.banks.Djurgarden;
 import com.liato.bankdroid.banking.banks.EurobonusMastercard;
 import com.liato.bankdroid.banking.banks.Eurocard;
 import com.liato.bankdroid.banking.banks.FirstCard;
@@ -148,6 +149,8 @@ public class BankFactory {
             return new SJPrio(context);
         case IBankTypes.OPEL:
             return new Opel(context);
+        case IBankTypes.DJURGARDEN:
+            return new Djurgarden(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -194,6 +197,7 @@ public class BankFactory {
         banks.add(new Chevrolet(context));
         banks.add(new SJPrio(context));
         banks.add(new Opel(context));
+        banks.add(new Djurgarden(context));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));
