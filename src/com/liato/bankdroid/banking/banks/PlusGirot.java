@@ -50,7 +50,7 @@ public class PlusGirot extends Bank {
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
 	
     private Pattern reAccounts = Pattern.compile("<tr>\\s*<td[^>]+>\\s*<font[^>]+>([^<]+)</font>\\s*</td>\\s*<td[^>]+><font[^>]+>\\s*<font[^>]+>([^<]+)</font>\\s*</td>\\s*<td[^>]+>\\s*<font[^>]+>([^<]+)</font>\\s*</td>\\s*<td[^>]+>\\s*<font[^>]+>([^<]+)</font>", Pattern.CASE_INSENSITIVE);
-	private Pattern reTransactions = Pattern.compile("href=\"details/Default\\.aspx\\?\\d{1,}\">\\s*<span\\s*title=\"(\\d{4}-\\d{2}-\\d{2})[^\"]+\">.*?Grid1_0_3_\\d{1,}_Hy[^>]+>([^<]+)<.*?Grid1_0_5_\\d{1,}_Hy[^>]+>([^<]+)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private Pattern reTransactions = Pattern.compile("<a[^>]+>([^<]+)</a>\\s*</font>\\s*</td>\\s*<td[^>]+>\\s*<font[^>]+>([^<]+)</font>\\s*</td>\\s*<td[^>]+>\\s*<font[^>]+>([^<]+)</font>\\s*</td>\\s*<td[^>]+>\\s*<font[^>]+>([^<]+)</f", Pattern.CASE_INSENSITIVE);
 	private String response = null;
 	
 	public PlusGirot(Context context) {
