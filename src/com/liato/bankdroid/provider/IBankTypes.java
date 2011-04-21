@@ -62,4 +62,5 @@ public interface IBankTypes {
     public final static int DJURGARDEN = 38;
     public final static int QUINTESSENTIALLY = 39;
     public final static int PLUSGIROT = 40;
+    public final static int SHELL = 41;
 }
