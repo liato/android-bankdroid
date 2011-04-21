@@ -23,24 +23,24 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
 
-public class Shell extends IkanoPartnerBase {
-	private static final String TAG = "Shell";
-	private static final String NAME = "Shell MasterCard";
-	private static final String NAME_SHORT = "shell";
-	private static final String URL = "https://partner.ikanobank.se/web/ShellCustomerLogin";
-	private static final int BANKTYPE_ID = Bank.SHELL;
+public class Volkswagen extends IkanoPartnerBase {
+	private static final String TAG = "Volkswagen";
+	private static final String NAME = "Volkswagenkortet";
+	private static final String NAME_SHORT = "volkswagen";
+	private static final String URL = "https://partner.ikanobank.se/web/engines/page.aspx?structid=1319";
+	private static final int BANKTYPE_ID = Bank.VOLKSWAGEN;
 
-    public Shell(Context context) {
+    public Volkswagen(Context context) {
         super(context);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;
         super.URL = URL;
-        this.structId = "2035";
+        this.structId = "1319";
     }
 
-    public Shell(String username, String password, Context context) throws BankException, LoginException {
+    public Volkswagen(String username, String password, Context context) throws BankException, LoginException {
         this(context);
         this.update(username, password);
     }
