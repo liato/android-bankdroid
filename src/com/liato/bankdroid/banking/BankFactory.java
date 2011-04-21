@@ -26,6 +26,7 @@ import android.database.Cursor;
 import android.preference.PreferenceManager;
 
 import com.liato.bankdroid.banking.banks.AmericanExpress;
+import com.liato.bankdroid.banking.banks.Audi;
 import com.liato.bankdroid.banking.banks.Avanza;
 import com.liato.bankdroid.banking.banks.AvanzaMini;
 import com.liato.bankdroid.banking.banks.CSN;
@@ -163,6 +164,8 @@ public class BankFactory {
             return new Shell(context);
         case IBankTypes.VOLKSWAGEN:
             return new Volkswagen(context);
+        case IBankTypes.AUDI:
+            return new Audi(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -214,6 +217,7 @@ public class BankFactory {
         banks.add(new PlusGirot(context));
         banks.add(new Shell(context));
         banks.add(new Volkswagen(context));
+        banks.add(new Audi(context));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));
