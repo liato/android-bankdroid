@@ -60,6 +60,7 @@ import com.liato.bankdroid.banking.banks.Rikslunchen;
 import com.liato.bankdroid.banking.banks.SEB;
 import com.liato.bankdroid.banking.banks.SJPrio;
 import com.liato.bankdroid.banking.banks.Saab;
+import com.liato.bankdroid.banking.banks.Seat;
 import com.liato.bankdroid.banking.banks.SevenDay;
 import com.liato.bankdroid.banking.banks.Shell;
 import com.liato.bankdroid.banking.banks.Statoil;
@@ -169,6 +170,8 @@ public class BankFactory {
             return new Audi(context);
         case IBankTypes.PREEM:
             return new Preem(context);
+        case IBankTypes.SEAT:
+            return new Seat(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -222,6 +225,7 @@ public class BankFactory {
         banks.add(new Volkswagen(context));
         banks.add(new Audi(context));
         banks.add(new Preem(context));
+        banks.add(new Seat(context));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));
