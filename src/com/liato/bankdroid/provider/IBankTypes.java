@@ -65,4 +65,5 @@ public interface IBankTypes {
     public final static int SHELL = 41;
     public final static int VOLKSWAGEN = 42;
     public final static int AUDI = 43;
+    public final static int PREEM = 44;
 }

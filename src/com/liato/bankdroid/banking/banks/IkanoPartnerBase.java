@@ -49,9 +49,12 @@ public abstract class IkanoPartnerBase extends Bank {
     private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
     private Pattern reViewState = Pattern.compile("(?:__|javax\\.faces\\.)VIEWSTATE\"\\s+.*?value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
     private Pattern reCtl = Pattern.compile("(ctl\\d{1,})_CustomValidationSummary", Pattern.CASE_INSENSITIVE);
+    private Pattern reTransactionsUrl = Pattern.compile("(page___\\d{1,}\\.aspx)\"><span[^>]+>Transaktioner</span>", Pattern.CASE_INSENSITIVE);
     private Pattern reAccounts = Pattern.compile("captionLabel\">([^<]+)</span>\\s*</span>\\s*<span\\s*id=\"[^\"]+ReadOnlyValueSpan\">([^<]+)</span>\\s*<span\\s*id=\"[^\"]+currencyTextLiteralSpan\">([^<]+)</span>");
     private Pattern reTransactions = Pattern.compile("<td\\s*class=\"TransactionDateRow\">([^>]+)</td><td[^>]+>(.+?)</td><td[^>]+>([^<]+)</td><td[^>]+>([^<]+)</td>");
+    private String response = null;
 	protected String structId;
+	
 
 	public IkanoPartnerBase(Context context) {
 		super(context);
@@ -69,7 +72,7 @@ public abstract class IkanoPartnerBase extends Bank {
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
         urlopen = new Urllib(true);
-        String response = urlopen.open("https://partner.ikanobank.se/web/engines/page.aspx?structid="+structId);
+        response = urlopen.open("https://partner.ikanobank.se/web/engines/page.aspx?structid="+structId);
         Matcher matcher = reViewState.matcher(response);
         if (!matcher.find()) {
             throw new BankException(res.getText(R.string.unable_to_find).toString()+" ViewState.");
@@ -98,7 +101,7 @@ public abstract class IkanoPartnerBase extends Bank {
 	public Urllib login() throws LoginException, BankException {
 		try {
 		    LoginPackage lp = preLogin();
-			String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
 		
 			if (response.contains("eller personnumme") || response.contains("elaktigt personnummer")
 			        || response.contains("ontrollera personnummer") || response.contains("elaktig inloggningskod")) {
@@ -121,10 +124,14 @@ public abstract class IkanoPartnerBase extends Bank {
 		}
 		
 		urlopen = login();
-		String response = null;
 		Matcher matcher;
 		try {
-			response = urlopen.open("https://partner.ikanobank.se/web/engines/page___2040.aspx");
+	        matcher = reTransactionsUrl.matcher(response);
+	        if (!matcher.find()) {
+	            throw new BankException(res.getText(R.string.unable_to_find).toString()+" transactions url.");
+	        }
+		    
+			response = urlopen.open("https://partner.ikanobank.se/web/engines/"+matcher.group(1));
 			matcher = reAccounts.matcher(response);
 			int accId = 0;
 			while (matcher.find()) {
