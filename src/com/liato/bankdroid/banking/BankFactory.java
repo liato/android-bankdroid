@@ -65,6 +65,7 @@ import com.liato.bankdroid.banking.banks.Seat;
 import com.liato.bankdroid.banking.banks.SevenDay;
 import com.liato.bankdroid.banking.banks.Shell;
 import com.liato.bankdroid.banking.banks.Skoda;
+import com.liato.bankdroid.banking.banks.SparbankenOresund;
 import com.liato.bankdroid.banking.banks.SparbankenSyd;
 import com.liato.bankdroid.banking.banks.Statoil;
 import com.liato.bankdroid.banking.banks.Steam;
@@ -181,6 +182,8 @@ public class BankFactory {
             return new IKEA(context);
         case IBankTypes.SPARBANKEN_SYD:
             return new SparbankenSyd(context);
+        case IBankTypes.SPARBANKEN_ORESUND:
+            return new SparbankenOresund(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -238,6 +241,7 @@ public class BankFactory {
         banks.add(new Skoda(context));
         banks.add(new IKEA(context));
         banks.add(new SparbankenSyd(context));
+        banks.add(new SparbankenOresund(context));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));

@@ -70,4 +70,5 @@ public interface IBankTypes {
     public final static int SKODA = 46;
     public final static int IKEA = 47;
     public final static int SPARBANKEN_SYD = 48;
+    public final static int SPARBANKEN_ORESUND = 49;
 }
