@@ -67,4 +67,5 @@ public interface IBankTypes {
     public final static int AUDI = 43;
     public final static int PREEM = 44;
     public final static int SEAT = 45;
+    public final static int SKODA = 46;
 }
