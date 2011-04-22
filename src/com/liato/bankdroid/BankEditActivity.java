@@ -30,6 +30,7 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -53,7 +54,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
 public class BankEditActivity extends LockableActivity implements OnClickListener, OnItemSelectedListener {
-	private final static String TAG = "AccountActivity";
+	private final static String TAG = "BankEditActivity";
 	private Bank SELECTED_BANK;
 	private long BANKID = -1;
 
@@ -80,6 +81,7 @@ public class BankEditActivity extends LockableActivity implements OnClickListene
 				if (bank != null) {
 					((EditText)findViewById(R.id.edtBankeditUsername)).setText(bank.getUsername());
                     ((EditText)findViewById(R.id.edtBankeditPassword)).setText(bank.getPassword());
+                    ((EditText)findViewById(R.id.edtBankeditExtras)).setText(bank.getExtras());
                     ((EditText)findViewById(R.id.edtBankeditCustomName)).setText(bank.getCustomName());
                     
 					TextView errorDesc = (TextView)findViewById(R.id.txtErrorDesc);
@@ -110,6 +112,7 @@ public class BankEditActivity extends LockableActivity implements OnClickListene
 			SELECTED_BANK.setUsername(((EditText) findViewById(R.id.edtBankeditUsername)).getText().toString().trim());
             SELECTED_BANK.setPassword(((EditText) findViewById(R.id.edtBankeditPassword)).getText().toString().trim());
             SELECTED_BANK.setCustomName(((EditText) findViewById(R.id.edtBankeditCustomName)).getText().toString().trim());
+            SELECTED_BANK.setExtras(((EditText) findViewById(R.id.edtBankeditExtras)).getText().toString().trim());
 			SELECTED_BANK.setDbid(BANKID);
 			new DataRetrieverTask(this, SELECTED_BANK).execute();
 		}
@@ -121,16 +124,26 @@ public class BankEditActivity extends LockableActivity implements OnClickListene
 		SELECTED_BANK = (Bank)parentView.getItemAtPosition(pos);
 		EditText edtUsername = (EditText)findViewById(R.id.edtBankeditUsername);
         EditText edtPassword = (EditText)findViewById(R.id.edtBankeditPassword);
+        EditText edtExtras = (EditText)findViewById(R.id.edtBankeditExtras);
         TextView txtUsername = (TextView)findViewById(R.id.txtBankeditUsername);
         TextView txtPassword = (TextView)findViewById(R.id.txtBankeditPassword);
+        TextView txtExtras = (TextView)findViewById(R.id.txtBankeditExtras);
         
 		edtUsername.setInputType(SELECTED_BANK.getInputTypeUsername());
 		edtUsername.setHint(SELECTED_BANK.getInputHintUsername());
-		edtPassword.setInputType(SELECTED_BANK.getInputTypePassword());
+        txtUsername.setText(SELECTED_BANK.getInputTitleUsername());
+
+        edtPassword.setInputType(SELECTED_BANK.getInputTypePassword());
 		edtPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
 		edtPassword.setTypeface(Typeface.MONOSPACE);
-        txtUsername.setText(SELECTED_BANK.getInputTitleUsername());
         txtPassword.setText(SELECTED_BANK.getInputTitlePassword());
+
+        edtExtras.setInputType(SELECTED_BANK.getInputTypeExtras());
+        if ((SELECTED_BANK.getInputTypeExtras() & InputType.TYPE_TEXT_VARIATION_PASSWORD) == InputType.TYPE_TEXT_VARIATION_PASSWORD) {
+            edtExtras.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            edtExtras.setTypeface(Typeface.MONOSPACE);
+        }
+        txtExtras.setText(SELECTED_BANK.getInputTitleExtras());
 		
         if (SELECTED_BANK.isInputUsernameHidden()) {
             edtUsername.setVisibility(View.GONE);
@@ -148,7 +161,16 @@ public class BankEditActivity extends LockableActivity implements OnClickListene
         else {
             edtPassword.setVisibility(View.VISIBLE);
             txtPassword.setVisibility(View.VISIBLE);
-        }        
+        }
+        
+        if (SELECTED_BANK.isInputExtrasHidden()) {
+            edtExtras.setVisibility(View.GONE);
+            txtExtras.setVisibility(View.GONE);
+        }
+        else {
+            edtExtras.setVisibility(View.VISIBLE);
+            txtExtras.setVisibility(View.VISIBLE);
+        }          
 	}
 
 	@Override

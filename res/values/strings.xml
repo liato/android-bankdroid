@@ -23,6 +23,7 @@
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="custom_name">Custom Name (optional)</string>
+    <string name="extras_field">Extras</string>
     <string name="bank">Bank</string>
     <string name="error_desc">The last update was unsuccessful and updates for this account have been disabled. Make sure you\'ve entered your username and password correctly and press the save button.</string>
 
@@ -273,4 +274,6 @@
 	
 	<string name="permission_provider_label">Basic account information and the transaction history</string>
 	<string name="permission_provider_desc">Allows the application to access what banks and accounts are configured in BankDroids. Your Bank credentials are not exposed. Transaction history can also be accessed.</string>
+
+	<string name="nordnetdirekt_extras_title">Key</string>	
 </resources>

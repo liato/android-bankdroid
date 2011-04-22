@@ -50,11 +50,14 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
 	protected String URL;
     protected int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT;
     protected int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD;
+    protected int INPUT_TYPE_EXTRAS = InputType.TYPE_CLASS_TEXT;
     protected String INPUT_HINT_USERNAME = null;
     protected boolean INPUT_HIDDEN_USERNAME = false;
     protected boolean INPUT_HIDDEN_PASSWORD = false;
+    protected boolean INPUT_HIDDEN_EXTRAS = true;
     protected int INPUT_TITLETEXT_USERNAME = R.string.username;
     protected int INPUT_TITLETEXT_PASSWORD = R.string.password;
+    protected int INPUT_TITLETEXT_EXTRAS = R.string.extras_field;
     protected boolean STATIC_BALANCE = false;
     protected boolean BROKEN = false;
 
@@ -186,6 +189,14 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     public void setCustomName(String customName) {
         this.customName = customName;
     }
+    
+    public String getExtras() {
+        return "";
+    }
+
+    public void setExtras(String extras) {
+        // Do nothing.
+    }    
 
     public String getShortName() {
         return NAME_SHORT;
@@ -257,6 +268,10 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         return INPUT_TYPE_PASSWORD;
     }
 
+    public int getInputTypeExtras() {
+        return INPUT_TYPE_EXTRAS;
+    }
+    
     public String getInputHintUsername() {
         return INPUT_HINT_USERNAME;
     }
@@ -268,6 +283,10 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     public boolean isInputPasswordHidden() {
         return INPUT_HIDDEN_PASSWORD;
     }
+    
+    public boolean isInputExtrasHidden() {
+        return INPUT_HIDDEN_EXTRAS;
+    }    
 
     public int getInputTitleUsername() {
         return INPUT_TITLETEXT_USERNAME;
@@ -275,6 +294,10 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
 
     public int getInputTitlePassword() {
         return INPUT_TITLETEXT_PASSWORD;
+    }
+
+    public int getInputTitleExtras() {
+        return INPUT_TITLETEXT_EXTRAS;
     }
 
 

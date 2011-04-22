@@ -8,10 +8,10 @@
 	android:layout_width="fill_parent">
 
 	<ScrollView
-
 		android:layout_height="fill_parent"
 		android:layout_width="fill_parent"
-		android:fillViewport="true" android:layout_above="@+id/TableLayout01">
+		android:fillViewport="true"
+		android:layout_above="@+id/TableLayout01">
 		<LinearLayout
 			android:id="@+id/LinearLayout01"
 			android:layout_height="wrap_content"
@@ -20,37 +20,65 @@
 			android:orientation="vertical"
 			android:layout_alignParentTop="true"
 			android:padding="10dp">
-			<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:typeface="sans" android:textSize="20sp" android:text="@string/bank" /><Spinner android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/spnBankeditBanklist"></Spinner><TextView
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:typeface="sans"
-				android:textSize="20sp"
-				android:text="@string/username"				
-				android:id="@+id/txtBankeditUsername"/>
-			<EditText
-				android:layout_height="wrap_content"
-				android:layout_width="fill_parent"
-				android:id="@+id/edtBankeditUsername" android:inputType="textEmailAddress"></EditText>
 			<TextView
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				android:typeface="sans"
-				android:textSize="20sp"				
-				android:text="@string/password" 
-				android:id="@+id/txtBankeditPassword"/>
-			<EditText
+				android:textSize="20sp"
+				android:text="@string/bank" />
+			<Spinner
 				android:layout_height="wrap_content"
 				android:layout_width="fill_parent"
-				android:id="@+id/edtBankeditPassword" android:inputType="textPassword"></EditText><TextView
+				android:id="@+id/spnBankeditBanklist"></Spinner>
+			<TextView
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				android:typeface="sans"
-				android:textSize="20sp" android:text="@string/custom_name"/><EditText
+				android:textSize="20sp"
+				android:text="@string/username"
+				android:id="@+id/txtBankeditUsername" />
+			<EditText
 				android:layout_height="wrap_content"
 				android:layout_width="fill_parent"
-				android:id="@+id/edtBankeditCustomName" android:inputType="textCapWords"></EditText>
-			
-			
+				android:id="@+id/edtBankeditUsername"
+				android:inputType="textEmailAddress"></EditText>
+			<TextView
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:typeface="sans"
+				android:textSize="20sp"
+				android:text="@string/password"
+				android:id="@+id/txtBankeditPassword" />
+			<EditText
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:id="@+id/edtBankeditPassword"
+				android:inputType="textPassword"></EditText>
+			<TextView
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:typeface="sans"
+				android:textSize="20sp"
+				android:text="@string/custom_name" />
+			<EditText
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:id="@+id/edtBankeditCustomName"
+				android:inputType="textCapWords"></EditText>
+			<TextView
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:typeface="sans"
+				android:textSize="20sp"
+				android:text="@string/extras_field"
+				android:id="@+id/txtBankeditExtras"
+				android:visibility="gone" />
+			<EditText
+				android:layout_height="wrap_content"
+				android:layout_width="fill_parent"
+				android:id="@+id/edtBankeditExtras"
+				android:inputType="textCapWords"
+				android:visibility="gone"></EditText>
 			<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"

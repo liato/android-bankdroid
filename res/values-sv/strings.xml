@@ -222,4 +222,6 @@
     
 	<string name="card_id">Kort ID</string>
 	<string name="card_number">Kortnummer</string>
+	
+	<string name="nordnetdirekt_extras_title">Nyckel</string>	
 </resources>
