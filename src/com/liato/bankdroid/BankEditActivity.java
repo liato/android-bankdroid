@@ -45,11 +45,14 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.liato.bankdroid.appwidget.AutoRefreshService;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.BankChoice;
 import com.liato.bankdroid.banking.BankFactory;
+import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
@@ -253,6 +256,9 @@ public class BankEditActivity extends LockableActivity implements OnClickListene
 			} catch (LoginException e) {
 				this.exc = e;
 			}
+            catch (BankChoiceException e) {
+                this.exc = e;
+            }
 			return null;
 		}
 
@@ -262,14 +268,32 @@ public class BankEditActivity extends LockableActivity implements OnClickListene
 				this.dialog.dismiss();
 			}
 			if (this.exc != null) {
-				AlertDialog.Builder builder = new AlertDialog.Builder(BankEditActivity.this);
-				builder.setMessage(this.exc.getMessage()).setTitle(res.getText(R.string.could_not_create_account))
-				.setIcon(android.R.drawable.ic_dialog_alert)
-				.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.cancel();
-					}
-				});
+				AlertDialog.Builder builder = new AlertDialog.Builder(context);
+				if (this.exc instanceof BankChoiceException) {
+				    final BankChoiceException e = (BankChoiceException)exc;
+	                final String[] items = new String[e.getBanks().size()];
+	                int i = 0;
+	                for (BankChoice b : e.getBanks()) {
+	                    items[i] = b.getName();
+	                    i++;
+	                }
+	                builder.setTitle("Select a bank");
+	                builder.setItems(items, new DialogInterface.OnClickListener() {
+	                    public void onClick(DialogInterface dialog, int item) {
+	                        SELECTED_BANK.setExtras(e.getBanks().get(item).getId());
+	                        new DataRetrieverTask(context, SELECTED_BANK).execute();
+	                    }
+	                });
+				}
+				else {
+    				builder.setMessage(this.exc.getMessage()).setTitle(res.getText(R.string.could_not_create_account))
+    				.setIcon(android.R.drawable.ic_dialog_alert)
+    				.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+    					public void onClick(DialogInterface dialog, int id) {
+    						dialog.cancel();
+    					}
+    				});
+				}
 				AlertDialog alert = builder.create();
 				alert.show();
 			}

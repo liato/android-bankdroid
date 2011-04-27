@@ -41,6 +41,7 @@ import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.BankFactory;
+import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.db.DBAdapter;
@@ -274,6 +275,10 @@ public class AutoRefreshService extends Service {
 					refreshWidgets = true;
 					db.disableBank(bank.getDbId());
 				}
+                catch (BankChoiceException e) {
+                    Log.d(TAG, "Error while updating bank '" + bank.getDbId()
+                            + "'; LoginException: " + e.getMessage());
+                }
 			}
 
 			if (refreshWidgets) {

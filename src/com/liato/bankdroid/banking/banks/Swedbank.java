@@ -38,7 +38,9 @@ import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.BankChoice;
 import com.liato.bankdroid.banking.Transaction;
+import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
@@ -59,6 +61,9 @@ public class Swedbank extends Bank {
 	private Pattern reLinklessAccounts = Pattern.compile("fix\">\\s*<span\\sclass=\"name\">([^<]+)</span>\\s*<br\\s?/>\\s*<span\\sclass=\"amount\">([^<]+)</span>\\s*</div>", Pattern.CASE_INSENSITIVE);
 	private Pattern reTransactions = Pattern.compile("date\">([^<]+)</span>\\s*<br\\s?/>\\s*<span\\s*class=\"receiver\">([^<]+)</span>\\s*<br\\s?/>\\s*<span\\s*class=\"amount\">([^<]+)</span>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private Pattern reLoanData = Pattern.compile("<li[^>]*>([^<]+)<br/><span\\s*class=\"secondary\">([^<]+)</span></li>");
+	private Pattern reMultipleBanks = Pattern.compile("menu\\.html\\?bank=(\\d{1,})\">([^<]+)</");
+	
+	String response;
 	public Swedbank(Context context) {
 		super(context);
 		super.TAG = TAG;
@@ -70,7 +75,7 @@ public class Swedbank extends Bank {
         super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
 	}
 
-	public Swedbank(String username, String password, Context context) throws BankException, LoginException {
+	public Swedbank(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
 		this(context);
 		this.update(username, password);
 	}
@@ -81,7 +86,7 @@ public class Swedbank extends Bank {
         urlopen = new Urllib();
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         Matcher matcher;
-        String response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/login.html");
+        response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/login.html");
         matcher = reCSRF.matcher(response);
         if (!matcher.find()) {
             throw new BankException(res.getText(R.string.unable_to_find).toString()+" CSRF token.");
@@ -101,7 +106,8 @@ public class Swedbank extends Bank {
         postData.clear();
         postData.add(new BasicNameValuePair("zyx", password));
         postData.add(new BasicNameValuePair("_csrf_token", csrftoken));
-        return new LoginPackage(urlopen, postData, response, "https://mobilbank.swedbank.se/banking/swedbank/login.html");
+        String banknr = (getExtras() != null && getExtras().length() > 0) ? "?bank="+getExtras() : "";
+        return new LoginPackage(urlopen, postData, response, "https://mobilbank.swedbank.se/banking/swedbank/login.html"+banknr);
     }
 
     @Override
@@ -109,7 +115,7 @@ public class Swedbank extends Bank {
 	    
 	    try {
 	        LoginPackage lp = preLogin();
-	        String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+	        response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
 
 			if (response.contains("misslyckats")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -125,16 +131,45 @@ public class Swedbank extends Bank {
 	}
 
 	@Override
-	public void update() throws BankException, LoginException {
+	public void update() throws BankException, LoginException, BankChoiceException {
 		super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		urlopen = login();
-		String response = null;
-		Matcher matcher;
 		try {
-			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/accounts.html");
+            response = urlopen.open("http://x.x00.us/android/bankdroid/swedbank/multiplebanks.htm");
+        }
+        catch (ClientProtocolException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+        catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+		Matcher matcher;
+		if (getExtras() == null || getExtras().length() == 0) {
+    		ArrayList<BankChoice> banks = new ArrayList<BankChoice>();
+    		matcher = reMultipleBanks.matcher(response);
+    		while (matcher.find()) {
+                /*
+                 * Capture groups:
+                 * GROUP                EXAMPLE DATA
+                 * 1: ID                0 | 1 | ..
+                 * 2: Name              Ostlands Sparbank
+                 *  
+                 */ 		    
+    		    banks.add(new BankChoice(Html.fromHtml(matcher.group(2)).toString().trim(), matcher.group(1)));
+    		}
+    		if (!banks.isEmpty()) {
+    		    throw new BankChoiceException("Select a bank.", banks);
+    		}
+		}
+		
+        String banknr = (getExtras() != null && getExtras().length() > 0) ? "?bank="+getExtras() : "";
+		try {
+			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/accounts.html"+banknr);
 			matcher = reAccounts.matcher(response);
 			while (matcher.find()) {
                 /*
@@ -186,6 +221,7 @@ public class Swedbank extends Bank {
 		super.updateTransactions(account, urlopen);
 		if (account.getType() == Account.OTHER) return;
 
+		String banknr = (getExtras() != null && getExtras().length() > 0) ? "&bank="+getExtras() : "";
 		String response = null;
 		Matcher matcher;
 		try {
@@ -193,8 +229,8 @@ public class Swedbank extends Bank {
 		    if (account.getType() == Account.LOANS) {
 		        String [] accountId = account.getId().split(":", 2);
 		        if (accountId.length < 2) return;
-	            Log.d(TAG, "Opening: https://mobilbank.swedbank.se/banking/swedbank/loan.html?id="+accountId[1]);
-	            response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/loan.html?id="+accountId[1]);
+	            Log.d(TAG, "Opening: https://mobilbank.swedbank.se/banking/swedbank/loan.html?id="+accountId[1]+banknr);
+	            response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/loan.html?id="+accountId[1]+banknr);
 	            matcher = reLoanData.matcher(response);
 	            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	            Calendar cal = Calendar.getInstance(); 
@@ -213,8 +249,8 @@ public class Swedbank extends Bank {
 	            }
 		    }
 		    else {
-	            Log.d(TAG, "Opening: https://mobilbank.swedbank.se/banking/swedbank/account.html?id="+account.getId());
-	            response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/account.html?id="+account.getId());
+	            Log.d(TAG, "Opening: https://mobilbank.swedbank.se/banking/swedbank/account.html?id="+account.getId()+banknr);
+	            response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/account.html?id="+account.getId()+banknr);
 	            matcher = reTransactions.matcher(response);
 	            while (matcher.find()) {
                     /*

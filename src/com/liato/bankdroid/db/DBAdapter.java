@@ -175,7 +175,7 @@ public class DBAdapter {
                 vals.put("acctype", acc.getType());
                 vals.put("aliasfor", acc.getAliasfor());
 	            mDb.insert("accounts", null, vals);
-	            if (acc.getAliasfor() != null && acc.getAliasfor().length() > 0) {
+	            if (acc.getAliasfor() == null || acc.getAliasfor().length() == 0) {
     	            ArrayList<Transaction> transactions = acc.getTransactions();
     	            if (transactions != null && !transactions.isEmpty()) {
     	                deleteTransactions(new Long(bankId).toString()+"_"+acc.getId());

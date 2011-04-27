@@ -36,6 +36,7 @@ import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
+import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
@@ -67,7 +68,7 @@ public class DinersClub extends Bank {
 		super.URL = URL;
 	}
 
-	public DinersClub(String username, String password, Context context) throws BankException, LoginException {
+	public DinersClub(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
 		this(context);
 		this.update(username, password);
 	}
@@ -120,7 +121,7 @@ public class DinersClub extends Bank {
 	}
 
 	@Override
-	public void update() throws BankException, LoginException {
+	public void update() throws BankException, LoginException, BankChoiceException {
 		super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());

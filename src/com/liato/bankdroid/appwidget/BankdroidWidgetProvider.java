@@ -40,6 +40,7 @@ import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.BankFactory;
+import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
@@ -378,6 +379,9 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 					Log.d("", "Disabling bank: "+bank.getDbId());
 					bank.disable();
 				}
+                catch (BankChoiceException e) {
+                    Log.d(TAG, "Error while updating bank '"+bank.getDbId()+"'; "+e.getMessage());
+                }
 
 				BankdroidWidgetProvider.updateAppWidget(context, appWidgetManager, appWidgetId);
 				return null;

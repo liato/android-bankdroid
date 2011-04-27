@@ -29,6 +29,7 @@ import org.apache.http.client.CookieStore;
 
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
+import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.db.DBAdapter;
@@ -93,13 +94,13 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         this.res = this.context.getResources();
     }
 
-    public void update(String username, String password) throws BankException, LoginException {
+    public void update(String username, String password) throws BankException, LoginException, BankChoiceException {
         this.username = username;
         this.password = password;
         this.update();
     }
 
-    public void update() throws BankException, LoginException {
+    public void update() throws BankException, LoginException, BankChoiceException {
         balance = new BigDecimal(0);
         oldAccounts = new HashMap<String, Account>();
         for(Account account: accounts) {
@@ -325,6 +326,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
                     a.setHidden(oa.isHidden());
                     a.setNotify(oa.isNotify());
                     a.setCurrency(oa.getCurrency());
+                    a.setAliasfor(oa.getAliasfor());
                 }
             }
             a.setBank(this);

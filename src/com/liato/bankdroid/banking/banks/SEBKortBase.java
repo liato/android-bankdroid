@@ -37,6 +37,7 @@ import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
+import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
@@ -62,7 +63,7 @@ public abstract class SEBKortBase extends Bank {
 		super.URL = String.format("https://applications.sebkort.com/nis/external/%s/login.do", provider_part);
 	}
 
-	public SEBKortBase(String username, String password, Context context, String url, String prodgroup) throws BankException, LoginException {
+	public SEBKortBase(String username, String password, Context context, String url, String prodgroup) throws BankException, LoginException, BankChoiceException {
 		this(context, url, prodgroup);
 		this.update(username, password);
 	}
@@ -111,7 +112,7 @@ public abstract class SEBKortBase extends Bank {
 	}
 
 	@Override
-	public void update() throws BankException, LoginException {
+	public void update() throws BankException, LoginException, BankChoiceException {
 		super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());

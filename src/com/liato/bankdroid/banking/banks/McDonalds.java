@@ -35,6 +35,7 @@ import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
+import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
@@ -67,7 +68,7 @@ public class McDonalds extends Bank {
 		super.INPUT_TITLETEXT_USERNAME = INPUT_TITLETEXT_USERNAME;
 	}
 
-	public McDonalds(String username, String password, Context context) throws BankException, LoginException {
+	public McDonalds(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
 		this(context);
 		this.update(username, password);
 	}
@@ -102,7 +103,7 @@ public class McDonalds extends Bank {
 	}
 
 	@Override
-	public void update() throws BankException, LoginException {
+	public void update() throws BankException, LoginException, BankChoiceException {
 		super.update();
 		if (username == null || username.length() != 19) {
 			throw new LoginException(res.getText(R.string.invalid_card_number).toString());

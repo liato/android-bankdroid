@@ -31,10 +31,12 @@ import com.liato.bankdroid.appwidget.AutoRefreshService;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.BankFactory;
+import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
 public class DataRetrieverTask extends AsyncTask<String, String, Void> {
+    private final static String TAG = "DataRetrieverTask";
 	private final ProgressDialog dialog;
 	private ArrayList<String> errors;
 	private final MainActivity parent;
@@ -79,13 +81,8 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
 			publishProgress(new String[] { new Integer(i).toString(),
 					bank.getName() + " (" + bank.getUsername() + ")" });
 			if (bank.isDisabled()) {
-				Log.d("AA", bank.getName() + " (" + bank.getUsername()
-						+ ") is disabled. Skipping refresh.");
 				continue;
 			}
-			Log.d("AA",
-					"Refreshing " + bank.getName() + " (" + bank.getUsername()
-							+ ").");
 			try {
 				// Log.d("AA", "bank.update()");
 				bank.update();
@@ -105,6 +102,11 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
 						+ ")");
 				bank.disable();
 			}
+            catch (BankChoiceException e) {
+                this.errors.add(bank.getName() + " (" + bank.getUsername()
+                        + ")");
+                Log.d(TAG, "BankChoiceError: " + e.getMessage());
+            }
 
 			final SharedPreferences prefs = PreferenceManager
 					.getDefaultSharedPreferences(parent);

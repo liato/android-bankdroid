@@ -18,6 +18,7 @@ package com.liato.bankdroid.banking.banks;
 import android.content.Context;
 
 import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
@@ -36,7 +37,7 @@ public class Saab extends SEBKortBase {
 		super.BANKTYPE_ID = BANKTYPE_ID;
 	}
 	
-	public Saab(String username, String password, Context context) throws BankException, LoginException {
+	public Saab(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
 		super(username, password, context, "sbse", "0106");
 	}
 

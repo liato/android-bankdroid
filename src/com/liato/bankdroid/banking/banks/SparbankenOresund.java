@@ -18,6 +18,7 @@ package com.liato.bankdroid.banking.banks;
 import android.content.Context;
 
 import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
@@ -39,7 +40,7 @@ public class SparbankenOresund extends MobilbankenBase {
         this.targetId = "0002";
     }
 
-    public SparbankenOresund(String username, String password, Context context) throws BankException, LoginException {
+    public SparbankenOresund(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
         this(context);
         this.update(username, password);
     }
