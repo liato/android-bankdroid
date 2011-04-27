@@ -32,6 +32,7 @@ public class Account implements IAccountTypes {
 	private boolean notify = true;
 	private String currency;
 	private ArrayList<Transaction> transactions;
+	private String aliasfor;
 
 	public ArrayList<Transaction> getTransactions() {
 		return transactions;
@@ -139,5 +140,13 @@ public class Account implements IAccountTypes {
 	public void setCurrency(final String currency) {
 		this.currency = currency;
 	}
+	
+    public String getAliasfor() {
+        return aliasfor;
+    }
+
+    public void setAliasfor(final String aliasfor) {
+        this.aliasfor = aliasfor;
+    }	
 
 }

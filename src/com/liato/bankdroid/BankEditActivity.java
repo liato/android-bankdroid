@@ -81,8 +81,10 @@ public class BankEditActivity extends LockableActivity implements OnClickListene
 				if (bank != null) {
 					((EditText)findViewById(R.id.edtBankeditUsername)).setText(bank.getUsername());
                     ((EditText)findViewById(R.id.edtBankeditPassword)).setText(bank.getPassword());
-                    ((EditText)findViewById(R.id.edtBankeditExtras)).setText(bank.getExtras());
                     ((EditText)findViewById(R.id.edtBankeditCustomName)).setText(bank.getCustomName());
+                    if (bank.getExtras() != null) {
+                        ((EditText)findViewById(R.id.edtBankeditExtras)).setText(bank.getExtras());
+                    }
                     
 					TextView errorDesc = (TextView)findViewById(R.id.txtErrorDesc);
 					if (bank.isDisabled()) {

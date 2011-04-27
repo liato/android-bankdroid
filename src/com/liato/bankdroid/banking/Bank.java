@@ -66,14 +66,15 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
 
     protected String username;
     protected String password;
+    protected String customName;
+    protected String extras;
+    protected String currency = "SEK";
     protected ArrayList<Account> accounts = new ArrayList<Account>();
     protected HashMap<String, Account> oldAccounts;
     protected BigDecimal balance = new BigDecimal(0);
     protected boolean disabled = false;
     protected long dbid = -1;
     protected Urllib urlopen = null;
-    protected String customName;
-    protected String currency = "SEK";
 
     public Urllib getUrlopen() {
         return urlopen;
@@ -191,11 +192,11 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     }
     
     public String getExtras() {
-        return "";
+        return this.extras;
     }
 
     public void setExtras(String extras) {
-        // Do nothing.
+        this.extras = extras;
     }    
 
     public String getShortName() {
@@ -203,7 +204,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     }
 
     public void setData(String username, String password, BigDecimal balance,
-            boolean disabled, long dbid, String currency, String customName) {
+            boolean disabled, long dbid, String currency, String customName, String extras) {
         this.username = username;
         this.password = password;
         this.balance = balance;
@@ -211,6 +212,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         this.dbid = dbid;
         this.currency = currency;
         this.customName = customName;
+        this.extras = extras;
     }
 
     public String getCurrency() {

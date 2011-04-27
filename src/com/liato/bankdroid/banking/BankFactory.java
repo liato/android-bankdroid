@@ -276,7 +276,8 @@ public class BankFactory {
 							 (c.getInt(c.getColumnIndex("disabled")) == 0 ? false : true),
 							 c.getLong(c.getColumnIndex("_id")),
 							 c.getString(c.getColumnIndex("currency")),
-							 c.getString(c.getColumnIndex("custname")));
+							 c.getString(c.getColumnIndex("custname")),
+							 c.getString(c.getColumnIndex("extras")));
 				if (loadAccounts) {
 					bank.setAccounts(accountsFromDb(context, bank.getDbId()));
 				}
@@ -320,7 +321,8 @@ public class BankFactory {
 				             (c.getInt(c.getColumnIndex("disabled")) == 0 ? false : true),
 				             c.getLong(c.getColumnIndex("_id")),
 				             c.getString(c.getColumnIndex("currency")),
-				             c.getString(c.getColumnIndex("custname")));
+				             c.getString(c.getColumnIndex("custname")),
+                             c.getString(c.getColumnIndex("extras")));
 				if (loadAccounts) {
 					bank.setAccounts(accountsFromDb(context, bank.getDbId()));
 				}
@@ -352,11 +354,15 @@ public class BankFactory {
         account.setHidden(c.getInt(c.getColumnIndex("hidden")) == 1 ? true : false);
         account.setNotify(c.getInt(c.getColumnIndex("notify")) == 1 ? true : false);
         account.setCurrency(c.getString(c.getColumnIndex("currency")));
+        account.setAliasfor(c.getString(c.getColumnIndex("aliasfor")));
 		c.close();
 		if (loadTransactions) {
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-			//"transdate", "btransaction", "amount"}			
-			c = db.fetchTransactions(accountId);
+			String fromAccount = accountId;
+			if (account.getAliasfor() != null && account.getAliasfor().length() > 0) {
+			    fromAccount = Long.toString(account.getBankDbId()) + "_" + account.getAliasfor();
+			}
+			c = db.fetchTransactions(fromAccount);
 			if (!(c == null || c.isClosed() || (c.isBeforeFirst() && c.isAfterLast()))) {
 				while (!c.isLast() && !c.isAfterLast()) {
 					c.moveToNext();
@@ -393,7 +399,8 @@ public class BankFactory {
                                               c.getInt(c.getColumnIndex("acctype")));
     	        account.setHidden(c.getInt(c.getColumnIndex("hidden")) == 1 ? true : false);
     	        account.setNotify(c.getInt(c.getColumnIndex("notify")) == 1 ? true : false);			
-    	        account.setCurrency(c.getString(c.getColumnIndex("currency")));
+                account.setCurrency(c.getString(c.getColumnIndex("currency")));
+                account.setAliasfor(c.getString(c.getColumnIndex("aliasfor")));
     			accounts.add(account);
 			}
 			catch (ArrayIndexOutOfBoundsException e) {

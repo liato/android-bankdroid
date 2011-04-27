@@ -42,12 +42,18 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
 				+ "custname text, "
 				+ "updated text, "
 				+ "sortorder real, "
-				+ "currency text, " + "disabled integer);");
+				+ "currency text, "
+				+ "disabled integer, "
+				+ "extras text);");
 		db.execSQL("create table accounts (bankid integer not null, "
-				+ "id text not null, " + "balance text not null, "
-				+ "acctype integer not null, " + "hidden integer not null, "
-				+ "notify integer not null, " + "currency text, "
-				+ "name text not null);");
+				+ "id text not null, "
+				+ "balance text not null, "
+				+ "acctype integer not null, "
+				+ "hidden integer not null, "
+				+ "notify integer not null, "
+				+ "currency text, "
+				+ "name text not null, "
+				+ "aliasfor text);");
 		db.execSQL("create table transactions (_id integer primary key autoincrement, "
 				+ "transdate text not null, "
 				+ "btransaction text not null, "
@@ -61,9 +67,11 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
 			final int newVersion) {
 		Log.w(DBAdapter.TAG, "Upgrading database from version " + oldVersion
 				+ " to " + newVersion + ", which will destroy all old data");
-		db.execSQL("DROP TABLE IF EXISTS banks;");
-		db.execSQL("DROP TABLE IF EXISTS accounts;");
-		db.execSQL("DROP TABLE IF EXISTS transactions;");
-		onCreate(db);
+        // Version <= 1.7.2 
+		if (oldVersion == 9) {
+		    // Add an "extras" field to the bank and and "alias for" field to the account.
+            db.execSQL("ALTER TABLE banks ADD extras text;");
+            db.execSQL("ALTER TABLE accounts ADD aliasfor text;");
+		}
 	}
 }
