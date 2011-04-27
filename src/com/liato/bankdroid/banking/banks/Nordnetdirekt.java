@@ -17,7 +17,6 @@
 package com.liato.bankdroid.banking.banks;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -54,7 +53,6 @@ public class Nordnetdirekt extends Bank {
     
     private Pattern reBalance = Pattern.compile("left\">\\s*<table[^>]+>\\s*<caption[^>]+>([^<]+)</caption>\\s*<tr[^>]+>\\s*<td[^>]+>[^<]+</td>\\s*<td>([^<]+)</td>\\s*</tr>\\s*<tr[^>]+>\\s*<td[^>]+>[^<]+</td>\\s*<td>([^<]+)</td>");
 	private String response = null;
-	private String key = "";
 	
 	public Nordnetdirekt(Context context) {
 		super(context);
@@ -87,7 +85,7 @@ public class Nordnetdirekt extends Bank {
         postData.add(new BasicNameValuePair("usa", "7"));
         postData.add(new BasicNameValuePair("a1", username));
         postData.add(new BasicNameValuePair("a2", password));
-        postData.add(new BasicNameValuePair("nyckel", key));
+        postData.add(new BasicNameValuePair("nyckel", extras));
         return new LoginPackage(urlopen, postData, response, "https://www.nordnetdirekt.se/mux/inloggad/lib/login.html");
     }
 
@@ -148,36 +146,5 @@ public class Nordnetdirekt extends Bank {
             super.updateComplete();
         }
 	}
-
-    @Override
-    public String getExtras() {
-        return this.key;
-    }
-
-    public void setData(String username, String password, BigDecimal balance,
-            boolean disabled, long dbid, String currency, String customName) {
-        super.setData(username, password, balance, disabled, dbid, currency, customName);
-        if (password.contains("|")) {
-            String[] passkey = password.split("\\|", 2);
-            this.password = passkey[0];
-            this.key = passkey[1];
-        }
-    }
-
-    @Override
-    public void setExtras(String extras) {
-        this.key = extras;
-    }
-
-    @Override
-    public void setPassword(String password) {
-        this.password = password;
-        if (password.contains("|")) {
-            String[] passkey = password.split("\\|", 2);
-            this.password = passkey[0];
-            this.key = passkey[1];
-        }
-    }
-    
-    
+  
 }
