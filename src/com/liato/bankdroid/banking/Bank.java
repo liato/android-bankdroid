@@ -160,7 +160,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
             BigDecimal bal = new BigDecimal(0); 
             for (Account account : accounts) {
                 if (account.getType() == Account.REGULAR || account.getType() == Account.CCARD) {
-                    if (!account.isHidden()) {
+                    if (!account.isHidden() || (account.getAliasfor() == null || account.getAliasfor().length() == 0)) {
                         bal = bal.add(account.getBalance());
                     }
                 }

@@ -152,7 +152,9 @@ public class ICABanken extends Bank {
                  *  
                  */			    
                 accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim() + " (Disponibelt)", Helpers.parseBalance(matcher.group(3).trim()), matcher.group(1).trim()));
-                accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim() + " (Saldo)", Helpers.parseBalance(matcher.group(4).trim()), "a:" + matcher.group(1).trim()));
+                Account account = new Account(Html.fromHtml(matcher.group(2)).toString().trim() + " (Saldo)", Helpers.parseBalance(matcher.group(4).trim()), "a:" + matcher.group(1).trim());
+                account.setAliasfor(matcher.group(1).trim());
+                accounts.add(account);
 
                 balance = balance.add(Helpers.parseBalance(matcher.group(3)));
 			}
