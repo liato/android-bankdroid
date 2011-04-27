@@ -275,5 +275,6 @@
 	<string name="permission_provider_label">Basic account information and the transaction history</string>
 	<string name="permission_provider_desc">Allows the application to access what banks and accounts are configured in BankDroids. Your Bank credentials are not exposed. Transaction history can also be accessed.</string>
 
-	<string name="nordnetdirekt_extras_title">Key</string>	
+	<string name="nordnetdirekt_extras_title">Key</string>
+	<string name="select_a_bank">Select a bank</string>
 </resources>

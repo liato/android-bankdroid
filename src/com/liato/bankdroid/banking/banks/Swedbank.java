@@ -137,17 +137,7 @@ public class Swedbank extends Bank {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		urlopen = login();
-		try {
-            response = urlopen.open("http://x.x00.us/android/bankdroid/swedbank/multiplebanks.htm");
-        }
-        catch (ClientProtocolException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-        catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
+
 		Matcher matcher;
 		if (getExtras() == null || getExtras().length() == 0) {
     		ArrayList<BankChoice> banks = new ArrayList<BankChoice>();

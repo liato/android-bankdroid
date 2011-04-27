@@ -45,7 +45,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.liato.bankdroid.appwidget.AutoRefreshService;
 import com.liato.bankdroid.banking.Account;
@@ -277,7 +276,7 @@ public class BankEditActivity extends LockableActivity implements OnClickListene
 	                    items[i] = b.getName();
 	                    i++;
 	                }
-	                builder.setTitle("Select a bank");
+	                builder.setTitle(R.string.select_a_bank);
 	                builder.setItems(items, new DialogInterface.OnClickListener() {
 	                    public void onClick(DialogInterface dialog, int item) {
 	                        SELECTED_BANK.setExtras(e.getBanks().get(item).getId());
