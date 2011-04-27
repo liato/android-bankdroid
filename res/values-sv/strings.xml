@@ -60,6 +60,8 @@
 	<string name="round_widget_balance_summary">Visa saldot på widgets utan decimaler</string>
 	<string name="round_balance_title">Avrunda saldo</string>
 	<string name="round_balance_summary">Visa saldot på banker och konton utan decimaler</string>
+	<string name="notify_min_delta_title">Minsta förändring</string>
+	<string name="notify_min_delta_summary">Visa endast notifiering om saldoförändringar är minst så här stor</string>
 	<string name="widget_opens_transactions_title">Widget-klick öppnar kontoutdrag</string>
 	<string name="widget_opens_transactions_summary">Öppna kontoutdraget för kontot när du klickar på en widget.</string>
 	<string name="widget_updates_transactions_title">Uppdatera kontoutdrag från widget</string>
@@ -228,4 +230,5 @@
 	
 	<string name="nordnetdirekt_extras_title">Nyckel</string>
 	<string name="select_a_bank">Välj en bank</string>
+	<string name="invalid_integer">%1$s är inte ett giltigt positivt heltal, var god försök igen.</string>
 </resources>

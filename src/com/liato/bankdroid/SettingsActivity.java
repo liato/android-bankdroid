@@ -21,16 +21,18 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceScreen;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.liato.bankdroid.appwidget.AutoRefreshService;
 import com.liato.bankdroid.lockpattern.ChooseLockPattern;
 import com.liato.bankdroid.lockpattern.ConfirmLockPattern;
 import com.liato.bankdroid.lockpattern.LockPatternUtils;
 
-public class SettingsActivity extends LockablePreferenceActivity implements OnPreferenceClickListener {
+public class SettingsActivity extends LockablePreferenceActivity implements OnPreferenceClickListener, OnPreferenceChangeListener {
 	private final static String TAG = "SettingsActivity";
 	private final static int DISABLE_LOCKPATTERN = 1;
 	private final static int ENABLE_LOCKPATTERN = 2;
@@ -54,6 +56,7 @@ public class SettingsActivity extends LockablePreferenceActivity implements OnPr
 		(findPreference("autoupdates_enabled")).setOnPreferenceClickListener(this);
         (findPreference("notification_sound")).setOnPreferenceClickListener(this);
         (findPreference("test_notification")).setOnPreferenceClickListener(this);
+        (findPreference("notify_min_delta")).setOnPreferenceChangeListener(this);
 		final CheckBoxPreference patternLock = ((CheckBoxPreference)findPreference("patternlock_enabled"));
 		patternLock.setOnPreferenceClickListener(this);
 		// Check the pattern lock check box if the lock pattern is enabled
@@ -69,10 +72,9 @@ public class SettingsActivity extends LockablePreferenceActivity implements OnPr
 		}
 
 		if ("notification_sound".equals(prefKey)) {
-			this.setLockEnabled(false);
 			return false;
 		}
-
+		
 		if ("patternlock_enabled".equals(prefKey)) {
 			this.setLockEnabled(false);
 			if (mLockPatternUtils.isLockPatternEnabled()) {
@@ -153,5 +155,28 @@ public class SettingsActivity extends LockablePreferenceActivity implements OnPr
 		// Blur/unblur the widget balance
 		AutoRefreshService.sendWidgetRefresh(this);
 	}
+
+    @Override
+    public boolean onPreferenceChange(Preference pref, Object newValue) {
+        final String prefKey = pref.getKey();
+        if ("notify_min_delta".equals(prefKey)) {
+            Integer val;
+            try {
+                val = Integer.valueOf((String) newValue);
+            }
+            catch (NumberFormatException e) {
+                val = null;
+            }
+            
+            if (val != null && val >= 0) {
+                return true;
+            }
+            else {
+                Toast.makeText(pref.getContext(), String.format(pref.getContext().getString(R.string.invalid_integer), newValue), Toast.LENGTH_LONG).show();
+            }
+            return false;
+        }
+        return false;
+    }
 
 }

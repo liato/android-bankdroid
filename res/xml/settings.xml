@@ -24,26 +24,6 @@
 			android:dependency="patternlock_enabled" />
 	</PreferenceCategory>
 	<PreferenceCategory
-		android:title="@string/automatic_updates_title">
-		<CheckBoxPreference
-			android:key="autoupdates_enabled"
-			android:defaultValue="true"
-			android:title="@string/autoupdates_enabled_title"
-			android:summary="@string/autoupdates_enabled_summary" />
-		<ListPreference
-			android:title="@string/update_frequency_title"
-			android:key="refresh_rate"
-			android:defaultValue="60"
-			android:entries="@array/refreshrateNames"
-			android:entryValues="@array/refreshrateValues"
-			android:dependency="autoupdates_enabled" />
-		<CheckBoxPreference
-			android:key="autoupdates_transactions_enabled"
-			android:defaultValue="true"
-			android:title="@string/update_transaction_history_title"
-			android:summary="@string/update_transaction_history_summary" />
-	</PreferenceCategory>
-	<PreferenceCategory
 		android:title="@string/appearance_title">
 		<CheckBoxPreference
 			android:key="round_balance"
@@ -83,12 +63,44 @@
 			android:summary="@string/widget_updates_transactions_summary" />
 	</PreferenceCategory>
 	<PreferenceCategory
+		android:title="@string/automatic_updates_title">
+		<CheckBoxPreference
+			android:key="autoupdates_enabled"
+			android:defaultValue="true"
+			android:title="@string/autoupdates_enabled_title"
+			android:summary="@string/autoupdates_enabled_summary" />
+		<ListPreference
+			android:title="@string/update_frequency_title"
+			android:key="refresh_rate"
+			android:defaultValue="60"
+			android:entries="@array/refreshrateNames"
+			android:entryValues="@array/refreshrateValues"
+			android:dependency="autoupdates_enabled" />
+		<CheckBoxPreference
+			android:key="autoupdates_transactions_enabled"
+			android:defaultValue="true"
+			android:title="@string/update_transaction_history_title"
+			android:summary="@string/update_transaction_history_summary" />
+	</PreferenceCategory>	
+	<PreferenceCategory
 		android:title="@string/notifications_title">
 		<CheckBoxPreference
 			android:key="notify_on_change"
 			android:defaultValue="true"
 			android:title="@string/enable_notifications_title"
 			android:summary="@string/enable_notifications_summary" />
+		<CheckBoxPreference
+			android:key="notify_with_vibration"
+			android:defaultValue="true"
+			android:title="@string/vibrate_title"
+			android:summary="@string/vibrate_summary"
+			android:dependency="notify_on_change" />
+		<EditTextPreference
+			android:key="notify_min_delta"
+			android:defaultValue="0"
+			android:title="@string/notify_min_delta_title"
+			android:summary="@string/notify_min_delta_summary"
+			android:dependency="notify_on_change" />
 		<CheckBoxPreference
 			android:key="notify_with_vibration"
 			android:defaultValue="true"

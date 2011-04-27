@@ -61,7 +61,9 @@
 	<string name="round_widget_balance_title">Round widget balance</string>
 	<string name="round_widget_balance_summary">Display the balance on widgets without decimals</string>
 	<string name="round_balance_title">Round balance</string>
-	<string name="round_balance_summary">Display the balance for banks and accounts without decimals</string>
+	<string name="round_balance_summary">Display the balance without decimals</string>
+	<string name="notify_min_delta_title">Minimum change</string>
+	<string name="notify_min_delta_summary">Only display a notification if the change is at least this big</string>
 	<string name="widget_opens_transactions_title">Widget click opens transactions</string>
 	<string name="widget_opens_transactions_summary">Open the transactions screen when a widget is clicked. If unchecked the main screen is shown.</string>
 	<string name="widget_updates_transactions_title">Update transactions from widget.</string>
@@ -280,4 +282,5 @@
 
 	<string name="nordnetdirekt_extras_title">Key</string>
 	<string name="select_a_bank">Select a bank</string>
+	<string name="invalid_integer">%1$s is not a valid positive integer, please try again.</string>	
 </resources>

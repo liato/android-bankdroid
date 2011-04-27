@@ -156,6 +156,8 @@ public class AutoRefreshService extends Service {
 			db.open();
 			BigDecimal currentBalance;
 			BigDecimal diff;
+			BigDecimal minDelta = new BigDecimal(prefs.getString("notify_min_delta", "0"));
+			
 			final HashMap<String, Account> accounts = new HashMap<String, Account>();
 
 			for (final Bank bank : banks) {
@@ -182,7 +184,7 @@ public class AutoRefreshService extends Service {
 					}
 					bank.update();
 					diff = currentBalance.subtract(bank.getBalance());
-					if (diff.compareTo(new BigDecimal(0)) != 0) {
+					if (diff.compareTo(new BigDecimal(0)) != 0  && diff.abs().compareTo(minDelta) != -1) {
 						Account oldAccount;
 						for (final Account account : bank.getAccounts()) {
 							oldAccount = accounts.get(account.getId());
