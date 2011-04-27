@@ -49,7 +49,7 @@ public abstract class IkanoPartnerBase extends Bank {
     private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
     private Pattern reViewState = Pattern.compile("(?:__|javax\\.faces\\.)VIEWSTATE\"\\s+.*?value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
     private Pattern reCtl = Pattern.compile("(ctl\\d{1,})_CustomValidationSummary", Pattern.CASE_INSENSITIVE);
-    private Pattern reTransactionsUrl = Pattern.compile("(page___\\d{1,}\\.aspx)\"><span[^>]+>Transaktioner</span>", Pattern.CASE_INSENSITIVE);
+    private Pattern reTransactionsUrl = Pattern.compile("(page___\\d{1,}\\.aspx)\">(?:<span[^>]+>)?Transaktioner</", Pattern.CASE_INSENSITIVE);
     private Pattern reAccounts = Pattern.compile("captionLabel\">([^<]+)</span>\\s*</span>\\s*<span\\s*id=\"[^\"]+ReadOnlyValueSpan\">([^<]+)</span>\\s*<span\\s*id=\"[^\"]+currencyTextLiteralSpan\">([^<]+)</span>");
     private Pattern reTransactions = Pattern.compile("<td\\s*class=\"TransactionDateRow\">([^>]+)</td><td[^>]+>(.+?)</td><td[^>]+>([^<]+)</td><td[^>]+>([^<]+)</td>");
     private String response = null;
