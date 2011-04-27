@@ -139,7 +139,8 @@ public class CSN extends Bank {
 		    response = urlopen.open("https://www.csn.se/aterbetalning/hurStorArMinSkuld/aktuellStudieskuld.do?javascript=off");
 			Matcher matcher;
 			matcher = reBalance.matcher(response);
-			if (matcher.find()) {
+			int i = 0;
+			while (matcher.find()) {
                 /*
                  * Capture groups:
                  * GROUP                EXAMPLE DATA
@@ -149,9 +150,17 @@ public class CSN extends Bank {
                  *  
                  */
 			    BigDecimal amount = Helpers.parseBalance(matcher.group(3).replace(",", "")).negate();
-				accounts.add(new Account("Annuitetslån",
-				        amount, matcher.group(1).trim(), Account.LOANS));
-				balance = amount;
+			    Account account = new Account(
+                        Html.fromHtml(matcher.group(2)).toString().trim(),
+                        amount,
+                        matcher.group(1).trim(),
+                        Account.LOANS);
+			    if (i > 0) {
+			        account.setAliasfor("0");
+			    }
+				accounts.add(account);
+				balance = balance.add(amount);
+				i++;
 			}
 			
 			if (accounts.isEmpty()) {
@@ -174,6 +183,8 @@ public class CSN extends Bank {
     @Override
     public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
         super.updateTransactions(account, urlopen);
+        if (account.getAliasfor() == null || account.getAliasfor().length() == 0) return;
+        
         Matcher matcher;
         try {
             response = urlopen.open("https://www.csn.se/studiemedel/utbetalningar/utbetalningar.do?javascript=off");
