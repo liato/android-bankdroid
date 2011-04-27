@@ -22,19 +22,6 @@
 			android:defaultValue="false"
 			android:title="@string/lockpattern_settings_enable_tactile_feedback_title"
 			android:dependency="patternlock_enabled" />
-		<CheckBoxPreference
-			android:key="widget_blur_balance"
-			android:defaultValue="false"
-			android:title="@string/blur_widget_title"
-			android:summary="@string/blur_widget_summary" />
-		<ListPreference
-			android:title="@string/unblur_widget_timeout_title"
-			android:key="widget_blur_balance_timeout"
-			android:defaultValue="5"
-			android:entries="@array/unblurTimeoutNames"
-			android:entryValues="@array/unblurTimeoutValues"
-			android:summary="@string/unblur_widget_timeout_summary"
-			android:dependency="widget_blur_balance" />
 	</PreferenceCategory>
 	<PreferenceCategory
 		android:title="@string/automatic_updates_title">
@@ -58,6 +45,27 @@
 	</PreferenceCategory>
 	<PreferenceCategory
 		android:title="@string/appearance_title">
+		<CheckBoxPreference
+			android:key="round_balance"
+			android:defaultValue="false"
+			android:title="@string/round_balance_title"
+			android:summary="@string/round_balance_summary" />
+	</PreferenceCategory>
+	<PreferenceCategory
+		android:title="@string/widgets_title">	
+		<CheckBoxPreference
+			android:key="widget_blur_balance"
+			android:defaultValue="false"
+			android:title="@string/blur_widget_title"
+			android:summary="@string/blur_widget_summary" />
+		<ListPreference
+			android:title="@string/unblur_widget_timeout_title"
+			android:key="widget_blur_balance_timeout"
+			android:defaultValue="5"
+			android:entries="@array/unblurTimeoutNames"
+			android:entryValues="@array/unblurTimeoutValues"
+			android:summary="@string/unblur_widget_timeout_summary"
+			android:dependency="widget_blur_balance" />
 		<CheckBoxPreference
 			android:key="round_widget_balance"
 			android:defaultValue="false"

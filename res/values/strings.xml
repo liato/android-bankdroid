@@ -57,8 +57,11 @@
 	<string name="update_transaction_history_title">Update transaction history</string>
 	<string name="update_transaction_history_summary">Update transaction history when updating automatically</string>
 	<string name="appearance_title">Appearance</string>
+	<string name="widgets_title">Widgets</string>
 	<string name="round_widget_balance_title">Round widget balance</string>
 	<string name="round_widget_balance_summary">Display the balance on widgets without decimals</string>
+	<string name="round_balance_title">Round balance</string>
+	<string name="round_balance_summary">Display the balance for banks and accounts without decimals</string>
 	<string name="widget_opens_transactions_title">Widget click opens transactions</string>
 	<string name="widget_opens_transactions_summary">Open the transactions screen when a widget is clicked. If unchecked the main screen is shown.</string>
 	<string name="widget_updates_transactions_title">Update transactions from widget.</string>

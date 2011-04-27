@@ -148,12 +148,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 		Log.d("buildAppWidget", "WidgetLayout: "+layoutId);
         views.setTextViewText(R.id.txtWidgetAccountname, account.getName().toUpperCase());
         views.setTextViewText(R.id.txtWidgetAccountnameBlur, account.getName().toUpperCase());
-        if (defprefs.getBoolean("round_widget_balance", false)) {
-            views.setTextViewText(R.id.txtWidgetAccountbalance, Helpers.formatBalance(account.getBalance(), account.getCurrency(), true));
-        }
-        else {
-            views.setTextViewText(R.id.txtWidgetAccountbalance, Helpers.formatBalance(account.getBalance(), account.getCurrency()));
-        }
+        views.setTextViewText(R.id.txtWidgetAccountbalance, Helpers.formatBalance(account.getBalance(), account.getCurrency(), defprefs.getBoolean("round_widget_balance", false)));
 		views.setImageViewResource(R.id.imgWidgetIcon, bank.getImageResource());
 		Log.d("Disabled", ""+bank.isDisabled());
 		if (bank.isDisabled()) {

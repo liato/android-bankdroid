@@ -55,8 +55,11 @@
 	<string name="update_transaction_history_title">Uppdatera kontoutdrag</string>
 	<string name="update_transaction_history_summary">Uppdatera kontoutdrag vid automatiska uppdateringar</string>
 	<string name="appearance_title">Utseende</string>
+	<string name="widgets_title">Widgets</string>
 	<string name="round_widget_balance_title">Avrunda saldo på widgets</string>
 	<string name="round_widget_balance_summary">Visa saldot på widgets utan decimaler</string>
+	<string name="round_balance_title">Avrunda saldo</string>
+	<string name="round_balance_summary">Visa saldot på banker och konton utan decimaler</string>
 	<string name="widget_opens_transactions_title">Widget-klick öppnar kontoutdrag</string>
 	<string name="widget_opens_transactions_summary">Öppna kontoutdraget för kontot när du klickar på en widget.</string>
 	<string name="widget_updates_transactions_title">Uppdatera kontoutdrag från widget</string>

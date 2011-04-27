@@ -18,21 +18,21 @@ package com.liato.bankdroid.adapters;
 
 import java.util.ArrayList;
 
-import com.liato.bankdroid.Helpers;
-import com.liato.bankdroid.R;
-import com.liato.bankdroid.R.id;
-import com.liato.bankdroid.R.layout;
-import com.liato.bankdroid.banking.Account;
-import com.liato.bankdroid.banking.Bank;
-
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.liato.bankdroid.Helpers;
+import com.liato.bankdroid.R;
+import com.liato.bankdroid.banking.Account;
+import com.liato.bankdroid.banking.Bank;
 
 public class AccountsAdapter extends BaseAdapter {
 	public final static int VIEWTYPE_BANK = 0;
@@ -41,14 +41,15 @@ public class AccountsAdapter extends BaseAdapter {
 	private ArrayList<Bank> banks;
 	private Context context;
 	private LayoutInflater inflater;
-	private boolean showHidden; 
-
+	private boolean showHidden;
+	SharedPreferences prefs;
 
     public AccountsAdapter(Context context, boolean showHidden) {
 		this.context = context;
 		this.banks = new ArrayList<Bank>();
 		inflater = LayoutInflater.from(this.context);
 		this.showHidden = showHidden;
+		prefs = PreferenceManager.getDefaultSharedPreferences(context);
 	}
 
 	public void addGroup(Bank bank) {
@@ -84,7 +85,7 @@ public class AccountsAdapter extends BaseAdapter {
 		ImageView icon = (ImageView)convertView.findViewById(R.id.imgListitemAccountsGroup);
 		((TextView)convertView.findViewById(R.id.txtListitemAccountsGroupAccountname)).setText(bank.getDisplayName());
 		((TextView)convertView.findViewById(R.id.txtListitemAccountsGroupBankname)).setText(bank.getName());
-		((TextView)convertView.findViewById(R.id.txtListitemAccountsGroupTotal)).setText(Helpers.formatBalance(bank.getBalance(), bank.getCurrency()));
+		((TextView)convertView.findViewById(R.id.txtListitemAccountsGroupTotal)).setText(Helpers.formatBalance(bank.getBalance(), bank.getCurrency(), prefs.getBoolean("round_balance", false)));
 		icon.setImageResource(bank.getImageResource());
 		ImageView warning = (ImageView)convertView.findViewById(R.id.imgWarning);
 		if (bank.isDisabled()) {
@@ -108,6 +109,7 @@ public class AccountsAdapter extends BaseAdapter {
         TextView txtBalance = ((TextView)convertView.findViewById(R.id.txtListitemAccountsItemBalance));
 		txtAccountName.setText(account.getName());
 		txtBalance.setText(Helpers.formatBalance(account.getBalance(), account.getCurrency()));
+        txtBalance.setText(Helpers.formatBalance(account.getBalance(), account.getCurrency(), prefs.getBoolean("round_balance", false)));
 		if (account.isHidden()) {
             txtAccountName.setTextColor(Color.argb(255, 191, 191, 191));
             txtBalance.setTextColor(Color.argb(255, 191, 191, 191));		    
