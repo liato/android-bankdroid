@@ -225,27 +225,27 @@ public class BankFactory {
         banks.add(new Volvofinans(context));
         banks.add(new CSN(context));
         banks.add(new ResursBank(context));
-        //American Express doesn't work yet
-        //banks.add(new AmericanExpress(context));
         banks.add(new McDonalds(context));
-        banks.add(new Saab(context));
-        banks.add(new Wallet(context));
-        banks.add(new Chevrolet(context));
         banks.add(new SJPrio(context));
-        banks.add(new Opel(context));
-        banks.add(new Djurgarden(context));
-        banks.add(new Quintessentially(context));
-        banks.add(new PlusGirot(context));
-        banks.add(new Shell(context));
-        banks.add(new Volkswagen(context));
-        banks.add(new Audi(context));
-        banks.add(new Preem(context));
-        banks.add(new Seat(context));
-        banks.add(new Skoda(context));
-        banks.add(new IKEA(context));
         banks.add(new SparbankenSyd(context));
         banks.add(new SparbankenOresund(context));
-        banks.add(new Nordnetdirekt(context));
+        banks.add(new Opel(context));
+        //Not tested or not working
+        //banks.add(new AmericanExpress(context));
+        //banks.add(new PlusGirot(context));
+        //banks.add(new Nordnetdirekt(context));
+        //banks.add(new Saab(context));
+        //banks.add(new Wallet(context));
+        //banks.add(new Chevrolet(context));
+        //banks.add(new Djurgarden(context));
+        //banks.add(new Quintessentially(context));
+        //banks.add(new Shell(context));
+        //banks.add(new Volkswagen(context));
+        //banks.add(new Audi(context));
+        //banks.add(new Preem(context));
+        //banks.add(new Seat(context));
+        //banks.add(new Skoda(context));
+        //banks.add(new IKEA(context));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));

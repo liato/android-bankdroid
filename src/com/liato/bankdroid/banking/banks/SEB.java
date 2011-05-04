@@ -77,7 +77,7 @@ public class SEB extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib();
+        urlopen = new Urllib(true);
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         urlopen.addHeader("Referer", "https://m.seb.se/");
         urlopen.setKeepAliveTimeout(5);

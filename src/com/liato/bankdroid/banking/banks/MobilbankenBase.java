@@ -162,9 +162,9 @@ public abstract class MobilbankenBase extends Bank {
                  * 
                  */
                 transactions.add(new Transaction(
-                        matcher.group(2).trim().replace(".", "-"),
+                        matcher.group(3).trim().replace(".", "-"),
                         Html.fromHtml(matcher.group(1)).toString().trim(),
-                        Helpers.parseBalance(matcher.group(3))));
+                        Helpers.parseBalance(matcher.group(2))));
             }
             account.setTransactions(transactions);
         } catch (ClientProtocolException e) {

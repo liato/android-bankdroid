@@ -32,7 +32,6 @@ import org.apache.http.protocol.HTTP;
 import android.content.Context;
 import android.text.Html;
 import android.text.InputType;
-import android.util.Log;
 
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
@@ -159,7 +158,8 @@ public class Swedbank extends Bank {
 		
         String banknr = (getExtras() != null && getExtras().length() > 0) ? "?bank="+getExtras() : "";
 		try {
-			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/accounts.html"+banknr);
+	        response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/menu.html"+banknr);
+			response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/accounts.html");
 			matcher = reAccounts.matcher(response);
 			while (matcher.find()) {
                 /*
@@ -211,7 +211,6 @@ public class Swedbank extends Bank {
 		super.updateTransactions(account, urlopen);
 		if (account.getType() == Account.OTHER) return;
 
-		String banknr = (getExtras() != null && getExtras().length() > 0) ? "&bank="+getExtras() : "";
 		String response = null;
 		Matcher matcher;
 		try {
@@ -219,8 +218,7 @@ public class Swedbank extends Bank {
 		    if (account.getType() == Account.LOANS) {
 		        String [] accountId = account.getId().split(":", 2);
 		        if (accountId.length < 2) return;
-	            Log.d(TAG, "Opening: https://mobilbank.swedbank.se/banking/swedbank/loan.html?id="+accountId[1]+banknr);
-	            response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/loan.html?id="+accountId[1]+banknr);
+	            response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/loan.html?id="+accountId[1]);
 	            matcher = reLoanData.matcher(response);
 	            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	            Calendar cal = Calendar.getInstance(); 
@@ -239,8 +237,7 @@ public class Swedbank extends Bank {
 	            }
 		    }
 		    else {
-	            Log.d(TAG, "Opening: https://mobilbank.swedbank.se/banking/swedbank/account.html?id="+account.getId()+banknr);
-	            response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/account.html?id="+account.getId()+banknr);
+	            response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/account.html?id="+account.getId());
 	            matcher = reTransactions.matcher(response);
 	            while (matcher.find()) {
                     /*

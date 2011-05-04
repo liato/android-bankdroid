@@ -52,6 +52,7 @@ public class ICABanken extends Bank {
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDD-XXXX";
+    private static final boolean STATIC_BALANCE = true;
 
 	private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
 	private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
@@ -71,6 +72,7 @@ public class ICABanken extends Bank {
         super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
         super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
         super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
+        super.STATIC_BALANCE = STATIC_BALANCE;
 	}
 
 	public ICABanken(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
