@@ -34,12 +34,7 @@ public class Skandiabanken extends Bank {
 	private static final String BASE_URL = "https://smartrefill.se/mobile/bank/android/";
 	private static final String LOGIN_URL = BASE_URL + "customer.service";
 	private static final String BALANCE_URL = BASE_URL + "balance.service";
-	private static final String TRANSACTIONS_URL = BASE_URL + "balance.service";
 	
-//	private final static String LOGIN_URL = "http://www.peterbjorkman.se/hessian/real.dat";
-//	private final static String BALANCE_URL = "http://www.peterbjorkman.se/hessian/getAccounts.dat";
-//	private final static String TRANSACTIONS_URL = "http://www.peterbjorkman.se/hessian/GetTransactions.dat";
-
 	private final static String customerOwner = "SKANDIABANKEN";
 	private final static String countryCode = "SE";
 	
@@ -148,9 +143,7 @@ public class Skandiabanken extends Bank {
 			}
 			// TODO Check null
 			
-			// TODO Reuse the service only for debugging against my webserver
-			RemoteBalanceService balanceService2 = (RemoteBalanceService) getHessianProxy().create(RemoteBalanceService.class, TRANSACTIONS_URL, context.getClassLoader());			
-    		AdAccount accountWithTransactions =  balanceService2.getAccountTransactions(adAccount, "f", securityCode);
+			AdAccount accountWithTransactions =  balanceService.getAccountTransactions(adAccount, "f", securityCode);
     		List<AdBalanceInformationTransaction> adTransactions = accountWithTransactions.getTransactions();
     		for (AdBalanceInformationTransaction transaction : adTransactions) {
 				String transactionAmount = transaction.getAmount();
