@@ -65,6 +65,7 @@ import com.liato.bankdroid.banking.banks.Saab;
 import com.liato.bankdroid.banking.banks.Seat;
 import com.liato.bankdroid.banking.banks.SevenDay;
 import com.liato.bankdroid.banking.banks.Shell;
+import com.liato.bankdroid.banking.banks.Skandiabanken;
 import com.liato.bankdroid.banking.banks.Skoda;
 import com.liato.bankdroid.banking.banks.SparbankenOresund;
 import com.liato.bankdroid.banking.banks.SparbankenSyd;
@@ -187,6 +188,8 @@ public class BankFactory {
             return new SparbankenOresund(context);
         case IBankTypes.NORDNETDIREKT:
             return new Nordnetdirekt(context);
+        case IBankTypes.SKANDIABANKEN:
+                return new Skandiabanken(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -230,6 +233,7 @@ public class BankFactory {
         banks.add(new SparbankenSyd(context));
         banks.add(new SparbankenOresund(context));
         banks.add(new Opel(context));
+        banks.add(new Skandiabanken(context));
         //Not tested or not working
         //banks.add(new AmericanExpress(context));
         //banks.add(new PlusGirot(context));
