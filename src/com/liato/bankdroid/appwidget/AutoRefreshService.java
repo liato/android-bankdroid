@@ -132,7 +132,8 @@ public class AutoRefreshService extends Service {
 		// Broadcast to LiveView if enabled
 		// http://www.sonyericsson.com/cws/products/accessories/overview/liveviewmicrodisplay
 		if (prefs.getBoolean("notify_liveview", false)) {
-			final Intent i = new Intent(LiveViewService.INTENT_ANNOUNCE);
+			final Intent i = new Intent(context, LiveViewService.class);
+			i.putExtra(LiveViewService.INTENT_EXTRA_ANNOUNCE, true);
 			i.putExtra(LiveViewService.INTENT_EXTRA_TITLE, String.format("%s (%s)", bank, title));
 			i.putExtra(LiveViewService.INTENT_EXTRA_TEXT, text);
 			context.startService(i);

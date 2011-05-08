@@ -39,6 +39,8 @@
 
 package com.liato.bankdroid.liveview;
 
+import com.liato.bankdroid.SettingsActivity;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -65,9 +67,9 @@ public class PluginReceiver extends BroadcastReceiver {
 			String myPluginName = PluginUtils.getDynamicResourceString(context, PluginConstants.RESOURCE_STRING_PLUGIN_NAME);
 
 			if(pluginName != null && pluginName.contentEquals(myPluginName)) {
-				Log.d(PluginConstants.LOG_TAG, "Starting preferences! Intent: " + PluginConstants.PLUGIN_PREFERENCES_INTENT);
+				Log.d(PluginConstants.LOG_TAG, "Starting preferences!");
 				
-				Intent prefsIntent = new Intent(PluginConstants.PLUGIN_PREFERENCES_INTENT);
+				Intent prefsIntent = new Intent(context, SettingsActivity.class);
 				prefsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				context.startActivity(prefsIntent);
 			}
@@ -76,9 +78,9 @@ public class PluginReceiver extends BroadcastReceiver {
 			if(LiveViewService.isAlreadyRunning()) {
 			    Log.d(PluginConstants.LOG_TAG, "Service is already running.");
 			} else {
-				Log.d(PluginConstants.LOG_TAG, "Starting service! Intent: " + PluginConstants.PLUGIN_SERVICE_INTENT);
+				Log.d(PluginConstants.LOG_TAG, "Starting service!");
 				
-				context.startService(new Intent(PluginConstants.PLUGIN_SERVICE_INTENT));
+				context.startService(new Intent(context, LiveViewService.class));
 			}
 		}
 		

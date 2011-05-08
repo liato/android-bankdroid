@@ -60,7 +60,7 @@ import android.util.Log;
  */
 public class LiveViewService extends Service {
 	// Announce intent information keys
-	public static final String INTENT_ANNOUNCE = "com.liato.bankdroid.liveview.ANNOUNCE";
+	public static final String INTENT_EXTRA_ANNOUNCE = "isAnnounce";
 	public static final String INTENT_EXTRA_TITLE = "title";
 	public static final String INTENT_EXTRA_TEXT = "text";
 
@@ -151,7 +151,7 @@ public class LiveViewService extends Service {
         super.onStart(intent, startId);
         Log.d(PluginConstants.LOG_TAG, "Enter LiveViewService.onStart.");
         
-		if (intent.getAction().equals(INTENT_ANNOUNCE)) {
+		if (intent.getBooleanExtra(INTENT_EXTRA_ANNOUNCE, false)) {
 			Bundle extras = intent.getExtras();
 			if (extras != null) {
 				try {
@@ -168,6 +168,7 @@ public class LiveViewService extends Service {
 			}
 			
 		} else {
+			// We end up here when LiveView Application probes the plugin
 	        if (isAlreadyRunning()) {
 	            Log.d(PluginConstants.LOG_TAG, "Already started.");
 	        } else {

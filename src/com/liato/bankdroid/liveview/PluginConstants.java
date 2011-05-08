@@ -59,10 +59,6 @@ public final class PluginConstants {
     // LiveView Plugin interface intents
     public static final String LIVEVIEW_SERVICE_BIND_INTENT = "com.sonyericsson.extras.liveview.PLUGIN_SERVICE_V1";
     public static final String LIVEVIEW_BROADCAST_LAUNCH_EVENT = "com.sonyericsson.extras.liveview.LAUNCH_PLUGIN";
-    
-    // These MUST match the intent names in AndroidManifest.xml!
-    public static final String PLUGIN_PREFERENCES_INTENT = "com.liato.bankdroid.liveview.SETTINGS";
-    public static final String PLUGIN_SERVICE_INTENT = "com.liato.bankdroid.liveview.SERVICE";
 
     // Log tag
     public static final String LOG_TAG = "BankDroidLiveViewPlugin";
