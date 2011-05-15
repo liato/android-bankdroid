@@ -111,14 +111,25 @@
 					android:path="com.liato.bankdroid" />
 			</intent-filter>
 		</receiver>
-	<provider 
-		android:name=".provider.BankTransactionsProvider" 
-		android:syncable="false"
-		android:multiprocess="true"
-		android:exported="true"
-		android:authorities="com.liato.bankdroid.provider.BankTransactionsProvider" 
-		android:permission="com.liato.bankdroid.permission.READ_ACCESS_BANK_TRANSACTIONS"/>
-</application>
+		
+        <service android:name=".liveview.LiveViewService"
+				 android:label="LiveView plugin service">
+		</service>
+	    <receiver android:name=".liveview.PluginReceiver">
+			<intent-filter>
+				<action android:name="com.sonyericsson.extras.liveview.LAUNCH_PLUGIN" />
+			</intent-filter>
+	    </receiver>
+	    
+		<provider 
+			android:name=".provider.BankTransactionsProvider" 
+			android:syncable="false"
+			android:multiprocess="true"
+			android:exported="true"
+			android:authorities="com.liato.bankdroid.provider.BankTransactionsProvider" 
+			android:permission="com.liato.bankdroid.permission.READ_ACCESS_BANK_TRANSACTIONS"/>
+	</application>
+	
 	<uses-sdk
 		android:targetSdkVersion="4"
 		android:minSdkVersion="4" />
@@ -128,6 +139,8 @@
 		android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 	<uses-permission
 		android:name="android.permission.VIBRATE" />
+	<uses-permission
+		android:name="com.sonyericsson.extras.liveview.permission.LIVEVIEW_API" />
 	<supports-screens
 		android:largeScreens="true"
 		android:normalScreens="true"

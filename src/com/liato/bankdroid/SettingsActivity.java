@@ -47,13 +47,13 @@ public class SettingsActivity extends LockablePreferenceActivity implements OnPr
 		addPreferencesFromResource(R.xml.settings);
 		getWindow().setBackgroundDrawableResource(R.drawable.background_repeat);
 		(findPreference("patternlock_change")).setOnPreferenceClickListener(this);
-		(findPreference("patternlock_change")).setOnPreferenceClickListener(this);
 		(findPreference("remotenotifier_help")).setOnPreferenceClickListener(this);
 		(findPreference("openwatch_help")).setOnPreferenceClickListener(this);
+		(findPreference("liveview_help")).setOnPreferenceClickListener(this);
 		(findPreference("account_types_screen")).setOnPreferenceClickListener(this);
 		(findPreference("remotenotifier_screen")).setOnPreferenceClickListener(this);
 		(findPreference("openwatch_screen")).setOnPreferenceClickListener(this);
-		(findPreference("autoupdates_enabled")).setOnPreferenceClickListener(this);
+		(findPreference("liveview_screen")).setOnPreferenceClickListener(this);
         (findPreference("notification_sound")).setOnPreferenceClickListener(this);
         (findPreference("test_notification")).setOnPreferenceClickListener(this);
         (findPreference("notify_min_delta")).setOnPreferenceChangeListener(this);
@@ -66,7 +66,10 @@ public class SettingsActivity extends LockablePreferenceActivity implements OnPr
 	@Override
 	public boolean onPreferenceClick(final Preference pref) {
 		final String prefKey = pref.getKey();
-		if ("account_types_screen".equals(prefKey) || "openwatch_screen".equals(prefKey) || "remotenotifier_screen".equals(prefKey)) {
+		if ("account_types_screen".equals(prefKey) ||
+				"remotenotifier_screen".equals(prefKey) ||
+				"openwatch_screen".equals(prefKey) ||
+				"liveview_screen".equals(prefKey)) {
 			((PreferenceScreen)pref).getDialog().getWindow().setBackgroundDrawableResource(R.drawable.background_repeat);
 			return false;
 		}
@@ -102,6 +105,11 @@ public class SettingsActivity extends LockablePreferenceActivity implements OnPr
 		else if ("openwatch_help".equals(prefKey)) {
 			startActivity(new Intent(Intent.ACTION_VIEW,
 					Uri.parse("http://forum.xda-developers.com/showthread.php?t=554551")));
+			return true;
+		}
+		else if ("liveview_help".equals(prefKey)) {
+			startActivity(new Intent(Intent.ACTION_VIEW,
+					Uri.parse("http://www.sonyericsson.com/cws/products/accessories/overview/liveviewmicrodisplay")));
 			return true;
 		}
 		else if ("test_notification".equals(prefKey)) {
