@@ -27,7 +27,7 @@ public class SparbankenOresund extends MobilbankenBase {
 	private static final String TAG = "SparbankenOresund";
 	private static final String NAME = "Sparbanken Öresund";
 	private static final String NAME_SHORT = "sparbanken_oresund";
-	private static final String URL = "https://mobil-banken.se/0002/login.html";
+	private static final String URL = "https://mobil-banken.se/0003/login.html";
 	private static final int BANKTYPE_ID = Bank.SPARBANKEN_ORESUND;
 
     public SparbankenOresund(Context context) {
@@ -37,7 +37,7 @@ public class SparbankenOresund extends MobilbankenBase {
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;
         super.URL = URL;
-        this.targetId = "0002";
+        this.targetId = "0003";
     }
 
     public SparbankenOresund(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
