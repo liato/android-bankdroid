@@ -51,6 +51,7 @@ public abstract class IkanoPartnerBase extends Bank {
     private Pattern reViewState = Pattern.compile("(?:__|javax\\.faces\\.)VIEWSTATE\"\\s+.*?value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
     private Pattern reCtl = Pattern.compile("(ctl\\d{1,})_CustomValidationSummary", Pattern.CASE_INSENSITIVE);
     private Pattern reTransactionsUrl = Pattern.compile("(page___\\d{1,}\\.aspx)\">(?:<span[^>]+>)?Transaktioner</", Pattern.CASE_INSENSITIVE);
+    private Pattern reCreditInfoUrl = Pattern.compile("(page___\\d{1,}\\.aspx)\">(?:<span[^>]+>)?Kredit-? ?uppgifter</", Pattern.CASE_INSENSITIVE);
     private Pattern reAccounts = Pattern.compile("captionLabel\">([^<]+)</span>\\s*</span>\\s*<span\\s*id=\"[^\"]+ReadOnlyValueSpan\">([^<]+)</span>\\s*<span\\s*id=\"[^\"]+currencyTextLiteralSpan\">([^<]+)</span>");
     private Pattern reTransactions = Pattern.compile("<td\\s*class=\"TransactionDateRow\">([^>]+)</td><td[^>]+>(.+?)</td><td[^>]+>([^<]+)</td><td[^>]+>([^<]+)</td>");
     private String response = null;
@@ -127,12 +128,24 @@ public abstract class IkanoPartnerBase extends Bank {
 		urlopen = login();
 		Matcher matcher;
 		try {
+            String creditPageUrl = null;
+            String transactionsPageUrl = null;
+		    matcher = reCreditInfoUrl.matcher(response);
+            if (matcher.find()) {
+                creditPageUrl = matcher.group(1);
+            }
+		    
 	        matcher = reTransactionsUrl.matcher(response);
-	        if (!matcher.find()) {
+	        if (!matcher.find() && creditPageUrl == null) {
 	            throw new BankException(res.getText(R.string.unable_to_find).toString()+" transactions url.");
 	        }
+	        transactionsPageUrl = matcher.group(1);
 		    
-			response = urlopen.open("https://partner.ikanobank.se/web/engines/"+matcher.group(1));
+	        // If a url for the credit page is found we request that page first. If no url for the credit page is
+	        // found we only need to request the transactions page as all the credit info should be available on
+	        // that page.
+            response = urlopen.open("https://partner.ikanobank.se/web/engines/"+(creditPageUrl == null ? transactionsPageUrl : creditPageUrl));
+	            
 			matcher = reAccounts.matcher(response);
 			int accId = 0;
 			while (matcher.find()) {
@@ -144,12 +157,17 @@ public abstract class IkanoPartnerBase extends Bank {
 	             * 3: Currency          &nbsp;kr 
 	             *   
 	             */
-				accounts.add(new Account(
-				        Html.fromHtml(matcher.group(1)).toString().trim(),
-				        Helpers.parseBalance(matcher.group(2)),
-				        Integer.toString(accId)));
+			    Account account = new Account(
+                        Html.fromHtml(matcher.group(1)).toString().trim(),
+                        Helpers.parseBalance(matcher.group(2)),
+                        Integer.toString(accId));
+			    if (accId > 0) {
+			        account.setAliasfor("0");
+			    }
+				accounts.add(account);
 				accId++;
 			}
+			
 			
 			if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
@@ -157,6 +175,9 @@ public abstract class IkanoPartnerBase extends Bank {
 			 // Use the amount from "Kvar att handla för" which should be the last account in the list.
 		    this.balance = accounts.get(accounts.size()-1).getBalance();
 		    
+		    if (creditPageUrl != null) {
+		        response = urlopen.open("https://partner.ikanobank.se/web/engines/"+transactionsPageUrl);
+		    }
             ArrayList<Transaction> transactions = new ArrayList<Transaction>();
             matcher = reTransactions.matcher(response);
             while (matcher.find()) {
