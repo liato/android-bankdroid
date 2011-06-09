@@ -28,8 +28,7 @@
     <string name="error_desc">Senaste uppdateringsförsöket misslyckades och uppdateringar för detta konto har inaktiverats. Se till att lösenord och användarnamn är korrekt angivet och tryck på spara-knappen.</string>
 
     <string name="cancel">AVBRYT</string>
-    <string name="save">SPARA</string>
-    
+   
 	<string name="add_new_account">LÄGG TILL BANK</string>
 	<string name="banks_instructions">Du har inte lagt till någon bank ännu, tryck på knappen för att lägga till en bank.</string>
 	
@@ -231,4 +230,7 @@
 	<string name="nordnetdirekt_extras_title">Nyckel</string>
 	<string name="select_a_bank">Välj en bank</string>
 	<string name="invalid_integer">%1$s är inte ett giltigt positivt heltal, var god försök igen.</string>
+	<string name="pair_message">Applikationen nedan vill ta del av kontotyp och transaktionsdata från BankDroid.</string>
+	<string name="approve">GODKÄNN</string>
+	<string name="pair_app_name">Okänd applikation</string>
 </resources>

@@ -64,7 +64,8 @@ public class MainActivity extends LockableActivity {
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		initialSetupApiKey();
+		PairApplicationsActivity.initialSetupApiKey(this);
+		
 		setContentView(R.layout.main);
 		final OnClickListener listener = new View.OnClickListener() {
 			public void onClick(final View v) {
@@ -129,20 +130,7 @@ public class MainActivity extends LockableActivity {
 		}
 	}
 
-	private void initialSetupApiKey() {
-		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		final String apiKey = prefs.getString("content_provider_api_key", "");
-		if(apiKey.equals("")) {
-			final SharedPreferences.Editor editor = prefs.edit();
-
-			// Create a random HEX String
-			final String genKey = Long.toHexString(Double.doubleToLongBits(Math.random()));
-
-			// Commit to preferences
-			editor.putString("content_provider_api_key", genKey.toUpperCase());
-			editor.commit();
-		}
-	}
+	
 
 	@Override
 	public void onResume() {

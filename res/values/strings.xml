@@ -282,5 +282,8 @@
 
 	<string name="nordnetdirekt_extras_title">Key</string>
 	<string name="select_a_bank">Select a bank</string>
-	<string name="invalid_integer">%1$s is not a valid positive integer, please try again.</string>	
+	<string name="invalid_integer">%1$s is not a valid positive integer, please try again.</string>
+	<string name="pair_message">The Application below wants to access account types and transaction data from BankDroid.</string>
+	<string name="approve">APPROVE</string>
+	<string name="pair_app_name">Unknown application</string>	
 </resources>
