@@ -5,8 +5,7 @@
 	android:versionName="1.7.3" android:versionCode="115">
 	<application
 		android:icon="@drawable/icon"
-		android:label="@string/app_name"
-		android:debuggable="false">
+		android:label="@string/app_name" android:debuggable="false">
 		<activity
 			android:name=".MainActivity"
 			android:label="@string/app_name"
@@ -118,6 +117,17 @@
 		android:exported="true"
 		android:authorities="com.liato.bankdroid.provider.BankTransactionsProvider" 
 		android:permission="com.liato.bankdroid.permission.READ_ACCESS_BANK_TRANSACTIONS"/>
+	<activity 
+		android:name="PairApplicationsActivity" 
+		android:label="@string/app_name"
+		android:multiprocess="false"
+		android:alwaysRetainTaskState="false"
+		android:theme="@style/BankdroidTheme">
+			<intent-filter>
+				<action android:name="com.liato.bankroid.PAIR_APPLICATION_ACTION" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</activity>
 </application>
 	<uses-sdk
 		android:targetSdkVersion="4"
