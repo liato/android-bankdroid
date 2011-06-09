@@ -90,6 +90,11 @@
 	<string name="openwatch_vibrate_summary">Vibrate the OpenWatch device</string>
 	<string name="openwatch_help_title">What is OpenWatch?</string>
 	<string name="openwatch_help_summary">Read more about OpenWatch on their website</string>
+	<string name="liveview_title">LiveView Integration</string>
+	<string name="liveview_enable_title">Enable</string>
+	<string name="liveview_enable_summary">Enable Sony Ericsson LiveView integration</string>
+	<string name="liveview_help_title">What is LiveView?</string>
+	<string name="liveview_help_summary">Read more about LiveView on Sony Ericsson\'s website</string>
 	<string name="share_data_title">Share data</string>
 	<string name="share_data_enable_title">Enable data sharing</string>
 	<string name="share_data_enable_summary">Grant other installed apps access to your transaction history</string>
