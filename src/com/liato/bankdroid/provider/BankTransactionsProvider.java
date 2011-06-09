@@ -203,7 +203,7 @@ public class BankTransactionsProvider extends ContentProvider implements
 				"This provider does not implement the update method");
 	}
 
-	private static String getApiKey(final Context ctx) {
+	public static String getApiKey(final Context ctx) {
 		final SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(ctx);
 		if (!prefs.getBoolean(CONTENT_PROVIDER_ENABLED, false)) {
