@@ -18,8 +18,7 @@
     android:id="@+id/topLayout"
     android:orientation="vertical"
     android:layout_width="wrap_content"
-    android:layout_height="fill_parent"
-    android:background="@drawable/background_repeat">
+    android:layout_height="fill_parent" android:background="#00000000">
 
     <TextView android:id="@+id/headerText"
         android:layout_width="fill_parent"

@@ -95,17 +95,17 @@
 			android:title="@string/vibrate_title"
 			android:summary="@string/vibrate_summary"
 			android:dependency="notify_on_change" />
+		<CheckBoxPreference
+			android:key="notify_delta_only"
+			android:defaultValue="false"
+			android:title="@string/vibrate_title"
+			android:summary="@string/vibrate_summary"
+			android:dependency="notify_on_change" />
 		<EditTextPreference
 			android:key="notify_min_delta"
 			android:defaultValue="0"
 			android:title="@string/notify_min_delta_title"
 			android:summary="@string/notify_min_delta_summary"
-			android:dependency="notify_on_change" />
-		<CheckBoxPreference
-			android:key="notify_with_vibration"
-			android:defaultValue="true"
-			android:title="@string/vibrate_title"
-			android:summary="@string/vibrate_summary"
 			android:dependency="notify_on_change" />
 		<RingtonePreference
 			android:key="notification_sound"
@@ -173,6 +173,20 @@
 				android:title="@string/openwatch_help_title"
 				android:summary="@string/openwatch_help_summary"
 				android:key="openwatch_help" />
+		</PreferenceScreen>
+		<PreferenceScreen
+			android:key="liveview_screen"
+			android:title="@string/liveview_title"
+			android:dependency="notify_on_change">
+			<CheckBoxPreference
+				android:key="notify_liveview"
+				android:defaultValue="false"
+				android:title="@string/liveview_enable_title"
+				android:summary="@string/liveview_enable_summary" />
+			<Preference
+				android:title="@string/liveview_help_title"
+				android:summary="@string/liveview_help_summary"
+				android:key="liveview_help" />
 		</PreferenceScreen>
 	</PreferenceCategory>
 	<PreferenceCategory

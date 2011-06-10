@@ -72,4 +72,5 @@ public interface IBankTypes {
     public final static int SPARBANKEN_SYD = 48;
     public final static int SPARBANKEN_ORESUND = 49;
     public final static int NORDNETDIREKT = 50;
+    public final static int SKANDIABANKEN = 51;
 }

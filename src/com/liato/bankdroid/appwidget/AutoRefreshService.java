@@ -45,6 +45,7 @@ import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.db.DBAdapter;
+import com.liato.bankdroid.liveview.LiveViewService;
 
 public class AutoRefreshService extends Service {
 	private final static String TAG = "AutoRefreshService";
@@ -126,6 +127,16 @@ public class AutoRefreshService extends Service {
 			i.putExtra("line1", String.format("%s (%s)", bank, title));
 			i.putExtra("line2", text);
 			context.sendBroadcast(i);
+		}
+		
+		// Broadcast to LiveView if enabled
+		// http://www.sonyericsson.com/cws/products/accessories/overview/liveviewmicrodisplay
+		if (prefs.getBoolean("notify_liveview", false)) {
+			final Intent i = new Intent(context, LiveViewService.class);
+			i.putExtra(LiveViewService.INTENT_EXTRA_ANNOUNCE, true);
+			i.putExtra(LiveViewService.INTENT_EXTRA_TITLE, String.format("%s (%s)", bank, title));
+			i.putExtra(LiveViewService.INTENT_EXTRA_TEXT, text);
+			context.startService(i);
 		}
 
 	}
