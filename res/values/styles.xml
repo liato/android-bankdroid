@@ -61,6 +61,13 @@
 	</style>
     <style name="WindowTitleBackground" parent="android:WindowTitleBackground">    
         <item name="android:background">@android:color/transparent</item>        
-    </style>    
+    </style>
+    <style name="listViewStyle" parent="@android:style/Widget.ListView">
+    	<item name="android:cacheColorHint">@android:color/transparent</item>  
+    </style>
+    <style name="checkBoxStyle" parent="@android:style/Widget.CompoundButton.CheckBox">
+    	<item name="android:button">@drawable/btn_check</item>
+    	<item name="android:background">@drawable/btn_check_label_background</item>
+    </style>
  	
 </resources>

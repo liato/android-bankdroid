@@ -20,6 +20,8 @@ package com.liato.bankdroid.lockpattern;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.liato.bankdroid.R;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -241,25 +243,26 @@ public class LockPatternView extends View {
         mPathPaint.setStrokeCap(Paint.Cap.ROUND);
 
         // lot's of bitmaps!
-        /*
+        
         mBitmapBtnDefault = getBitmapFor(R.drawable.btn_code_lock_default);
         mBitmapBtnTouched = getBitmapFor(R.drawable.btn_code_lock_touched);
         mBitmapCircleDefault = getBitmapFor(R.drawable.indicator_code_lock_point_area_default);
+        
         mBitmapCircleGreen = getBitmapFor(R.drawable.indicator_code_lock_point_area_green);
         mBitmapCircleRed = getBitmapFor(R.drawable.indicator_code_lock_point_area_red);
 
         mBitmapArrowGreenUp = getBitmapFor(R.drawable.indicator_code_lock_drag_direction_green_up);
         mBitmapArrowRedUp = getBitmapFor(R.drawable.indicator_code_lock_drag_direction_red_up);
-        */
         
-        mBitmapBtnDefault = getBitmapFor(getResources().getIdentifier("android:drawable/btn_code_lock_default", null, null));
-        mBitmapBtnTouched = getBitmapFor(getResources().getIdentifier("android:drawable/btn_code_lock_touched", null, null));
-        mBitmapCircleDefault = getBitmapFor(getResources().getIdentifier("android:drawable/indicator_code_lock_point_area_default", null, null));
-        mBitmapCircleGreen = getBitmapFor(getResources().getIdentifier("android:drawable/indicator_code_lock_point_area_green", null, null));
-        mBitmapCircleRed = getBitmapFor(getResources().getIdentifier("android:drawable/indicator_code_lock_point_area_red", null, null));
         
-        mBitmapArrowGreenUp = getBitmapFor(getResources().getIdentifier("android:drawable/indicator_code_lock_drag_direction_green_up", null, null));
-        mBitmapArrowRedUp = getBitmapFor(getResources().getIdentifier("android:drawable/indicator_code_lock_drag_direction_red_up", null, null));
+        //mBitmapBtnDefault = getBitmapFor(getResources().getIdentifier("android:drawable/btn_code_lock_default", null, null));
+        //mBitmapBtnTouched = getBitmapFor(getResources().getIdentifier("android:drawable/btn_code_lock_touched", null, null));
+        //mBitmapCircleDefault = getBitmapFor(getResources().getIdentifier("android:drawable/indicator_code_lock_point_area_default", null, null));
+        //mBitmapCircleGreen = getBitmapFor(getResources().getIdentifier("android:drawable/indicator_code_lock_point_area_green", null, null));
+        //mBitmapCircleRed = getBitmapFor(getResources().getIdentifier("android:drawable/indicator_code_lock_point_area_red", null, null));
+        
+        //mBitmapArrowGreenUp = getBitmapFor(getResources().getIdentifier("android:drawable/indicator_code_lock_drag_direction_green_up", null, null));
+        //mBitmapArrowRedUp = getBitmapFor(getResources().getIdentifier("android:drawable/indicator_code_lock_drag_direction_red_up", null, null));
 
         // we assume all bitmaps have the same size
         mBitmapWidth = mBitmapBtnDefault.getWidth();
