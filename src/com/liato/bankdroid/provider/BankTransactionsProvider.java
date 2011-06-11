@@ -54,7 +54,9 @@ public class BankTransactionsProvider extends ContentProvider implements
 	private final static int BANK_ACCOUNTS = 1;
 	private static final String WILD_CARD = "*";
 
-	private static final String BANK_ACCOUNT_TABLES = "banks LEFT JOIN accounts ON banks."
+	private static final String BANK_TABLE = "banks"; 
+	private static final String ACCOUNT_TABLE = "accounts";
+	private static final String BANK_ACCOUNT_TABLES = BANK_TABLE + " LEFT JOIN " + ACCOUNT_TABLE + " ON banks."
 			+ BANK_ID + " = accounts.bankid";
 	private static final String TRANSACTIONS_TABLE = "transactions";
 
@@ -81,6 +83,8 @@ public class BankTransactionsProvider extends ContentProvider implements
 		bankAccountProjectionMap.put(BANK_LAST_UPDATED, BANK_LAST_UPDATED);
 		bankAccountProjectionMap.put(ACC_ID, ACC_ID);
 		bankAccountProjectionMap.put(ACC_NAME, ACC_NAME);
+		// Table name has to be explicitly included here since Banks also have a column named balance.
+		bankAccountProjectionMap.put(ACC_BALANCE, ACCOUNT_TABLE + "." + ACC_BALANCE); 
 		bankAccountProjectionMap.put(ACC_TYPE, ACC_TYPE);
 
 		transProjectionMap = new HashMap<String, String>();
@@ -186,6 +190,7 @@ public class BankTransactionsProvider extends ContentProvider implements
 			throw new IllegalArgumentException("Unsupported URI: " + uri);
 		}
 
+				
 		final Cursor cur = qb.query(db, projection, selection, selectionArgs,
 				null, null, sortOrder);
 
