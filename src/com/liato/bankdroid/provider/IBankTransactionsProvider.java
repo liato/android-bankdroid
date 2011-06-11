@@ -39,8 +39,7 @@ import java.math.BigDecimal;
  * <pre>
  * final Uri uri = Uri.parse(&quot;content://&quot; + AUTHORITY + &quot;/&quot; + TRANSACTIONS_CAT
  * 		+ &quot;/&quot; + API_KEY + apiKey);
- * final Cursor cur = managedQuery(uri, TRANSACTIONS_PROJECTION,
- * 		ACCOUNT_SELECTION_FILTER, new String[] { currentAccountId }, null);
+ * final Cursor cur = managedQuery(uri, TRANSACTIONS_PROJECTION, ACCOUNT_SELECTION_FILTER, new String[] { currentAccountId }, null);
  * startManagingCursor(cur);
  * </pre>
  * 
@@ -49,7 +48,7 @@ import java.math.BigDecimal;
  * 
  * @author Magnus Andersson
  * @since 8 jan 2011
- * @version 1.0-RC1
+ * @version 1.0-RC2
  * @see BankTransactionsProvider
  */
 public interface IBankTransactionsProvider {
@@ -161,6 +160,17 @@ public interface IBankTransactionsProvider {
 	String ACC_TYPE = "acctype";
 
 	/**
+	 * <p>
+	 * The account balance.
+	 * </p>
+	 * <p>
+	 * <i>Note! This will most likely differ from the total amount that can be
+	 * calculated from transactions.</i>
+	 * </p>
+	 */
+	String ACC_BALANCE = "balance";
+
+	/**
 	 * Defines if an account is hidden.
 	 */
 	String ACC_HIDDEN = "hidden";
@@ -172,7 +182,7 @@ public interface IBankTransactionsProvider {
 	 * </p>
 	 */
 	String[] BANK_ACCOUNT_PROJECTION = { BANK_ID, BANK_NAME, BANK_TYPE,
-			BANK_LAST_UPDATED, ACC_ID, ACC_NAME, ACC_TYPE };
+			BANK_LAST_UPDATED, ACC_ID, ACC_BALANCE, ACC_NAME, ACC_TYPE };
 
 	/**
 	 * <p>
@@ -182,6 +192,14 @@ public interface IBankTransactionsProvider {
 	 * </p>
 	 */
 	String NO_HIDDEN_ACCOUNTS_FILTER = ACC_HIDDEN + " = 0";
+
+	/**
+	 * <p>
+	 * Use this order by to make sure that all account belonging to one Bank
+	 * comes clustered.
+	 * </p>
+	 */
+	String ORDER_BY_BANK_ACCOUNT = BANK_ID + " DESC";
 
 	// ===================================TRANSACTION_FIELDS===============================
 	/**
