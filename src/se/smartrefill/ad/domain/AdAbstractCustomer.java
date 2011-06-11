@@ -23,4 +23,8 @@ public abstract class AdAbstractCustomer
     this.services = new ArrayList<AdService>();
     this.paymentCards = new ArrayList<AdPaymentCard>();
   }
+  
+  public int getId(){
+	  return id;
+  }
 }

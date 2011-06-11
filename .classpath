@@ -3,7 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry kind="lib" path="C:/Program Files (x86)/android-sdk-windows/libs/google-collect-1.0/google-collect-1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Program Files (x86)/android-sdk-windows/libs/commons-io-2.0.1/commons-io-2.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-io-2.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/google-collect-1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

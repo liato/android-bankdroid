@@ -103,6 +103,7 @@ public class HessianDebugInputStream extends InputStream
       ch = is.read();
     }
 
+    //Log.d("Hessian",(int)ch);
     _state.next(ch);
 
     return ch;
