@@ -26,7 +26,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * <code>HessianHttpProxyFactory</code> extends the
@@ -98,8 +97,7 @@ public class HessianHttpProxyFactory extends HessianProxyFactory {
      * Header Field: server (Apache-Coyote/1.1)
      * Header Field: set-cookie (JSESSIONID=5930D0459F0CE1B769ED5D08B031F9D2; Path=/Server)
      */
-    private static class HessianHttpProxy extends HessianProxy {
-        private static final Logger log = Logger.getLogger(HessianHttpProxy.class.getName());
+    protected static class HessianHttpProxy extends HessianProxy {
         private static final HashMap<String, Cookie> cookieMap = new HashMap<String, Cookie>();
 
         private static final String COOKIE_SET = "set-cookie";
@@ -123,7 +121,7 @@ public class HessianHttpProxyFactory extends HessianProxyFactory {
                 for (String s : cookieStrings) {
                     Cookie cookie = CookieParser.parse(host, s);
                     HessianHttpProxy.cookieMap.put(cookie.host + cookie.path, cookie);
-                    log.finest("Cookie cached: " + cookie.host + cookie.path + ":" + s);
+                   // Log.d("Cookies", "Cookie cached: " + cookie.host + cookie.path + ":" + s);
                 }
             }
         }
@@ -142,11 +140,11 @@ public class HessianHttpProxyFactory extends HessianProxyFactory {
             String path = conn.getURL().getPath();
 
             while (path != null && 0 < path.length()) {
-                log.info("Host:+" + host +",Path:"+path);
-                Cookie cookie = HessianHttpProxy.cookieMap.get(host + path);
+                //Log.d("Cookies", "Host:+" + host +",Path:"+path);
+                Cookie cookie = getCookie(host, path);
                 if (cookie != null) {
                     conn.setRequestProperty("Cookie", cookie.value);
-                    log.finest("Cookie set in request:" + cookie.value);
+                    //Log.d("Cookies", "Cookie set in request:" + cookie.value);
                     break;
                 }
                 int i = path.lastIndexOf("/");
@@ -156,6 +154,10 @@ public class HessianHttpProxyFactory extends HessianProxyFactory {
                     path = path.substring(0, i);
                 }
 			}
+		}
+
+		protected Cookie getCookie(String host, String path) {
+			return HessianHttpProxy.cookieMap.get(host + path);
 		}
 	}
 }
