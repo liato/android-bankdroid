@@ -48,6 +48,8 @@
 
 package com.caucho.hessian.client;
 
+import android.util.Log;
+
 import com.caucho.hessian.io.*;
 import com.caucho.services.server.AbstractSkeleton;
 
@@ -215,6 +217,11 @@ public class HessianProxy implements InvocationHandler {
 				PrintWriter dbg = new PrintWriter(new LogWriter(log));
 				is = new HessianDebugInputStream(is, dbg);
 			}
+
+//			if (false) {
+//				PrintWriter dbg = new PrintWriter(new LogCatLogWriter());
+//				is = new HessianDebugInputStream(is, dbg);
+//			}
 
 			AbstractHessianInput in = _factory.getHessianInput(is);
 
@@ -418,7 +425,7 @@ public class HessianProxy implements InvocationHandler {
 		LogWriter(Logger log) {
 			_log = log;
 		}
-
+		
 		public void write(char ch) {
 			if (ch == '\n' && _sb.length() > 0) {
 				_log.fine(_sb.toString());
@@ -432,7 +439,7 @@ public class HessianProxy implements InvocationHandler {
 				char ch = buffer[offset + i];
 
 				if (ch == '\n' && _sb.length() > 0) {
-					_log.log(_level, _sb.toString());
+					_log.fine(_sb.toString());
 					_sb.setLength(0);
 				} else
 					_sb.append((char) ch);
@@ -444,7 +451,40 @@ public class HessianProxy implements InvocationHandler {
 
 		public void close() {
 			if (_sb.length() > 0)
-				_log.log(_level, _sb.toString());
+				_log.fine(_sb.toString());
+		}
+	}	
+	
+	static class LogCatLogWriter extends Writer {
+		private StringBuilder _sb = new StringBuilder();
+
+		public void write(char ch) {
+			if (ch == '\n' && _sb.length() > 0) {
+				Log.d("HessianLogCatLogWriter", _sb.toString());
+				_sb.setLength(0);
+			} else
+				_sb.append((char) ch);
+		}
+
+		public void write(char[] buffer, int offset, int length) {
+			for (int i = 0; i < length; i++) {
+				char ch = buffer[offset + i];
+
+				if (ch == '\n' && _sb.length() > 0) {
+					Log.d("HessianLogCatLogWriter", _sb.toString());
+					_sb.setLength(0);
+				} else
+					_sb.append((char) ch);
+			}
+		}
+
+		public void flush() {
+		}
+
+		public void close() {
+			if (_sb.length() > 0){
+				Log.d("HessianLogCatLogWriter", _sb.toString());
+			}
 		}
 	}
 }

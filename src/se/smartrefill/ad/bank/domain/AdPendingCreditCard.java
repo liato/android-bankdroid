@@ -7,6 +7,7 @@ public class AdPendingCreditCard
 {
   private static final long serialVersionUID = 1L;
   private String alias;
+  private int customerId;
   private String number;
   private String partner;
   private String phoneNumber;
@@ -15,6 +16,9 @@ public class AdPendingCreditCard
 	public String getAlias() {
 		return alias;
 	}
+	  public int getCustomerId() {
+			return customerId;
+		}
 
 	public String getNumber() {
 		return number;
