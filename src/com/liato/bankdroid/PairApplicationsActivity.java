@@ -15,14 +15,6 @@
  */
 package com.liato.bankdroid;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
-import com.liato.bankdroid.provider.BankTransactionsProvider;
-import com.liato.bankdroid.provider.IBankTransactionsProvider;
-
-import com.liato.bankdroid.R;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -37,11 +29,14 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.liato.bankdroid.provider.BankTransactionsProvider;
+import com.liato.bankdroid.provider.IBankTransactionsProvider;
+
 /**
  * @author Magnus Andersson
  * @since 8 jun 2011
  */
-public class PairApplicationsActivity extends Activity {
+public class PairApplicationsActivity extends LockableActivity {
 
 	/**
 	 * 
@@ -61,7 +56,7 @@ public class PairApplicationsActivity extends Activity {
 			String appName = bundle.getString(PAIR_APP_NAME);
 
 			ImageView img = (ImageView) findViewById(R.id.imageView1);
-			String logoUri = "drawable/logo_"+appName.toLowerCase();
+			String logoUri = "drawable/applogo_"+appName.toLowerCase();
 
 			// Dynamically load logo
 			int imageResource = getResources().getIdentifier(logoUri, null, getPackageName());
@@ -78,7 +73,7 @@ public class PairApplicationsActivity extends Activity {
 			TextView appNameView = (TextView) findViewById(R.id.app_name);
 			appNameView.setText(appName);
 		} else {
-			Log.d(TAG, "Unkown application");
+			Log.d(TAG, "Unknown application");
 		}
 
 
