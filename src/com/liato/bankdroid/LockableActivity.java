@@ -47,6 +47,9 @@ public class LockableActivity extends Activity {
 	private LinearLayout mTitlebarButtons;
 	private LayoutInflater mInflater;
 	private ProgressBar mProgressBar;
+	
+    private ImageView mHomeButton;
+    private View mHomeButtonCont;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,8 +69,8 @@ public class LockableActivity extends Activity {
         mTitlebarButtons = (LinearLayout)titlebar.findViewById(R.id.layTitleButtons);
         mInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        ImageView homeButton = (ImageView)titlebar.findViewById(R.id.imgTitle);
-        View homeButtonCont = titlebar.findViewById(R.id.layLogoContainer);
+        mHomeButton = (ImageView)titlebar.findViewById(R.id.imgTitle);
+        mHomeButtonCont = titlebar.findViewById(R.id.layLogoContainer);
         mProgressBar = (ProgressBar)titlebar.findViewById(R.id.progressBar);
         OnClickListener listener = new View.OnClickListener() {
             public void onClick(View v) {
@@ -77,12 +80,9 @@ public class LockableActivity extends Activity {
                 LockableActivity.this.finish();
             }
         };
-        homeButton.setOnClickListener(listener);
-        homeButton.setFocusable(true);
-        homeButton.setClickable(true);
-        homeButtonCont.setOnClickListener(listener);
-        homeButtonCont.setFocusable(true);
-        homeButtonCont.setClickable(true);
+        mHomeButton.setOnClickListener(listener);
+        mHomeButtonCont.setOnClickListener(listener);
+        setHomeButtonEnabled(true);
     }
 
     protected void addTitleButton(int imageResourceId, String tag, OnClickListener listener) {
@@ -121,6 +121,13 @@ public class LockableActivity extends Activity {
             }
         }
     }
+    
+    protected void setHomeButtonEnabled(boolean enabled) {
+        mHomeButtonCont.setFocusable(enabled);
+        mHomeButtonCont.setClickable(enabled);
+        mHomeButton.setFocusable(enabled);
+        mHomeButton.setClickable(enabled);
+    }    
     
     protected void setProgressBar(int progress) {
         mProgressBar.setProgress(progress);
