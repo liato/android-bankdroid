@@ -15,7 +15,6 @@ import se.smartrefill.remoting.domain.exception.CustomerBlockedException;
 import se.smartrefill.remoting.domain.exception.InvalidLoginException;
 import se.smartrefill.remoting.domain.exception.InvalidSecurityCodeException;
 import se.smartrefill.remoting.domain.exception.UnauthenticatedUserException;
-
 import android.content.Context;
 import android.provider.Settings.Secure;
 import android.text.InputType;
@@ -35,7 +34,17 @@ import com.liato.bankdroid.provider.IBankTypes;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Skandiabanken extends Bank {
-	private static final String BASE_URL = "https://smartrefill.se/mobile/bank/android2/";
+    private static final String TAG = "Skandiabanken";
+    private static final String NAME = "Skandiabanken";
+    private static final String NAME_SHORT = "skandiabanken";
+    private static final int BANKTYPE_ID = IBankTypes.SKANDIABANKEN;
+    private static final String URL = "http://www.skandiabanken.se/hem/";
+    private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+    private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
+    private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
+
+    
+    private static final String BASE_URL = "https://smartrefill.se/mobile/bank/android2/";
 	private static final String LOGIN_URL = BASE_URL + "customer.service";
 	private static final String BALANCE_URL = BASE_URL + "balance.service";
 	
@@ -55,15 +64,13 @@ public class Skandiabanken extends Bank {
 
 	public Skandiabanken(Context context) {
 		super(context);
-		TAG = "Skandiabanken";
-		NAME = "Skandiabanken";
-		NAME_SHORT = "Skandiabanken";
-		BANKTYPE_ID = IBankTypes.SKANDIABANKEN;
-		;
-		URL = "http://www.skandiabanken.se/hem/";
-		INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
-		INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
-		INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
+		super.NAME = NAME;
+		super.NAME_SHORT = NAME_SHORT;
+		super.BANKTYPE_ID = BANKTYPE_ID;
+		super.URL = URL;
+		super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
+		super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
+		super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
 	}
 
 	public Skandiabanken(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
@@ -141,7 +148,6 @@ public class Skandiabanken extends Bank {
 					.create(RemoteBalanceService.class, BALANCE_URL, context.getClassLoader());
 			
 			List<AdAccount> adAccounts = balanceService.getAccounts(customerId);
-			
 			for (AdAccount adAccount : adAccounts) {
 				String amount = adAccount.getAmount();
 				if (amount == null)
@@ -154,8 +160,9 @@ public class Skandiabanken extends Bank {
 				if (typeDescription.contentEquals("Allt i Ett-konto") || typeDescription.contentEquals("Sparkonto"))
 					type = Account.REGULAR;
 				
-				accounts.add(new Account(adAccount.getAlias(), Helpers
-						.parseBalance(amount), adAccount.getId(), type));
+				accounts.add(new Account(
+				        adAccount.getAlias() != null ? adAccount.getAlias() : adAccount.getAccountNumber(),
+				        Helpers.parseBalance(amount), adAccount.getId(), type));
 			}
 		} catch (IOException e) {
 			throw new BankException(e.getMessage());
