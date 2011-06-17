@@ -18,6 +18,7 @@ package com.liato.bankdroid.appwidget;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import android.app.Notification;
@@ -59,10 +60,31 @@ public class AutoRefreshService extends Service {
 
 	@Override
 	public void onCreate() {
-		new DataRetrieverTask().execute();
+		if (InsideUpdatePeriod())
+			new DataRetrieverTask().execute();
+		else
+			Log.v(TAG, "Skipping update due to not in update period.");
 	}
 
-    @Override
+    private boolean InsideUpdatePeriod() {
+		final SharedPreferences prefs = PreferenceManager
+			.getDefaultSharedPreferences(this);
+		
+		int start = prefs.getInt("refresh_start_minutes", 0);
+		int stop = prefs.getInt("refresh_stop_minutes", 0);
+		
+		// If start is bigger than stop we always update. It should perhaps 
+		// be possible to set start to 17:00 and stop to 07:00 and have to 
+		// updates working from 17 to 07 around midnight
+		if (start >= stop)
+			return true;
+		
+        Date now = new Date();
+		int minutesSinceMidnight = now.getHours() * 60 + now.getMinutes();
+		return minutesSinceMidnight > start && minutesSinceMidnight < stop;
+	}
+
+	@Override
 	public void onDestroy() {
 	}
 

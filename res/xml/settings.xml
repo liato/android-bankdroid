@@ -76,6 +76,16 @@
 			android:entries="@array/refreshrateNames"
 			android:entryValues="@array/refreshrateValues"
 			android:dependency="autoupdates_enabled" />
+		<com.liato.bankdroid.TimePreference
+			android:title="@string/update_start_title"
+			android:key="refresh_start_minutes"
+			android:defaultValue="0"
+			android:dependency="autoupdates_enabled" />
+		<com.liato.bankdroid.TimePreference
+			android:title="@string/update_stop_title"
+			android:key="refresh_stop_minutes"
+			android:defaultValue="0"
+			android:dependency="autoupdates_enabled" />
 		<CheckBoxPreference
 			android:key="autoupdates_transactions_enabled"
 			android:defaultValue="true"

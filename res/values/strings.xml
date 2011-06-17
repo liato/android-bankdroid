@@ -54,6 +54,8 @@
 	<string name="autoupdates_enabled_title">Enable</string>
 	<string name="autoupdates_enabled_summary">Enable automatic updates</string>
 	<string name="update_frequency_title">Update frequency</string>
+	<string name="update_start_title">Update start time</string>
+	<string name="update_stop_title">Update end time</string>
 	<string name="update_transaction_history_title">Update transaction history</string>
 	<string name="update_transaction_history_summary">Update transaction history when updating automatically</string>
 	<string name="appearance_title">Appearance</string>
