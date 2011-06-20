@@ -62,5 +62,7 @@ public class TimePreference extends DialogPreference {
 				val = Integer.parseInt(defaultValue.toString());
 			} catch (NumberFormatException e) { }
 		}
+		
+		lastValue = val;
 	}
 }
