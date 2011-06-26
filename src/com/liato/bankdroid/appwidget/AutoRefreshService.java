@@ -60,10 +60,13 @@ public class AutoRefreshService extends Service {
 
 	@Override
 	public void onCreate() {
-		if (InsideUpdatePeriod())
+		if (InsideUpdatePeriod()){
 			new DataRetrieverTask().execute();
-		else
+		}
+		else{
 			Log.v(TAG, "Skipping update due to not in update period.");
+			stopSelf();
+		}
 	}
 
     private boolean InsideUpdatePeriod() {
