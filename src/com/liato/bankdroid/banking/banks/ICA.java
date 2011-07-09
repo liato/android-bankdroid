@@ -75,7 +75,7 @@ public class ICA extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib();
+        urlopen = new Urllib(true);
         String response = urlopen.open("https://www.ica.se/Logga-in/");
         Matcher matcher = reViewState.matcher(response);
         if (!matcher.find()) {
