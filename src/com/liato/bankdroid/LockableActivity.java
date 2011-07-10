@@ -40,9 +40,10 @@ import com.liato.bankdroid.lockpattern.LockPatternUtils;
 
 public class LockableActivity extends Activity {
     private static int PATTERNLOCK_UNLOCK = 42;
-	private SharedPreferences prefs;
-	private Editor editor;
+	private SharedPreferences mPrefs;
+	private Editor mEditor;
 	private LockPatternUtils mLockPatternUtils;
+	private boolean mHasLoaded = false;
 	
 	private LinearLayout mTitlebarButtons;
 	private LayoutInflater mInflater;
@@ -54,10 +55,10 @@ public class LockableActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		mLockPatternUtils = new LockPatternUtils(this);		
-        mLockPatternUtils.setVisiblePatternEnabled(prefs.getBoolean("patternlock_visible_pattern", true));
-        mLockPatternUtils.setTactileFeedbackEnabled(prefs.getBoolean("patternlock_tactile_feedback", false));
+        mLockPatternUtils.setVisiblePatternEnabled(mPrefs.getBoolean("patternlock_visible_pattern", true));
+        mLockPatternUtils.setTactileFeedbackEnabled(mPrefs.getBoolean("patternlock_tactile_feedback", false));
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
     }
 	
@@ -158,16 +159,30 @@ public class LockableActivity extends Activity {
     @Override
 	protected void onPause() {
 		super.onPause();
-		// Don't do anything if not lock pattern is set
+		// Don't do anything if no lock pattern is set
 		if (!mLockPatternUtils.isLockPatternEnabled()) return;
-        // Save the current time If a lock pattern has been set
-		writeLockTime();
+        /*
+		Save the current time If a lock pattern has been set
+		If this activity never loaded set the lock time to
+		10 seconds ago.
+		This is to prevent the following scenario:
+		    1. Activity Starts 
+		    2. Lock screen is displayed
+            3. User presses the home button
+            4. "lock time" is set in onPause to when the home button was pressed
+            5. Activity is started again within 2 seconds and no lock screen is shown this time.
+	    */ 
+		if (mHasLoaded) {
+		    writeLockTime();
+		} else {
+		    writeLockTime(System.currentTimeMillis()-10000);
+		}
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-        // Don't do anything if not lock pattern is set
+        // Don't do anything if no lock pattern is set
 		if (!mLockPatternUtils.isLockPatternEnabled()) {
 		    return;
 		}
@@ -175,10 +190,14 @@ public class LockableActivity extends Activity {
 		// activity was open. If it's been more than two seconds the user
 		// will have to enter the lock pattern to continue.
 		long currentTime = System.currentTimeMillis();
-		long lockedAt = prefs.getLong("locked_at", currentTime-10000);
+		long lockedAt = mPrefs.getLong("locked_at", currentTime-10000);
 		long timedif = currentTime - lockedAt;
 		if (timedif > 2000) {
+            mHasLoaded = false;         
 		    launchPatternLock();
+		}
+		else {
+		    mHasLoaded = true;		    
 		}
 	}
 
@@ -190,10 +209,14 @@ public class LockableActivity extends Activity {
 	}
 	
 	private void writeLockTime() {
-        editor = prefs.edit();
-        editor.putLong("locked_at", System.currentTimeMillis());
-        editor.commit();	    
+        writeLockTime(System.currentTimeMillis());
 	}
+
+    private void writeLockTime(long time) {
+        mEditor = mPrefs.edit();
+        mEditor.putLong("locked_at", time);
+        mEditor.commit();       
+    }
 	
     protected void onActivityResult(int requestCode, int resultCode,
             Intent data) {

@@ -28,17 +28,18 @@ import android.preference.PreferenceManager;
 
 public class LockablePreferenceActivity extends PreferenceActivity {
     private static int PATTERNLOCK_UNLOCK = 42;
-	private SharedPreferences prefs;
-	private Editor editor;
+	private SharedPreferences mPrefs;
+	private Editor mEditor;
 	private LockPatternUtils mLockPatternUtils;
+    private boolean mHasLoaded = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		mLockPatternUtils = new LockPatternUtils(this);
-        mLockPatternUtils.setVisiblePatternEnabled(prefs.getBoolean("patternlock_visible_pattern", true));
-        mLockPatternUtils.setTactileFeedbackEnabled(prefs.getBoolean("patternlock_tactile_feedback", false));
+        mLockPatternUtils.setVisiblePatternEnabled(mPrefs.getBoolean("patternlock_visible_pattern", true));
+        mLockPatternUtils.setTactileFeedbackEnabled(mPrefs.getBoolean("patternlock_tactile_feedback", false));
 	}
 
 	@Override
@@ -46,9 +47,23 @@ public class LockablePreferenceActivity extends PreferenceActivity {
 		super.onPause();
 		// Don't do anything if not lock pattern is set
 		if (!mLockPatternUtils.isLockPatternEnabled()) return;
-        // Save the current time If a lock pattern has been set
-		writeLockTime();
-	}
+        /*
+        Save the current time If a lock pattern has been set
+        If this activity never loaded set the lock time to
+        10 seconds ago.
+        This is to prevent the following scenario:
+            1. Activity Starts 
+            2. Lock screen is displayed
+            3. User presses the home button
+            4. "lock time" is set in onPause to when the home button was pressed
+            5. Activity is started again within 2 seconds and no lock screen is shown this time.
+        */ 
+        if (mHasLoaded) {
+            writeLockTime();
+        } else {
+            writeLockTime(System.currentTimeMillis()-10000);
+        }
+    }
 
 	@Override
 	protected void onResume() {
@@ -61,11 +76,14 @@ public class LockablePreferenceActivity extends PreferenceActivity {
 		// activity was open. If it's been more than two seconds the user
 		// will have to enter the lock pattern to continue.
 		long currentTime = System.currentTimeMillis();
-		long lockedAt = prefs.getLong("locked_at", currentTime-10000);
+		long lockedAt = mPrefs.getLong("locked_at", currentTime-10000);
 		long timedif = currentTime - lockedAt;
 		if (timedif > 2000) {
 		    launchPatternLock();
 		}
+        else {
+            mHasLoaded = true;          
+        }
 	}
 
 	private void launchPatternLock() {
@@ -75,20 +93,24 @@ public class LockablePreferenceActivity extends PreferenceActivity {
         startActivityForResult(intent, PATTERNLOCK_UNLOCK);         
 	}
 	
-	private void writeLockTime() {
-        editor = prefs.edit();
-        editor.putLong("locked_at", System.currentTimeMillis());
-        editor.commit();	    
-	}
+    private void writeLockTime() {
+        writeLockTime(System.currentTimeMillis());
+    }
+
+    private void writeLockTime(long time) {
+        mEditor = mPrefs.edit();
+        mEditor.putLong("locked_at", time);
+        mEditor.commit();       
+    }
 
 	protected void setLockEnabled(boolean enabled) {
-        editor = prefs.edit();
-        editor.putBoolean("lock_enabled", enabled);
-        editor.commit();        
+        mEditor = mPrefs.edit();
+        mEditor.putBoolean("lock_enabled", enabled);
+        mEditor.commit();        
 	}
 
     protected boolean isLockEnabled() {
-        return prefs.getBoolean("lock_enabled", true);       
+        return mPrefs.getBoolean("lock_enabled", true);       
     }	
     protected void onActivityResult(int requestCode, int resultCode,
             Intent data) {
