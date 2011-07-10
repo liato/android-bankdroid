@@ -32,6 +32,7 @@ import com.liato.bankdroid.banking.banks.AvanzaMini;
 import com.liato.bankdroid.banking.banks.CSN;
 import com.liato.bankdroid.banking.banks.Chevrolet;
 import com.liato.bankdroid.banking.banks.Coop;
+import com.liato.bankdroid.banking.banks.DanskeBank;
 import com.liato.bankdroid.banking.banks.DinersClub;
 import com.liato.bankdroid.banking.banks.Djurgarden;
 import com.liato.bankdroid.banking.banks.EurobonusMastercard;
@@ -189,7 +190,9 @@ public class BankFactory {
         case IBankTypes.NORDNETDIREKT:
             return new Nordnetdirekt(context);
         case IBankTypes.SKANDIABANKEN:
-                return new Skandiabanken(context);
+            return new Skandiabanken(context);
+        case IBankTypes.DANSKEBANK:
+            return new DanskeBank(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -250,6 +253,7 @@ public class BankFactory {
         banks.add(new Seat(context));
         banks.add(new Skoda(context));
         banks.add(new IKEA(context));
+        banks.add(new DanskeBank(context));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));
