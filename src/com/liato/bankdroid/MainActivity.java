@@ -29,6 +29,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -149,9 +150,7 @@ public class MainActivity extends LockableActivity {
 	};
 
 	public void refreshView() {
-		Log.d(TAG, "refreshView()");
 		final ArrayList<Bank> banks = BankFactory.banksFromDb(this, true);
-		Log.d(TAG, "Bank count: "+banks.size());
 		if (banks.size() > 0) {
 			findViewById(R.id.txtAccountsDesc).setVisibility(View.GONE);
 			showTitleButton("refresh");
@@ -214,10 +213,16 @@ public class MainActivity extends LockableActivity {
 			this.startActivity(intent);
 			//Helpers.setActivityAnimation(this, R.anim.zoom_enter, R.anim.zoom_exit);
 			return true;
-		case R.id.about:
-			showDialog(0);
-			return true;
-		}
+        case R.id.about:
+            intent = new Intent(this, AboutActivity.class);
+            startActivity(intent);
+            return true;
+        case R.id.donate:
+            intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=KWRCBB4PAA3LC"));
+            startActivity(intent);
+            return true;
+        }
 		return false;
 	}
 

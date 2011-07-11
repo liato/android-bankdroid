@@ -10,7 +10,11 @@
 		android:title="@string/menu_show_hidden"
 		android:icon="@drawable/ic_menu_view"/>
 	<item
+		android:id="@+id/donate"
+		android:title="Donate"
+		android:icon="@drawable/ic_menu_donate" />
+	<item
 		android:id="@+id/about"
 		android:title="About"
-		android:icon="@android:drawable/ic_menu_info_details" />
+		android:icon="@drawable/ic_menu_info_details" />
 </menu>

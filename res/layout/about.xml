@@ -17,56 +17,28 @@
 			android:layout_width="wrap_content"
 			android:paddingLeft="20dp"
 			android:paddingRight="20dp">
-			
-			<ImageView android:id="@+id/ImageView02" android:layout_height="wrap_content" android:src="@drawable/logo_text_big" android:adjustViewBounds="true" android:layout_width="fill_parent" android:scaleType="fitXY"></ImageView><LinearLayout
-				android:id="@+id/LinearLayout01"
+			<RelativeLayout
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:layout_marginBottom="20dp">
+			<ImageView
 				android:layout_height="wrap_content"
-				android:orientation="horizontal"
-				android:layout_width="fill_parent">
-				<ImageView
-					android:id="@+id/ImageView01"
-					android:layout_width="100dp"
-					android:layout_height="100dp"
-					android:layout_gravity="center_horizontal"
-					android:visibility="visible"
-					android:src="@drawable/icon_large"
-					android:maxHeight="100dp"
-					android:maxWidth="100dp"
-					android:minHeight="100dp"
-					android:minWidth="100dp"
-					android:scaleType="fitXY"></ImageView>
-				<LinearLayout
-					android:id="@+id/LinearLayout02"
-					android:layout_height="wrap_content"
-					android:orientation="vertical"
-					android:layout_width="fill_parent">
-					<TextView
-						android:layout_height="wrap_content"
-						android:id="@+id/txtVersion"
-						android:layout_width="fill_parent"
-						android:textSize="17dp"
-						android:text="@string/version"></TextView>
-
-
-					<TextView
-						android:id="@+id/TextView02"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:text="http://liato.github.com/android-bankdroid/"
-						android:autoLink="web"
-						android:fitsSystemWindows="false"></TextView>
-				</LinearLayout>
-
-
-			</LinearLayout>
+				android:src="@drawable/logo_text_big"
+				android:adjustViewBounds="true"
+				android:layout_width="fill_parent"
+				android:scaleType="fitXY"
+				android:id="@+id/imgTextLogo"
+				android:layout_marginTop="20dp"></ImageView>
+			<ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_below="@+id/imgTextLogo" android:id="@+id/imgNullbyteLogo" android:src="@drawable/nullbyte_logo" android:layout_alignRight="@+id/imgTextLogo" android:layout_alignBottom="@+id/txtVersion"></ImageView>
+			<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/txtVersion" android:text="@string/version" android:textSize="15dp" android:layout_below="@+id/imgTextLogo" android:gravity="right" android:textColor="#78ffffff" android:layout_toLeftOf="@+id/imgNullbyteLogo" android:layout_marginRight="4dp"></TextView>
+</RelativeLayout>
 			<TextView
 				android:id="@+id/TextView04"
 				android:layout_height="wrap_content"
 				android:text="@string/thanks_to"
-				android:textSize="20sp"
 				android:textStyle="bold"
 				android:layout_marginTop="10dp"
-				android:layout_width="fill_parent"></TextView>
+				android:layout_width="fill_parent" android:textSize="20dp"></TextView>
 			<TextView
 				android:id="@+id/TextView03"
 				android:layout_height="wrap_content"
@@ -74,9 +46,9 @@
 				android:layout_width="fill_parent"
 				android:paddingLeft="10dp"
 				android:typeface="serif"
-				android:textSize="12sp"></TextView>
-		
-</LinearLayout>
+				android:textSize="12sp" android:layout_marginBottom="10dp"></TextView>
+
+		</LinearLayout>
 
 
 

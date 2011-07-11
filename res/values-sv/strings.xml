@@ -3,7 +3,7 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     
     <string name="about">Om</string>
-    <string name="version">Version $version av liato</string>
+    <string name="version">Version $version av</string>
     <string name="widget_name_small">Bankdroid (Liten)</string>
     <string name="widget_name_large">Bankdroid (Stor)</string>
     <string name="accounts_were_not_updated">Saldon för följande konton har ej uppdaterats</string>

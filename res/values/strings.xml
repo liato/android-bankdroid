@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources  xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="version">Version $version by liato</string>
+    <string name="version">Version $version by</string>
     <string name="app_name">Bankdroid</string>
     <string name="widget_name_small">Bankdroid (Small)</string>
     <string name="widget_name_large">Bankdroid (Large)</string>
