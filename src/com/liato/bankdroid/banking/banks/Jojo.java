@@ -48,7 +48,7 @@ public class Jojo extends Bank {
     private static final int BANKTYPE_ID = IBankTypes.JOJO;
 
     private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
-    private Pattern reAccounts = Pattern.compile("1_mRepeaterMyCards_ctl(\\d{2,3})_LinkButton\\d{1,3}\"[^>]+>([^<]+)</a>\\s*</td>\\s*<td[^>]+>\\s*<a\\s*id=\"ctl00_fullRegion_mainRegion_CardInformation1_mRepeaterMyCards_ctl\\d{2,3}_LinkButton\\d{1,3}\"[^>]+>([^<]+)</a>", Pattern.CASE_INSENSITIVE);
+    private Pattern reAccounts = Pattern.compile("\"></a>\\s*</td>\\s*<td\\s*class=\"cardinfoaligntop\">\\s*<a\\s*id=\"ctl\\d*_fullRegion_mainRegion_CardInformation1_mRepeaterMyCards_ctl(\\d{2,3})_LinkButton\\d{1,3}\"[^>]+>([^<]+)</a>\\s*</td>\\s*<td[^>]+>\\s*<a\\s*id=\"ctl00_fullRegion_mainRegion_CardInformation1_mRepeaterMyCards_ctl\\d{2,3}_LinkButton\\d{1,3}\"[^>]+>([^<]+)</a>", Pattern.CASE_INSENSITIVE);
     private Pattern reBalance = Pattern.compile("labelsaldoinfo\">([^<]+)<", Pattern.CASE_INSENSITIVE);
     private String response = null;
 
