@@ -37,6 +37,7 @@ public class SparbankenSyd extends MobilbankenBase {
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;
         super.URL = URL;
+        super.BROKEN = true;
         this.targetId = "0004";
     }
 
