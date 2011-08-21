@@ -84,6 +84,7 @@ public class DanskeBank extends Bank {
             ClientProtocolException, IOException {
         urlopen = new Urllib(true);
         urlopen.setContentCharset(HTTP.ISO_8859_1);
+        urlopen.addHeader("Referer", "https://mobil.danskebank.se/XI");
 
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm - dd.MM.yyyy");
