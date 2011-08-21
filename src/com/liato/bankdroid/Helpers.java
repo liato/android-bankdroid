@@ -205,5 +205,15 @@ public class Helpers {
         }
         return sdf.format(cal.getTime());
     }
+    
+    /**
+     * Remove HTML from a string.
+     * 
+     * @param text      The string containing HTML.
+     * @return          The same string with all HTML removed.
+     */
+    public static String removeHtml(String text) {
+        return text.replaceAll("<[^>]+>", "");
+    }
 
 }

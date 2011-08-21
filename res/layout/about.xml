@@ -14,21 +14,17 @@
 			android:id="@+id/LinearLayout03"
 			android:orientation="vertical"
 			android:layout_height="fill_parent"
-			android:layout_width="wrap_content"
 			android:paddingLeft="20dp"
-			android:paddingRight="20dp">
+			android:paddingRight="20dp" android:layout_width="fill_parent">
 			<RelativeLayout
 			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:layout_marginBottom="20dp">
+			android:layout_marginBottom="20dp" android:layout_width="fill_parent">
 			<ImageView
 				android:layout_height="wrap_content"
 				android:src="@drawable/logo_text_big"
 				android:adjustViewBounds="true"
-				android:layout_width="fill_parent"
-				android:scaleType="fitXY"
 				android:id="@+id/imgTextLogo"
-				android:layout_marginTop="20dp"></ImageView>
+				android:layout_marginTop="20dp" android:scaleType="fitXY" android:layout_width="wrap_content" android:layout_centerHorizontal="true"></ImageView>
 			<ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_below="@+id/imgTextLogo" android:id="@+id/imgNullbyteLogo" android:src="@drawable/nullbyte_logo" android:layout_alignRight="@+id/imgTextLogo" android:layout_alignBottom="@+id/txtVersion"></ImageView>
 			<TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/txtVersion" android:text="@string/version" android:textSize="15dp" android:layout_below="@+id/imgTextLogo" android:gravity="right" android:textColor="#78ffffff" android:layout_toLeftOf="@+id/imgNullbyteLogo" android:layout_marginRight="4dp"></TextView>
 </RelativeLayout>

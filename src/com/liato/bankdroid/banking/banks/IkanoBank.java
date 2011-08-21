@@ -57,6 +57,7 @@ public class IkanoBank extends Bank {
     private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+.*?value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
     private Pattern reAccounts = Pattern.compile("(ctl\\d{1,}_rptAccountList_ctl\\d{1,}_RowLink)[^>]+>([^<]+)</a>\\s*</td>\\s*<td>([^<]+)</td>\\s*<td>[^<]+</td>\\s*<td[^>]+>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
     private Pattern reTransactions = Pattern.compile("<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>([^<]+)</td>\\s*<td>[^<]+</td>\\s*<td[^>]+>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
+    private Pattern reErrorMessage = Pattern.compile("<div\\s*class=\"message-box-inner\">\\s*<div>\\s*<p>([^<]+)<");
     private String response = null;
 
     public IkanoBank(Context context) {
@@ -83,7 +84,14 @@ public class IkanoBank extends Bank {
             ClientProtocolException, IOException {
         urlopen = new Urllib(true);
         response = urlopen.open("https://secure.ikanobank.se/login");
-        Matcher matcher = reViewState.matcher(response);
+        Matcher matcher;
+        if (response.contains("Banken är stängd")) {
+            matcher = reErrorMessage.matcher(response);
+            if (matcher.find()) {
+                throw new BankException(Helpers.removeHtml(matcher.group(1)));
+            } 
+        }
+        matcher = reViewState.matcher(response);
         if (!matcher.find()) {
             throw new BankException(res.getText(R.string.unable_to_find).toString()+" ViewState.");
         }
