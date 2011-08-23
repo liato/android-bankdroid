@@ -57,7 +57,7 @@ public class IkanoBank extends Bank {
     private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+.*?value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
     private Pattern reAccounts = Pattern.compile("(ctl\\d{1,}_rptAccountList_ctl\\d{1,}_RowLink)[^>]+>([^<]+)</a>\\s*</td>\\s*<td>([^<]+)</td>\\s*<td>[^<]+</td>\\s*<td[^>]+>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
     private Pattern reTransactions = Pattern.compile("<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>([^<]+)</td>\\s*<td>[^<]+</td>\\s*<td[^>]+>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
-    private Pattern reErrorMessage = Pattern.compile("<div\\s*class=\"message-box-inner\">\\s*<div>\\s*<p>([^<]+)<");
+    private Pattern reErrorMessage = Pattern.compile("<div\\s*class=\"(?:error|message)-box-inner\">\\s*<div>\\s*<p>(.+)</p");
     private String response = null;
 
     public IkanoBank(Context context) {
@@ -84,11 +84,12 @@ public class IkanoBank extends Bank {
             ClientProtocolException, IOException {
         urlopen = new Urllib(true);
         response = urlopen.open("https://secure.ikanobank.se/login");
+        //Log.d(TAG, "Url after first request: " + urlopen.getCurrentURI());
         Matcher matcher;
         if (response.contains("Banken är stängd")) {
             matcher = reErrorMessage.matcher(response);
             if (matcher.find()) {
-                throw new BankException(Helpers.removeHtml(matcher.group(1)));
+                throw new BankException(Helpers.removeHtml(matcher.group(1).replace("<BR>", "\n")));
             } 
         }
         matcher = reViewState.matcher(response);
@@ -117,8 +118,16 @@ public class IkanoBank extends Bank {
         try {
             LoginPackage lp = preLogin();
             response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-            if (response.contains("Ogiltigt personnummer eller")) {
-                throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+            //Log.d(TAG, "Url after login attempt: " + urlopen.getCurrentURI());
+            if (response.contains("Ogiltigt personnummer") || response.contains("felaktigt personnummer")) {
+                Matcher matcher = reErrorMessage.matcher(response);
+                if (matcher.find()) {
+                    throw new LoginException(Helpers.removeHtml(matcher.group(1).replace("<BR>", "\n")));
+                }
+                else {
+                    throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+                }
+                
             }
         }
         catch (ClientProtocolException e) {
@@ -167,12 +176,12 @@ public class IkanoBank extends Bank {
         Matcher matcher;
         matcher = reViewState.matcher(response);
         if (!matcher.find()) {
-            Log.d(TAG, "Unable to find ViewState. L156.");
+            Log.e(TAG, "Unable to find ViewState. L156.");
         }
         String strViewState = matcher.group(1);
         matcher = reEventValidation.matcher(response);
         if (!matcher.find()) {
-            Log.d(TAG, "Unable to find EventValidation. L161.");
+            Log.e(TAG, "Unable to find EventValidation. L161.");
         }
         String strEventValidation = matcher.group(1);       
 
@@ -183,6 +192,7 @@ public class IkanoBank extends Bank {
             postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));            
             postData.add(new BasicNameValuePair("__EVENTVALIDATION", strEventValidation));            
             response = urlopen.open("https://secure.ikanobank.se/engines/page.aspx?structid=1787", postData);
+            //Log.d(TAG, "Transactions url: " + urlopen.getCurrentURI());
 
             matcher = reTransactions.matcher(response);
             ArrayList<Transaction> transactions = new ArrayList<Transaction>();
@@ -202,9 +212,9 @@ public class IkanoBank extends Bank {
             account.setTransactions(transactions);
 
         } catch (ClientProtocolException e) {
-            Log.e(TAG, e.getMessage());
+            Log.e(TAG, "CPE: " + e.getMessage());
         } catch (IOException e) {
-            Log.e(TAG, e.getMessage());
+            Log.e(TAG, "IOE: "+ e.getMessage());
         }
         finally {
             super.updateComplete();

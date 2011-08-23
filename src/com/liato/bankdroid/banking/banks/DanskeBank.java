@@ -32,6 +32,7 @@ import org.apache.http.protocol.HTTP;
 import android.content.Context;
 import android.text.Html;
 import android.text.InputType;
+import android.util.Log;
 
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
@@ -84,7 +85,7 @@ public class DanskeBank extends Bank {
             ClientProtocolException, IOException {
         urlopen = new Urllib(true);
         urlopen.setContentCharset(HTTP.ISO_8859_1);
-        urlopen.addHeader("Referer", "https://mobil.danskebank.se/XI");
+        urlopen.addHeader("Referer", "https://mobil.danskebank.se/");
 
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm - dd.MM.yyyy");
@@ -119,6 +120,7 @@ public class DanskeBank extends Bank {
 		try {
 		    LoginPackage lp = preLogin();
 			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+            Log.d(TAG, "Url after login attempt: " + urlopen.getCurrentURI());
 			
 			if (response.contains("et personnummer eller servicekod du angett")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -157,6 +159,7 @@ public class DanskeBank extends Bank {
 		
 		try {
 			response = urlopen.open(String.format("https://mobil.danskebank.se/XI?WP=XAS&WO=Konto&WA=KTList&WSES=%s&WAFT=%s", mSessionId, mPersonnr));
+            Log.d(TAG, "Accounts url: " + urlopen.getCurrentURI());
 			matcher = reAccounts.matcher(response);
 			while (matcher.find()) {
                 /*
@@ -206,6 +209,7 @@ public class DanskeBank extends Bank {
 		Matcher matcher;
 		try {
 			response = urlopen.open(String.format("https://mobil.danskebank.se/XI?WP=XAS&WAFT=%s&WSES=%s&WO=Konto&WA=KBList&WCI=%s", mPersonnr, mSessionId, account.getId()));
+            Log.d(TAG, "Transactions url: " + urlopen.getCurrentURI());
 			matcher = reTransactions.matcher(response);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 			while (matcher.find()) {
