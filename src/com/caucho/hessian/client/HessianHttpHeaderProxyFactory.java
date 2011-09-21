@@ -7,7 +7,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Map;
 
+import android.util.Log;
+
 import com.ast.util.CookieParser.Cookie;
+import com.caucho.hessian.client.HessianHttpProxyFactory.HessianHttpProxy;
 import com.caucho.hessian.io.HessianRemoteObject;
 
 // This class is added in the bankdroid project to enable adding some http-headers required by Skandiabanken
@@ -48,19 +51,16 @@ public class HessianHttpHeaderProxyFactory extends HessianHttpProxyFactory{
 			for (Map.Entry<String, String> header : mHeaderMap.entrySet())
 				conn.setRequestProperty(header.getKey(), header.getValue());
 		}
-		
+
 	    @Override
-		protected Cookie getCookie(String host, String path) {
-			Cookie cookie = super.getCookie(host, path);
-			
-			// Ugly hack: For some reason the cookie has the wrong path in the response from Skandiabanken.
-			if (cookie == null && 
-					host.contentEquals("smartrefill.se") && 
-					path.contentEquals("/")){
-				cookie = super.getCookie("smartrefill.se", "/BankServices");
-			}
-			
-			return cookie;
+		protected void putCookie(Cookie cookie) {
+	    	// Ugly hack: for some reason the path in the cookie is not as expected
+            if (cookie.host.contentEquals("smartrefill.se"))
+            {
+            	Log.d("Skandiabanken cookie", "using path / instead of " + cookie.path);
+            	cookie.path = "/";
+            }
+            super.putCookie(cookie);
 		}
 	}
 }
