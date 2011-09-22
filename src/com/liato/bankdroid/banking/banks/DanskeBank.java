@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Nullbyte <http://nullbyte.eu>
+ * Copyright (C) 2011 Nullbyte <http://nullbyte.eu>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,6 +53,7 @@ public class DanskeBank extends Bank {
 	private static final String URL = "https://mobil.danskebank.se/XI?WP=XAI&WO=Logon&WA=MBSELogon&gsSprog=SE&gsBrand=OEB";
 	private static final int BANKTYPE_ID = IBankTypes.DANSKEBANK;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+    private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
 	
     private Pattern reSessionId = Pattern.compile("WSES=([^\"& ]+)", Pattern.CASE_INSENSITIVE);
@@ -73,6 +74,7 @@ public class DanskeBank extends Bank {
 		super.URL = URL;
         super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
         super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
+        super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
 	}
 
 	public DanskeBank(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
@@ -120,8 +122,6 @@ public class DanskeBank extends Bank {
 		try {
 		    LoginPackage lp = preLogin();
 			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-            Log.d(TAG, "Url after login attempt: " + urlopen.getCurrentURI());
-			
 			if (response.contains("et personnummer eller servicekod du angett")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}
@@ -151,7 +151,7 @@ public class DanskeBank extends Bank {
 		}
         matcher = rePersonnr.matcher(response);
         if (matcher.find()) {
-            mSessionId = matcher.group(1);
+            mPersonnr = matcher.group(1);
         }
         else {
             throw new BankException(res.getText(R.string.unable_to_find).toString() + " personnummer.");
@@ -159,15 +159,14 @@ public class DanskeBank extends Bank {
 		
 		try {
 			response = urlopen.open(String.format("https://mobil.danskebank.se/XI?WP=XAS&WO=Konto&WA=KTList&WSES=%s&WAFT=%s", mSessionId, mPersonnr));
-            Log.d(TAG, "Accounts url: " + urlopen.getCurrentURI());
 			matcher = reAccounts.matcher(response);
 			while (matcher.find()) {
                 /*
                  * Capture groups:
                  * GROUP                    EXAMPLE DATA
-                 * 1: Account number        ?
-                 * 2: Account name          L÷nekonto
-                 * 3: Account number        ? | Same as #1?
+                 * 1: Internal acc number?  0123456789
+                 * 2: Account name          Danske Direkt Bas
+                 * 3: Account number        01234567890
                  * 4: Balance               1.124,56
                  * 5: Balance (disp.)       1.124,56
                  * 
@@ -209,7 +208,6 @@ public class DanskeBank extends Bank {
 		Matcher matcher;
 		try {
 			response = urlopen.open(String.format("https://mobil.danskebank.se/XI?WP=XAS&WAFT=%s&WSES=%s&WO=Konto&WA=KBList&WCI=%s", mPersonnr, mSessionId, account.getId()));
-            Log.d(TAG, "Transactions url: " + urlopen.getCurrentURI());
 			matcher = reTransactions.matcher(response);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 			while (matcher.find()) {
