@@ -167,7 +167,6 @@ public class OKQ8 extends Bank {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		if (response == null) {
-			Log.d(TAG, "Response is null, login again.");
 			urlopen = login();
 		}
 		try {

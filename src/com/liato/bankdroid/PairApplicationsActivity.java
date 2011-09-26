@@ -74,7 +74,7 @@ public class PairApplicationsActivity extends LockableActivity {
 			TextView appNameView = (TextView) findViewById(R.id.app_name);
 			appNameView.setText(appName);
 		} else {
-			Log.d(TAG, "Unknown application");
+			Log.w(TAG, "Unknown application");
 		}
 
 

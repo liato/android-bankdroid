@@ -122,7 +122,7 @@ public class HessianHttpProxyFactory extends HessianProxyFactory {
                 String host = conn.getURL().getHost();
                 for (String s : cookieStrings) {
                     Cookie cookie = CookieParser.parse(host, s);
-                    Log.d("Skandiabanken cookie", "Cookie string: " + s);
+                    //Log.d("Skandiabanken cookie", "Cookie string: " + s);
                     putCookie(cookie);
                 }
             }
@@ -142,11 +142,11 @@ public class HessianHttpProxyFactory extends HessianProxyFactory {
             String path = conn.getURL().getPath();
 
             while (path != null && 0 < path.length()) {
-                Log.d("Skandiabanken cookie", "Host:+" + host +",Path:"+path);
+                //Log.d("Skandiabanken cookie", "Host:+" + host +",Path:"+path);
                 Cookie cookie = getCookie(host, path);
                 if (cookie != null) {
                     conn.setRequestProperty("Cookie", cookie.value);
-                    Log.d("Skandiabanken cookie", "Cookie set in request:" + cookie.value);
+                    //Log.d("Skandiabanken cookie", "Cookie set in request:" + cookie.value);
                     break;
                 }
                 int i = path.lastIndexOf("/");
@@ -164,7 +164,7 @@ public class HessianHttpProxyFactory extends HessianProxyFactory {
 
 		protected void putCookie(Cookie cookie) {
             HessianHttpProxy.cookieMap.put(cookie.host + cookie.path, cookie);
-            Log.d("Skandiabanken cookie", "Cookie cached: " + cookie.host + cookie.path);
+            //Log.d("Skandiabanken cookie", "Cookie cached: " + cookie.host + cookie.path);
 		}
 	}
 }

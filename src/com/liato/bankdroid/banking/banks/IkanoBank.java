@@ -84,7 +84,6 @@ public class IkanoBank extends Bank {
             ClientProtocolException, IOException {
         urlopen = new Urllib(true);
         response = urlopen.open("https://secure.ikanobank.se/login");
-        //Log.d(TAG, "Url after first request: " + urlopen.getCurrentURI());
         Matcher matcher;
         if (response.contains("Banken är stängd")) {
             matcher = reErrorMessage.matcher(response);
@@ -118,7 +117,6 @@ public class IkanoBank extends Bank {
         try {
             LoginPackage lp = preLogin();
             response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-            //Log.d(TAG, "Url after login attempt: " + urlopen.getCurrentURI());
             if (response.contains("Ogiltigt personnummer") || response.contains("felaktigt personnummer")) {
                 Matcher matcher = reErrorMessage.matcher(response);
                 if (matcher.find()) {
@@ -192,7 +190,6 @@ public class IkanoBank extends Bank {
             postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));            
             postData.add(new BasicNameValuePair("__EVENTVALIDATION", strEventValidation));            
             response = urlopen.open("https://secure.ikanobank.se/engines/page.aspx?structid=1787", postData);
-            //Log.d(TAG, "Transactions url: " + urlopen.getCurrentURI());
 
             matcher = reTransactions.matcher(response);
             ArrayList<Transaction> transactions = new ArrayList<Transaction>();

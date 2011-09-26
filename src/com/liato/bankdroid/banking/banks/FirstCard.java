@@ -145,7 +145,6 @@ public class FirstCard extends Bank {
 		super.updateTransactions(account, urlopen);
 		Matcher matcher;
 		try {
-			Log.d(TAG, "Opening: https://www.firstcard.se/mkol/translist.jsp?p=a&cardID="+account.getId());
 			response = urlopen.open("https://www.firstcard.se/mkol/translist.jsp?p=a&cardID="+account.getId());
 			matcher = reTransactions.matcher(response);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();

@@ -72,7 +72,6 @@ public class Volvofinans extends Bank {
 	@Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-		Log.d("Volvofinans", "preLogin");
         urlopen = new Urllib(true);
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
@@ -85,8 +84,6 @@ public class Volvofinans extends Bank {
 
     @Override
 	public Urllib login() throws LoginException, BankException {
-		Log.d("Volvofinans", "login");
-	    
 	    try {
 	        LoginPackage lp = preLogin();
 	        String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
@@ -111,7 +108,6 @@ public class Volvofinans extends Bank {
 	@Override
 	public void update() throws BankException, LoginException, BankChoiceException {
 		super.update();
-		Log.d("Volvofinans", "update");
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
@@ -119,9 +115,6 @@ public class Volvofinans extends Bank {
 		String response = null;
 		try {
 			response = urlopen.open("https://www.volvokort.com/privat/kund/kortkonto/oversikt/kortkonton.html");
-			
-			Log.d("Volvofinans", response);
-
 			try {
 				JSONObject object = (JSONObject) new JSONTokener(response).nextValue();
 				JSONArray data = object.getJSONArray("data");
@@ -129,9 +122,6 @@ public class Volvofinans extends Bank {
 				int length = data.length();
 				for (int index = 0; index < length; index++) {
 					JSONObject account = data.getJSONObject(index);
-
-					Log.d("Volvofinans", account.getString("kontonummer"));
-					
 					accounts.add(new Account(account.getString("kontonummer"), Helpers.parseBalance(account.getString("disponibeltBelopp")), "1"));
 				}
 			}

@@ -152,7 +152,6 @@ public class DBAdapter {
         initialValues.put("updated", sdf.format(cal.getTime()));
         
         long bankId = bank.getDbId();
-        Log.d(TAG, "Updating bank, DbId: "+bankId);
         if (bankId == -1) {
         	bankId = mDb.insert("banks", null, initialValues);
         }
@@ -162,7 +161,6 @@ public class DBAdapter {
         }
         if (bankId != -1) {
 	        ArrayList<Account> accounts = bank.getAccounts();
-            Log.d(TAG, "Bank accounts: "+bank.getAccounts().size());
 	        for(Account acc : accounts) {
 	            ContentValues vals = new ContentValues();
 	            vals.put("bankid", bankId);
@@ -192,7 +190,6 @@ public class DBAdapter {
 	            }
 	        }
         }
-        Log.d(TAG, "Updated bank: "+bankId);
         return bankId;
     }
     

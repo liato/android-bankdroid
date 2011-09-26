@@ -112,9 +112,7 @@ public class AutoRefreshService extends Service {
 
 		// http://www.freesound.org/samplesViewSingle.php?id=75235
 		// http://www.freesound.org/samplesViewSingle.php?id=91924
-		Log.d(TAG,
-				"Notification sound: "
-						+ prefs.getString("notification_sound", "none"));
+		//Log.d(TAG, "Notification sound: " + prefs.getString("notification_sound", "none"));
 		if (prefs.getString("notification_sound", null) != null) {
 			notification.sound = Uri.parse(prefs.getString(
 					"notification_sound", null));
@@ -205,13 +203,10 @@ public class AutoRefreshService extends Service {
 					continue;
 				}
 				if (bank.isDisabled()) {
-					Log.d(TAG, bank.getName() + " (" + bank.getDisplayName()
-							+ ") is disabled. Skipping refresh.");
+					//Log.d(TAG, bank.getName() + " (" + bank.getDisplayName() + ") is disabled. Skipping refresh.");
 					continue;
 				}
-				Log.d(TAG,
-						"Refreshing " + bank.getName() + " ("
-								+ bank.getDisplayName() + ").");
+				//Log.d(TAG, "Refreshing " + bank.getName() + " (" + bank.getDisplayName() + ").");
 				try {
 					currentBalance = bank.getBalance();
 					accounts.clear();
@@ -250,10 +245,6 @@ public class AutoRefreshService extends Service {
 												"notify_for_other", false);
 										break;
 									}
-									Log.d(TAG,
-											"Account type: "
-													+ account.getType()
-													+ "; notify: " + notify);
 									if (account.isHidden()
 											|| !account.isNotify()) {
 										notify = false;
@@ -305,16 +296,16 @@ public class AutoRefreshService extends Service {
 					}
 				} catch (final BankException e) {
 					// Refresh widgets if an update fails
-					Log.d(TAG, "Error while updating bank '" + bank.getDbId()
+					Log.e(TAG, "Error while updating bank '" + bank.getDbId()
 							+ "'; BankException: " + e.getMessage());
 				} catch (final LoginException e) {
-					Log.d(TAG, "Error while updating bank '" + bank.getDbId()
+					Log.e(TAG, "Error while updating bank '" + bank.getDbId()
 							+ "'; LoginException: " + e.getMessage());
 					refreshWidgets = true;
 					db.disableBank(bank.getDbId());
 				}
                 catch (BankChoiceException e) {
-                    Log.d(TAG, "Error while updating bank '" + bank.getDbId()
+                    Log.e(TAG, "Error while updating bank '" + bank.getDbId()
                             + "'; LoginException: " + e.getMessage());
                 }
 			}
@@ -343,7 +334,6 @@ public class AutoRefreshService extends Service {
 					errormsg.append(err);
 					errormsg.append("\n");
 				}
-				Log.d("aa", errormsg.toString());
 			}
 			AutoRefreshService.this.stopSelf();
 		}

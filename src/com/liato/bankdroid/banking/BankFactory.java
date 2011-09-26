@@ -316,7 +316,6 @@ public class BankFactory {
 		}
 		while (!c.isLast() && !c.isAfterLast()) {
 			c.moveToNext();
-			//Log.d("AA", "Refreshing "+c.getString(clmBanktype)+" ("+c.getString(clmUsername)+").");
 			try {
 				Bank bank = fromBanktypeId(c.getInt(c.getColumnIndex("banktype")), context);
 				

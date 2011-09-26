@@ -179,7 +179,6 @@ public class DinersClub extends Bank {
 		Matcher matcher;
 		try {
 			/* We're going to look at all the pages until we find one that has transactions on it */
-			Log.d(TAG, String.format("Opening: https://www.dinersclub.se/dcs/eSaldo/%s", invoiceUrl));
 			response = urlopen.open(String.format("https://www.dinersclub.se/dcs/eSaldo/%s", invoiceUrl));
 			matcher = reTransactions.matcher(response);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();

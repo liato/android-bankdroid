@@ -64,7 +64,7 @@ public class TransactionsActivity extends LockableActivity {
 		viewAccountBalance.setText(Helpers.formatBalance(account.getBalance(), account.getCurrency()));
 		icon.setImageResource(bank.getImageResource());
 		ArrayList<Transaction> transactions = account.getTransactions();
-		Log.d(TAG, "Transactions: "+transactions.size());
+
 		if (transactions.size() > 0) {
 			findViewById(R.id.txtTranDesc).setVisibility(View.GONE);
 			TransactionsAdapter adapter = new TransactionsAdapter(transactions);

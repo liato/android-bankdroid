@@ -106,11 +106,11 @@ public class Handelsbanken extends Bank {
 			}
 		}
 		catch (ClientProtocolException e) {
-			Log.d(TAG, "ClientProtocolException: "+e.getMessage());
+			Log.w(TAG, "ClientProtocolException: "+e.getMessage());
 			throw new BankException(e.getMessage());
 		}
 		catch (IOException e) {
-			Log.d(TAG, "IOException: "+e.getMessage());
+			Log.w(TAG, "IOException: "+e.getMessage());
 			throw new BankException(e.getMessage());
 		}
 		return urlopen;
@@ -161,7 +161,6 @@ public class Handelsbanken extends Bank {
 		Matcher matcher;
 		try {
 			String accountWebId = accountIds.get(Integer.parseInt(account.getId()));
-			Log.d(TAG, "Opening: https://m.handelsbanken.se/primary/_-"+accountWebId);
 			response = urlopen.open("https://m.handelsbanken.se/primary/_-"+accountWebId);
 			matcher = reTransactions.matcher(response);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();

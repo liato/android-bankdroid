@@ -129,13 +129,11 @@ public class SettingsActivity extends LockablePreferenceActivity implements OnPr
 	protected void onActivityResult(final int requestCode, final int resultCode,
 			final Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		Log.d(TAG, "onActivityResult: req:"+requestCode+"; res:"+resultCode);
 		if (requestCode == DISABLE_LOCKPATTERN) {
 			if (resultCode == RESULT_OK) {
 				mLockPatternUtils.setLockPatternEnabled(false);
 				mLockPatternUtils.saveLockPattern(null);
 				((CheckBoxPreference)findPreference("patternlock_enabled")).setChecked(false);
-				Log.d(TAG, "Pattern lock has been disabled.");
 			}
 			else {
 				Log.d(TAG, "User was unable to disable pattern lock.");

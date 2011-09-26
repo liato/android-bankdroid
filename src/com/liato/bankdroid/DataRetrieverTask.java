@@ -84,15 +84,10 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
 				continue;
 			}
 			try {
-				// Log.d("AA", "bank.update()");
 				bank.update();
-				// Log.d("AA", "bank.updateAllTransactions()");
 				bank.updateAllTransactions();
-				// Log.d("AA", "bank.closeConnction()");
 				bank.closeConnection();
-				// Log.d("AA", "bank.save()");
 				bank.save();
-				// Log.d("AA", "DONE!");
 				i++;
 			} catch (final BankException e) {
 				this.errors.add(bank.getName() + " (" + bank.getUsername()
@@ -105,7 +100,7 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
             catch (BankChoiceException e) {
                 this.errors.add(bank.getName() + " (" + bank.getUsername()
                         + ")");
-                Log.d(TAG, "BankChoiceError: " + e.getMessage());
+                Log.e(TAG, "BankChoiceError: " + e.getMessage());
             }
 
 			final SharedPreferences prefs = PreferenceManager

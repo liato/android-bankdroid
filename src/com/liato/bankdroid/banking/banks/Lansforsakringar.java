@@ -114,7 +114,6 @@ public class Lansforsakringar extends Bank {
         postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
         postData.add(new BasicNameValuePair("btnLogIn.x", "12"));
         postData.add(new BasicNameValuePair("btnLogIn.y", "34"));
-        Log.d(TAG, "Posting to: "+urlopen.getCurrentURI());
         return new LoginPackage(urlopen, postData, response, urlopen.getCurrentURI());
     }
 
@@ -165,7 +164,6 @@ public class Lansforsakringar extends Bank {
         Matcher matcher;
         try {
             if (accountsUrl == null) {
-                Log.d(TAG, "accountsUrl is null, unable to update.");
                 return;
             }
             response = urlopen.open(accountsUrl);
@@ -266,14 +264,14 @@ public class Lansforsakringar extends Bank {
                 response = urlopen.open("https://" + host + "/lfportal/privat.portal?_nfpb=true&_pageLabel=bank_konto&dialog=dialog:account.viewAccountTransactions&webapp=edb-account-web&stickyMenu=false&newUc=true&isPortalLogLink=true&AccountNumber=" + account.getId() + "&_token=" + mRequestToken);
                 matcher = reViewState.matcher(response);
                 if (!matcher.find()) {
-                    Log.d(TAG,res.getText(R.string.unable_to_find).toString()+" ViewState. L237.");
+                    Log.w(TAG,res.getText(R.string.unable_to_find).toString()+" ViewState. L237.");
                     return;
                 }
                 mViewState = matcher.group(1);
 
                 matcher = reToken.matcher(response);
                 if (!matcher.find()) {
-                    Log.d(TAG,res.getText(R.string.unable_to_find).toString()+" token. L244.");
+                    Log.w(TAG,res.getText(R.string.unable_to_find).toString()+" token. L244.");
                     return;
                 }
                 mRequestToken = matcher.group(1);                  
@@ -333,7 +331,7 @@ public class Lansforsakringar extends Bank {
             // We need the second match, disregard the first one.
             matcher.find();
             if (!matcher.find()) {
-                Log.d(TAG, res.getText(R.string.unable_to_find).toString()+" ViewState. L334.");
+                Log.e(TAG, res.getText(R.string.unable_to_find).toString()+" ViewState. L334.");
                 return;
             }
             mViewState = matcher.group(1);
@@ -341,7 +339,7 @@ public class Lansforsakringar extends Bank {
 
             matcher = reToken.matcher(response);
             if (!matcher.find()) {
-                Log.d(TAG, res.getText(R.string.unable_to_find).toString()+" token. L342.");
+                Log.w(TAG, res.getText(R.string.unable_to_find).toString()+" token. L342.");
                 return;
             }
             mRequestToken = matcher.group(1);            

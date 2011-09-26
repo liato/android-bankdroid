@@ -121,11 +121,11 @@ public class ICABanken extends Bank {
 			}
 		}
 		catch (ClientProtocolException e) {
-			Log.d(TAG, "ClientProtocolException: "+e.getMessage());
+			Log.e(TAG, "ClientProtocolException: "+e.getMessage());
 			throw new BankException(e.getMessage());
 		}
 		catch (IOException e) {
-			Log.d(TAG, "IOException: "+e.getMessage());
+			Log.e(TAG, "IOException: "+e.getMessage());
 			throw new BankException(e.getMessage());
 		}
 		return urlopen;
