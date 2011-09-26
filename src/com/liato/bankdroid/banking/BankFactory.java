@@ -48,6 +48,7 @@ import com.liato.bankdroid.banking.banks.Jojo;
 import com.liato.bankdroid.banking.banks.Lansforsakringar;
 import com.liato.bankdroid.banking.banks.McDonalds;
 import com.liato.bankdroid.banking.banks.Nordea;
+import com.liato.bankdroid.banking.banks.NordeaDK;
 import com.liato.bankdroid.banking.banks.Nordnet;
 import com.liato.bankdroid.banking.banks.Nordnetdirekt;
 import com.liato.bankdroid.banking.banks.OKQ8;
@@ -193,6 +194,8 @@ public class BankFactory {
             return new Skandiabanken(context);
         case IBankTypes.DANSKEBANK:
             return new DanskeBank(context);
+        case IBankTypes.NORDEA_DK:
+        	return new NordeaDK(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -254,6 +257,7 @@ public class BankFactory {
         banks.add(new Skoda(context));
         banks.add(new IKEA(context));
         banks.add(new DanskeBank(context));
+        banks.add(new NordeaDK(context));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));
