@@ -53,8 +53,8 @@ public class AmericanExpress extends Bank {
 	private static final String URL = "https://home.americanexpress.com/home/se/home_c.shtml";
 	private static final int BANKTYPE_ID = IBankTypes.AMERICANEXPRESS;
 	
-	private Pattern reAccounts = Pattern.compile("leftnav'\\)\">([^<]+)</a></div>\\s*</td>\\s*<td\\s*colspan=\"6\"\\s*id=\"headerSectionLeft\">\\s*<span\\s*class=\"cardTitle\">.*?BPIndex=(\\d{1,})&[^>]+>([^<]+)</a>.*?Utest&aring;ende skuld</div>\\s*<div[^>]+>[^<]+</div>\\s*<div[^>]+>([^<]+)</div>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-	private Pattern reTransactions = Pattern.compile("tableStandardText\"\\s*id=\"Roc\\d{1,}\">\\s*<td[^>]+>\\s*(\\d{1,2}\\s[a-z]{3}\\s\\d{4})</td>\\s*<td[^>]+>([^<]+)</td>\\s*<td[^>]+>[^<]+</td>\\s*<td[^>]+>([^<]+)<", Pattern.CASE_INSENSITIVE);
+	private Pattern reAccounts = Pattern.compile("leftnav'\\)\">([^<]+)</a>\\r*\\s*</div>\\r*\\s*</td>\\r*\\s*<td\\s*id=\"headerSectionLeft\"\\s*colspan=\"6\">\\r*\\s*<span\\s*class=\"cardTitle\">.*?sorted_index=(\\d{1,})&?[^>]+>([^<]+)</a>.*?Utest[\\&aring;|å]ende skuld\\s*</div>\\r*\\s*<div[^>]+>[^<]+</div>\\r*\\s*<div[^>]+>([^<]+)</div>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private Pattern reTransactions = Pattern.compile("id=\"Roc\\d{1,}\"\\s* class='tableStandardText'>\\r*\\s*<td[^>]+>\\r*\\s*(\\d{1,2}\\s[a-z]{3}\\s\\d{4}).*?</a>\\r*\\s*([^<]*).*?amountPadding'>&nbsp;</td>\\r*\\s*<td\\s*class='amountPadding'>.*?(\\d{1,},?\\d{1,}\\s*kr)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	
 	private String response = null;
 
@@ -127,6 +127,7 @@ public class AmericanExpress extends Bank {
         Log.d(TAG, "Url after login: " + urlopen.getCurrentURI());
 		
 		Matcher matcher = reAccounts.matcher(response);
+		
 		while (matcher.find()) {
             /*
              * Capture groups:
@@ -154,7 +155,7 @@ public class AmericanExpress extends Bank {
 		super.updateTransactions(account, urlopen);
 
 		try {
-			response = urlopen.open("https://www99.americanexpress.com/myca/intl/estatement/emea/statement.do?request_type=&Face=sv_SE&sorted_index=0&BPIndex=" + account.getId());
+			response = urlopen.open("https://global.americanexpress.com/myca/intl/estatement/emea/statement.do?request_type=&Face=sv_SE&BPIndex=0&sorted_index=" + account.getId());
 			Matcher matcher = reTransactions.matcher(response);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 			while (matcher.find()) {

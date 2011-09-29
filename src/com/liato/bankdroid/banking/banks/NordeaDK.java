@@ -3,11 +3,7 @@ package com.liato.bankdroid.banking.banks;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,7 +21,6 @@ import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
-import com.liato.bankdroid.banking.Bank.LoginPackage;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
@@ -126,10 +121,10 @@ public class NordeaDK extends Bank {
 			}
 			this.updatePrefix();
 		} catch (ClientProtocolException e) {
-			Log.d(TAG, "ClientProtocolException: " + e.getMessage());
+			Log.e(TAG, "ClientProtocolException: " + e.getMessage());
 			throw new BankException(e.getMessage());
 		} catch (IOException e) {
-			Log.d(TAG, "IOException: " + e.getMessage());
+			Log.e(TAG, "IOException: " + e.getMessage());
 			throw new BankException(e.getMessage());
 		}
 		return urlopen;
@@ -213,7 +208,6 @@ public class NordeaDK extends Bank {
 
 		Matcher matcher;
 		try {
-			Log.d(TAG, "Opening: " + url);
 			urlopen.addHeader("referer", this.referer);
 			this.response = urlopen.open(url);
 			this.updatePrefix();

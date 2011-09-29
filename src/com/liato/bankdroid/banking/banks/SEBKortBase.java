@@ -172,7 +172,6 @@ public abstract class SEBKortBase extends Bank {
 		String response = null;
 		Matcher matcher;
 		try {
-			Log.d(TAG, String.format("Opening: https://applications.sebkort.com/nis/%s/getPendingTransactions.do", provider_part));
 			response = urlopen.open(String.format("https://applications.sebkort.com/nis/%s/getPendingTransactions.do", provider_part));
 			matcher = reTransactions.matcher(response);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();

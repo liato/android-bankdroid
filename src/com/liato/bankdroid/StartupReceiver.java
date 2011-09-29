@@ -33,7 +33,6 @@ public class StartupReceiver extends BroadcastReceiver{
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		//Set alarms for auto updates on boot, package update, package replace and package new
-		Log.d("StartupReceiever", "Intent action: "+intent.getAction());
 		setAlarm(context);
 	}
 	
@@ -46,7 +45,6 @@ public class StartupReceiver extends BroadcastReceiver{
         AlarmManager am = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         if (!autoUpdatesEnabled) {
         	am.cancel(alarmSender);
-        	Log.d(TAG,"Automatic updates have been disabled.");
         }
         else {
 	        long firstTime = SystemClock.elapsedRealtime();
@@ -55,7 +53,6 @@ public class StartupReceiver extends BroadcastReceiver{
 	            secondsInMinute = 1;
 	        }
 	        am.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, firstTime+refreshRate*secondsInMinute*1000, refreshRate*secondsInMinute*1000, alarmSender);
-        	Log.d(TAG,"Automatic updates set to "+refreshRate.toString()+" minutes.");
         }
 	
 	}

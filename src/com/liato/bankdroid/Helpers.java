@@ -90,7 +90,7 @@ public class Helpers {
             ret = new BigDecimal(balance);
         }
         catch (NumberFormatException e) {
-            Log.d("parseBalance", "Unable to parse: "+balance);
+            Log.e("parseBalance", "Unable to parse: "+balance);
             ret = new BigDecimal(0);
         }
         return ret;

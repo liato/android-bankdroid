@@ -157,7 +157,7 @@ public class Steam extends Bank {
                                                      Helpers.parseCurrency(Html.fromHtml(matcher.group(2)).toString().trim(), "USD")));
                 }
                 catch (ParseException e) {
-                    Log.d(TAG, "Unable to parse date: " + matcher.group(1).trim());
+                    Log.e(TAG, "Unable to parse date: " + matcher.group(1).trim());
                 }
 		    }
 		    Collections.sort(transactions, Collections.reverseOrder());

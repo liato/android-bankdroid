@@ -174,7 +174,6 @@ public class Eurocard extends Bank {
 		if (account.getType() == Account.OTHER) return;
 		try {
 		    String accountWebId = accountIds.get(Integer.parseInt(account.getId()));
-			Log.d(TAG, "Opening: https://e-saldo.eurocard.se/nis/ecse/getPendingTransactions.do?id="+accountWebId);
 			response = urlopen.open("https://e-saldo.eurocard.se/nis/ecse/getPendingTransactions.do?id="+accountWebId);
 			matcher = reTransactions.matcher(response);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();

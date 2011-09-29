@@ -100,10 +100,7 @@ public class Nordea extends Bank {
 	public Urllib login() throws LoginException, BankException {
 		try {
 		    LoginPackage lp = preLogin();
-			Log.d("BankNordea", "Posting to https://mobil.nordea.se/banking-nordea/nordea-c3/login.html");
 			String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-			Log.d("BankNordea", "Url after post: "+urlopen.getCurrentURI());
-			
 			if (response.contains("felaktiga uppgifter")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}
@@ -197,7 +194,6 @@ public class Nordea extends Bank {
 		Matcher matcher;
 		try {
 			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/accounts.html");
-			Log.d(TAG, "Opening: https://mobil.nordea.se/banking-nordea/nordea-c3/account.html?id=konton:"+account.getId());
 			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/account.html?id=konton:"+account.getId());
 			matcher = reCurrency.matcher(response);
             /*
@@ -211,7 +207,7 @@ public class Nordea extends Bank {
 			    currency = matcher.group(1).trim();
 			}
 			else {
-			    Log.d(TAG, "Unable to find currency, assuming SEK.");
+			    Log.w(TAG, "Unable to find currency, assuming SEK.");
 			}
 			matcher = reTransactions.matcher(response);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();

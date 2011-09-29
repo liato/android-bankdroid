@@ -150,7 +150,6 @@ public class WebViewActivity extends LockableActivity implements OnClickListener
 
         @Override
         public void onPageFinished(WebView view, String url) {
-            Log.d(TAG, "Finished loading: "+url);
             super.onPageFinished(view, url);
             if (!mFirstPageLoaded) {
                 //This is the generated POST page.

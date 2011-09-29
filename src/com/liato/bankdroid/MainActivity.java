@@ -89,7 +89,6 @@ public class MainActivity extends LockableActivity {
 		lv.setAdapter(adapter);
 		lv.setOnItemLongClickListener(new OnItemLongClickListener() {
 			public boolean onItemLongClick(final AdapterView<?> parent, final View view, final int position, final long id) {
-				Log.d("itemclick", "Parent: "+parent+ "; View: "+view+"; Pos: "+position+"; ID: "+id);
 				if (adapter.getItem(position) instanceof Account) {
 					selected_account = (Account)adapter.getItem(position);
 					final PopupMenuAccount pmenu = new PopupMenuAccount(view, MainActivity.this);
@@ -101,7 +100,6 @@ public class MainActivity extends LockableActivity {
 		});
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
-				Log.d("itemclick", "Parent: "+parent+ "; View: "+view+"; Pos: "+position+"; ID: "+id);
 				if (adapter.getItem(position) instanceof Bank) {
 					selected_bank = (Bank) adapter.getItem(position);
 					final PopupMenuBank pmenu = new PopupMenuBank(view, MainActivity.this);
@@ -335,8 +333,6 @@ public class MainActivity extends LockableActivity {
 
 		@Override
 		protected void onCreate() {
-			Log.d(TAG, "PopUpMenuAcc, oncreate");
-			// inflate layout
 			final LayoutInflater inflater =
 				(LayoutInflater) this.anchor.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 

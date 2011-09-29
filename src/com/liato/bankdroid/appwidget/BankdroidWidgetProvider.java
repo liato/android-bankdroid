@@ -97,18 +97,16 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
     
     static RemoteViews buildAppWidget(Context context, AppWidgetManager appWidgetManager,
 			int appWidgetId) {
-		Log.d("BankdroidWigetProvider", "Updating widget: "+appWidgetId);
 		String accountId = WidgetConfigureActivity.getAccountId(context, appWidgetId);
 		long bankId = WidgetConfigureActivity.getBankId(context, appWidgetId);
 		if (accountId == null) {
-			Log.d("BankdroidWidgetProvider", "Widget not found. ID: "+appWidgetId);
+			Log.w("BankdroidWidgetProvider", "Widget not found. ID: "+appWidgetId);
 			return disableAppWidget(context, appWidgetManager,
 					appWidgetId);
 		}
-		Log.d("BankdroidWidgetProvider", "Account ID: "+accountId);
 		Account account = BankFactory.accountFromDb(context, bankId + "_" + accountId, false);
 		if (account == null) {
-			Log.d("BankdroidWidgetProvider", "Account not found in db: "+accountId);
+			Log.w("BankdroidWidgetProvider", "Account not found in db: "+accountId);
 			return disableAppWidget(context, appWidgetManager,
 					appWidgetId);
 			
@@ -116,7 +114,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 
 		Bank bank = BankFactory.bankFromDb(account.getBankDbId(), context, false);
 		if (bank == null) {
-			Log.d("BankdroidWidgetProvider", "Bank not found: " + account.getBankDbId());
+			Log.w("BankdroidWidgetProvider", "Bank not found: " + account.getBankDbId());
 			return disableAppWidget(context, appWidgetManager,
 					appWidgetId);
 			
@@ -131,7 +129,6 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 
 	static RemoteViews buildAppWidget(Context context, AppWidgetManager appWidgetManager,
 			int appWidgetId, Account account) {
-		Log.d("Widget", "Building widget: "+appWidgetId);
 		AppWidgetProviderInfo providerInfo = appWidgetManager.getAppWidgetInfo(appWidgetId);
 		int layoutId = (providerInfo == null) ? R.layout.widget : providerInfo.initialLayout;
         SharedPreferences prefs = context.getSharedPreferences("widget_prefs", 0);		
@@ -145,12 +142,10 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 		}
 		Bank bank = account.getBank();
 		RemoteViews views = new RemoteViews(context.getPackageName(), layoutId);
-		Log.d("buildAppWidget", "WidgetLayout: "+layoutId);
         views.setTextViewText(R.id.txtWidgetAccountname, account.getName().toUpperCase());
         views.setTextViewText(R.id.txtWidgetAccountnameBlur, account.getName().toUpperCase());
         views.setTextViewText(R.id.txtWidgetAccountbalance, Helpers.formatBalance(account.getBalance(), account.getCurrency(), defprefs.getBoolean("round_widget_balance", false)));
 		views.setImageViewResource(R.id.imgWidgetIcon, bank.getImageResource());
-		Log.d("Disabled", ""+bank.isDisabled());
 		if (bank.isDisabled()) {
 			views.setViewVisibility(R.id.frmWarning, View.VISIBLE);
 		}
@@ -208,7 +203,6 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 
 	static RemoteViews disableAppWidget(Context context, AppWidgetManager appWidgetManager,
 			int appWidgetId) {
-		Log.d("Widget", "Disabling widget: "+appWidgetId);
 		AppWidgetProviderInfo providerInfo = appWidgetManager.getAppWidgetInfo(appWidgetId);
 		int layoutId = (providerInfo == null) ? R.layout.widget : providerInfo.initialLayout;
         SharedPreferences prefs = context.getSharedPreferences("widget_prefs", 0);		
@@ -220,7 +214,6 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 			}
 		}		
 		RemoteViews views = new RemoteViews(context.getPackageName(), layoutId);
-		Log.d("buildAppWidget", "WidgetLayout: "+layoutId);
 		views.setTextViewText(R.id.txtWidgetAccountname, "");
 		views.setTextViewText(R.id.txtWidgetAccountbalance, "ERROR");
 		views.setImageViewResource(R.id.imgWidgetIcon, R.drawable.icon_large);
@@ -250,7 +243,6 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 		}
 
 
-		Log.d("BankdroidWidgetProvider", "intent=" + intent+"; action="+action);
 		if (action.equals(AutoRefreshService.BROADCAST_WIDGET_REFRESH) || action.equals(android.appwidget.AppWidgetManager.ACTION_APPWIDGET_UPDATE)) {
 			AppWidgetManager appWM = AppWidgetManager.getInstance(context);
 			int[] appWidgetIds = appWM.getAppWidgetIds(intent.getComponent());
@@ -267,7 +259,6 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 		super.onDeleted(context, appWidgetIds);
 		final int N = appWidgetIds.length;
 		for (int i = 0; i < N; i++) {
-			Log.d("Widget", "Widget deleted: " + appWidgetIds[i]);
 			WidgetConfigureActivity.delAccountId(context, appWidgetIds[i]);
 		}
 	}
@@ -277,7 +268,6 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 		@Override
 		public void onStart(Intent intent, int startId) {
 			int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
-			Log.d("WidgetService", "Updating widget: " + appWidgetId);
 			Context context = getApplicationContext();
 			String action = intent.getAction();
 			if (action == null) return; 
@@ -346,7 +336,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 			protected Void doInBackground(Void... params) {
 				String accountId = WidgetConfigureActivity.getAccountId(context, appWidgetId);
 				if (accountId == null) {
-					Log.d("WidgetService", "Widget not found in db: "+appWidgetId);
+					Log.w("WidgetService", "Widget not found in db: "+appWidgetId);
 					return null;
 				}
 				long bankId = WidgetConfigureActivity.getBankId(context, appWidgetId);
@@ -364,18 +354,16 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 						bank.closeConnection();
 						bank.save();
 					}
-					else {
-						Log.d("BankdroidWidgetProvider", "Bank is disabled, skipping refresh on "+bank.getDbId());
-					}
+
 				} 
 				catch (BankException e) {
-    				Log.d(TAG, "Error while updating bank '"+bank.getDbId()+"'; "+e.getMessage());
+    				Log.e(TAG, "Error while updating bank '"+bank.getDbId()+"'; "+e.getMessage());
 				} catch (LoginException e) {
-					Log.d("", "Disabling bank: "+bank.getDbId());
+					Log.e("", "Disabling bank: "+bank.getDbId());
 					bank.disable();
 				}
                 catch (BankChoiceException e) {
-                    Log.d(TAG, "Error while updating bank '"+bank.getDbId()+"'; "+e.getMessage());
+                    Log.e(TAG, "Error while updating bank '"+bank.getDbId()+"'; "+e.getMessage());
                 }
 
 				BankdroidWidgetProvider.updateAppWidget(context, appWidgetManager, appWidgetId);

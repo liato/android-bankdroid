@@ -231,13 +231,10 @@ public class BankEditActivity extends LockableActivity implements OnClickListene
 
 		protected Void doInBackground(final String... args) {
 			try {
-				Log.d(TAG, "Updating "+bank);
 				bank.update();
 				bank.updateAllTransactions();
 				bank.closeConnection();
-				Log.d(TAG, "Saving "+bank);
 				bank.save();
-				Log.d(TAG, "Disabled: " + bank.isDisabled());
 
 				// Transactions updated.
 				final SharedPreferences prefs = PreferenceManager

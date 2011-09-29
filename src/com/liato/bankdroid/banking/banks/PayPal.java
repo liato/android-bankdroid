@@ -82,7 +82,6 @@ public class PayPal extends Bank {
         String strPostUrl;
         if (matcher.find()) {
             strPostUrl = Html.fromHtml(matcher.group(1)).toString();
-            Log.d(TAG, "Found post url: "+strPostUrl);
         }
         else {
             throw new BankException(res.getText(R.string.unable_to_find).toString()+" post url.");

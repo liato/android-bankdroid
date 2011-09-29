@@ -361,13 +361,13 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
             return new SessionPackage(html, cookies);
         }
         catch (ClientProtocolException e) {
-            Log.d(TAG, e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
         catch (IOException e) {
-            Log.d(TAG, e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
         catch (BankException e) {
-            Log.d(TAG, e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
         String html = String.format(preloader,
                 String.format("function go(){window.location=\"%s\" }", this.URL), // Javascript function

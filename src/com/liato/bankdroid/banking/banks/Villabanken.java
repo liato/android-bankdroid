@@ -155,7 +155,6 @@ public class Villabanken extends Bank {
 		String response = null;
 		Matcher matcher;
 		try {
-			Log.d(TAG, "Opening: https://kundportal.cerdo.se/villabankenpub/card/secure/CardAccountOverview.aspx");
 			response = urlopen.open("https://kundportal.cerdo.se/villabankenpub/card/secure/CardAccountOverview.aspx");
 
 			matcher = reAccounts.matcher(response);

@@ -165,7 +165,6 @@ public class Hemkop extends Bank {
             }
             
             if (url != null) {
-                Log.d(TAG, "Opening "+url);
                 response = urlopen.open(url);
     
                 Matcher matcher = reTransaction.matcher(response);

@@ -57,7 +57,7 @@ public class HessianHttpHeaderProxyFactory extends HessianHttpProxyFactory{
 	    	// Ugly hack: for some reason the path in the cookie is not as expected
             if (cookie.host.contentEquals("smartrefill.se"))
             {
-            	Log.d("Skandiabanken cookie", "using path / instead of " + cookie.path);
+            	//Log.d("Skandiabanken cookie", "using path / instead of " + cookie.path);
             	cookie.path = "/";
             }
             super.putCookie(cookie);
