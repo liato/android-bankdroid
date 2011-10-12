@@ -93,7 +93,7 @@ public class Vasttrafik extends Bank {
         try {
             LoginPackage lp = preLogin();
             response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-            if (response.contains("Inloggningen misslyckades")) {
+            if (response.contains("Felaktig inloggning")) {
                 throw new LoginException(res.getText(R.string.invalid_username_password).toString());
             }
         }
