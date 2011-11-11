@@ -48,7 +48,7 @@ public class SEB extends Bank {
 	private static final String TAG = "SEB";
 	private static final String NAME = "SEB";
 	private static final String NAME_SHORT = "seb";
-	private static final String URL = "https://m.seb.se/cgi-bin/pts3/mpo/9000/mpo9001.aspx?P1=logon.htm";
+	private static final String URL = "https://m.seb.se/cgi-bin/pts3/mpo/mpo0001.aspx";
 	private static final int BANKTYPE_ID = IBankTypes.SEB;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
@@ -85,7 +85,8 @@ public class SEB extends Bank {
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         postData.add(new BasicNameValuePair("A1", username));
         postData.add(new BasicNameValuePair("A2", password));
-        return new LoginPackage(urlopen, postData, response, "https://m.seb.se/cgi-bin/pts3/mps/1000/mps1001b.aspx");
+        postData.add(new BasicNameValuePair("A3", "4"));
+        return new LoginPackage(urlopen, postData, response, "https://m.seb.se/cgi-bin/pts3/mps/1000/mps1001bm.aspx");
     }
 
 	@Override
@@ -93,8 +94,7 @@ public class SEB extends Bank {
 		try {
 		    LoginPackage lp = preLogin();
 			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-			
-			if (!response.contains("1100/mps1101.aspx?X1=passWord")) {
+			if (!response.contains("passwordLoginOK")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}
 		} catch (ClientProtocolException e) {
@@ -115,7 +115,7 @@ public class SEB extends Bank {
 		urlopen = login();
 		Matcher matcher;
 		try {
-			response = urlopen.open("https://m.seb.se/cgi-bin/pts3/mps/1100/mps1101.aspx?X1=passWord");
+			response = urlopen.open("https://m.seb.se/cgi-bin/pts3/mps/1100/mps1101.aspx?X1=digipassAppl1");
 			matcher = reAccounts.matcher(response);
 			while (matcher.find()) {
                 /*
