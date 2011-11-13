@@ -28,6 +28,7 @@
     <string name="error_desc">Senaste uppdateringsförsöket misslyckades och uppdateringar för detta konto har inaktiverats. Se till att lösenord och användarnamn är korrekt angivet och tryck på spara-knappen.</string>
 
     <string name="cancel">AVBRYT</string>
+    <string name="save">SPARA</string>
    
 	<string name="add_new_account">LÄGG TILL BANK</string>
 	<string name="banks_instructions">Du har inte lagt till någon bank ännu, tryck på knappen för att lägga till en bank.</string>

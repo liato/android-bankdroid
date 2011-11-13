@@ -20,10 +20,13 @@ import com.liato.bankdroid.appwidget.AutoRefreshService;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -33,7 +36,12 @@ public class StartupReceiver extends BroadcastReceiver{
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		//Set alarms for auto updates on boot, package update, package replace and package new
-		setAlarm(context);
+		if (ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())) {
+	        updateNow(context);
+		}
+        else {
+            setAlarm(context);
+        }
 	}
 	
 	public static void setAlarm(Context context) {
@@ -52,8 +60,18 @@ public class StartupReceiver extends BroadcastReceiver{
 	        if (prefs.getBoolean("debug_mode", false) && prefs.getBoolean("debug_refreshrate_in_seconds", false)) {
 	            secondsInMinute = 1;
 	        }
-	        am.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, firstTime+refreshRate*secondsInMinute*1000, refreshRate*secondsInMinute*1000, alarmSender);
+	        am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, firstTime+refreshRate*secondsInMinute*1000, refreshRate*secondsInMinute*1000, alarmSender);
         }
 	
+	}
+	
+	public static void updateNow(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean autoUpdatesEnabled = prefs.getBoolean("autoupdates_enabled", true);
+        long lastUpdate = prefs.getLong("autoupdates_last_update", 0);
+        Integer refreshRate = Integer.parseInt(prefs.getString("refresh_rate", "0")); 
+        if (autoUpdatesEnabled && System.currentTimeMillis() - lastUpdate > refreshRate*60*1000) {
+            context.startService(new Intent(context, AutoRefreshService.class));
+        }
 	}
 }

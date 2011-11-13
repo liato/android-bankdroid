@@ -29,7 +29,9 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.IBinder;
@@ -60,14 +62,32 @@ public class AutoRefreshService extends Service {
 
 	@Override
 	public void onCreate() {
-		if (InsideUpdatePeriod()){
-			new DataRetrieverTask().execute();
-		}
-		else{
-			Log.v(TAG, "Skipping update due to not in update period.");
-			stopSelf();
-		}
+
 	}
+	
+    @Override
+    public void onStart(Intent intent, int startId) {
+        handleStart(intent, startId);
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        handleStart(intent, startId);
+        return START_NOT_STICKY;
+    }
+    
+    private void handleStart(Intent intent, int startId) {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        if (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnectedOrConnecting()) {
+            if (InsideUpdatePeriod()){
+                new DataRetrieverTask().execute();
+            }
+            else{
+                Log.v(TAG, "Skipping update due to not in update period.");
+                stopSelf();
+            }
+        }
+    }
 
     private boolean InsideUpdatePeriod() {
 		final SharedPreferences prefs = PreferenceManager
@@ -335,6 +355,9 @@ public class AutoRefreshService extends Service {
 					errormsg.append("\n");
 				}
 			}
+			Editor edit = prefs.edit();
+			edit.putLong("autoupdates_last_update", System.currentTimeMillis());
+			edit.commit();
 			AutoRefreshService.this.stopSelf();
 		}
 	}
