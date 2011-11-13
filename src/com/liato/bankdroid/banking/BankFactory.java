@@ -240,8 +240,7 @@ public class BankFactory {
         banks.add(new SparbankenOresund(context));
         banks.add(new Opel(context));
         banks.add(new Skandiabanken(context));
-        //Not tested or not working
-        //banks.add(new AmericanExpress(context));
+        banks.add(new AmericanExpress(context));
         banks.add(new PlusGirot(context));
         banks.add(new Nordnetdirekt(context));
         banks.add(new Saab(context));

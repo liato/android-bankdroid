@@ -18,7 +18,7 @@
 		android:inputType="none"
 		android:text="Kontonamn"
 		android:textStyle="bold"
-		android:layout_height="fill_parent" android:paddingLeft="15dp"/>
+		android:layout_height="fill_parent" android:paddingLeft="15dp" android:layout_toLeftOf="@+id/txtListitemAccountsItemBalance"/>
 
 
 	<TextView
@@ -30,7 +30,6 @@
 		android:layout_alignParentTop="true"
 		android:id="@+id/txtListitemAccountsItemBalance"
 		android:inputType="none"
-		android:layout_toRightOf="@+id/txtListitemAccountsItemAccountname"
 		android:gravity="right|center_vertical"
 		android:layout_height="fill_parent" android:textColor="#fff" android:paddingRight="10dp"/>
 
