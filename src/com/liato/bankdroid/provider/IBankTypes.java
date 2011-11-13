@@ -75,4 +75,5 @@ public interface IBankTypes {
     public final static int SKANDIABANKEN = 51;
     public final static int DANSKEBANK = 52;
     public final static int NORDEA_DK = 53;
+    public final static int VASTTRAFIK = 54;
 }
