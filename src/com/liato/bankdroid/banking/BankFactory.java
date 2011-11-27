@@ -37,6 +37,7 @@ import com.liato.bankdroid.banking.banks.DinersClub;
 import com.liato.bankdroid.banking.banks.Djurgarden;
 import com.liato.bankdroid.banking.banks.EurobonusMastercard;
 import com.liato.bankdroid.banking.banks.Eurocard;
+import com.liato.bankdroid.banking.banks.Everydaycard;
 import com.liato.bankdroid.banking.banks.FirstCard;
 import com.liato.bankdroid.banking.banks.Handelsbanken;
 import com.liato.bankdroid.banking.banks.Hemkop;
@@ -198,7 +199,9 @@ public class BankFactory {
         case IBankTypes.NORDEA_DK:
         	return new NordeaDK(context);
         case IBankTypes.VASTTRAFIK:
-        	return new Vasttrafik(context);
+            return new Vasttrafik(context);
+        case IBankTypes.EVERYDAYCARD:
+            return new Everydaycard(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -261,6 +264,7 @@ public class BankFactory {
         banks.add(new DanskeBank(context));
         banks.add(new NordeaDK(context));
         banks.add(new Vasttrafik(context));
+        banks.add(new Everydaycard(context));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));
