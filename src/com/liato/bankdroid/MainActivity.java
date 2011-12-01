@@ -195,8 +195,7 @@ public class MainActivity extends LockableActivity {
 	@Override
 	public boolean onOptionsItemSelected (final MenuItem item){
 		Intent intent;
-		switch (item.getItemId()) {
-		case R.id.toggle_hidden:
+		if (item.getItemId() == R.id.toggle_hidden) {
 			showHidden = !showHidden;
 			if (showHidden) {
 				item.setTitle(R.string.menu_hide_hidden);
@@ -206,21 +205,21 @@ public class MainActivity extends LockableActivity {
 			}
 			refreshView();
 			return true;
-		case R.id.settings:
+		} else if (item.getItemId() == R.id.settings) {
 			intent = new Intent(this, SettingsActivity.class);
 			this.startActivity(intent);
 			//Helpers.setActivityAnimation(this, R.anim.zoom_enter, R.anim.zoom_exit);
 			return true;
-        case R.id.about:
-            intent = new Intent(this, AboutActivity.class);
-            startActivity(intent);
-            return true;
-        case R.id.donate:
-            intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=KWRCBB4PAA3LC"));
-            startActivity(intent);
-            return true;
-        }
+		} else if (item.getItemId() == R.id.about) {
+			intent = new Intent(this, AboutActivity.class);
+			startActivity(intent);
+			return true;
+		} else if (item.getItemId() == R.id.donate) {
+			intent = new Intent(Intent.ACTION_VIEW);
+			intent.setData(Uri.parse("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=KWRCBB4PAA3LC"));
+			startActivity(intent);
+			return true;
+		}
 		return false;
 	}
 
@@ -265,8 +264,7 @@ public class MainActivity extends LockableActivity {
 		public void onClick(final View v) {
 			final Context context = this.anchor.getContext();
 			final int id = v.getId();
-			switch (id) {
-			case R.id.btnWWW:
+			if (id == R.id.btnWWW) {
 				if (selected_bank != null) {
 					//Uri uri = Uri.parse(selected_bank.getURL());
 					//Intent intent = new Intent(Intent.ACTION_VIEW, uri);
@@ -276,17 +274,17 @@ public class MainActivity extends LockableActivity {
 				}
 				this.dismiss();
 				return;
-			case R.id.btnEdit:
+			} else if (id == R.id.btnEdit) {
 				final Intent intent = new Intent(context, BankEditActivity.class);
 				intent.putExtra("id", selected_bank.getDbId());
 				context.startActivity(intent);
 				this.dismiss();
 				return;
-			case R.id.btnRefresh:
+			} else if (id == R.id.btnRefresh) {
 				this.dismiss();
 				new DataRetrieverTask(parent, selected_bank.getDbId()).execute();
 				return;
-			case R.id.btnRemove:
+			} else if (id == R.id.btnRemove) {
 				this.dismiss();
 				final AlertDialog.Builder builder = new AlertDialog.Builder(context);
 				//builder.setMessage(getText(R.string.passwords_mismatch)).setTitle(getText(R.string.passwords_mismatch_title))
@@ -367,32 +365,30 @@ public class MainActivity extends LockableActivity {
 		@Override
 		public void onClick(final View v) {
 			final int id = v.getId();
-			switch (id) {
-			case R.id.btnHide:
+			if (id == R.id.btnHide) {
 				this.dismiss();
 				selected_account.setHidden(true);
 				selected_account.getBank().save();
 				parent.refreshView();
 				return;
-			case R.id.btnUnhide:
+			} else if (id == R.id.btnUnhide) {
 				this.dismiss();
 				selected_account.setHidden(false);
 				selected_account.getBank().save();
 				parent.refreshView();
 				return;
-			case R.id.btnEnableNotifications:
+			} else if (id == R.id.btnEnableNotifications) {
 				this.dismiss();
 				selected_account.setNotify(true);
 				selected_account.getBank().save();
 				parent.refreshView();
 				return;
-			case R.id.btnDisableNotifications:
+			} else if (id == R.id.btnDisableNotifications) {
 				this.dismiss();
 				selected_account.setNotify(false);
 				selected_account.getBank().save();
 				parent.refreshView();
 				return;
-
 			}
 
 		}

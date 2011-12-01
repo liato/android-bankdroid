@@ -55,13 +55,14 @@ public class Lansforsakringar extends Bank {
 
     private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
     private Pattern reViewState = Pattern.compile("(?:__|javax\\.faces\\.)VIEWSTATE\"\\s+.*?value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
-    private Pattern reAccountsReg = Pattern.compile("AccountNumber=([0-9]+)[^>]+><span[^>]+>([^<]+)</.*?span></td.*?<span[^>]+>([0-9 .,-]+)</span", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private Pattern reAccountsReg = Pattern.compile("AccountNumber=([0-9]+)[^>]+>([^<]+)<.*?<td class=\"right\"[^>]+>([0-9 .,-]+)</td", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private Pattern reAccountsFunds = Pattern.compile("fundsDataTable[^>]+>([^<]+)</span></a></td><td[^>]+></td><td[^>]+><span\\sid=\"fundsDataTable:\\d{1,}:bankoverview_\\d{1,}_([^\"]+)\">([0-9 .,-]+)</span", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-    private Pattern reAccountsLoans = Pattern.compile("internalLoanDataTable[^>]+>([^<]+)</span></a></span></td><td[^>]+><span[^>]+>[^<]+</span></td><td[^>]+><span\\sid=\"internalLoanDataTable:\\d{1,}:bankoverview_\\d{1,}_([^\"]+)\">([0-9 .,-]+)</spa.*?internalLoanDataTable:\\d{1,}:bankoverview_\\d{1,}_(?:[^\"]+)\">([0-9 .,-]+)</spa", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-    private Pattern rePension = Pattern.compile("AvtalsID=([0-9_]+)[^<]+><span\\s*id=\"occupationalPensionDataTable:\\d{1,}:pension_overview_\\d{1,}_[^>]+>([^<]+)</span></a></span><span[^>]+>\\s*<sup>\\s*</span><span[^>]+></span><span[^>]+>\\s*</sup>\\s*</span>\\s*<table[^>]+>\\s*<tbody[^>]+></tbody></table>\\s*</td><td[^>]+><span[^>]+>([^<]+)</span>", Pattern.CASE_INSENSITIVE);
+    private Pattern reAccountsLoans = Pattern.compile("LoanNumber=[^>]+>([^<]+)</a></td><td class=\"left\" width=\"25%\">([0-9.]+)</td><td class=\"right\" width=\"25%\">([0-9 .,-]+)</td><td class=\"right\" width=\"25%\">([0-9 .,-]+)</td", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private Pattern rePension = Pattern.compile("class=\"portlet-menu-item\" [^>]+>(.*)</a></td><td class=\"left\" width=\"25%\">([^>]+)</td><td class=\"right\" width=\"25%\">([^>]+)</td><td class=\"right\" width=\"25%\">([^>]+)</td>", Pattern.CASE_INSENSITIVE);
     private Pattern reToken = Pattern.compile("var\\s+token\\s*=\\s*'([^']+)'", Pattern.CASE_INSENSITIVE);
-    private Pattern reUrl = Pattern.compile("<li class=\"bank\">\\s*<a href=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
-    private Pattern reTransactions = Pattern.compile("td\\s*class=\"leftpadding\"[^>]+>(?:<a[^>]+>)?<span[^>]+>(\\d{4}-\\d{2}-\\d{2})</span>(?:</a>)?\\s*<a.*?</a></td><td[^>]+><span[^>]+>(\\d{4}-\\d{2}-\\d{2})</span></td><td[^>]+><span[^>]+>([^<]+)</span></td><td[^>]+><span[^>]+><span[^>]+>([^<]*)</span></span></td><td[^>]+><span[^>]+>([^<]+)</span></td><td[^>]+><span[^>]+>([^<]+)<", Pattern.CASE_INSENSITIVE);
+    private Pattern reHiddenToken = Pattern.compile("name=\"_token\" value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
+    private Pattern reUrl = Pattern.compile("<li class=\"bank\\s*\">\\s*<a href=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
+    private Pattern reTransactions = Pattern.compile("[^>]+>(\\d{4}-\\d{2}-\\d{2})<.*(\\d{4}-\\d{2}-\\d{2})<.*<span title=\"([^\"]+)\".*</span></td><td class=\"left\"><span title=\"([^\"]+)\".*</span></td><td class=\"right nowrap\" style=\"width:90px\">([^<]+)</td>.*style=\"width:90px\">([^<]+)</td>", Pattern.CASE_INSENSITIVE);
     private String accountsUrl = null;
     private String mRequestToken = null;
     private String mViewState = null;
@@ -90,7 +91,7 @@ public class Lansforsakringar extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib();
+        urlopen = new Urllib(false, true);
         String response = urlopen.open("https://secure246.lansforsakringar.se/lfportal/login/privat");
         Matcher matcher = reViewState.matcher(response);
         if (!matcher.find()) {
@@ -176,10 +177,11 @@ public class Lansforsakringar extends Bank {
                  * 2: Name                  Personkonto
                  * 3: Amount                25 000 000
                  * 
-                 */    
+                 */
                 accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), matcher.group(1).trim()));
                 balance = balance.add(Helpers.parseBalance(matcher.group(3)));
             }
+            //TODO: Don't have funds.
             matcher = reAccountsFunds.matcher(response);
             while (matcher.find()) {
                 /*
@@ -213,18 +215,18 @@ public class Lansforsakringar extends Bank {
             }
             mRequestToken = matcher.group(1);
 
-            response = urlopen.open("https://" + host + "/lfportal/privat.portal?_nfpb=true&_pageLabel=pension_undermenyosynlig&newUc=true&isTopLevel=true&_token=" + mRequestToken);
+            response = urlopen.open("https://" + host + "/im/im/pension.jsf?newUc=true&_token=" + mRequestToken);
             matcher = rePension.matcher(response);
             while (matcher.find()) {
                 /*
                  * Capture groups:
                  * GROUP                    EXAMPLE DATA
-                 * 1: ID                    00835742_0
-                 * 2: Name                  Avtalspension ITP - Fond
+                 * 1: Name                  Avtalspension ITP - Fond
+                 * 2: ID                    00835742_0
                  * 3: Amount                10 587,40
-                 * 
+                 * 4: Amount?				10 587,40
                  */
-                Account account = new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), matcher.group(1).trim());
+                Account account = new Account(Html.fromHtml(matcher.group(1)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), matcher.group(2).trim());
                 account.setType(Account.OTHER);
                 accounts.add(account);
             }            
@@ -261,7 +263,7 @@ public class Lansforsakringar extends Bank {
 
         if (mFirstTransactionPage) {
             try {
-                response = urlopen.open("https://" + host + "/lfportal/privat.portal?_nfpb=true&_pageLabel=bank_konto&dialog=dialog:account.viewAccountTransactions&webapp=edb-account-web&stickyMenu=false&newUc=true&isPortalLogLink=true&AccountNumber=" + account.getId() + "&_token=" + mRequestToken);
+                response = urlopen.open("https://" + host + "/im/index_account.jsf?dialog=dialog:account.viewAccountTransactions&AccountNumber=" + account.getId() + "&_token=" + mRequestToken);
                 matcher = reViewState.matcher(response);
                 if (!matcher.find()) {
                     Log.w(TAG,res.getText(R.string.unable_to_find).toString()+" ViewState. L237.");
@@ -269,7 +271,7 @@ public class Lansforsakringar extends Bank {
                 }
                 mViewState = matcher.group(1);
 
-                matcher = reToken.matcher(response);
+                matcher = reHiddenToken.matcher(response);
                 if (!matcher.find()) {
                     Log.w(TAG,res.getText(R.string.unable_to_find).toString()+" token. L244.");
                     return;
@@ -294,7 +296,7 @@ public class Lansforsakringar extends Bank {
                 postData.add(new BasicNameValuePair("loginForm:_idcl", ""));            
                 postData.add(new BasicNameValuePair("loginForm:_link_hidden_", ""));            
                 postData.add(new BasicNameValuePair("javax.faces.ViewState", mViewState));            
-                response = urlopen.open("https://" + host + "/lfportal/privat.portal?_nfpb=true&_windowLabel=account_1&_nffvid=%2Flfportal%2Findex_account.faces", postData);
+                response = urlopen.open("https://" + host + "/im/index_account.jsf", postData);
                 mFirstTransactionPage = false;
             }
             else {
@@ -304,7 +306,7 @@ public class Lansforsakringar extends Bank {
                 postData.add(new BasicNameValuePair("viewAccountListTransactionsForm:_link_hidden_", ""));            
                 postData.add(new BasicNameValuePair("javax.faces.ViewState", mViewState));            
                 postData.add(new BasicNameValuePair("accountList", account.getId()));
-                response = urlopen.open("https://" + host + "/lfportal/privat.portal?_nfpb=true&_windowLabel=account_1&_nffvid=%2Flfportal%2Fjsp%2Faccount%2Fview%2FviewAccountTransactions.faces", postData);
+                response = urlopen.open("https://" + host + "/im/jsp/account/view/viewAccountTransactions.jsf", postData);
             }
             matcher = reTransactions.matcher(response);
             ArrayList<Transaction> transactions = new ArrayList<Transaction>();
