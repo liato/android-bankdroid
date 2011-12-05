@@ -13,7 +13,6 @@ Desktop.ini
 bin
 gen
 local.properties
-*.jar
 dev/
 src/com/liato/bankdroid/db/Crypto.*
 src/com/liato/bankdroid/db/Crypto.java.dev
