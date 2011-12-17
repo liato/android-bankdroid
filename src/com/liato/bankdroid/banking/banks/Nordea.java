@@ -17,6 +17,7 @@
 package com.liato.bankdroid.banking.banks;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -24,12 +25,12 @@ import java.util.regex.Pattern;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
 import android.text.Html;
 import android.text.InputType;
-import android.util.Log;
 
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
@@ -52,15 +53,24 @@ public class Nordea extends Bank {
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDD-XXXX";
+    
+    private static final int MAX_TRANSACTIONS = 50;
 
-    private Pattern reCurrency = Pattern.compile("list-left\">\\s*Valuta\\s*</dt>\\s*<dd[^>]+>([^<]+)</dd>", Pattern.CASE_INSENSITIVE);
-    private Pattern reBalance = Pattern.compile("list-left\">\\s*Summa\\s*([a-zA-Z]{3})\\s*</dt>\\s*<dd[^>]+>([^<]+)</", Pattern.CASE_INSENSITIVE);
-    private Pattern reAccounts = Pattern.compile("account\\.html\\?id=konton:([^\"]+)\"[^>]+>\\s*<div[^>]+>([^<]+)<span[^>]+>([^<]+)</span", Pattern.CASE_INSENSITIVE);
-	private Pattern reFundsLoans = Pattern.compile("(?:fund|loan)\\.html\\?id=(?:fonder|lan):([^\"]+)\".*?>.*?>([^<]+).*?>([^<]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-	private Pattern reCards = Pattern.compile("/card/details\\.html\\?id=(\\d{1,})[^\"]*\".*?>\\s*<span[^>]*>\\s*<span>([^<]+)</span>\\s*<span[^>]+>([^<]+)<", Pattern.CASE_INSENSITIVE);
-	private Pattern reTransactions = Pattern.compile("(\\d{4}-\\d{2}-\\d{2})\\s</dt>[^>]+>([^<]+)[^>]+>.*?(?:Positive|Negative)\">([^<]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-	private Pattern reCSRF = Pattern.compile("csrf_token\".*?value=\"([^\"]+)\"");
-
+    private Pattern reSimpleLoginLink = Pattern.compile("href=\"(engine\\?(?=[^\"]*usecase=commonlogin)(?=[^\"]*command=commonlogintabcommand)(?=[^\"]*commonlogintab=2)(?=[^\"]*guid=([\\w]*))(?=[^\"]*fpid=([\\w]*))(?=[^\"]*hash=([\\w]*))[^\"]*)", Pattern.CASE_INSENSITIVE);
+    private Pattern reLoginFormContents = Pattern.compile("<form[^>]+id=\"commonlogin\"[^>]*>(.*?)</form>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private Pattern reNonTextInputField = Pattern.compile("<input(?=[^>]+type=\"((?!text)[^\"]*)\")(?=[^>]+name=\"([^\"]+)\")(?=[^>]+value=\"([^\"]+)\")", Pattern.CASE_INSENSITIVE);
+    
+    private Pattern reTransactionFormContents = Pattern.compile("<form(?=[^>]+id=\"accountTransactions\")(?=[^>]+action=\"([^\"]*)\").*?>(.*?)</form>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private Pattern reAccountLink = Pattern.compile("href=\"(engine\\?(?=[^\"]*usecase=accountsoverview)(?=[^\"]*command=getcurrenttransactions)(?=[^\"]*currentaccountsoverviewtable=([\\d]+))[^\"]*)[^>]*>(.*?)</a>.*?([*\\d]+).*?([\\d\\.,]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private Pattern reTransaction = Pattern.compile("(\\d{4}-\\d{2}-\\d{2})[\n\r <].*?<td.*?>(.*?)</td>.*?<td.*?>.*?</td>.*?<td.*?>([\\s\\d-+,.]*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private Pattern reCurrency = Pattern.compile("Saldo:.*?[\\d\\.,-]+[\\s]*</td>[\\s]*<td[^>]*>([^<]*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    
+    private Pattern reAccountSelect = Pattern.compile("<select[^>]+name=\"transactionaccount\"[^>]*>(.*?)</select>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private Pattern reAccountOption = Pattern.compile("<option[^>]+value=\"([\\d]+)\"[^>]*>.*?([*\\d]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    
+    private String lastResponse;    // Nordea has variables that needs to be sent between every single page
+    private int currentPageType;	// Depending on what kind of page we're currently on, the variables will have to be retrieved differently
+    
 	public Nordea(Context context) {
 		super(context);
 		super.TAG = TAG;
@@ -81,30 +91,60 @@ public class Nordea extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib();
-        Matcher matcher;
-        String response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/login.html");
-        matcher = reCSRF.matcher(response);
-        if (!matcher.find()) {
-            throw new BankException(res.getText(R.string.unable_to_find).toString()+" CSRF token.");
-        }
-        String csrftoken = matcher.group(1);
-        List <NameValuePair> postData = new ArrayList <NameValuePair>();
-        postData.add(new BasicNameValuePair("xyz", username));
-        postData.add(new BasicNameValuePair("zyx", password));
-        postData.add(new BasicNameValuePair("_csrf_token", csrftoken));
-        return new LoginPackage(urlopen, postData, response, "https://mobil.nordea.se/banking-nordea/nordea-c3/login.html");
+		urlopen = new Urllib();
+		Matcher matcher;
+		// Find "simple login" link
+		this.lastResponse = urlopen.open("https://internetbanken.privat.nordea.se/nsp/engine");
+		this.currentPageType = PageType.LOGIN;
+		matcher = reSimpleLoginLink.matcher(this.lastResponse);
+		if (!matcher.find()) {
+			throw new BankException(res.getText(R.string.unable_to_find).toString()+" login link.");
+		}
+		// Visit login link
+		String link = "https://internetbanken.privat.nordea.se/nsp/" + matcher.group(1);
+		this.lastResponse = urlopen.open(link);
+		this.currentPageType = PageType.SIMPLE_LOGIN;
+		matcher = reLoginFormContents.matcher(this.lastResponse);
+		if (!matcher.find()) {
+			throw new BankException(res.getText(R.string.unable_to_find).toString()+" login form.");
+		}
+		// Extract hidden fields
+		String formContents = matcher.group(1);
+		matcher = reNonTextInputField.matcher(formContents);
+		if (!matcher.find()) {
+			throw new BankException(res.getText(R.string.unable_to_find).toString()+" login fields.");
+		}
+		matcher.reset();
+		List <NameValuePair> postData = new ArrayList <NameValuePair>();
+		while (matcher.find()) {
+			String name  = matcher.group(2);
+			String value = matcher.group(3);
+			// The non-mobile page requires javascript, so we'd best pretend we have it
+			if ("JAVASCRIPT_DETECTED".equals(name)) {
+				value = "true";
+			}
+			postData.add(new BasicNameValuePair(name, value));
+		}
+		// Login information
+		postData.add(new BasicNameValuePair("userid", username));
+		postData.add(new BasicNameValuePair("pin", password));
+		// Submit button is not contained within the form and thus cannot (should not) be found with the InputField matcher
+		postData.add(new BasicNameValuePair("commonlogin$loginLight", "Logga in"));
+		return new LoginPackage(urlopen, postData, this.lastResponse, "https://internetbanken.privat.nordea.se/nsp/engine");
     }
 
 	@Override
 	public Urllib login() throws LoginException, BankException {
 		try {
 		    LoginPackage lp = preLogin();
-			String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-			if (response.contains("felaktiga uppgifter")) {
+		    this.lastResponse = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+		    this.currentPageType = PageType.ENTRY;
+			if (this.lastResponse.contains("felaktiga uppgifter")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}
 			
+		} catch (HttpResponseException e) {
+			throw new BankException(String.valueOf(e.getStatusCode()));
 		} catch (ClientProtocolException e) {
 			throw new BankException(e.getMessage());
 		} catch (IOException e) {
@@ -121,56 +161,23 @@ public class Nordea extends Bank {
 		}
 		
 		urlopen = login();
-		String response = null;
 		Matcher matcher;
 		try {
-			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/accounts.html");
-			matcher = reAccounts.matcher(response);
+			matcher = reAccountLink.matcher(this.lastResponse);
 			while (matcher.find()) {
-				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), matcher.group(1).trim()));
+				accounts.add(new Account(
+						Html.fromHtml(matcher.group(3)).toString().trim(), 
+						Helpers.parseBalance(matcher.group(5)), 
+						Html.fromHtml(matcher.group(4)).toString().trim()
+						));
 			}
-            /*
-             * Capture groups:
-             * GROUP                EXAMPLE DATA
-             * 1: Currency          SEK
-             * 2: Amount            56,78  
-             *   
-             */
-			matcher = reBalance.matcher(response);
-			String currency = "SEK";
-			if (matcher.find()) {
-			    balance = Helpers.parseBalance(matcher.group(2));
-			    currency = Html.fromHtml(matcher.group(1)).toString().trim();
-			}
-			this.setCurrency(currency);
 			
-			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/funds/portfolio/funds.html");
-			matcher = reFundsLoans.matcher(response);
-			while (matcher.find()) {
-				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), "f:"+matcher.group(1).trim(), -1L, Account.FUNDS));
-			}
-
-			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/accounts.html?type=lan");
-			matcher = reFundsLoans.matcher(response);
-			while (matcher.find()) {
-				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), "l:"+matcher.group(1).trim(), -1L, Account.LOANS));
-			}
-
-			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/card/list.html");
-			matcher = reCards.matcher(response);
-			while (matcher.find()) {
-				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), "c:"+matcher.group(1).trim(), -1L, Account.CCARD));
-			}
+			// TODO(Rhoot): Put code for loan, funds and cards back. I don't have either of them so I cannot do it 
+			//              personally, as I don't know what the pages look like.
 
 			if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
 			}
-		}
-		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage());
-		}
-		catch (IOException e) {
-			throw new BankException(e.getMessage());
 		}
 		finally {
 		    super.updateComplete();
@@ -190,34 +197,85 @@ public class Nordea extends Bank {
 		int accType = account.getType();
 		if (accType == Account.LOANS || accType == Account.FUNDS || accType == Account.CCARD) return;
 
-		String response = null;
 		Matcher matcher;
 		try {
-			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/accounts.html");
-			response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/account.html?id=konton:"+account.getId());
-			matcher = reCurrency.matcher(response);
-            /*
-             * Capture groups:
-             * GROUP                EXAMPLE DATA
-             * 1: Currency          SEK 
-             *   
-             */
-			String currency = "SEK";
-			if (matcher.find()) {
-			    currency = matcher.group(1).trim();
+			// We must never browse to a random page without keeping the hashes and stuff from the current page.
+			// Thus, we need to handle it separately depending on if we're still on the entry page or not.
+			
+			String link = null;
+			List<NameValuePair> postData = new ArrayList<NameValuePair>();
+			if(currentPageType == PageType.ENTRY) {
+				// Find the link to the transaction page
+				matcher = reAccountLink.matcher(this.lastResponse);
+				while (matcher.find()) {
+					if (Html.fromHtml(matcher.group(4)).toString().trim().equals(account.getId())) {
+						link = matcher.group(1);
+						break;
+					}
+				}
+				if (link == null) {
+					throw new BankException(res.getText(R.string.unable_to_find).toString()+" transactions link.");
+				}
+			}
+			else if(currentPageType == PageType.TRANSACTIONS) {
+				// Find the account dropdown form
+				matcher = reTransactionFormContents.matcher(this.lastResponse);
+				if (!matcher.find()) {
+					throw new BankException(res.getText(R.string.unable_to_find).toString()+" account form.");
+				}
+				link = matcher.group(1);
+				matcher = reNonTextInputField.matcher(matcher.group(2));
+				if (!matcher.find()) {
+					throw new BankException(res.getText(R.string.unable_to_find).toString()+" input fields.");
+				}
+				matcher.reset();
+				// Input fields
+				while (matcher.find()) {
+					// For some odd reason, it does not like us sending the submit button... So don't.
+					if (!matcher.group(1).equals("submit")) {
+						postData.add(new BasicNameValuePair(matcher.group(2), matcher.group(3)));
+					}
+				}
+				postData.add(new BasicNameValuePair("transactionPeriod", "0"));
+				// Account id
+				matcher = reAccountSelect.matcher(this.lastResponse);
+				if (!matcher.find()) {
+					throw new BankException(res.getText(R.string.unable_to_find).toString()+" account selection.");
+				}
+				matcher = reAccountOption.matcher(matcher.group(1));
+				String id = null;
+				while (matcher.find()) {
+					if(matcher.group(2).equals(account.getId())) {
+						id = matcher.group(1);
+						break;
+					}
+				}
+				if (id == null) {
+					throw new BankException(res.getText(R.string.unable_to_find).toString()+" account id.");
+				}
+				postData.add(new BasicNameValuePair("transactionaccount", id));
 			}
 			else {
-			    Log.w(TAG, "Unable to find currency, assuming SEK.");
+				throw new BankException("This should never happen. If it does: Grats, you broke it.");
 			}
-			matcher = reTransactions.matcher(response);
+			// Navigate to it, and parse the results
+			this.lastResponse = urlopen.open("https://internetbanken.privat.nordea.se/nsp/" + link, postData);
+			this.currentPageType = PageType.TRANSACTIONS;
+			matcher = reTransaction.matcher(this.lastResponse);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-			while (matcher.find()) {
-                Transaction transaction = new Transaction(Html.fromHtml(matcher.group(1)).toString().trim(), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)));
-                transaction.setCurrency(currency);
+			while (matcher.find() && transactions.size() < MAX_TRANSACTIONS) {
+				String date = Html.fromHtml(matcher.group(1)).toString().trim();
+				String text = Html.fromHtml(matcher.group(2)).toString().trim();
+				BigDecimal amount = Helpers.parseBalance(matcher.group(3));
+				Transaction transaction = new Transaction(date, text, amount);
 				transactions.add(transaction);
 			}
 			account.setTransactions(transactions);
-			account.setCurrency(currency);
+			// Currency
+			matcher = reCurrency.matcher(this.lastResponse);
+			if (matcher.find()) {
+				account.setCurrency(Html.fromHtml(matcher.group(1)).toString().trim());
+			}
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -225,5 +283,12 @@ public class Nordea extends Bank {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}	
+	}
+	
+	private static class PageType {
+		public static final int LOGIN = 0;
+		public static final int SIMPLE_LOGIN = 1;
+		public static final int ENTRY = 2;
+		public static final int TRANSACTIONS = 3;
+	}
 }
