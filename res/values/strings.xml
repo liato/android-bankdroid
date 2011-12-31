@@ -75,7 +75,10 @@
 	<string name="enable_notifications_summary">Notify on account changes</string>
 	<string name="vibrate_title">Vibrate</string>
 	<string name="vibrate_summary">Vibrate on account changes</string>
-	<string name="notification_sound_title">Notification sound</string>
+	<string name="led_title">Flash LED</string>
+	<string name="led_summary">Flash the LED on account changes. (Not supported by all devices.)</string>
+	<string name="led_color_title">LED color</string>
+   	<string name="notification_sound_title">Notification sound</string>
 	<string name="notification_sound_summary">Select notification sound</string>
 	<string name="notification_sound_name">Select sound</string>
 	<string name="account_types_title">Account types</string>
@@ -293,4 +296,8 @@
 	<string name="pair_message">The Application below wants to access account types and transaction data from BankDroid.</string>
 	<string name="approve">APPROVE</string>
 	<string name="pair_app_name">Unknown application</string>	
+	
+    <!-- Color Picker -->
+    <string name="dialog_color_picker">Color Picker</string>
+    <string name="press_color_to_apply">Press on Color to apply</string>    
 </resources>

@@ -142,6 +142,15 @@ public class AutoRefreshService extends Service {
 			notification.vibrate = vib;
 			// notification.defaults |= Notification.DEFAULT_VIBRATE;
 		}
+
+		Log.d("LED", "true? " + prefs.getBoolean("notify_with_led", true));
+        if (prefs.getBoolean("notify_with_led", true)) {
+            notification.ledARGB = prefs.getInt("notify_with_led_color", context.getResources().getColor(R.color.default_led_color));
+            notification.flags |= Notification.FLAG_SHOW_LIGHTS;
+            notification.ledOnMS = 700; 
+            notification.ledOffMS = 200; 
+        }
+		
 		final PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
 				new Intent(context, MainActivity.class), 0);
 
