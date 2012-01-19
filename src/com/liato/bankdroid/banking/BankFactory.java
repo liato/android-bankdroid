@@ -25,6 +25,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.preference.PreferenceManager;
 
+import com.liato.bankdroid.banking.banks.AkeliusInvest;
 import com.liato.bankdroid.banking.banks.AmericanExpress;
 import com.liato.bankdroid.banking.banks.Audi;
 import com.liato.bankdroid.banking.banks.Avanza;
@@ -92,6 +93,8 @@ public class BankFactory {
 		switch (id) {
         case IBankTypes.TESTBANK:
             return new TestBank(context);
+        case IBankTypes.AKELIUSINVEST:
+            return new AkeliusInvest(context);
         case IBankTypes.SWEDBANK:
             return new Swedbank(context);
 		case IBankTypes.NORDEA:
@@ -210,6 +213,7 @@ public class BankFactory {
 
 	public static ArrayList<Bank> listBanks(Context context) {
 		ArrayList<Bank> banks = new ArrayList<Bank>();
+		banks.add(new AkeliusInvest(context));
 		banks.add(new Swedbank(context));
 		banks.add(new Nordea(context));
 		banks.add(new ICABanken(context));

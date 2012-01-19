@@ -52,7 +52,7 @@ public class Coop extends Bank {
     private static final int BANKTYPE_ID = IBankTypes.COOP;
 
     private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
-    private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
+ //   private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
     private Pattern reBalance = Pattern.compile("saldo\">([^<]+)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private Pattern reTransactions = Pattern.compile("<td>\\s*(\\d{4}-\\d{2}-\\d{2})\\s*</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]*)</td>\\s*<td>([^<]*)</td>\\s*<td[^>]*>(?:\\s*<a[^>]+>)?([^<]+)(?:</a>\\s*)?</td>", Pattern.CASE_INSENSITIVE);
     private String response;
@@ -81,11 +81,11 @@ public class Coop extends Bank {
             throw new BankException(res.getText(R.string.unable_to_find).toString()+" viewstate.");
         }
         String strViewState = matcher.group(1);
-        matcher = reEventValidation.matcher(response);
-        if (!matcher.find()) {
-            throw new BankException(res.getText(R.string.unable_to_find).toString()+" eventvalidation.");
-        }
-        String strEventValidation = matcher.group(1);
+//        matcher = reEventValidation.matcher(response);
+//        if (!matcher.find()) {
+//          throw new BankException(res.getText(R.string.unable_to_find).toString()+" eventvalidation.");
+//        }
+//        String strEventValidation = matcher.group(1);
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         postData.add(new BasicNameValuePair("ctl00$ContentPlaceHolderTodo$ContentPlaceHolderMainPageContainer$ContentPlaceHolderMainPageWithNavigationAndGlobalTeaser$ContentPlaceHolderPreContent$RegisterMediumUserForm$TextBoxUserName", username));
         postData.add(new BasicNameValuePair("ctl00$ContentPlaceHolderTodo$ContentPlaceHolderMainPageContainer$ContentPlaceHolderMainPageWithNavigationAndGlobalTeaser$ContentPlaceHolderPreContent$RegisterMediumUserForm$TextBoxPassword", password));
@@ -93,7 +93,7 @@ public class Coop extends Bank {
         postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
         postData.add(new BasicNameValuePair("__EVENTTARGET", ""));
         postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
-        postData.add(new BasicNameValuePair("__EVENTVALIDATION", strEventValidation));
+//        postData.add(new BasicNameValuePair("__EVENTVALIDATION", strEventValidation));
         return new LoginPackage(urlopen, postData, response, "https://www.coop.se/Mina-sidor/Oversikt/");
     }
 
