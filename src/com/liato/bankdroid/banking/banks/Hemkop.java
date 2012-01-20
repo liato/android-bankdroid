@@ -90,6 +90,7 @@ public class Hemkop extends Bank {
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         postData.add(new BasicNameValuePair("hemkop_personnummer", username));
         postData.add(new BasicNameValuePair("hemkop_password", password));
+        postData.add(new BasicNameValuePair("login", "Logga in"));
         return new LoginPackage(urlopen, postData, response, "https://www.hemkop.se/scripts/cgiip.exe/WService=axfood/axfood/common/loginhemkopkundkort.p");
     }
 

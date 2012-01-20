@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Nullbyte <http://nullbyte.eu>
+ *  Copyright (C) 2010 Nullbyte <http://nullbyte.eu>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,9 +50,9 @@ public abstract class IkanoPartnerBase extends Bank {
     private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
     private Pattern reViewState = Pattern.compile("(?:__|javax\\.faces\\.)VIEWSTATE\"\\s+.*?value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
     private Pattern reCtl = Pattern.compile("(ctl\\d{1,})_CustomValidationSummary", Pattern.CASE_INSENSITIVE);
-    private Pattern reTransactionsUrl = Pattern.compile("(page___\\d{1,}\\.aspx)\">(?:<span[^>]+>)?Transaktioner</", Pattern.CASE_INSENSITIVE);
+    protected Pattern reTransactionsUrl = Pattern.compile("(page___\\d{1,}\\.aspx)\">(?:<span[^>]+>)?Transaktioner</", Pattern.CASE_INSENSITIVE);
     private Pattern reCreditInfoUrl = Pattern.compile("(page___\\d{1,}\\.aspx)\">(?:<span[^>]+>)?Kredit-? ?uppgifter</", Pattern.CASE_INSENSITIVE);
-    private Pattern reAccounts = Pattern.compile("captionLabel\">([^<]+)</span>\\s*</span>\\s*<span\\s*id=\"[^\"]+ReadOnlyValueSpan\">([^<]+)</span>\\s*<span\\s*id=\"[^\"]+currencyTextLiteralSpan\">([^<]+)</span>");
+    private Pattern reAccounts = Pattern.compile("captionLabel\">(?:<span></span>)?([^<]+)</span>\\s*</span>\\s*<span\\s*id=\"[^\"]+ReadOnlyValueSpan\">([^<]+)</span>\\s*<span\\s*id=\"[^\"]+currencyTextLiteralSpan\">([^<]+)</span>");
     private Pattern reTransactions = Pattern.compile("<td\\s*class=\"TransactionDateRow\">([^>]+)</td><td[^>]+>(.+?)</td><td[^>]+>([^<]+)</td><td[^>]+>([^<]+)</td>");
     private String response = null;
 	protected String structId;
@@ -69,8 +69,8 @@ public abstract class IkanoPartnerBase extends Bank {
 		this(context);
 		this.update(username, password);
 	}
-
-    @Override
+	
+	@Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
         urlopen = new Urllib(true);

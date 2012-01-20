@@ -122,7 +122,7 @@ public class SevenDay extends Bank {
 		try {
 			Matcher matcher;
 			matcher = reAccounts.matcher(response);
-			if (matcher.find()) {
+			while (matcher.find()) {
                 /*
                  * Capture groups:
                  * GROUP                EXAMPLE DATA
