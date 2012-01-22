@@ -88,12 +88,12 @@ public class LiveViewService extends Service {
     private class LiveViewCallback extends IPluginServiceCallbackV1.Stub {
         Handler mCallbackHandler = new Handler();
 
-        @Override
+        
         public String getPluginName() throws RemoteException {
             return mPluginName;
         }
 
-        @Override
+       
         public void openInPhone(final String openInPhoneAction) throws RemoteException {
             mCallbackHandler.post(new Runnable() {
                 public void run() {
@@ -122,7 +122,7 @@ public class LiveViewService extends Service {
         return alreadyRunning;
     }
 
-    @Override
+
     public void onCreate() {
         super.onCreate();
         Log.d(PluginConstants.LOG_TAG, "Enter LiveViewService.onCreate.");
@@ -132,7 +132,6 @@ public class LiveViewService extends Service {
         mMenuIcon = PluginUtils.storeIconToFile(this, getResources(), iconId, MENU_ICON_FILENAME);
     }
 
-    @Override
     public void onDestroy() {
         super.onDestroy();
         Log.d(PluginConstants.LOG_TAG, "Enter LiveViewService.onDestroy.");
@@ -146,7 +145,6 @@ public class LiveViewService extends Service {
         alreadyRunning = false;
     }
 
-	@Override
 	public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
         Log.d(PluginConstants.LOG_TAG, "Enter LiveViewService.onStart.");
