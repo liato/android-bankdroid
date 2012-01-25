@@ -50,7 +50,7 @@ public class Hemkop extends Bank {
     private static final String TAG = "Hemkop";
     private static final String NAME = "Hemköp Kundkort";
     private static final String NAME_SHORT = "hemkop";
-    private static final String URL = "http://www.hemkop.se/showdoc.asp?docid=780&show=minasidor";
+    private static final String URL = "https://kundkort.hemkop.se/showdoc.asp?docid=1209";
     private static final int BANKTYPE_ID = IBankTypes.HEMKOP;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
@@ -91,7 +91,7 @@ public class Hemkop extends Bank {
         postData.add(new BasicNameValuePair("hemkop_personnummer", username));
         postData.add(new BasicNameValuePair("hemkop_password", password));
         postData.add(new BasicNameValuePair("login", "Logga in"));
-        return new LoginPackage(urlopen, postData, response, "https://www.hemkop.se/scripts/cgiip.exe/WService=axfood/axfood/common/loginhemkopkundkort.p");
+        return new LoginPackage(urlopen, postData, response, "https://kundkort.hemkop.se/scripts/cgiip.exe/WService=axfood/axfood/common/loginhemkopkundkort.p");
     }
 
     public Urllib login() throws LoginException, BankException {
@@ -102,7 +102,7 @@ public class Hemkop extends Bank {
                 throw new LoginException(res.getText(R.string.invalid_username_password).toString());
             }
             //Login result contains a meta redirect to this page.
-            response = urlopen.open("https://www.hemkop.se/showdoc.asp?docid=780&show=minasidor");
+            response = urlopen.open("https://kundkort.hemkop.se/showdoc.asp?docid=780&show=minasidor");
         }
         catch (ClientProtocolException e) {
             throw new BankException(e.getMessage());
@@ -153,16 +153,16 @@ public class Hemkop extends Bank {
             if (account.getId().equals("AktuelltSaldo")) {
                 // Get a year's worth of card transactions (VISA only)
                 from.set(Calendar.YEAR, from.get(Calendar.YEAR) - 1);
-                url = String.format("https://www.hemkop.se/showdoc.asp?docid=785&hemkop_datumFrom=%tF&hemkop_datumTom=%tF", from, tom);
+                url = String.format("https://kundkort.hemkop.se/showdoc.asp?docid=785&hemkop_datumFrom=%tF&hemkop_datumTom=%tF", from, tom);
             } else if (account.getId().equals("BonusInfo")) {
                 // Get a year's worth of bonus transactions (shopping within Hemköp) until the current month.
                 from.set(Calendar.YEAR, from.get(Calendar.YEAR) - 1);
                 tom.set(Calendar.DATE, 0);
-                url = String.format("https://www.hemkop.se/showdoc.asp?docid=849&hemkop_datumFrom=%tF&hemkop_datumTom=%tF", from, tom);
+                url = String.format("https://kundkort.hemkop.se/showdoc.asp?docid=849&hemkop_datumFrom=%tF&hemkop_datumTom=%tF", from, tom);
             } else if (account.getId().equals("BonusInfoSum")) {
                 // Get a bonus transactions (shopping within Hemköp) during the current month.
                 from.set(Calendar.DATE, 1);
-                url = String.format("https://www.hemkop.se/showdoc.asp?docid=849&hemkop_datumFrom=%tF&hemkop_datumTom=%tF", from, tom);
+                url = String.format("https://kundkort.hemkop.se/showdoc.asp?docid=849&hemkop_datumFrom=%tF&hemkop_datumTom=%tF", from, tom);
             }
             
             if (url != null) {
