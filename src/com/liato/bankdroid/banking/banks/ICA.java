@@ -87,11 +87,12 @@ public class ICA extends Bank {
         postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
         postData.add(new BasicNameValuePair("__LASTFOCUS", ""));
         postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
-        postData.add(new BasicNameValuePair("ctl00$fakie", ""));
+        postData.add(new BasicNameValuePair("ctl00$fakie", "0"));
         postData.add(new BasicNameValuePair("q", "Sök"));
         postData.add(new BasicNameValuePair("appendUrlString", ""));
         postData.add(new BasicNameValuePair("ctl00$cphFullWidthContainer$ctl02$btnLogin", "Logga in"));
-        postData.add(new BasicNameValuePair("ctl00$cphFullWidthContainer$ctl02$chbRememberMe", "on"));
+        postData.add(new BasicNameValuePair("ctl00$cphFullWidthContainer$ctl02$txtCivicRegistrationNumber", ""));
+        postData.add(new BasicNameValuePair("ctl00$cphFullWidthContainer$ctl02$txtEmail", ""));
         postData.add(new BasicNameValuePair("footer-q", "Sök"));
         postData.add(new BasicNameValuePair("ctl00$cphFullWidthContainer$ctl02$tbPersno", username));
         postData.add(new BasicNameValuePair("ctl00$cphFullWidthContainer$ctl02$tbPasswd", password));
