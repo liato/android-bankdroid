@@ -86,7 +86,7 @@ public class SEB extends Bank {
         postData.add(new BasicNameValuePair("A1", username));
         postData.add(new BasicNameValuePair("A2", password));
         postData.add(new BasicNameValuePair("A3", "4"));
-        return new LoginPackage(urlopen, postData, response, "https://m.seb.se/cgi-bin/pts3/mpo/9000/mpo9001.aspx");
+        return new LoginPackage(urlopen, postData, response, "https://m.seb.se/cgi-bin/pts3/mps/1000/mps1001m.aspx");
     }
 
 	@Override

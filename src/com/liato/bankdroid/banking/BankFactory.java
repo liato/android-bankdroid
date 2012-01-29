@@ -129,8 +129,8 @@ public class BankFactory {
             return new Payson(context);
         case IBankTypes.JOJO:
             return new Jojo(context);
-        case IBankTypes.STEAM:
-            return new Steam(context);
+        //case IBankTypes.STEAM:
+        //    return new Steam(context);
         case IBankTypes.DINERSCLUB:
             return new DinersClub(context);
         case IBankTypes.IKANOBANK:
