@@ -116,11 +116,12 @@ public class MainActivity extends LockableActivity {
 		});
 
 		final Bundle extras = getIntent().getExtras();
-		// Clicking on widgets opens their transaction history through MainActivity so that
+		// Clicking on widgets opens the transactions history through MainActivity so that
 		// the user can back out to the main window.
 		if (AutoRefreshService.ACTION_MAIN_SHOW_TRANSACTIONS.equals(getIntent().getAction())) {
 	        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		    if (prefs.getBoolean("widget_opens_transactions", true)) {
+		        skipLockOnce();
     			final Intent intent = new Intent(this, TransactionsActivity.class);
     			intent.putExtra("account", extras.getString("account"));
     			intent.putExtra("bank", extras.getLong("bank"));

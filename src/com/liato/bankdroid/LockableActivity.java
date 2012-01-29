@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +45,7 @@ public class LockableActivity extends Activity {
 	private Editor mEditor;
 	private LockPatternUtils mLockPatternUtils;
 	private boolean mHasLoaded = false;
+	protected boolean mSkipLockOnce = false;
 	
 	private LinearLayout mTitlebarButtons;
 	private LayoutInflater mInflater;
@@ -175,7 +177,7 @@ public class LockableActivity extends Activity {
 		if (mHasLoaded) {
 		    writeLockTime();
 		} else {
-		    writeLockTime(System.currentTimeMillis()-10000);
+		    writeLockTime(SystemClock.elapsedRealtime()-10000);
 		}
 	}
 
@@ -186,10 +188,14 @@ public class LockableActivity extends Activity {
 		if (!mLockPatternUtils.isLockPatternEnabled()) {
 		    return;
 		}
+		if (mSkipLockOnce) {
+		    mSkipLockOnce = false;
+		    return;
+		}
 		// If a lock pattern is set we need to check the time for when the last
 		// activity was open. If it's been more than two seconds the user
 		// will have to enter the lock pattern to continue.
-		long currentTime = System.currentTimeMillis();
+		long currentTime = SystemClock.elapsedRealtime();
 		long lockedAt = mPrefs.getLong("locked_at", currentTime-10000);
 		long timedif = currentTime - lockedAt;
 		if (timedif > 2000) {
@@ -209,7 +215,7 @@ public class LockableActivity extends Activity {
 	}
 	
 	private void writeLockTime() {
-        writeLockTime(System.currentTimeMillis());
+        writeLockTime(SystemClock.elapsedRealtime());
 	}
 
     private void writeLockTime(long time) {
@@ -229,4 +235,8 @@ public class LockableActivity extends Activity {
             }
         }
     }   	
+    
+    protected void skipLockOnce() {
+        mSkipLockOnce = true;
+    }
 }
