@@ -49,8 +49,9 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 
 public class Urllib {
-    public final static String USER_AGENT = "Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17";
-
+    public static String DEFAULT_USER_AGENT = "Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17";
+    
+    private String userAgent = DEFAULT_USER_AGENT;
     private DefaultHttpClient httpclient;
 	private HttpContext context;
 	private String currentURI;
@@ -94,17 +95,28 @@ public class Urllib {
     	return this.open(url, new ArrayList <NameValuePair>());
     }
     
+    public String post(String url) throws ClientProtocolException, IOException {
+    	return this.open(url, new ArrayList <NameValuePair>(), true);
+    }
+    
     public String open(String url, List<NameValuePair> postData) throws ClientProtocolException, IOException {
-    	this.currentURI = url;
+    	return open(url, postData, false);
+    }
+   
+    public String open(String url, List<NameValuePair> postData, boolean forcePost) throws ClientProtocolException, IOException {
+            	this.currentURI = url;
     	String response;
         String[] headerKeys = (String[]) this.headers.keySet().toArray(new String[headers.size()]);
         String[] headerVals = (String[]) this.headers.values().toArray(new String[headers.size()]);
     	ResponseHandler<String> responseHandler = new BasicResponseHandler();
-    	if (postData.isEmpty()) {
+    	if (postData.isEmpty() && !forcePost) {
     		//URL urli = new URL(url); 
     		HttpGet urlConnection = new HttpGet(url);
-    		urlConnection.addHeader("User-Agent", USER_AGENT);
-            for (int i = 0; i < headerKeys.length; i++) {
+
+    		if (userAgent != null)
+    			urlConnection.addHeader("User-Agent", userAgent);
+            
+    		for (int i = 0; i < headerKeys.length; i++) {
                 urlConnection.addHeader(headerKeys[i], headerVals[i]);
             }
     		response = httpclient.execute(urlConnection, responseHandler, context);
@@ -112,8 +124,11 @@ public class Urllib {
     	else {
     		HttpPost urlConnection = new HttpPost(url);
     		urlConnection.setEntity(new UrlEncodedFormEntity(postData, this.charset));
-    		urlConnection.addHeader("User-Agent", USER_AGENT);
-            for (int i = 0; i < headerKeys.length; i++) {
+    		
+    		if (userAgent != null)
+    			urlConnection.addHeader("User-Agent", userAgent);
+            
+    		for (int i = 0; i < headerKeys.length; i++) {
                 urlConnection.addHeader(headerKeys[i], headerVals[i]);
             }
     		response = httpclient.execute(urlConnection, responseHandler, context); 
@@ -122,7 +137,7 @@ public class Urllib {
         HttpUriRequest currentReq = (HttpUriRequest)context.getAttribute(ExecutionContext.HTTP_REQUEST);
         HttpHost currentHost = (HttpHost)context.getAttribute(ExecutionContext.HTTP_TARGET_HOST);
         this.currentURI = currentHost.toURI() + currentReq.getURI();
-    	
+        
     	return response;
     }
     
@@ -174,5 +189,10 @@ public class Urllib {
     
     public boolean acceptsInvalidCertificates() {
     	return acceptInvalidCertificates;
+    }
+    
+    public void setUserAgent(String userAgent)
+    {
+    	this.userAgent = userAgent; 
     }
 }
