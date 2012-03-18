@@ -9,6 +9,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,9 +17,11 @@ import android.content.Context;
 import android.provider.Settings.Secure;
 import android.text.InputType;
 
+import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
@@ -92,6 +95,7 @@ public class Skandiabanken extends Bank {
 			String loginResponse = urlopen.open(loginUrl, postData);
 			JSONObject obj = new JSONObject(loginResponse);
 			customerId = (int) obj.getLong("id");
+			urlopen.addHeader("x-smartrefill-customer", "" + customerId);
 		} catch (HttpResponseException e) {
 			if (e.getStatusCode() == 401)
 				throw new BankException(
@@ -138,11 +142,27 @@ public class Skandiabanken extends Bank {
 
 		String accountsUrl = getBaseUrlWithCustomerOwner() + "/customer/"
 				+ customerId + "/accounts";
-		String accountsJsonString;
 		try {
-			accountsJsonString = urlopen.open(accountsUrl);
-			JSONObject json = new JSONObject(accountsJsonString);
-			// TODO Handle accounts
+			String accountsJsonString = urlopen.open(accountsUrl);
+			JSONArray json = new JSONArray(accountsJsonString);
+			for (int i = 0; i< json.length(); i++)
+			{
+				JSONObject acountJsonObj = json.getJSONObject(i);
+				
+				String name = acountJsonObj.optString("alias");
+				
+				if (name.length() != 0)
+					name += " - ";
+				
+				name += acountJsonObj.getString("accountNumber");
+
+				// disposableAmount also exists in JSON
+				String balanceString = acountJsonObj.getString("amount");
+				String id = acountJsonObj.getString("id");
+				int type = Account.REGULAR; // accountType exists in JSON
+				Account account = new Account(name, Helpers.parseBalance(balanceString), id, type);
+				accounts.add(account);
+			}
 		} catch (IOException e) {
 			throw new BankException("IOException " + e.getMessage());
 		} catch (JSONException e) {
@@ -155,9 +175,35 @@ public class Skandiabanken extends Bank {
 			throws LoginException, BankException {
 		super.updateTransactions(account, urlopen);
 
-		String accountTransactionsUrl = getBaseUrlWithCustomerOwner()
-				+ "/customer/" + customerId + "/account/" + account.getId();
-		// TODO Get transactions
+		if (customerId == 0)
+			login();
+		
+		try {
+	        ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+	        
+			String accountTransactionsUrl = getBaseUrlWithCustomerOwner()
+					+ "/customer/" + customerId + "/account/" + account.getId();
+			
+			String accountJsonString = urlopen.open(accountTransactionsUrl);
+			JSONObject accountJSONObj = new JSONObject(accountJsonString);
+			JSONArray transactionsJSONArray = accountJSONObj.getJSONArray("transactions");
+			for (int i = 0; i< transactionsJSONArray.length(); i++)
+			{
+				JSONObject transactionJsonObj = transactionsJSONArray.getJSONObject(i);
+				String date = transactionJsonObj.getString("date"); // time and timestamp also exists in JSON
+				String ammountString = transactionJsonObj.getString("amount");
+				String description = transactionJsonObj.getString("merchant");
+				Transaction transaction = new Transaction(date, description, Helpers.parseBalance(ammountString));
+				transactions.add(transaction);
+			}
+			
+			account.setTransactions(transactions);
+			
+		} catch (IOException e) {
+			throw new BankException("IOException " + e.getMessage());
+		} catch (JSONException e) {
+			throw new BankException("Oväntat svarsformat " + e.getMessage());
+		}
 	}
 
 	@Override
