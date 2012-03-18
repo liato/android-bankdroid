@@ -119,10 +119,6 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         for (Account account: accounts) {
             updateTransactions(account, urlopen);
         }
-        if (urlopen != null) {
-            urlopen.close();
-        }
-
     }
 
     public Urllib login() throws LoginException, BankException {
