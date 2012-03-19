@@ -16,10 +16,6 @@
 
 package com.liato.bankdroid.banking;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-
-import net.sf.andhsli.hotspotlogin.SimpleCrypto;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -82,10 +78,15 @@ import com.liato.bankdroid.banking.banks.Villabanken;
 import com.liato.bankdroid.banking.banks.Volkswagen;
 import com.liato.bankdroid.banking.banks.Volvofinans;
 import com.liato.bankdroid.banking.banks.Wallet;
+import com.liato.bankdroid.banking.banks.Meniga;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.db.Crypto;
 import com.liato.bankdroid.db.DBAdapter;
 import com.liato.bankdroid.provider.IBankTypes;
+import net.sf.andhsli.hotspotlogin.SimpleCrypto;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
 
 public class BankFactory {
 
@@ -205,6 +206,8 @@ public class BankFactory {
             return new Vasttrafik(context);
         case IBankTypes.EVERYDAYCARD:
             return new Everydaycard(context);
+        case IBankTypes.MENIGA:
+            return new Meniga(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -269,6 +272,7 @@ public class BankFactory {
         banks.add(new NordeaDK(context));
         banks.add(new Vasttrafik(context));
         banks.add(new Everydaycard(context));
+        banks.add(new Meniga(context));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));
