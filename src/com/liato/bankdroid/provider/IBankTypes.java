@@ -78,4 +78,5 @@ public interface IBankTypes {
     public final static int VASTTRAFIK = 54;
     public final static int EVERYDAYCARD = 55;
 	public static final int AKELIUSINVEST = 56;
+    public static final int MENIGA = 57;
 }
