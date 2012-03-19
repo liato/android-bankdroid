@@ -64,7 +64,7 @@ public class WebViewActivity extends LockableActivity implements OnClickListener
         mWebView.setBackgroundColor(0);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setBuiltInZoomControls(true); 
-        mWebView.getSettings().setUserAgentString(Urllib.USER_AGENT);
+        mWebView.getSettings().setUserAgentString(Urllib.DEFAULT_USER_AGENT);
         mWebView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
         
         mWebView.setWebChromeClient(new WebChromeClient() {
