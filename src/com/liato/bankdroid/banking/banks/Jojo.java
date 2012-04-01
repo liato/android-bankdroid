@@ -81,9 +81,9 @@ public class Jojo extends Bank {
         postData.add(new BasicNameValuePair("__EVENTTARGET", ""));
         postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
         postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
-        postData.add(new BasicNameValuePair("ctl00$ctl01$UsernameTextBox", username));
-        postData.add(new BasicNameValuePair("ctl00$ctl01$PasswordTextBox", password));
-        postData.add(new BasicNameValuePair("ctl00$ctl01$LoginButton", "Logga in"));
+        postData.add(new BasicNameValuePair("ctl00$ctl00$UsernameTextBox", username));
+        postData.add(new BasicNameValuePair("ctl00$ctl00$PasswordTextBox", password));
+        postData.add(new BasicNameValuePair("ctl00$ctl00$LoginButton", "Logga in"));
 
         return new LoginPackage(urlopen, postData, response, "https://www.skanetrafiken.se/templates/StartPage.aspx?id=2182&epslanguage=SV");
     }
