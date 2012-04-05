@@ -89,12 +89,12 @@ public class Rikslunchen extends Bank {
 		postData.add(new BasicNameValuePair("c0-methodName", "getCardData"));
 		postData.add(new BasicNameValuePair("c0-id", "0"));
 		postData.add(new BasicNameValuePair("batchId", "1"));
-		postData.add(new BasicNameValuePair("page", "%2Findex.html"));
+		postData.add(new BasicNameValuePair("page", "%2Friks-cp%2Fcheck_balance.html"));
 		postData.add(new BasicNameValuePair("httpSessionId", ""));
 		postData.add(new BasicNameValuePair("scriptSessionId", ""));
 
 		HttpClient httpclient = new DefaultHttpClient();
-		HttpPost httppost = new HttpPost("http://www.rikslunchen.se/dwr/call/plaincall/cardUtil.getCardData.dwr");
+		HttpPost httppost = new HttpPost("http://www.rikslunchen.se/riks-cp/dwr/call/plaincall/cardUtil.getCardData.dwr");
 		httppost.setEntity(new UrlEncodedFormEntity(postData));
 
 		HttpResponse response = httpclient.execute(httppost);
@@ -102,7 +102,7 @@ public class Rikslunchen extends Bank {
 		StringWriter writer = new StringWriter();
 		IOUtils.copy(streamResponse, writer);
 
-		return new LoginPackage(urlopen, postData, writer.toString(), "http://www.rikslunchen.se/dwr/call/plaincall/cardUtil.getCardData.dwr");
+		return new LoginPackage(urlopen, postData, writer.toString(), "http://www.rikslunchen.se/riks-cp/dwr/call/plaincall/cardUtil.getCardData.dwr");
 	}
 
 	@Override
