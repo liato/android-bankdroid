@@ -21,6 +21,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Paint.Style;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
@@ -29,6 +33,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
@@ -63,6 +68,7 @@ public class LockableActivity extends Activity {
         mLockPatternUtils.setVisiblePatternEnabled(mPrefs.getBoolean("patternlock_visible_pattern", true));
         mLockPatternUtils.setTactileFeedbackEnabled(mPrefs.getBoolean("patternlock_tactile_feedback", false));
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
     }
 	
 	@Override
@@ -199,7 +205,6 @@ public class LockableActivity extends Activity {
 		long currentTime = SystemClock.elapsedRealtime();
 		long lockedAt = mPrefs.getLong("locked_at", currentTime-10000);
 		long timedif = Math.abs(currentTime - lockedAt);
-        Log.d("Lock", "timedif: " + timedif);
 		if (timedif > 2000) {
             mHasLoaded = false;         
 		    launchPatternLock();
@@ -241,4 +246,19 @@ public class LockableActivity extends Activity {
     protected void skipLockOnce() {
         mSkipLockOnce = true;
     }
+    
+    
+    //Not always called?
+    /*
+    @Override
+    public boolean onCreateThumbnail(Bitmap outBitmap, Canvas canvas) {
+        Paint p = new Paint();
+        p.setStyle(Style.FILL);
+        p.setColor(0xff64E366);
+        canvas.drawCircle(outBitmap.getWidth()/2, outBitmap.getHeight()/2, outBitmap.getWidth()/3, p);
+        //return super.onCreateThumbnail(outBitmap, canvas);
+        return true;
+    }
+    */
+    
 }
