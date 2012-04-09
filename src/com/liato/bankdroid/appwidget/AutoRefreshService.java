@@ -116,13 +116,20 @@ public class AutoRefreshService extends Service {
 		return null;
 	}
 
-	public static void showNotification(final String text, final int icon,
-			final String title, final String bank, Context context) {
+    public static void showNotification(final String accountName,
+            final BigDecimal diff, final BigDecimal accountBalance,
+            final String currency, final int icon, final String title,
+            final String bank, Context context) {
 		final SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		if (!prefs.getBoolean("notify_on_change", true)) {
 			return;
 		}
+        
+        String text = String.format("%s: %s%s", accountName, ((diff.compareTo(new BigDecimal(0)) == 1) ? "+": ""), Helpers.formatBalance(diff, currency));
+        if (!prefs.getBoolean("notify_delta_only", false)) {
+            text = String.format("%s (%s)", text, Helpers.formatBalance(accountBalance, currency));
+        }
 
         final NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 		final Notification notification = new Notification(icon, text,
@@ -282,21 +289,10 @@ public class AutoRefreshService extends Service {
 										diff = account.getBalance().subtract(
 												oldAccount.getBalance());
 										showNotification(
-												account.getName()
-														+ ": "
-														+ ((diff.compareTo(new BigDecimal(
-																0)) == 1) ? "+"
-																: "")
-														+ Helpers
-																.formatBalance(
-																		diff,
-																		account.getCurrency())
-														+ " ("
-														+ Helpers
-																.formatBalance(
-																		account.getBalance(),
-																		account.getCurrency())
-														+ ")",
+										        account.getName(),
+										        diff,
+										        account.getBalance(),
+										        account.getCurrency(),
 												bank.getImageResource(),
 												bank.getDisplayName(),
 												bank.getName(),

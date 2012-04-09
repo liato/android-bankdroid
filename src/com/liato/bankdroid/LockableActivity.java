@@ -24,6 +24,7 @@ import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -197,7 +198,8 @@ public class LockableActivity extends Activity {
 		// will have to enter the lock pattern to continue.
 		long currentTime = SystemClock.elapsedRealtime();
 		long lockedAt = mPrefs.getLong("locked_at", currentTime-10000);
-		long timedif = currentTime - lockedAt;
+		long timedif = Math.abs(currentTime - lockedAt);
+        Log.d("Lock", "timedif: " + timedif);
 		if (timedif > 2000) {
             mHasLoaded = false;         
 		    launchPatternLock();

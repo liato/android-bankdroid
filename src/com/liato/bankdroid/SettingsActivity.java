@@ -16,6 +16,8 @@
 
 package com.liato.bankdroid;
 
+import java.math.BigDecimal;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -115,7 +117,10 @@ public class SettingsActivity extends LockablePreferenceActivity implements OnPr
 		else if ("test_notification".equals(prefKey)) {
             Log.d(TAG, "Sending test notification.");
             AutoRefreshService.showNotification(
-                    "Personkonto: -143,50 SEK (8 351,00 SEK)",
+                    "Personkonto",
+                    new BigDecimal(-143.50),
+                    new BigDecimal(8351.00),
+                    "SEK",
                     R.drawable.logo_swedbank,
                     "Familjekonto",
                     "Swedbank",

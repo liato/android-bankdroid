@@ -23,8 +23,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 public class LockablePreferenceActivity extends PreferenceActivity {
     private static int PATTERNLOCK_UNLOCK = 42;
@@ -61,7 +63,7 @@ public class LockablePreferenceActivity extends PreferenceActivity {
         if (mHasLoaded) {
             writeLockTime();
         } else {
-            writeLockTime(System.currentTimeMillis()-10000);
+            writeLockTime(SystemClock.elapsedRealtime()-10000);
         }
     }
 
@@ -75,9 +77,10 @@ public class LockablePreferenceActivity extends PreferenceActivity {
 		// If a lock pattern is set we need to check the time for when the last
 		// activity was open. If it's been more than two seconds the user
 		// will have to enter the lock pattern to continue.
-		long currentTime = System.currentTimeMillis();
+		long currentTime = SystemClock.elapsedRealtime();
 		long lockedAt = mPrefs.getLong("locked_at", currentTime-10000);
-		long timedif = currentTime - lockedAt;
+		long timedif = Math.abs(currentTime - lockedAt);
+		Log.d("Lock", "timedif: " + timedif);
 		if (timedif > 2000) {
 		    launchPatternLock();
 		}
@@ -94,7 +97,7 @@ public class LockablePreferenceActivity extends PreferenceActivity {
 	}
 	
     private void writeLockTime() {
-        writeLockTime(System.currentTimeMillis());
+        writeLockTime(SystemClock.elapsedRealtime());
     }
 
     private void writeLockTime(long time) {
@@ -130,4 +133,5 @@ public class LockablePreferenceActivity extends PreferenceActivity {
         super.onStop();
         setLockEnabled(true);
     }   	
+    
 }

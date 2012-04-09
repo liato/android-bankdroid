@@ -81,6 +81,8 @@
    	<string name="notification_sound_title">Notification sound</string>
 	<string name="notification_sound_summary">Select notification sound</string>
 	<string name="notification_sound_name">Select sound</string>
+	<string name="notify_delta_only_title">Display change only</string>
+	<string name="notify_delta_only_summary">Don\'t display the account balance in the notification</string>
 	<string name="account_types_title">Account types</string>
 	<string name="account_types_summary">Only show notifications for selected account types</string>
 	<string name="remote_notifier_title">Remote Notifier Integration</string>
