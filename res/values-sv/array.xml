@@ -22,4 +22,11 @@
 		<item>15 sekunder</item>
 		<item>20 sekunder</item>
 	</string-array>	
+	<string-array
+		name="numNotificationsNames">
+		<item>En</item>
+   		<item>En per bank</item>
+		<item>En per konto</item>
+		<item>En per kontoändring</item>
+	</string-array>	
 </resources>

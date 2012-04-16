@@ -24,7 +24,7 @@ import com.liato.bankdroid.provider.IAccountTypes;
 public class Account implements IAccountTypes {
 	private String name;
 	private BigDecimal balance;
-	private final String id;
+	private String id;
 	private Bank bank = null;
 	private long bankId = -1;
 	private int type = Account.REGULAR;
@@ -103,6 +103,10 @@ public class Account implements IAccountTypes {
 
 	public String getId() {
 		return id;
+	}
+	
+	public void setId(String id) {
+	    this.id = id;
 	}
 
 	public Bank getBank() {

@@ -58,6 +58,8 @@
 	<string name="update_stop_title">Update end time</string>
 	<string name="update_transaction_history_title">Update transaction history</string>
 	<string name="update_transaction_history_summary">Update transaction history when updating automatically</string>
+	<string name="number_of_notifications_title">Number of notifications</string>
+	<string name="number_of_notifications_summary">Number of notifications to display simultaneously</string>
 	<string name="appearance_title">Appearance</string>
 	<string name="widgets_title">Widgets</string>
 	<string name="round_widget_balance_title">Round widget balance</string>

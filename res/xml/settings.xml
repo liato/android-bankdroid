@@ -117,6 +117,14 @@
 		    android:defaultValue="@color/default_led_color"
 		    android:dependency="notify_with_led"
 		/>
+		<ListPreference
+			android:title="@string/number_of_notifications_title"
+			android:summary="@string/number_of_notifications_summary"
+			android:key="num_notifications"
+			android:defaultValue="total"
+			android:entries="@array/numNotificationsNames"
+			android:entryValues="@array/numNotificationsValues"
+			android:dependency="notify_on_change" />
 		<CheckBoxPreference
 			android:key="notify_delta_only"
 			android:defaultValue="false"

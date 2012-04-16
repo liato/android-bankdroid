@@ -35,6 +35,7 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -116,23 +117,22 @@ public class AutoRefreshService extends Service {
 		return null;
 	}
 
-    public static void showNotification(final String accountName,
-            final BigDecimal diff, final BigDecimal accountBalance,
-            final String currency, final int icon, final String title,
-            final String bank, Context context) {
+    public static void showNotification(final Bank bank, final Account account,
+            final BigDecimal diff, Context context) {
+        
 		final SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		if (!prefs.getBoolean("notify_on_change", true)) {
 			return;
 		}
         
-        String text = String.format("%s: %s%s", accountName, ((diff.compareTo(new BigDecimal(0)) == 1) ? "+": ""), Helpers.formatBalance(diff, currency));
+        String text = String.format("%s: %s%s", account.getName(), ((diff.compareTo(new BigDecimal(0)) == 1) ? "+": ""), Helpers.formatBalance(diff, account.getCurrency()));
         if (!prefs.getBoolean("notify_delta_only", false)) {
-            text = String.format("%s (%s)", text, Helpers.formatBalance(accountBalance, currency));
+            text = String.format("%s (%s)", text, Helpers.formatBalance(account.getBalance(), account.getCurrency()));
         }
 
         final NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-		final Notification notification = new Notification(icon, text,
+		final Notification notification = new Notification(bank.getImageResource(), text,
 				System.currentTimeMillis());
 		// Remove notification from statusbar when clicked
 		notification.flags |= Notification.FLAG_AUTO_CANCEL;
@@ -161,15 +161,17 @@ public class AutoRefreshService extends Service {
 		final PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
 				new Intent(context, MainActivity.class), 0);
 
-		notification.setLatestEventInfo(context, title, text, contentIntent);
+		notification.setLatestEventInfo(context, bank.getDisplayName(), text, contentIntent);
 
-		notificationManager.notify(R.id.about, notification);
+		String numNotifications = prefs.getString("num_notifications", "total");
+		int notificationId = (int) (numNotifications.equals("total") ? 0 : numNotifications.equals("bank") ? bank.getDbId() : numNotifications.equals("account") ? account.getId().hashCode() : SystemClock.elapsedRealtime());
+		notificationManager.notify(notificationId, notification);
 
 		// Broadcast to Remote Notifier if enabled
 		// http://code.google.com/p/android-notifier/
 		if (prefs.getBoolean("notify_remotenotifier", false)) {
 			final Intent i = new Intent(BROADCAST_REMOTE_NOTIFIER);
-			i.putExtra("title", String.format("%s (%s)", bank, title));
+			i.putExtra("title", String.format("%s (%s)", bank.getName(), bank.getDisplayName()));
 			i.putExtra("description", text);
 			context.sendBroadcast(i);
 		}
@@ -183,7 +185,7 @@ public class AutoRefreshService extends Service {
 			} else {
 				i = new Intent(BROADCAST_OPENWATCH_TEXT);
 			}
-			i.putExtra("line1", String.format("%s (%s)", bank, title));
+			i.putExtra("line1", String.format("%s (%s)", bank.getName(), bank.getDisplayName()));
 			i.putExtra("line2", text);
 			context.sendBroadcast(i);
 		}
@@ -193,7 +195,7 @@ public class AutoRefreshService extends Service {
 		if (prefs.getBoolean("notify_liveview", false)) {
 			final Intent i = new Intent(context, LiveViewService.class);
 			i.putExtra(LiveViewService.INTENT_EXTRA_ANNOUNCE, true);
-			i.putExtra(LiveViewService.INTENT_EXTRA_TITLE, String.format("%s (%s)", bank, title));
+			i.putExtra(LiveViewService.INTENT_EXTRA_TITLE, String.format("%s (%s)", bank.getName(), bank.getDisplayName()));
 			i.putExtra(LiveViewService.INTENT_EXTRA_TEXT, text);
 			context.startService(i);
 		}
@@ -288,15 +290,7 @@ public class AutoRefreshService extends Service {
 									if (notify) {
 										diff = account.getBalance().subtract(
 												oldAccount.getBalance());
-										showNotification(
-										        account.getName(),
-										        diff,
-										        account.getBalance(),
-										        account.getCurrency(),
-												bank.getImageResource(),
-												bank.getDisplayName(),
-												bank.getName(),
-												AutoRefreshService.this);
+										showNotification(bank, account, diff, AutoRefreshService.this);
 									}
 
 									refreshWidgets = true;
@@ -370,7 +364,7 @@ public class AutoRefreshService extends Service {
 	public static void broadcastTransactionUpdate(final Context context,
 			final long bankId, final String accountId) {
 		final Intent i = new Intent(BROADCAST_TRANSACTIONS_UPDATED);
-		i.putExtra("accountId", new Long(bankId).toString() + "_" + accountId);
+		i.putExtra("accountId", Long.toString(bankId) + "_" + accountId);
 		context.sendBroadcast(i);
 	}
 

@@ -44,4 +44,18 @@
 		<item>15</item>
 		<item>20</item>
 	</string-array>
+	<string-array
+		name="numNotificationsNames">
+		<item>One</item>
+   		<item>One per bank</item>
+		<item>One per account</item>
+		<item>One per change</item>
+	</string-array>
+	<string-array
+		name="numNotificationsValues">
+		<item>total</item>
+		<item>bank</item>
+		<item>account</item>
+		<item>change</item>
+	</string-array>
 </resources>

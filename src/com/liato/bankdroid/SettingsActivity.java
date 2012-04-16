@@ -30,6 +30,10 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.liato.bankdroid.appwidget.AutoRefreshService;
+import com.liato.bankdroid.banking.Account;
+import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.banks.Nordea;
+import com.liato.bankdroid.banking.banks.Swedbank;
 import com.liato.bankdroid.lockpattern.ChooseLockPattern;
 import com.liato.bankdroid.lockpattern.ConfirmLockPattern;
 import com.liato.bankdroid.lockpattern.LockPatternUtils;
@@ -116,15 +120,18 @@ public class SettingsActivity extends LockablePreferenceActivity implements OnPr
 		}
 		else if ("test_notification".equals(prefKey)) {
             Log.d(TAG, "Sending test notification.");
-            AutoRefreshService.showNotification(
-                    "Personkonto",
-                    new BigDecimal(-143.50),
-                    new BigDecimal(8351.00),
-                    "SEK",
-                    R.drawable.logo_swedbank,
-                    "Familjekonto",
-                    "Swedbank",
-                    this);      
+            Account account1 = new Account("Personkonto", new BigDecimal(8351.00), "22");
+            Bank bank1 = new Swedbank(this);
+            bank1.setDbid(21);
+            bank1.setCustomName("800416-0001");
+
+            Account account2 = new Account("Personkonto", new BigDecimal(8341.00), "23");
+            Bank bank2 = new Nordea(this);
+            bank2.setDbid(22);
+            bank2.setCustomName("800416-0002");
+
+            AutoRefreshService.showNotification(bank1, account1, new BigDecimal(-143.50), this);      
+            AutoRefreshService.showNotification(bank2, account2, new BigDecimal(-123.50), this);      
 		    return true;
 		}
 		return false;
