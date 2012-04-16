@@ -44,7 +44,6 @@ public class LockablePreferenceActivity extends PreferenceActivity {
 		mLockPatternUtils = new LockPatternUtils(this);
         mLockPatternUtils.setVisiblePatternEnabled(mPrefs.getBoolean("patternlock_visible_pattern", true));
         mLockPatternUtils.setTactileFeedbackEnabled(mPrefs.getBoolean("patternlock_tactile_feedback", false));
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
 	}
 
 	@Override

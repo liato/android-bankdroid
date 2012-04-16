@@ -22,9 +22,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BlurMaskFilter;
+import android.graphics.Color;
+import android.graphics.BlurMaskFilter.Blur;
 import android.graphics.Canvas;
+import android.graphics.MaskFilter;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
@@ -68,7 +74,6 @@ public class LockableActivity extends Activity {
         mLockPatternUtils.setVisiblePatternEnabled(mPrefs.getBoolean("patternlock_visible_pattern", true));
         mLockPatternUtils.setTactileFeedbackEnabled(mPrefs.getBoolean("patternlock_tactile_feedback", false));
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
     }
 	
 	@Override
@@ -248,17 +253,78 @@ public class LockableActivity extends Activity {
     }
     
     
-    //Not always called?
-    /*
     @Override
     public boolean onCreateThumbnail(Bitmap outBitmap, Canvas canvas) {
+        View decorview = getWindow().getDecorView();
+        if (decorview == null) {
+            return true;
+        }
+
+        final int vw = decorview.getWidth();
+        final int vh = decorview.getHeight();
+        final int dw = outBitmap.getWidth();
+        final int dh = outBitmap.getHeight();
+
+        Bitmap bluredBitmap = Bitmap.createBitmap(outBitmap.getWidth(), outBitmap.getHeight(), outBitmap.getConfig());
+        Canvas c = new Canvas(bluredBitmap);
+        
+        c.save();
+        c.scale(((float)dw)/vw, ((float)dh)/vh);
+        decorview.draw(c);
+        c.restore();        
+
+        canvas.drawBitmap(pixelate(bluredBitmap, 5), 0, 0, null);
+        Bitmap lockbitmap = BitmapFactory.decodeResource(getResources(), R.drawable.lock);
+
         Paint p = new Paint();
-        p.setStyle(Style.FILL);
-        p.setColor(0xff64E366);
-        canvas.drawCircle(outBitmap.getWidth()/2, outBitmap.getHeight()/2, outBitmap.getWidth()/3, p);
-        //return super.onCreateThumbnail(outBitmap, canvas);
+        p.setAntiAlias(true);
+        p.setDither(true);
+        p.setFilterBitmap(true);
+        
+        canvas.drawBitmap(lockbitmap, null, new RectF(dw*0.25f,dh*0.25f,dw*0.75f,dh*0.75f), p);
+        
         return true;
     }
-    */
+    
+    private Bitmap pixelate(Bitmap bitmap, int size) {
+        Bitmap bm = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
+        Canvas c = new Canvas(bm);
+        Paint p = new Paint();
+        p.setStyle(Style.FILL);
+        int w = bm.getWidth();
+        int h = bm.getHeight();
+        
+        int[] pixels = new int[w*h];
+        bitmap.getPixels(pixels, 0, w, 0, 0, w, h);
+        for (int i = 0; i < h; i = i+size) {
+            for (int j = 0; j < w; j = j+size) {
+                int a = 0;
+                int r = 0;
+                int g = 0;
+                int b = 0;
+                int pc = 0;
+                for (int k = 0; k < size; k++) {
+                    for (int l = 0; l < size; l++) {
+                        int pxp = (i+k)*w+j+l;
+                        if (pxp < pixels.length) {
+                            int pixel = pixels[pxp];
+                            a += Color.alpha(pixel);
+                            r += Color.red(pixel);
+                            g += Color.green(pixel);
+                            b += Color.blue(pixel);
+                            pc++;
+                        }
+                    }
+                }
+                a /= pc;
+                r /= pc;
+                g /= pc;
+                b /= pc;
+                p.setColor(Color.argb(a, r, g, b));
+                c.drawRect(j, i, j+size, i+size, p);
+            }
+        }
+        return bm;
+    }    
     
 }
