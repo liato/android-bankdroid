@@ -94,6 +94,7 @@ public class NordeaDK extends Bank {
 		}
 		response = urlopen
 				.open("https://www.netbank.nordea.dk/mnetbank/index.jsp");
+		response = urlopen.open("https://www.netbank.nordea.dk/mnetbank/logon.jsp");
 		Matcher matcher = reLoginUrl.matcher(response);
 		if (!matcher.find()) {
 			throw new BankException(res.getText(R.string.unable_to_find)
