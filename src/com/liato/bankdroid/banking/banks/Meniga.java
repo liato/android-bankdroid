@@ -34,7 +34,7 @@ public class Meniga extends Bank{
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
     private static final String INPUT_HINT_USERNAME = "name@company.com";
 
-    private Pattern reAccounts = Pattern.compile("\\?account=([^']+)'[^>]*>\\s*<div\\s*class=\"account-info\">[^<]*<span\\s*class=\"bold\">([^<]+)</span>\\s*(?:</div>\\s*<div\\s*class=\"account-status\">)\\s*<span\\s*class=\"(minus|plus)\">([^k]+)kr");
+    private Pattern reAccounts = Pattern.compile("\\?account=([^']+)'[^>]*>\\s*<div\\s*class=\"account-info\">[^<]*<span\\s*class=\"bold\">([^<]+)</span>\\s*(?:</div>\\s*<div\\s*class=\"account-status\">)\\s*<span\\s*class=\"(minus|plus)\">([^<]+)</span>");
     private Pattern reTransactions = Pattern.compile("\"Id\":([^,]*),.*?\"Text\":\"([^\"]*)\".*?\"OriginalDate\":\".?.?Date\\(([^\\)]*)\\).*?\"Amount\":([^,]*),");
 
     String response;
@@ -86,7 +86,7 @@ public class Meniga extends Bank{
         }
 
         try{
-            response = urlopen.open("https://www.meniga.is/mobile/language/?lang=sv-SE");
+            response = urlopen.open("https://www.meniga.is/mobile/language/?lang=is-IS");
         }
         catch (ClientProtocolException e){
             //Do nothing
@@ -120,7 +120,9 @@ public class Meniga extends Bank{
                  * 4: Balance            5 678
                  *
                  */
-                Account account = new Account(Html.fromHtml(matcher.group(2)).toString(), Helpers.parseBalance(matcher.group(4)), matcher.group(1).trim());
+                String balanceString ;
+                balanceString = matcher.group(4) + ".00";
+                Account account = new Account(Html.fromHtml(matcher.group(2)).toString(), Helpers.parseBalance(balanceString), matcher.group(1).trim());
                 account.setCurrency("ISK");
                 balance = balance.add(Helpers.parseBalance(matcher.group(4)));
                 accounts.add(account);
