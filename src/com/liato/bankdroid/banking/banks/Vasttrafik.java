@@ -44,13 +44,13 @@ public class Vasttrafik extends Bank {
     private static final String TAG = "Västtrafik";
     private static final String NAME = "Västtrafik";
     private static final String NAME_SHORT = "vasttrafik";
-    private static final String URL = "http://vasttrafik.se/Mina-Sidor/";
+    private static final String URL = "https://www.vasttrafik.se/mina-sidor/";
     private static final int BANKTYPE_ID = IBankTypes.VASTTRAFIK;
 
     private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
-	private Pattern reAccounts = Pattern.compile("<td class=\"HeadingTop Col2of3\">\\s+([^<]+)\\s+</td>.*?<td class=\"Col2of3\">\\s+([^<]+)\\s+</td>.*?<div id=\"ctl00_FullRegion_MainAndFooterRegion_MainRegion_HandleCardsFormControl_TabContainerCards_TabPanelCards_ListViewActiveCards_ctrl\\d{0,3}_PanelDetail\" class=\"RowColor collapsePanel\" style=\"height:0px;\">(.*?)</div>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);;
-	private Pattern reBalance = Pattern.compile("<tr class=\"(RowColor|AlternatingColor)\">\\s+<td>\\s+Kontoladdning\\s+</td>.*?<td>(.*?)<br />.*?</td>.*?</tr>", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
-    private String response = null;
+	private Pattern reAccounts = Pattern.compile("<div class=\"myCardsItemContainer\" data-cardnumber=\"\\d+\">.*?<h3 class=\"cardName grid_12 clearMargin\">(.*?)</h3>.*?<span class=\"cardNumber\">(\\d+)</span>.*?<div class=\"clearfix cardCharges\">(.*?)<div class=\"clearfix paddingBottom grid_12 cardOptions\">", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private Pattern reBalance = Pattern.compile("<span class=\"chargeType boldType\">(.*?): (.*?)</span>", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+	private String response = null;
 
     public Vasttrafik(Context context) {
         super(context);
@@ -70,30 +70,30 @@ public class Vasttrafik extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
     ClientProtocolException, IOException {
-        urlopen = new Urllib(true);
-        response = urlopen.open("https://www.vasttrafik.se/CustomerUtil/Common/Security/Login.aspx");
-        Matcher matcher = reViewState.matcher(response);
-        if (!matcher.find()) {
-            throw new BankException(res.getText(R.string.unable_to_find).toString()+" ViewState.");
-        }
-        String strViewState = matcher.group(1);
-        List <NameValuePair> postData = new ArrayList <NameValuePair>();
-		postData.add(new BasicNameValuePair("__EVENTTARGET", ""));
-		postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
-		postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
-		postData.add(new BasicNameValuePair("LoginFormControl$TextBoxUsername", username));
-		postData.add(new BasicNameValuePair("LoginFormControl$TextBoxPassword", password));
-		postData.add(new BasicNameValuePair("LoginFormControl_CheckBoxPersistantLogin", ""));
-		postData.add(new BasicNameValuePair("LoginFormControl$LoginButton", "Logga in"));
+		urlopen = new Urllib(true);
+		response = urlopen.open("https://www.vasttrafik.se/mina-sidor/logga-in/");
 
-        return new LoginPackage(urlopen, postData, response, "https://www.vasttrafik.se/CustomerUtil/Common/Security/Login.aspx");
+		Matcher matcher = reViewState.matcher(response);
+		if (!matcher.find()) {
+			throw new BankException(res.getText(R.string.unable_to_find).toString()+" ViewState.");
+		}
+		String strViewState = matcher.group(1);
+
+        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+		postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
+		postData.add(new BasicNameValuePair("ctl00$ctl00$SiteRegion$SiteRegion$ContentRegion$RoundedCorners43$MainContentRegion$AddContentRegion$ctl00$TextBoxUserName", username));
+		postData.add(new BasicNameValuePair("ctl00$ctl00$SiteRegion$SiteRegion$ContentRegion$RoundedCorners43$MainContentRegion$AddContentRegion$ctl00$TextBoxPassword", password));
+		postData.add(new BasicNameValuePair("ctl00$ctl00$SiteRegion$SiteRegion$ContentRegion$RoundedCorners43$MainContentRegion$AddContentRegion$ctl00$CheckBoxPersistent", "on"));
+		postData.add(new BasicNameValuePair("ctl00$ctl00$SiteRegion$SiteRegion$ContentRegion$RoundedCorners43$MainContentRegion$AddContentRegion$ctl00$ButtonLogin", "Logga in"));
+
+        return new LoginPackage(urlopen, postData, response, "https://www.vasttrafik.se/mina-sidor/logga-in/?ReturnUrl=/mina-sidor-inloggad/mina-kort/");
     }
 
     public Urllib login() throws LoginException, BankException {
         try {
             LoginPackage lp = preLogin();
             response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-            if (response.contains("Felaktig inloggning")) {
+            if (!response.contains("Inloggad som:")) {
                 throw new LoginException(res.getText(R.string.invalid_username_password).toString());
             }
         }
@@ -114,14 +114,9 @@ public class Vasttrafik extends Bank {
         }
         urlopen = login();
         try {
-            response = urlopen.open("https://www.vasttrafik.se/sv/Mina-sidor-inloggad/Mina-Vasttrafikskort/");
+            response = urlopen.open("https://www.vasttrafik.se/mina-sidor-inloggad/mina-kort/");
             Matcher matcher;
             Matcher matcher_b;
-            matcher = reViewState.matcher(response);
-            if (!matcher.find()) {
-                throw new BankException(res.getText(R.string.unable_to_find).toString()+" ViewState.");
-            }			
-            String strViewState = matcher.group(1);
 
             matcher = reAccounts.matcher(response);
             while (matcher.find()) {
@@ -131,7 +126,6 @@ public class Vasttrafik extends Bank {
                  * 1: Name              Nytt
                  * 2: Card number       1111111111
                  * 3: Balance information
-                 * 
                  */
 
                 matcher_b = reBalance.matcher(matcher.group(3));
@@ -139,14 +133,14 @@ public class Vasttrafik extends Bank {
                     /*
                      * Capture groups:
                      * GROUP                EXAMPLE DATA
+                     * 1: Type              Kontoladdning
                      * 2: Amount            592,80 kr
-                     * 
                      */
 
 					String balanceString = matcher_b.group(2).replaceAll("\\<a[^>]*>","").replaceAll("\\<[^>]*>","").trim();
-						
-                    accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim() , Helpers.parseBalance(balanceString), matcher.group(2)));
-                    balance = balance.add(Helpers.parseBalance(balanceString));
+
+					accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim() , Helpers.parseBalance(balanceString), matcher.group(2)));
+					balance = balance.add(Helpers.parseBalance(balanceString));
                 }
             }
 
@@ -161,7 +155,7 @@ public class Vasttrafik extends Bank {
         catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }		
+        }
         finally {
             super.updateComplete();
         }
