@@ -30,7 +30,6 @@ import org.apache.http.message.BasicNameValuePair;
 import android.content.Context;
 import android.text.Html;
 import android.text.InputType;
-import android.util.Log;
 
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
@@ -60,7 +59,7 @@ public abstract class SEBKortBase extends Bank {
 		super.STATIC_BALANCE = STATIC_BALANCE;
 		this.provider_part = provider_part;
 		this.prodgroup = prodgroup;
-		super.URL = String.format("https://applications.sebkort.com/nis/external/%s/login.do", provider_part);
+		super.URL = String.format("https://application.sebkort.com/nis/external/%s/login.do", provider_part);
 	}
 
 	public SEBKortBase(String username, String password, Context context, String url, String prodgroup) throws BankException, LoginException, BankChoiceException {
@@ -73,24 +72,23 @@ public abstract class SEBKortBase extends Bank {
             ClientProtocolException, IOException {
         urlopen = new Urllib(true);
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
-        response = urlopen.open(String.format("https://applications.sebkort.com/nis/external/%s/login.do", provider_part));
-        List<NameValuePair> parameters = new ArrayList<NameValuePair>(3);
-        parameters.add(new BasicNameValuePair("USERNAME", prodgroup+username.toUpperCase()));
-        parameters.add(new BasicNameValuePair("referer", "login.jsp"));
-        response = urlopen.open("https://applications.sebkort.com/nis/external/hidden.jsp", postData);
+        response = urlopen.open(String.format("https://application.sebkort.com/nis/external/%s/login.do", provider_part));
+        urlopen.addHeader("Referer", String.format("https://application.sebkort.com/nis/external/%s/login.do", provider_part));
+        response = urlopen.open("https://application.sebkort.com/nis/external/hidden.jsp");
+        urlopen.removeHeader("Referer");
         
         postData.clear();
-        postData.add(new BasicNameValuePair("choice", "PWD"));
-        postData.add(new BasicNameValuePair("CURRENT_METHOD", "PWD"));
-        postData.add(new BasicNameValuePair("METHOD", "LOGIN"));
-        postData.add(new BasicNameValuePair("uname", username.toUpperCase()));
-        postData.add(new BasicNameValuePair("PASSWORD", password));
+        postData.add(new BasicNameValuePair("SEB_Referer", "/nis"));
+        postData.add(new BasicNameValuePair("SEB_Auth_Mechanism", "5"));
         postData.add(new BasicNameValuePair("target", String.format("/nis/%s/main.do", provider_part)));
         postData.add(new BasicNameValuePair("prodgroup", prodgroup));
-        postData.add(new BasicNameValuePair("USERNAME", prodgroup+username.toUpperCase()));
-        postData.add(new BasicNameValuePair("METHOD", "LOGIN"));
+        postData.add(new BasicNameValuePair("UID", prodgroup+username.toUpperCase()));
+        postData.add(new BasicNameValuePair("TYPE", "LOGIN"));
         postData.add(new BasicNameValuePair("CURRENT_METHOD", "PWD"));
-        return new LoginPackage(urlopen, postData, response, "https://applications.sebkort.com/siteminderagent/forms/generic.fcc");
+        postData.add(new BasicNameValuePair("uname", username.toUpperCase()));
+        postData.add(new BasicNameValuePair("PASSWORD", password));
+        
+        return new LoginPackage(urlopen, postData, response, "https://application.sebkort.com/auth4/Authentication/select.jsp");
     }
 
 	@Override
@@ -120,8 +118,8 @@ public abstract class SEBKortBase extends Bank {
 		urlopen = login();
 		Matcher matcher;
 		try {
-			if (!String.format("https://applications.sebkort.com/nis/%s/main.do", provider_part).equals(urlopen.getCurrentURI())) {
-				response = urlopen.open(String.format("https://applications.sebkort.com/nis/%s/main.do", provider_part));
+			if (!String.format("https://application.sebkort.com/nis/%s/main.do", provider_part).equals(urlopen.getCurrentURI())) {
+				response = urlopen.open(String.format("https://application.sebkort.com/nis/%s/main.do", provider_part));
 			}
 			matcher = reAccounts.matcher(response);
             /*
@@ -133,11 +131,13 @@ public abstract class SEBKortBase extends Bank {
 			if (matcher.find()) {
 			    Account account = new Account("Köpgräns" , Helpers.parseBalance(matcher.group(1)), "3");
 			    account.setType(Account.OTHER);
+                account.setAliasfor("1");
 			    accounts.add(account);
 			}
             if (matcher.find()) {
                 Account account = new Account("Saldo" , Helpers.parseBalance(matcher.group(1)), "2");
                 account.setType(Account.OTHER);
+                account.setAliasfor("1");
                 accounts.add(account);
             }
             if (matcher.find()) {
@@ -172,7 +172,7 @@ public abstract class SEBKortBase extends Bank {
 		String response = null;
 		Matcher matcher;
 		try {
-			response = urlopen.open(String.format("https://applications.sebkort.com/nis/%s/getPendingTransactions.do", provider_part));
+			response = urlopen.open(String.format("https://application.sebkort.com/nis/%s/getPendingTransactions.do", provider_part));
 			matcher = reTransactions.matcher(response);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 			while (matcher.find()) {
