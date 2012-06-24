@@ -74,7 +74,7 @@ public abstract class SEBKortBase extends Bank {
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         response = urlopen.open(String.format("https://application.sebkort.com/nis/external/%s/login.do", provider_part));
         urlopen.addHeader("Referer", String.format("https://application.sebkort.com/nis/external/%s/login.do", provider_part));
-        response = urlopen.open("https://application.sebkort.com/nis/external/hidden.jsp");
+        response = urlopen.open(String.format("https://application.sebkort.com/nis/external/hidden.jsp?USERNAME=%s&CURRENT_METHOD=&referer=login.jsp", prodgroup+username.toUpperCase()));
         urlopen.removeHeader("Referer");
         
         postData.clear();

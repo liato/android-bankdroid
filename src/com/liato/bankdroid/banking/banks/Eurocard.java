@@ -30,7 +30,6 @@ import org.apache.http.message.BasicNameValuePair;
 import android.content.Context;
 import android.text.Html;
 import android.text.InputType;
-import android.util.Log;
 
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
@@ -48,7 +47,7 @@ public class Eurocard extends Bank {
 	private static final String TAG = "Eurocard";
 	private static final String NAME = "Eurocard";
 	private static final String NAME_SHORT = "eurocard";
-	private static final String URL = "https://e-saldo.eurocard.se/nis/external/ecse/login.do";
+	private static final String URL = "https://secure.eurocard.se/nis/external/ecse/login.do";
 	private static final int BANKTYPE_ID = IBankTypes.EUROCARD;
 	private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
@@ -80,14 +79,23 @@ public class Eurocard extends Bank {
             ClientProtocolException, IOException {
         urlopen = new Urllib(true);
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
-        postData.add(new BasicNameValuePair("target", "/nis/ecse/main.do"));                
-        postData.add(new BasicNameValuePair("prodgroup", "0005"));              
-        postData.add(new BasicNameValuePair("USERNAME", "0005"+username));              
-        postData.add(new BasicNameValuePair("METHOD", "LOGIN"));                
-        postData.add(new BasicNameValuePair("CURRENT_METHOD", "PWD"));              
-        postData.add(new BasicNameValuePair("uname", username));
+        response = urlopen.open("https://secure.eurocard.se/nis/external/ecse/login.do");
+        urlopen.addHeader("Referer", String.format("https://secure.eurocard.se/nis/external/ecse/login.do"));
+        response = urlopen.open(String.format("https://secure.eurocard.se/nis/external/hidden.jsp?USERNAME=%s&CURRENT_METHOD=&referer=login.jsp", "0005"+username.toUpperCase()));
+        urlopen.removeHeader("Referer");
+        
+        postData.clear();
+        postData.add(new BasicNameValuePair("SEB_Referer", "/nis"));
+        postData.add(new BasicNameValuePair("SEB_Auth_Mechanism", "5"));
+        postData.add(new BasicNameValuePair("target", "/nis/ecse/main.do"));
+        postData.add(new BasicNameValuePair("prodgroup", "0005"));
+        postData.add(new BasicNameValuePair("UID", "0005"+username.toUpperCase()));
+        postData.add(new BasicNameValuePair("TYPE", "LOGIN"));
+        postData.add(new BasicNameValuePair("CURRENT_METHOD", "PWD"));
+        postData.add(new BasicNameValuePair("uname", username.toUpperCase()));
         postData.add(new BasicNameValuePair("PASSWORD", password));
-        return new LoginPackage(urlopen, postData, response, "https://e-saldo.eurocard.se/siteminderagent/forms/generic.fcc");
+        
+        return new LoginPackage(urlopen, postData, response, "https://secure.eurocard.se/auth4/Authentication/select.jsp");        
     }
 
 	@Override
@@ -135,7 +143,7 @@ public class Eurocard extends Bank {
 		}
 
 		try {
-            response = urlopen.open("https://e-saldo.eurocard.se/nis/ecse/getBillingUnits.do");
+            response = urlopen.open("https://secure.eurocard.se/nis/ecse/getBillingUnits.do");
             matcher = reSaldo.matcher(response);
             int i = 0;
             while (matcher.find()) {
@@ -174,7 +182,7 @@ public class Eurocard extends Bank {
 		if (account.getType() == Account.OTHER) return;
 		try {
 		    String accountWebId = accountIds.get(Integer.parseInt(account.getId()));
-			response = urlopen.open("https://e-saldo.eurocard.se/nis/ecse/getPendingTransactions.do?id="+accountWebId);
+			response = urlopen.open("https://secure.eurocard.se/nis/ecse/getPendingTransactions.do?id="+accountWebId);
 			matcher = reTransactions.matcher(response);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 			while (matcher.find()) {
