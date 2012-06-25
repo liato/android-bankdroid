@@ -6,7 +6,6 @@
 	<application
 		android:icon="@drawable/icon"
 		android:label="@string/app_name"
-		android:debuggable="false"
 	    android:hardwareAccelerated="true">
 		<activity
 			android:name=".MainActivity"
