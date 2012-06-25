@@ -252,4 +252,6 @@
     <!-- Color Picker -->
     <string name="dialog_color_picker">Färgväljare</string>
     <string name="press_color_to_apply">Tryck på färgen för att välja</string>    
+    
+    <string name="points">poäng</string>
 </resources>

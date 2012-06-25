@@ -26,6 +26,7 @@ import com.liato.bankdroid.banking.banks.AmericanExpress;
 import com.liato.bankdroid.banking.banks.Audi;
 import com.liato.bankdroid.banking.banks.Avanza;
 import com.liato.bankdroid.banking.banks.AvanzaMini;
+import com.liato.bankdroid.banking.banks.Bioklubben;
 import com.liato.bankdroid.banking.banks.CSN;
 import com.liato.bankdroid.banking.banks.Chevrolet;
 import com.liato.bankdroid.banking.banks.Coop;
@@ -211,6 +212,8 @@ public class BankFactory {
             return new Meniga(context);
         case IBankTypes.RIKSKORTET:
             return new TicketRikskortet(context);
+        case IBankTypes.BIOKLUBBEN:
+            return new Bioklubben(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -277,6 +280,7 @@ public class BankFactory {
         banks.add(new Everydaycard(context));
         banks.add(new Meniga(context));
         banks.add(new TicketRikskortet(context));
+        banks.add(new Bioklubben(context));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));
