@@ -58,6 +58,7 @@ import com.liato.bankdroid.banking.banks.PlusGirot;
 import com.liato.bankdroid.banking.banks.Preem;
 import com.liato.bankdroid.banking.banks.Quintessentially;
 import com.liato.bankdroid.banking.banks.ResursBank;
+import com.liato.bankdroid.banking.banks.TicketRikskortet;
 import com.liato.bankdroid.banking.banks.Rikslunchen;
 import com.liato.bankdroid.banking.banks.SEB;
 import com.liato.bankdroid.banking.banks.SJPrio;
@@ -208,6 +209,8 @@ public class BankFactory {
             return new Everydaycard(context);
         case IBankTypes.MENIGA:
             return new Meniga(context);
+        case IBankTypes.RIKSKORTET:
+            return new TicketRikskortet(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -273,6 +276,7 @@ public class BankFactory {
         banks.add(new Vasttrafik(context));
         banks.add(new Everydaycard(context));
         banks.add(new Meniga(context));
+        banks.add(new TicketRikskortet(context));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));
