@@ -26,9 +26,9 @@ import com.liato.bankdroid.banking.exceptions.LoginException;
 
 public class EurobonusMastercard extends SEBKortBase {
 	private static final String TAG = "EurobonusMastercard";
-	private static final String NAME = "Eurobonus Mastercard";
+	private static final String NAME = "SAS EuroBonus MasterCard";
 	private static final String NAME_SHORT = "ebmaster";
-	private static final int BANKTYPE_ID = Bank.EUROBONUSMASTERCARD;
+	private static final int BANKTYPE_ID = Bank.SASEUROBONUSMASTERCARD;
 
 	public EurobonusMastercard(Context context) {
 		super(context, "sase", "0102");

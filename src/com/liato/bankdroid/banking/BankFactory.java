@@ -137,7 +137,7 @@ public class BankFactory {
             return new DinersClub(context);
         case IBankTypes.IKANOBANK:
             return new IkanoBank(context);
-        case IBankTypes.EUROBONUSMASTERCARD:
+        case IBankTypes.SASEUROBONUSMASTERCARD:
         	return new EurobonusMastercard(context);
         case IBankTypes.RIKSLUNCHEN:
             return new Rikslunchen(context);            
