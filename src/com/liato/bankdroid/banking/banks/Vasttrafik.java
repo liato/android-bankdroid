@@ -48,7 +48,7 @@ public class Vasttrafik extends Bank {
     private static final int BANKTYPE_ID = IBankTypes.VASTTRAFIK;
 
     private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
-	private Pattern reAccounts = Pattern.compile("<div class=\"myCardsItemContainer\" data-cardnumber=\"\\d+\">.*?<h3 class=\"cardName grid_12 clearMargin\">(.*?)</h3>.*?<span class=\"cardNumber\">(\\d+)</span>.*?<div class=\"clearfix cardCharges\">(.*?)<div class=\"clearfix paddingBottom grid_12 cardOptions\">", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private Pattern reAccounts = Pattern.compile("<div class=\"myCardsItemContainer\" data-cardnumber=\"(.*?)\">.*?<h3 class=\"cardName grid_12 clearMargin\">(.*?)</h3>.*?<div class=\"clearfix cardCharges\">(.*?)<div class=\"clearfix paddingBottom grid_12 cardOptions(.*?)\">", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
 	private Pattern reBalance = Pattern.compile("<span class=\"chargeType boldType\">(.*?): (.*?)</span>", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 	private String response = null;
 
@@ -65,7 +65,6 @@ public class Vasttrafik extends Bank {
         this(context);
         this.update(username, password);
     }
-
 
     @Override
     protected LoginPackage preLogin() throws BankException,
@@ -124,10 +123,14 @@ public class Vasttrafik extends Bank {
                 /*
                  * Capture groups:
                  * GROUP                EXAMPLE DATA
-                 * 1: Name              Nytt
-                 * 2: Card number       1111111111
+                 * 1: Card number       1111111111
+                 * 2: Name              Nytt
                  * 3: Balance information
                  */
+
+				if ("".equals(matcher.group(1))) {
+					continue;
+				}
 
                 matcher_b = reBalance.matcher(matcher.group(3));
                 if (matcher_b.find()) {
@@ -140,7 +143,7 @@ public class Vasttrafik extends Bank {
 
 					String balanceString = matcher_b.group(2).replaceAll("\\<a[^>]*>","").replaceAll("\\<[^>]*>","").trim();
 
-					accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim() , Helpers.parseBalance(balanceString), matcher.group(2)));
+					accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim() , Helpers.parseBalance(balanceString), matcher.group(1)));
 					balance = balance.add(Helpers.parseBalance(balanceString));
                 }
             }
