@@ -89,11 +89,12 @@ public class Vasttrafik extends Bank {
         return new LoginPackage(urlopen, postData, response, "https://www.vasttrafik.se/mina-sidor/logga-in/?ReturnUrl=/mina-sidor-inloggad/mina-kort/");
     }
 
+    @Override
     public Urllib login() throws LoginException, BankException {
         try {
             LoginPackage lp = preLogin();
             response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-            if (!response.contains("Inloggad som:")) {
+            if (!response.contains("<span class=\"loggedInAs\">")) {
                 throw new LoginException(res.getText(R.string.invalid_username_password).toString());
             }
         }
