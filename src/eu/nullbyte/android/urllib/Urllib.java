@@ -17,11 +17,12 @@
 package eu.nullbyte.android.urllib;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.http.HttpHost;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
@@ -44,7 +45,6 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 
@@ -103,43 +103,65 @@ public class Urllib {
     	return open(url, postData, false);
     }
    
+    
     public String open(String url, List<NameValuePair> postData, boolean forcePost) throws ClientProtocolException, IOException {
-            	this.currentURI = url;
-    	String response;
+        this.currentURI = url;
+        String response;
         String[] headerKeys = (String[]) this.headers.keySet().toArray(new String[headers.size()]);
         String[] headerVals = (String[]) this.headers.values().toArray(new String[headers.size()]);
-    	ResponseHandler<String> responseHandler = new BasicResponseHandler();
-    	if (postData.isEmpty() && !forcePost) {
-    		//URL urli = new URL(url); 
-    		HttpGet urlConnection = new HttpGet(url);
-
-    		if (userAgent != null)
-    			urlConnection.addHeader("User-Agent", userAgent);
-            
-    		for (int i = 0; i < headerKeys.length; i++) {
-                urlConnection.addHeader(headerKeys[i], headerVals[i]);
-            }
-    		response = httpclient.execute(urlConnection, responseHandler, context);
-    	}
-    	else {
-    		HttpPost urlConnection = new HttpPost(url);
-    		urlConnection.setEntity(new UrlEncodedFormEntity(postData, this.charset));
-    		
-    		if (userAgent != null)
-    			urlConnection.addHeader("User-Agent", userAgent);
-            
-    		for (int i = 0; i < headerKeys.length; i++) {
-                urlConnection.addHeader(headerKeys[i], headerVals[i]);
-            }
-    		response = httpclient.execute(urlConnection, responseHandler, context); 
-    	}
-
-        HttpUriRequest currentReq = (HttpUriRequest)context.getAttribute(ExecutionContext.HTTP_REQUEST);
-        HttpHost currentHost = (HttpHost)context.getAttribute(ExecutionContext.HTTP_TARGET_HOST);
-        this.currentURI = currentHost.toURI() + currentReq.getURI();
+        ResponseHandler<String> responseHandler = new BasicResponseHandler();
+        HttpUriRequest request;
+        if ((postData == null || postData.isEmpty()) && !forcePost) {
+            //URL urli = new URL(url); 
+            request = new HttpGet(url);
+        }
+        else {
+            request = new HttpPost(url);
+            ((HttpPost)request).setEntity(new UrlEncodedFormEntity(postData, this.charset));
+        }
+        if (userAgent != null)
+            request.addHeader("User-Agent", userAgent);
         
-    	return response;
+        for (int i = 0; i < headerKeys.length; i++) {
+            request.addHeader(headerKeys[i], headerVals[i]);
+        }
+        response = httpclient.execute(request, responseHandler, context);
+        
+        //HttpUriRequest currentReq = (HttpUriRequest)context.getAttribute(ExecutionContext.HTTP_REQUEST);
+        //HttpHost currentHost = (HttpHost)context.getAttribute(ExecutionContext.HTTP_TARGET_HOST);
+        //this.currentURI = currentHost.toURI() + currentReq.getURI();
+        this.currentURI = request.getURI().toString();
+        
+        return response;
+    }    
+    public InputStream openStream(String url) throws ClientProtocolException, IOException {
+        return openStream(url, null, false);
     }
+    
+    public InputStream openStream(String url, List<NameValuePair> postData, boolean forcePost) throws ClientProtocolException, IOException {
+        this.currentURI = url;
+        String[] headerKeys = (String[]) this.headers.keySet().toArray(new String[headers.size()]);
+        String[] headerVals = (String[]) this.headers.values().toArray(new String[headers.size()]);
+        HttpUriRequest request;
+        if ((postData == null || postData.isEmpty()) && !forcePost) {
+            //URL urli = new URL(url); 
+            request = new HttpGet(url);
+        }
+        else {
+            request = new HttpPost(url);
+            ((HttpPost)request).setEntity(new UrlEncodedFormEntity(postData, this.charset));
+        }
+        if (userAgent != null)
+            request.addHeader("User-Agent", userAgent);
+        
+        for (int i = 0; i < headerKeys.length; i++) {
+            request.addHeader(headerKeys[i], headerVals[i]);
+        }
+        this.currentURI = request.getURI().toString();
+        HttpResponse response = httpclient.execute(request);
+        HttpEntity entity = response.getEntity();
+        return entity.getContent();
+    }        
     
     public void close() {
         httpclient.getConnectionManager().shutdown();
