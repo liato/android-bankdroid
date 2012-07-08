@@ -51,7 +51,7 @@ public class PayPal extends Bank {
 	private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT | + InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
 	private static final boolean STATIC_BALANCE = true;
 	
-	private Pattern reFormAction = Pattern.compile("<form.*?login_form.*?action=\"([^\"]+)\".*?>", Pattern.CASE_INSENSITIVE);
+	private Pattern reFormAction = Pattern.compile("<form.*?action=\"([^\"]+)\".*?login_form.*?>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reBalance = Pattern.compile("PayPal\\s*balance:\\s*(?:</strong>)?<span\\s*class=\"balance\">[^<]+<[^<]+>\\s*(?:<strong>)?[^0-9,.-]*([0-9,. ]+)([A-Z]+)\\s*(?:</strong>)?\\s*<[^<]+>\\s*</span>", Pattern.CASE_INSENSITIVE);
 	private Pattern reAccounts = Pattern.compile("row\">([^>]+)</td>\\s*<td\\s*class=\"textright\">\\s*<[^>]+>\\s*[^0-9,.-]*([0-9,. ]+)([A-Z]+)\\s*<[^>]+>\\s*</td>", Pattern.CASE_INSENSITIVE);
 	private String response = null;
