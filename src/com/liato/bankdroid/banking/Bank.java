@@ -61,6 +61,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     protected int INPUT_TITLETEXT_EXTRAS = R.string.extras_field;
     protected boolean STATIC_BALANCE = false;
     protected boolean BROKEN = false;
+    protected boolean DISPLAY_DECIMALS = true;
 
     protected Context context;
     protected Resources res;
@@ -415,5 +416,9 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
             return loginTarget;
         }
     }    
+    
+    public boolean getDisplayDecimals() {
+        return DISPLAY_DECIMALS;
+    }
 
 }

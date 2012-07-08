@@ -85,7 +85,11 @@ public class AccountsAdapter extends BaseAdapter {
 		ImageView icon = (ImageView)convertView.findViewById(R.id.imgListitemAccountsGroup);
 		((TextView)convertView.findViewById(R.id.txtListitemAccountsGroupAccountname)).setText(bank.getDisplayName());
 		((TextView)convertView.findViewById(R.id.txtListitemAccountsGroupBankname)).setText(bank.getName());
-		((TextView)convertView.findViewById(R.id.txtListitemAccountsGroupTotal)).setText(Helpers.formatBalance(bank.getBalance(), bank.getCurrency(), prefs.getBoolean("round_balance", false)));
+        ((TextView) convertView
+                .findViewById(R.id.txtListitemAccountsGroupTotal))
+                .setText(Helpers.formatBalance(bank.getBalance(),
+                        bank.getCurrency(),
+                        prefs.getBoolean("round_balance", false) || !bank.getDisplayDecimals()));
 		icon.setImageResource(bank.getImageResource());
 		ImageView warning = (ImageView)convertView.findViewById(R.id.imgWarning);
 		if (bank.isDisabled()) {
@@ -109,7 +113,10 @@ public class AccountsAdapter extends BaseAdapter {
         TextView txtBalance = ((TextView)convertView.findViewById(R.id.txtListitemAccountsItemBalance));
 		txtAccountName.setText(account.getName());
 		txtBalance.setText(Helpers.formatBalance(account.getBalance(), account.getCurrency()));
-        txtBalance.setText(Helpers.formatBalance(account.getBalance(), account.getCurrency(), prefs.getBoolean("round_balance", false)));
+        txtBalance
+                .setText(Helpers.formatBalance(account.getBalance(),
+                        account.getCurrency(),
+                        prefs.getBoolean("round_balance", false) || !account.getBank().getDisplayDecimals()));
 		if (account.isHidden()) {
             txtAccountName.setTextColor(Color.argb(255, 191, 191, 191));
             txtBalance.setTextColor(Color.argb(255, 191, 191, 191));		    
