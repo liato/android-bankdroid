@@ -80,6 +80,7 @@ import com.liato.bankdroid.banking.banks.Volkswagen;
 import com.liato.bankdroid.banking.banks.Volvofinans;
 import com.liato.bankdroid.banking.banks.Wallet;
 import com.liato.bankdroid.banking.banks.Meniga;
+import com.liato.bankdroid.banking.banks.Marginalen;
 import com.liato.bankdroid.banking.banks.Nordea.Nordea;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.db.Crypto;
@@ -214,6 +215,8 @@ public class BankFactory {
             return new TicketRikskortet(context);
         case IBankTypes.BIOKLUBBEN:
             return new Bioklubben(context);
+        case IBankTypes.MARGINALEN:
+            return new Marginalen(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -281,6 +284,7 @@ public class BankFactory {
         banks.add(new Meniga(context));
         banks.add(new TicketRikskortet(context));
         banks.add(new Bioklubben(context));
+        banks.add(new Marginalen(context));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));
