@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2011 Nullbyte <http://nullbyte.eu>
- * Copyright (C) 2011 Andreas Gunnerås
+ * Copyright (C) 2011, 2012 Andreas Gunnerås
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.Transaction;
+//import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
@@ -52,10 +52,10 @@ public class Everydaycard extends Bank {
 	private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
 	
-	private Pattern reSaldo = Pattern.compile("Utnyttjad kredit \\(sek\\)</td>\\s*<td class=\"right\">([^<]+)<", Pattern.CASE_INSENSITIVE);
-	private Pattern reBonus = Pattern.compile("Aktuell bonus \\(sek\\)</strong></td>\\s*<td class=\"right\">([^<]+)<", Pattern.CASE_INSENSITIVE);
-	private Pattern reAccountTransactions = Pattern.compile("<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>.*</td>\\s*<td>.*</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
-	private Pattern reBonusTransactions = Pattern.compile("<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>.*</td>\\s*<td>.*</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
+	private Pattern reSaldo = Pattern.compile("Utnyttjad kredit \\(sek\\)</td>\\s*<td></td>\\s*<td>([^<]+)<", Pattern.CASE_INSENSITIVE);
+	private Pattern reBonus = Pattern.compile("Aktuell bonus \\(sek\\)</td>\\s*<td>.*</td>\\s*<td>([^<]+)<", Pattern.CASE_INSENSITIVE);
+//	private Pattern reAccountTransactions = Pattern.compile("<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>.*</td>\\s*<td>.*</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
+//	private Pattern reBonusTransactions = Pattern.compile("<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>.*</td>\\s*<td>.*</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
 	private String response = null;
 	public Everydaycard(Context context) {
 		super(context);
@@ -79,10 +79,10 @@ public class Everydaycard extends Bank {
     	return preLoginInternal("http://valuta.g2solutions.se/mobil/web/logonSubmit.do");
     }
     
-    private LoginPackage preLoginNonMobile() throws BankException,
-            ClientProtocolException, IOException {
-    	return preLoginInternal("https://valuta.g2solutions.se/valuta/web/logonSubmit.do");
-    }
+//    private LoginPackage preLoginNonMobile() throws BankException,
+//            ClientProtocolException, IOException {
+//    	return preLoginInternal("https://valuta.g2solutions.se/valuta/web/logonSubmit.do");
+//    }
 
     private LoginPackage preLoginInternal(String url) throws BankException,
     		ClientProtocolException, IOException {
@@ -97,7 +97,8 @@ public class Everydaycard extends Bank {
 	@Override
 	public Urllib login() throws LoginException, BankException {
 		try {
-			LoginPackage lp = preLoginNonMobile();
+			//LoginPackage lp = preLoginNonMobile();
+			LoginPackage lp = preLogin();
 			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
 			if (response.contains("Felaktigt Login")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -140,47 +141,47 @@ public class Everydaycard extends Bank {
         super.updateComplete();
 	}
 
-	@Override
-    public void updateAllTransactions() throws LoginException, BankException {
-		if (urlopen == null) {
-			urlopen = login();
-        }
-		try {
-			response = urlopen.open("https://valuta.g2solutions.se/valuta/web/manageCustomer.do?action=account");
-			for (Account account: accounts) {
-				Matcher matcher;
-				ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-            
-				switch (account.getType()) {
-				case Account.CCARD:
-					matcher = reAccountTransactions.matcher(response);
-					while (matcher.find()) {
-						transactions.add(new Transaction(matcher.group(1), matcher.group(2), Helpers.parseBalance(matcher.group(3)).negate()));
-					}
-					break;
-				// Bonus account
-				case Account.OTHER:
-					matcher = reBonusTransactions.matcher(response);
-					while (matcher.find()) {
-						if (!matcher.group(4).equals("0,00")) {
-							transactions.add(new Transaction(matcher.group(1), matcher.group(2) + " (-" + matcher.group(3) + ")", Helpers.parseBalance(matcher.group(4))));
-						}
-					}
-					break;
-				default:
-					return;
-				}
-
-				account.setTransactions(transactions);
-			}
-		} catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage());
-		} catch (IOException e) {
-			throw new BankException(e.getMessage());
-		} finally {
-			if (urlopen != null) {
-				urlopen.close();
-			}
-        }
-	}
+//	@Override
+//    public void updateAllTransactions() throws LoginException, BankException {
+//		if (urlopen == null) {
+//			urlopen = login();
+//        }
+//		try {
+//			response = urlopen.open("https://valuta.g2solutions.se/valuta/web/manageCustomer.do?action=account");
+//			for (Account account: accounts) {
+//				Matcher matcher;
+//				ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+//            
+//				switch (account.getType()) {
+//				case Account.CCARD:
+//					matcher = reAccountTransactions.matcher(response);
+//					while (matcher.find()) {
+//						transactions.add(new Transaction(matcher.group(1), matcher.group(2), Helpers.parseBalance(matcher.group(3)).negate()));
+//					}
+//					break;
+//				// Bonus account
+//				case Account.OTHER:
+//					matcher = reBonusTransactions.matcher(response);
+//					while (matcher.find()) {
+//						if (!matcher.group(4).equals("0,00")) {
+//							transactions.add(new Transaction(matcher.group(1), matcher.group(2) + " (-" + matcher.group(3) + ")", Helpers.parseBalance(matcher.group(4))));
+//						}
+//					}
+//					break;
+//				default:
+//					return;
+//				}
+//
+//				account.setTransactions(transactions);
+//			}
+//		} catch (ClientProtocolException e) {
+//			throw new BankException(e.getMessage());
+//		} catch (IOException e) {
+//			throw new BankException(e.getMessage());
+//		} finally {
+//			if (urlopen != null) {
+//				urlopen.close();
+//			}
+//        }
+//	}
 }
