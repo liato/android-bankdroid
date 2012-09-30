@@ -54,7 +54,7 @@ public class Nordea extends Bank {
 	private static final int BANKTYPE_ID = IBankTypes.NORDEA;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
-    private static final String INPUT_HINT_USERNAME = "ÅÅMMDD-XXXX";
+    private static final String INPUT_HINT_USERNAME = "ÅÅÅÅMMDDXXXX";
 
     private Pattern reCurrency = Pattern.compile("list-left\">\\s*Valuta\\s*</dt>\\s*<dd[^>]+>([^<]+)</dd>", Pattern.CASE_INSENSITIVE);
     private Pattern reBalance = Pattern.compile("list-left\">\\s*Summa\\s*([a-zA-Z]{3})\\s*</dt>\\s*<dd[^>]+>([^<]+)</", Pattern.CASE_INSENSITIVE);
