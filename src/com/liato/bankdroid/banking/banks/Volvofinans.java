@@ -122,7 +122,7 @@ public class Volvofinans extends Bank {
 				int length = data.length();
 				for (int index = 0; index < length; index++) {
 					JSONObject account = data.getJSONObject(index);
-					accounts.add(new Account(account.getString("kontonummer"), Helpers.parseBalance(account.getString("disponibeltBelopp")), "1"));
+					accounts.add(new Account(account.getString("kontonummer"), Helpers.parseBalance(account.getString("disponibeltBelopp")).subtract(Helpers.parseBalance(account.getString("limit"))), "1"));
 				}
 			}
 			catch (JSONException e) {
