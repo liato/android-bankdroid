@@ -311,7 +311,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     }
 
     public int compareTo(Bank another) {
-        return this.toString().compareToIgnoreCase(another.getName());
+        return this.getName().compareToIgnoreCase(another.getName());
     }
 
     public void updateComplete() {
