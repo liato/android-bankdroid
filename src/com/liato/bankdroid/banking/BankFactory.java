@@ -243,7 +243,7 @@ public class BankFactory {
         banks.add(new PayPal(context));
         banks.add(new Payson(context));
         banks.add(new Jojo(context));
-        banks.add(new Steam(context));
+        //banks.add(new Steam(context));
         banks.add(new DinersClub(context));
         banks.add(new IkanoBank(context));
         banks.add(new EurobonusMastercard(context));
