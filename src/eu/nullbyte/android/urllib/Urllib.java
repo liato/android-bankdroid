@@ -18,6 +18,7 @@ package eu.nullbyte.android.urllib;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +39,8 @@ import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.entity.BasicHttpEntity;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
@@ -47,6 +50,9 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
+
+import android.util.Log;
 
 public class Urllib {
     public static String DEFAULT_USER_AGENT = "Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17";
@@ -135,24 +141,43 @@ public class Urllib {
         return response;
     }    
     public InputStream openStream(String url) throws ClientProtocolException, IOException {
-        return openStream(url, null, false);
+        return openStream(url, new BasicHttpEntity(), false);
+    }
+    
+    public HttpEntity toEntity(List<NameValuePair> postData) {
+    	if (postData != null && !postData.isEmpty()) {
+    		try {
+				return new UrlEncodedFormEntity(postData, this.charset);
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			} 
+    	}
+    	return null;
     }
     
     public InputStream openStream(String url, List<NameValuePair> postData, boolean forcePost) throws ClientProtocolException, IOException {
+    	return openStream(url, toEntity(postData), forcePost);
+    }
+    
+    public InputStream openStream(String url, String postData, boolean forcePost) throws ClientProtocolException, IOException {
+    	return openStream(url, postData != null ? new StringEntity(postData, this.charset) : null, forcePost);
+    }
+    
+    public InputStream openStream(String url, HttpEntity postData, boolean forcePost) throws ClientProtocolException, IOException {
         this.currentURI = url;
         String[] headerKeys = (String[]) this.headers.keySet().toArray(new String[headers.size()]);
         String[] headerVals = (String[]) this.headers.values().toArray(new String[headers.size()]);
         HttpUriRequest request;
-        if ((postData == null || postData.isEmpty()) && !forcePost) {
-            //URL urli = new URL(url); 
+        if (postData == null && !forcePost) {
             request = new HttpGet(url);
         }
         else {
             request = new HttpPost(url);
-            ((HttpPost)request).setEntity(new UrlEncodedFormEntity(postData, this.charset));
+            ((HttpPost)request).setEntity(postData);
         }
-        if (userAgent != null)
+        if (userAgent != null) {
             request.addHeader("User-Agent", userAgent);
+        }
         
         for (int i = 0; i < headerKeys.length; i++) {
             request.addHeader(headerKeys[i], headerVals[i]);
@@ -161,7 +186,7 @@ public class Urllib {
         HttpResponse response = httpclient.execute(request);
         HttpEntity entity = response.getEntity();
         return entity.getContent();
-    }        
+    }      
     
     public void close() {
         httpclient.getConnectionManager().shutdown();

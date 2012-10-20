@@ -22,6 +22,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
@@ -75,6 +76,8 @@ public class Helpers {
         {"₮", "MNT"}, {"₱", "CUP"}, {"₴", "UAH"},
         {"﷼", "SAR"}, 
     }; 
+    
+    private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     public static BigDecimal parseBalance(String balance) {
         balance = balance.replaceAll("[^0-9,.-]*", "");
@@ -214,6 +217,10 @@ public class Helpers {
      */
     public static String removeHtml(String text) {
         return text.replaceAll("<[^>]+>", "");
+    }
+    
+    public static String formatDate(Date date) {
+    	return DATE_FORMAT.format(date);
     }
 
 }
