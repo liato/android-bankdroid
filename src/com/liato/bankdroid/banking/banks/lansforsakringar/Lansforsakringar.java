@@ -34,15 +34,10 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
-import android.text.Html;
 import android.text.InputType;
-import android.util.Log;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
@@ -74,25 +69,11 @@ public class Lansforsakringar extends Bank {
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDD-XXXX";
+    
+    private static final String API_BASEURL = "https://mobil.lansforsakringar.se/appoutlet/";
 
-    private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
     private Pattern reViewState = Pattern.compile("(?:__|javax\\.faces\\.)VIEWSTATE\"\\s+.*?value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
-    private Pattern reAccountsReg = Pattern.compile("AccountNumber=([0-9]+)[^>]+>([^<]+)<.*?<td class=\"right\"[^>]+>([0-9 .,-]+)</td", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-    private Pattern reAccountsFunds = Pattern.compile("fundsDataTable[^>]+>([^<]+)</span></a></td><td[^>]+></td><td[^>]+><span\\sid=\"fundsDataTable:\\d{1,}:bankoverview_\\d{1,}_([^\"]+)\">([0-9 .,-]+)</span", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-    private Pattern reAccountsLoans = Pattern.compile("LoanNumber=[^>]+>([^<]+)</a></td><td class=\"left\" width=\"25%\">([0-9.]+)</td><td class=\"right\" width=\"25%\">([0-9 .,-]+)</td><td class=\"right\" width=\"25%\">([0-9 .,-]+)</td", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-    private Pattern rePension = Pattern.compile("class=\"portlet-menu-item\" [^>]+>(.*)</a></td><td class=\"left\" width=\"25%\">([^>]+)</td><td class=\"right\" width=\"25%\">([^>]+)</td><td class=\"right\" width=\"25%\">([^>]+)</td>", Pattern.CASE_INSENSITIVE);
-    private Pattern reToken = Pattern.compile("var\\s+token\\s*=\\s*'([^']+)'", Pattern.CASE_INSENSITIVE);
-    private Pattern reHiddenToken = Pattern.compile("name=\"_token\" value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
-    private Pattern reUrl = Pattern.compile("<li class=\"bank\\s*\">\\s*<a href=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
-    private Pattern reTransactions = Pattern.compile("[^>]+>(\\d{4}-\\d{2}-\\d{2})<.*(\\d{4}-\\d{2}-\\d{2})<.*<span title=\"([^\"]+)\".*</span></td><td class=\"left\"><span title=\"([^\"]+)\".*</span></td><td class=\"right nowrap\" style=\"width:90px\">([^<]+)</td>.*style=\"width:90px\">([^<]+)</td>", Pattern.CASE_INSENSITIVE);
-    private String accountsUrl = null;
-    private String mRequestToken = null;
-    private String mViewState = null;
-    private String host = null;
-    private boolean mFirstTransactionPage = true;
-    
-    
-    
+    private Pattern reLoginToken = Pattern.compile("login:loginToken\"\\s+.*?value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
     private ObjectMapper mObjectMapper = new ObjectMapper();
 
     public Lansforsakringar(Context context) {
@@ -120,72 +101,50 @@ public class Lansforsakringar extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(false, true);
-        String response = urlopen.open("https://secure246.lansforsakringar.se/lfportal/login/privat");
+        Urllib weblogin = new Urllib(false, true);
+        String response = weblogin.open("https://mobil.lansforsakringar.se/lf-mobile/pages/login.faces");
         Matcher matcher = reViewState.matcher(response);
         if (!matcher.find()) {
             throw new BankException(res.getText(R.string.unable_to_find).toString()+" ViewState.");
         }
-        mViewState = matcher.group(1);
-        matcher = reEventValidation.matcher(response);
+        String viewState = matcher.group(1);
+        matcher = reLoginToken.matcher(response);
         if (!matcher.find()) {
-            throw new BankException(res.getText(R.string.unable_to_find).toString()+" EventValidation.");
+            throw new BankException(res.getText(R.string.unable_to_find).toString()+" LoginToken.");
         }
-        String strEventValidation = matcher.group(1);
+        String loginToken = matcher.group(1);
 
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
-        postData.add(new BasicNameValuePair("inputPersonalNumber", username));
-        postData.add(new BasicNameValuePair("inputPinCode", password));
-        postData.add(new BasicNameValuePair("selMechanism", "PIN-kod"));
-        postData.add(new BasicNameValuePair("__VIEWSTATE", mViewState));
-        postData.add(new BasicNameValuePair("__EVENTVALIDATION", strEventValidation));
-        postData.add(new BasicNameValuePair("__LASTFOCUS", ""));
-        postData.add(new BasicNameValuePair("__EVENTTARGET", ""));
-        postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
-        postData.add(new BasicNameValuePair("btnLogIn.x", "12"));
-        postData.add(new BasicNameValuePair("btnLogIn.y", "34"));
-        return new LoginPackage(urlopen, postData, response, urlopen.getCurrentURI());
+        postData.add(new BasicNameValuePair("login:userId", username));
+        postData.add(new BasicNameValuePair("login:pin", password));
+        postData.add(new BasicNameValuePair("login", "login"));
+        postData.add(new BasicNameValuePair("javax.faces.ViewState", viewState));
+        postData.add(new BasicNameValuePair("login:time", Long.toString(System.currentTimeMillis())));
+        postData.add(new BasicNameValuePair("login:loginToken", loginToken));
+        postData.add(new BasicNameValuePair("login:loginButton", "login:loginButton"));
+        return new LoginPackage(weblogin, postData, response, weblogin.getCurrentURI());
     }
 
     public Urllib login() throws LoginException, BankException {
+        urlopen = new Urllib();
+        urlopen.addHeader("Content-Type", "application/json; charset=UTF-8");
+        urlopen.addHeader("DeviceId", UUID.randomUUID().toString());
+        urlopen.addHeader("deviceInfo", "Galaxy Nexus;4.1.1;1.8;Portrait");
+        //TODO: Change user-agent to "lf-android-app" if they block Bankdroid
+        urlopen.setUserAgent("bankdroid");
+
+        NumberResponse nr = readJsonValue(API_BASEURL + "security/client", null, NumberResponse.class);
+        ChallengeResponse cr = readJsonValue(API_BASEURL + "security/client", objectAsJson(new ChallengeRequest(nr.getNumber(), nr.getNumberPair(), generateChallenge(nr.getNumber()))), ChallengeResponse.class);
+        urlopen.addHeader("Ctoken", cr.getToken());
         try {
-            LoginPackage lp = preLogin();
-            String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-            if (response.contains("Felaktig inloggning")) {
-                throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-            }
-
-            Matcher matcher = reToken.matcher(response);
-            if (!matcher.find()) {
-                //throw new BankException(res.getText(R.string.unable_to_find).toString()+" token0.");
-            } else {
-            	mRequestToken = matcher.group(1);
-            }
-
-            matcher = reUrl.matcher(response);
-            if (!matcher.find()) {
-                throw new BankException(res.getText(R.string.unable_to_find).toString()+" accounts url.");
-            }
-
-            host = urlopen.getCurrentURI().split("/")[2];
-            accountsUrl = Html.fromHtml(matcher.group(1)).toString() + "&_token=" + getRequestToken();
-            if (!accountsUrl.contains("https://")) {
-                accountsUrl = "https://" + host + accountsUrl;
-            }
-
-        }
-        catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage());
-        }
-        catch (IOException e) {
-            throw new BankException(e.getMessage());
-        }
+        	LoginResponse lr = readJsonValue(API_BASEURL + "security/user", objectAsJson(new LoginRequest(username, password)), LoginResponse.class);
+        	urlopen.addHeader("Utoken", lr.getTicket());
+		} catch (Exception e) {
+			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+		}
         return urlopen;
     }
     
-    private String getRequestToken() {
-    	return mRequestToken != null ? mRequestToken : "";
-    }
     
     private <T> T readJsonValue(InputStream is, Class<T> valueType) throws BankException {
         try {
@@ -239,25 +198,15 @@ public class Lansforsakringar extends Bank {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 
-        urlopen = new Urllib();
-        urlopen.addHeader("Content-Type", "application/json; charset=UTF-8");
-        urlopen.addHeader("DeviceId", UUID.randomUUID().toString());//"9ba6991346f2f8e9");
-        urlopen.addHeader("deviceInfo", "Galaxy Nexus;4.1.1;1.8;Portrait");
-        urlopen.setUserAgent("bankdroid"); // Android app uses "lf-android-app"
+        urlopen = login();
 
-        NumberResponse nr = readJsonValue("https://mobil.lansforsakringar.se/appoutlet/security/client", null, NumberResponse.class);
-        ChallengeResponse cr = readJsonValue("https://mobil.lansforsakringar.se/appoutlet/security/client", objectAsJson(new ChallengeRequest(nr.getNumber(), nr.getNumberPair(), generateChallenge(nr.getNumber()))), ChallengeResponse.class);
-        urlopen.addHeader("Ctoken", cr.getToken());
-        LoginResponse lr = readJsonValue("https://mobil.lansforsakringar.se/appoutlet/security/user", objectAsJson(new LoginRequest(username, password)), LoginResponse.class);
-        urlopen.addHeader("Utoken", lr.getTicket());
-
-        AccountsResponse ar = readJsonValue("https://mobil.lansforsakringar.se/appoutlet/account/bytype", objectAsJson(new AccountsRequest(AccountsRequest.Type.CHECKING)), AccountsResponse.class);
+        AccountsResponse ar = readJsonValue(API_BASEURL + "account/bytype", objectAsJson(new AccountsRequest(AccountsRequest.Type.CHECKING)), AccountsResponse.class);
         for (com.liato.bankdroid.banking.banks.lansforsakringar.model.response.Account a : ar.getAccounts()) {
         	accounts.add(new Account(a.getAccountName(), new BigDecimal(a.getDispoibleAmount()), a.getAccountNumber()));
         	//a.getLedger() should be saved to database, used when fetching transactions
         	balance = balance.add(new BigDecimal(a.getDispoibleAmount()));
         }
-        ar = readJsonValue("https://mobil.lansforsakringar.se/appoutlet/account/bytype", objectAsJson(new AccountsRequest(AccountsRequest.Type.SAVING)), AccountsResponse.class);
+        ar = readJsonValue(API_BASEURL + "account/bytype", objectAsJson(new AccountsRequest(AccountsRequest.Type.SAVING)), AccountsResponse.class);
         for (com.liato.bankdroid.banking.banks.lansforsakringar.model.response.Account a : ar.getAccounts()) {
         	accounts.add(new Account(a.getAccountName(), new BigDecimal(a.getDispoibleAmount()), a.getAccountNumber()));
         	balance = balance.add(new BigDecimal(a.getDispoibleAmount()));
@@ -276,11 +225,11 @@ public class Lansforsakringar extends Bank {
         
         ArrayList<Transaction> transactions = new ArrayList<Transaction>();
         //TODO: Get upcoming transactions?
-        //TransactionsResponse tr = readJsonValue("https://mobil.lansforsakringar.se/appoutlet/account/upcoming", objectAsJson(new UpcomingTransactionsRequest(account.getId())), TransactionsResponse.class);
-        TransactionsResponse tr = readJsonValue("https://mobil.lansforsakringar.se/appoutlet/account/transaction", objectAsJson(new TransactionsRequest(0, "DEPIOSIT", account.getId())), TransactionsResponse.class);
+        //TransactionsResponse tr = readJsonValue(API_BASEURL + "account/upcoming", objectAsJson(new UpcomingTransactionsRequest(account.getId())), TransactionsResponse.class);
+        TransactionsResponse tr = readJsonValue(API_BASEURL + "account/transaction", objectAsJson(new TransactionsRequest(0, "DEPIOSIT", account.getId())), TransactionsResponse.class);
         
         for (com.liato.bankdroid.banking.banks.lansforsakringar.model.response.Transaction t : tr.getTransactions()) {
-        	//TODO: Set locale on date?
+        	//TODO: Set locale to Europe/Stockholm on date?
         	transactions.add(new Transaction(Helpers.formatDate(new Date(t.getTransactiondate())), t.getText(), new BigDecimal(t.getAmmount())));
         }
 
