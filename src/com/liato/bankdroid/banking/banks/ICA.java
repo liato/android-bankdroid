@@ -51,10 +51,13 @@ public class ICA extends Bank {
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
 
-	private Pattern reAccounts = Pattern.compile("lblAvaibleAmount\">([^<]+)<", Pattern.CASE_INSENSITIVE);
-	private Pattern reTransactions = Pattern.compile("<td>\\s*(\\d{4}-\\d{2}-\\d{2})\\s*</td>\\s*<td>\\s*([^<]+).*?amount\">([^<]+)", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private Pattern reAccounts = Pattern.compile("<td><span>Saldo</span></td>\\s*<td class=\"td_right\"><span>([^\\s]+)\\s*kr", Pattern.CASE_INSENSITIVE);
+	private Pattern rePreTransactions = Pattern.compile("<h2>Transaktioner</h2>(.*?)<h2>Information om kredit</h2>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+	private Pattern reTransactions = Pattern.compile("<td><span>(\\d{4}-\\d{2}-\\d{2})</span></td>\\s*<td><span>([^<]+)</span></td>\\s*<td class=\"td_right\"><span>([^<]+)</span></td>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 	private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
-	private Pattern reLoginError = Pattern.compile("login-error[^>]+>(.+?)<");
+	private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
+	private Pattern reLoginError = Pattern.compile("loginError\">([^<]+)</span>");
+	
 	public ICA(Context context) {
 		super(context);
 		super.TAG = TAG;
@@ -76,28 +79,29 @@ public class ICA extends Bank {
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
         urlopen = new Urllib(true);
-        String response = urlopen.open("https://www.ica.se/Logga-in/");
+        String response = urlopen.open("https://www.ica.se/logga-in/");
         Matcher matcher = reViewState.matcher(response);
         if (!matcher.find()) {
             throw new BankException(res.getText(R.string.unable_to_find).toString()+" viewstate.");
         }
         String strViewState = matcher.group(1);
+        
+        // Find __EVENTVALIDATION
+        matcher = reEventValidation.matcher(response);
+        if (!matcher.find()) {
+        	throw new BankException(res.getText(R.string.unable_to_find).toString()+" eventvalidation");
+        }
+        String strEventValidation = matcher.group(1);
+        
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
-        postData.add(new BasicNameValuePair("__EVENTTARGET", ""));
+        postData.add(new BasicNameValuePair("__EVENTTARGET", "LoginView1$btnModalLogin"));
         postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
-        postData.add(new BasicNameValuePair("__LASTFOCUS", ""));
         postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
-        postData.add(new BasicNameValuePair("ctl00$fakie", "0"));
-        postData.add(new BasicNameValuePair("q", "Sök"));
-        postData.add(new BasicNameValuePair("appendUrlString", ""));
-        postData.add(new BasicNameValuePair("ctl00$cphFullWidthContainer$ctl02$btnLogin", "Logga in"));
-        postData.add(new BasicNameValuePair("ctl00$cphFullWidthContainer$ctl02$txtCivicRegistrationNumber", ""));
-        postData.add(new BasicNameValuePair("ctl00$cphFullWidthContainer$ctl02$txtEmail", ""));
-        postData.add(new BasicNameValuePair("footer-q", "Sök"));
-        postData.add(new BasicNameValuePair("ctl00$cphFullWidthContainer$ctl02$tbPersno", username));
-        postData.add(new BasicNameValuePair("ctl00$cphFullWidthContainer$ctl02$tbPasswd", password));
-
-        return new LoginPackage(urlopen, postData, response, "https://www.ica.se/Logga-in/");
+        postData.add(new BasicNameValuePair("__EVENTVALIDATION", strEventValidation));
+        postData.add(new BasicNameValuePair("LoginView1$userName", username));
+        postData.add(new BasicNameValuePair("LoginView1$password", password));
+        
+        return new LoginPackage(urlopen, postData, response, "https://www.ica.se/logga-in/");
     }
 
 	@Override
@@ -105,6 +109,7 @@ public class ICA extends Bank {
 		try {
 			LoginPackage lp = preLogin();
 			String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+			
 			Matcher matcher = reLoginError.matcher(response);
 			if (matcher.find()) {
 				throw new LoginException(Html.fromHtml(matcher.group(1)).toString().trim());
@@ -129,18 +134,22 @@ public class ICA extends Bank {
 		String response = null;
 		Matcher matcher;
 		try {
-			response = urlopen.open("https://www.ica.se/Mina-sidor/Konto--Saldo/");
+			response = urlopen.open("https://www.ica.se/mina-sidor/");
 			matcher = reAccounts.matcher(response);
 			if (matcher.find()) {
 				Account account = new Account("ICA Kort", Helpers.parseBalance(matcher.group(1)), "1");
 				balance = balance.add(Helpers.parseBalance(matcher.group(1)));
-				matcher = reTransactions.matcher(response);
-				ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-				while (matcher.find()) {
-					transactions.add(new Transaction(matcher.group(1).trim(), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3))));
+				matcher = rePreTransactions.matcher(response);
+				if (matcher.find()) {
+					String temp = matcher.group(1);
+					matcher = reTransactions.matcher(temp);
+					ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+					while (matcher.find()) {
+						transactions.add(new Transaction(matcher.group(1).trim(), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3))));
+					}
+					account.setTransactions(transactions);
+					accounts.add(account);
 				}
-				account.setTransactions(transactions);
-				accounts.add(account);
 			}
 			if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
