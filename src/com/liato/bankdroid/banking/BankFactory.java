@@ -72,7 +72,6 @@ import com.liato.bankdroid.banking.banks.Skoda;
 import com.liato.bankdroid.banking.banks.SparbankenOresund;
 import com.liato.bankdroid.banking.banks.SparbankenSyd;
 import com.liato.bankdroid.banking.banks.Statoil;
-import com.liato.bankdroid.banking.banks.Steam;
 import com.liato.bankdroid.banking.banks.Swedbank;
 import com.liato.bankdroid.banking.banks.TestBank;
 import com.liato.bankdroid.banking.banks.Vasttrafik;
@@ -246,7 +245,7 @@ public class BankFactory {
         banks.add(new PayPal(context));
         banks.add(new Payson(context));
         banks.add(new Jojo(context));
-        banks.add(new Steam(context));
+        //banks.add(new Steam(context));
         banks.add(new DinersClub(context));
         banks.add(new IkanoBank(context));
         banks.add(new EurobonusMastercard(context));
