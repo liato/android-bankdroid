@@ -32,7 +32,6 @@ import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
@@ -45,9 +44,8 @@ public class Bioklubben extends Bank {
 	private static final String NAME_SHORT = "bioklubben";
 	private static final String URL = "http://bioklubben.sfbio.se/user/login";
 	private static final int BANKTYPE_ID = Bank.BIOKLUBBEN;
+	private static final boolean DISPLAY_DECIMALS = false;
 
-    private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
-    private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
     private Pattern reBalance = Pattern.compile("pointsblock-bignumber-bn\">([^<]+)</div>");
 
     private String response = null;
@@ -59,6 +57,8 @@ public class Bioklubben extends Bank {
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;
         super.URL = URL;
+        super.DISPLAY_DECIMALS = DISPLAY_DECIMALS;
+        
         currency = context.getString(R.string.points);
     }
 

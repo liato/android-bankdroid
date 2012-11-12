@@ -94,7 +94,7 @@ public class SEB extends Bank {
 		try {
 		    LoginPackage lp = preLogin();
 			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-			if (!response.contains("passwordLoginOK")) {
+			if (response.contains("elaktig inloggning")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}
 		} catch (ClientProtocolException e) {

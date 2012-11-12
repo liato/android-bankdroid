@@ -81,5 +81,6 @@ public interface IBankTypes {
     public static final int MENIGA = 57;
     public static final int RIKSKORTET = 58;
     public static final int BIOKLUBBEN = 59;
-    public static final int MARGINALEN = 60;
+    public static final int CHALMREST = 60;
+    public static final int MARGINALEN = 61;
 }

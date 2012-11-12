@@ -215,6 +215,8 @@ public class BankFactory {
             return new TicketRikskortet(context);
         case IBankTypes.BIOKLUBBEN:
             return new Bioklubben(context);
+        case IBankTypes.CHALMREST:
+        	return new Chalmrest(context);
         case IBankTypes.MARGINALEN:
             return new Marginalen(context);
 		default:
@@ -284,7 +286,9 @@ public class BankFactory {
         banks.add(new Meniga(context));
         banks.add(new TicketRikskortet(context));
         banks.add(new Bioklubben(context));
+        banks.add(new Chalmrest(context));
         banks.add(new Marginalen(context));
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));

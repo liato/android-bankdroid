@@ -53,7 +53,7 @@ public class Swedbank extends Bank {
 	private static final String URL = "https://mobilbank.swedbank.se/";
 	private static final int BANKTYPE_ID = IBankTypes.SWEDBANK;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
-    private static final String INPUT_HINT_USERNAME = "ÅÅMMDD-XXXX";
+    private static final String INPUT_HINT_USERNAME = "ÅÅÅÅMMDDXXXX";
     
 	private Pattern reCSRF = Pattern.compile("csrf_token\".*?value=\"([^\"]+)\"");
 	private Pattern reAccounts = Pattern.compile("(account|loan)\\.html\\?id=([^\"]+)\"[^>]*>\\s*(?:<span\\sclass=\"icon\">[^<]*</span>\\s*)?<span\\s*class=\"name\">([^<]+)</span>\\s*(?:<br/>\\s*)?<span\\s*class=\"amount\">([^<]+)</");
