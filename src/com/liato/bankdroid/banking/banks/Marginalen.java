@@ -14,7 +14,6 @@ import org.apache.http.protocol.HTTP;
 import android.content.Context;
 import android.text.Html;
 import android.text.InputType;
-import android.util.Log;
 
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
@@ -146,7 +145,7 @@ public class Marginalen extends Bank {
                  * 1: Name              Högräntekonto
                  * 2: URL               engine?usecase=account&amp;command=transactions&amp;guid=mCmupGvnAAJuC76MGuuRnwCC&amp;commandorigin=0.account_private_viewhandler&amp;account_table=0&amp;hash=Be2HxFargpk2m0BI2tShAACC
                  * 3: ID                92351124972
-                 * 4: Amount            200.000,00
+                 * 4: Amount            100.000,00
                  *  
                  */
 				Account account = new Account(Html.fromHtml(matcher.group(1)).toString(), Helpers.parseBalance(matcher.group(4)), matcher.group(2), Long.parseLong(matcher.group(3)));
