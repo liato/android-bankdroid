@@ -154,11 +154,7 @@ public class ICABanken extends Bank {
                  * 4: Saldo             1.655,71
                  *  
                  */			    
-                accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim() + " (Disponibelt)", Helpers.parseBalance(matcher.group(3).trim()), matcher.group(1).trim()));
-                Account account = new Account(Html.fromHtml(matcher.group(2)).toString().trim() + " (Saldo)", Helpers.parseBalance(matcher.group(4).trim()), "a:" + matcher.group(1).trim());
-                account.setAliasfor(matcher.group(1).trim());
-                accounts.add(account);
-
+                accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), matcher.group(1).trim()));
                 balance = balance.add(Helpers.parseBalance(matcher.group(3)));
 			}
 			if (accounts.isEmpty()) {
