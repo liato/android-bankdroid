@@ -68,7 +68,7 @@ public class Lansforsakringar extends Bank {
     private static final int BANKTYPE_ID = IBankTypes.LANSFORSAKRINGAR;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
-    private static final String INPUT_HINT_USERNAME = "ÅÅMMDD-XXXX";
+    private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
     
     private static final String API_BASEURL = "https://mobil.lansforsakringar.se/appoutlet/";
 
