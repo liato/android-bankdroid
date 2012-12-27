@@ -18,6 +18,7 @@ package com.liato.bankdroid.banking.banks;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -59,6 +60,7 @@ public class ICABanken extends Bank {
 	private Pattern reError = Pattern.compile("<label\\s+class=\"error\">(.+?)</label>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reBalance = Pattern.compile("account\\.aspx\\?id=([^\"]+).+?>([^<]+)</a.+?Disponibelt([0-9 .,-]+)[^<]*<br/>.+?Saldo([0-9 .,-]+)", Pattern.CASE_INSENSITIVE);
 	private Pattern reTransactions = Pattern.compile("<label>(.+?)</label>\\s*<[^>]+(.+?)</div>\\s*<[^>]+>-\\s*Belopp(.+?)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private HashMap<String, String> mIdMappings = new HashMap<String, String>();
 
 	public ICABanken(Context context) {
 		super(context);
@@ -153,6 +155,7 @@ public class ICABanken extends Bank {
                  * 4: Saldo             1.655,71
                  *  
                  */			    
+			    mIdMappings.put(Integer.toString(accid), matcher.group(1).trim());           
                 accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim() + " (Disponibelt)", Helpers.parseBalance(matcher.group(3).trim()), Integer.toString(accid)));
                 Account account = new Account(Html.fromHtml(matcher.group(2)).toString().trim() + " (Saldo)", Helpers.parseBalance(matcher.group(4).trim()), "a:" + accid);
                 account.setAliasfor(matcher.group(1).trim());
@@ -176,11 +179,12 @@ public class ICABanken extends Bank {
 	@Override
 	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
 		super.updateTransactions(account, urlopen);
-		if (account.getId().startsWith("a:")) return; // No transactions for "saldo"-accounts
+		if (account.getId().startsWith("a:") || !mIdMappings.containsKey(account.getId())) return; // No transactions for "saldo"-accounts
+		String accountId = mIdMappings.get(account.getId());
 		String response = null;
 		Matcher matcher;
 		try {
-			response = urlopen.open("https://mobil2.icabanken.se/account/account.aspx?id="+account.getId());
+			response = urlopen.open("https://mobil2.icabanken.se/account/account.aspx?id="+accountId);
 			matcher = reTransactions.matcher(response);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 			while (matcher.find()) {
