@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,7 +55,7 @@ public class AmericanExpress extends Bank {
 	private static final int BANKTYPE_ID = IBankTypes.AMERICANEXPRESS;
 	
 	private Pattern reAccounts = Pattern.compile("leftnav'\\)\">([^<]+)</a>\\r*\\s*</div>\\r*\\s*</td>\\r*\\s*<td\\s*id=\"headerSectionLeft\"\\s*colspan=\"6\">\\r*\\s*<span\\s*class=\"cardTitle\">.*?sorted_index=(\\d{1,})&?[^>]+>([^<]+)</a>.*?Utest[\\&aring;|å]ende skuld\\s*</div>\\r*\\s*<div[^>]+>[^<]+</div>\\r*\\s*<div[^>]+>([^<]+)</div>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-	private Pattern reTransactions = Pattern.compile("id=\"Roc\\d{1,}\"\\s* class='tableStandardText'>\\r*\\s*<td[^>]+>\\r*\\s*(\\d{1,2}\\s[a-z]{3}\\s\\d{4}).*?</a>\\r*\\s*([^<]*).*?amountPadding'>&nbsp;</td>\\r*\\s*<td\\s*class='amountPadding'>.*?(\\d{1,},?\\d{1,}\\s*kr)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private Pattern reTransactions = Pattern.compile("id=\"Roc\\d{1,}\"\\s* class='tableStandardText'>\\r*\\s*<td[^>]+>\\r*\\s*(\\d{1,2}\\s[a-z]{3}\\s\\d{4}).*?</a>\\r*\\s*([^<]*).*?amountPadding'>&nbsp;</td>\\r*\\s*<td\\s*class='amountPadding'>.*?([0-9.,\\s]*kr)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	
 	private String response = null;
 
@@ -158,18 +159,20 @@ public class AmericanExpress extends Bank {
 			response = urlopen.open("https://global.americanexpress.com/myca/intl/estatement/emea/statement.do?request_type=&Face=sv_SE&BPIndex=0&sorted_index=" + account.getId());
 			Matcher matcher = reTransactions.matcher(response);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+			
+			SimpleDateFormat sdfFrom = new SimpleDateFormat("d MMM yyyy", new Locale("sv-SE"));
+            SimpleDateFormat sdfTo = new SimpleDateFormat("yyyy-MM-dd");
+            Date transactionDate;
+			
 			while (matcher.find()) {
                 /*
                  * Capture groups:
                  * GROUP                    EXAMPLE DATA
                  * 1: Date                  17 jan 2011
                  * 2: Specification         xx
-                 * 3: Amount                2,00&nbsp;kr
+                 * 3: Amount                1.582,00&nbsp;kr
                  * 
                  */
-                SimpleDateFormat sdfFrom = new SimpleDateFormat("d MMM yyyy");
-                SimpleDateFormat sdfTo = new SimpleDateFormat("yyyy-MM-dd");
-                Date transactionDate;
                 try {
                     transactionDate = sdfFrom.parse(matcher.group(1).trim());
                     String strDate = sdfTo.format(transactionDate);
