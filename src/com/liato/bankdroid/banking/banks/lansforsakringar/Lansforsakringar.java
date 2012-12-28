@@ -24,6 +24,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -31,6 +32,7 @@ import java.util.regex.Pattern;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.conn.EofSensorInputStream;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
@@ -75,6 +77,7 @@ public class Lansforsakringar extends Bank {
     private Pattern reViewState = Pattern.compile("(?:__|javax\\.faces\\.)VIEWSTATE\"\\s+.*?value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
     private Pattern reLoginToken = Pattern.compile("login:loginToken\"\\s+.*?value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
     private ObjectMapper mObjectMapper = new ObjectMapper();
+    private HashMap<String, String> mAccountLedger = new HashMap<String, String>();
 
     public Lansforsakringar(Context context) {
         super(context);
@@ -200,15 +203,18 @@ public class Lansforsakringar extends Bank {
 
         urlopen = login();
 
+        mAccountLedger.clear();
         AccountsResponse ar = readJsonValue(API_BASEURL + "account/bytype", objectAsJson(new AccountsRequest(AccountsRequest.Type.CHECKING)), AccountsResponse.class);
         for (com.liato.bankdroid.banking.banks.lansforsakringar.model.response.Account a : ar.getAccounts()) {
         	accounts.add(new Account(a.getAccountName(), new BigDecimal(a.getDispoibleAmount()), a.getAccountNumber()));
         	//a.getLedger() should be saved to database, used when fetching transactions
+        	mAccountLedger.put(a.getAccountNumber(), a.getLedger());
         	balance = balance.add(new BigDecimal(a.getDispoibleAmount()));
         }
         ar = readJsonValue(API_BASEURL + "account/bytype", objectAsJson(new AccountsRequest(AccountsRequest.Type.SAVING)), AccountsResponse.class);
         for (com.liato.bankdroid.banking.banks.lansforsakringar.model.response.Account a : ar.getAccounts()) {
         	accounts.add(new Account(a.getAccountName(), new BigDecimal(a.getDispoibleAmount()), a.getAccountNumber()));
+            mAccountLedger.put(a.getAccountNumber(), a.getLedger());
         	balance = balance.add(new BigDecimal(a.getDispoibleAmount()));
         }        
         if (accounts.isEmpty()) {
@@ -226,14 +232,20 @@ public class Lansforsakringar extends Bank {
         ArrayList<Transaction> transactions = new ArrayList<Transaction>();
         //TODO: Get upcoming transactions?
         //TransactionsResponse tr = readJsonValue(API_BASEURL + "account/upcoming", objectAsJson(new UpcomingTransactionsRequest(account.getId())), TransactionsResponse.class);
-        TransactionsResponse tr = readJsonValue(API_BASEURL + "account/transaction", objectAsJson(new TransactionsRequest(0, "DEPIOSIT", account.getId())), TransactionsResponse.class);
         
-        for (com.liato.bankdroid.banking.banks.lansforsakringar.model.response.Transaction t : tr.getTransactions()) {
-        	//TODO: Set locale to Europe/Stockholm on date?
-        	transactions.add(new Transaction(Helpers.formatDate(new Date(t.getTransactiondate())), t.getText(), new BigDecimal(t.getAmmount())));
+        try {
+            TransactionsResponse tr = readJsonValue(API_BASEURL + "account/transaction", objectAsJson(new TransactionsRequest(0, mAccountLedger.containsKey(account.getId()) ? mAccountLedger.get(account.getId()) : "DEPIOSIT", account.getId())), TransactionsResponse.class);
+            for (com.liato.bankdroid.banking.banks.lansforsakringar.model.response.Transaction t : tr.getTransactions()) {
+                //TODO: Set locale to Europe/Stockholm on date?
+                transactions.add(new Transaction(Helpers.formatDate(new Date(t.getTransactiondate())), t.getText(), new BigDecimal(t.getAmmount())));
+            }
+            account.setTransactions(transactions);        
+        } catch (BankException e) {
+            // No transactions for account if this fails.
+            // readJsonValue will print the stack trace
         }
-
-        account.setTransactions(transactions);        
+        
+        
         super.updateComplete();
     }       	
 }
