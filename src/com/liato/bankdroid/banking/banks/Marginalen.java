@@ -41,7 +41,7 @@ public class Marginalen extends Bank {
 	private Pattern reGuid = Pattern.compile("name=\"guid\" value=\"([a-zA-Z0-9]+)\"");
 	private Pattern reAccountLink = Pattern.compile("href=\"(engine\\?[a-zA-Z0-9;=&._]+menuid=15[a-zA-Z0-9;=&._]+)\"");
 	private Pattern reAccounts = Pattern.compile("<td>\\s*([a-zA-ZåäöÅÄÖ0-9]+)\\s*</td>\\s*<td>\\s*<a href=\"(engine\\?usecase=account[a-zA-Z0-9;=&._]+)\">([0-9]+)</a>\\s*</td>\\s*<td class=\"aright\">\\s*([0-9.,]+)\\s*[a-zA-Z&;]+\\s*</td>");
-	private Pattern reTransactions = Pattern.compile("href=\"engine\\?usecase=transactiondetails.*tabindex=\"4\">([0-9\\-]+)</a>\\s*</td>\\s*<td>\\s*([a-zA-ZåäöÅÄÖ0-9]+)\\s*</td>\\s*<td class=\"aright\">\\s*([0-9\\.,]+)&nbsp;");
+	private Pattern reTransactions = Pattern.compile("href=\"engine\\?usecase=transactiondetails.*tabindex=\"4\">([0-9\\-]+)</a>\\s*</td>\\s*<td>\\s*(.*?)\\s*</td>\\s*<td class=\"aright\">\\s*([\\-0-9\\.,]+)&nbsp;");
 	
 	private String accountUrl = "";
     
