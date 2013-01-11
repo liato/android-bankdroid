@@ -20,10 +20,12 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.http.NameValuePair;
 
@@ -121,11 +123,24 @@ public class Helpers {
         currency.setDecimalFormatSymbols(dfs);
         return currency.format(balance.doubleValue())+curr;
     }
+
+
     public static String formatBalance(BigDecimal balance, String curr) {
         return formatBalance(balance, curr, false, null);
     }
     public static String formatBalance(Double balance, String curr) {
         return formatBalance(new BigDecimal(balance), curr);
+    }
+
+    public static String formatBalanceAsDate(BigDecimal balance) {
+    	try {
+        	SimpleDateFormat sdfIn = new SimpleDateFormat("yyyyMMdd", Locale.US);
+        	SimpleDateFormat sdfOut = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+			Date date = sdfIn.parse(balance.toPlainString());
+			return sdfOut.format(date);
+		} catch (ParseException e) {
+			return balance.toPlainString();
+		}
     }
 
     static public void setActivityAnimation(Activity activity, int in, int out) {
