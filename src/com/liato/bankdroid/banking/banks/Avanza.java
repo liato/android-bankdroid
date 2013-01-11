@@ -50,7 +50,7 @@ public class Avanza extends Bank {
 	private static final String URL = "https://www.avanza.se/";
     private static final int BANKTYPE_ID = IBankTypes.AVANZA;
 	
-	private Pattern reAccounts = Pattern.compile("depa\\.jsp\\?depotnr=([^\"]+)[^>]+>[^<]+</a>\\s*</td>\\s*<td[^>]+>([^<]+)<.*?<td[^>]+>([^<]+)</td>\\s*<td[^>]+>([^<]+)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private Pattern reAccounts = Pattern.compile("depa\\.jsp\\?depotnr=([^\"]+)[^>]+>[^<]+</a>\\s*</td>\\s*<td[^>]+>(.+?)\\s(Private|Pro|Premium|Bas).*?<td[^>]+>([^<]+)</td>\\s*<td[^>]+>([^<]+)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reTransactions = Pattern.compile("(?:warrantguide\\.jsp|aktie\\.jsp)(?:.*?)orderbookId=(?:.*?)>(.*?)<(?:.*?)<nobr>(?:.*?)<nobr>(?:.*?)<nobr>(.*?)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	public Avanza(Context context) {
 		super(context);
@@ -114,12 +114,12 @@ public class Avanza extends Bank {
                  * GROUP                EXAMPLE DATA
                  * 1: ID                3505060
                  * 2: Type              Aktie- och fondkonto Premium Silver
-                 * 3: % since purchase  1,90
-                 * 4: Amount in SEK     820
+                 * 4: % since purchase  1,90
+                 * 5: Amount in SEK     820
                  *    
                  */    
-			    accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim(), Helpers.parseBalance(matcher.group(4)), matcher.group(1).trim()));
-				balance = balance.add(Helpers.parseBalance(matcher.group(4)));
+			    accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(5)), matcher.group(1).trim()));
+				balance = balance.add(Helpers.parseBalance(matcher.group(5)));
 			}
 			if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
