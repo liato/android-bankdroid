@@ -83,4 +83,5 @@ public interface IBankTypes {
     public static final int BIOKLUBBEN = 59;
     public static final int CHALMREST = 60;
     public static final int MARGINALEN = 61;
+    public static final int AKELIUSSPAR = 62;
 }
