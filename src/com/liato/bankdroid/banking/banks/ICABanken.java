@@ -158,7 +158,7 @@ public class ICABanken extends Bank {
                 mIdMappings.put(Integer.toString(accid), matcher.group(1).trim());           
                 accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim() + " (Disponibelt)", Helpers.parseBalance(matcher.group(3).trim()), Integer.toString(accid)));
                 Account account = new Account(Html.fromHtml(matcher.group(2)).toString().trim() + " (Saldo)", Helpers.parseBalance(matcher.group(4).trim()), "a:" + accid);
-                account.setAliasfor(matcher.group(1).trim());
+                account.setAliasfor(Integer.toString(accid));
                 accounts.add(account);
 
                 balance = balance.add(Helpers.parseBalance(matcher.group(3)));
