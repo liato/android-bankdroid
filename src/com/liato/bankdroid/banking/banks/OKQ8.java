@@ -193,6 +193,7 @@ public class OKQ8 extends Bank {
 			if(matcher.find())
 			{
 			    accounts.add(new Account("Saldo" , Helpers.parseBalance(matcher.group(1)), "2"));
+			    accounts.add(new Account("Saldo" , Helpers.parseBalance(matcher.group(1)).negate(), "4"));
 			}
 			/*
 			 * Find the next value that is "Köpgräns". Add a new account but don't add to the balance.
