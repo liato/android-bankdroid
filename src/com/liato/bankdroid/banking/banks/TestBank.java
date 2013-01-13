@@ -86,7 +86,7 @@ public class TestBank extends Bank {
 		Matcher matcher;
 		try {
 		    
-            response = urlopen.open("http://www.nullbyte.eu/static/bankdroid/tests/testbank/accounts.htm");
+            response = urlopen.open("http://www.nullbyte.eu/bankdroid/tests/testbank/accounts.htm");
             matcher = reAccounts.matcher(response);
             while (matcher.find()) {
                 /*
@@ -134,7 +134,7 @@ public class TestBank extends Bank {
 		String response = null;
 		Matcher matcher;
 		try {
-			response = urlopen.open("http://www.nullbyte.eu/static/bankdroid/tests/testbank/transactions_"+account.getId()+".htm");
+			response = urlopen.open("http://www.nullbyte.eu/bankdroid/tests/testbank/transactions_"+account.getId()+".htm");
 			matcher = reTransactions.matcher(response);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 			while (matcher.find()) {
