@@ -83,6 +83,7 @@ import com.liato.bankdroid.banking.banks.Wallet;
 import com.liato.bankdroid.banking.banks.Meniga;
 import com.liato.bankdroid.banking.banks.Marginalen;
 import com.liato.bankdroid.banking.banks.Nordea.Nordea;
+import com.liato.bankdroid.banking.banks.SvenskaSpel;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.db.Crypto;
 import com.liato.bankdroid.db.DBAdapter;
@@ -222,6 +223,8 @@ public class BankFactory {
         	return new Chalmrest(context);
         case IBankTypes.MARGINALEN:
             return new Marginalen(context);
+        case IBankTypes.SVENSKASPEL:
+            return new SvenskaSpel(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -292,7 +295,8 @@ public class BankFactory {
         banks.add(new Bioklubben(context));
         banks.add(new Chalmrest(context));
         banks.add(new Marginalen(context));
-
+        banks.add(new SvenskaSpel(context));
+        
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));
