@@ -107,13 +107,16 @@ public class PairApplicationsActivity extends LockableActivity {
 		Editor editor = pref.edit();
 		editor.putBoolean("content_provider_enabled", true);
 		editor.commit();
+        String apiKey;
 
-		String apiKey = BankTransactionsProvider.getApiKey(ctx);
-
-		// Make sure we actually have an generated API-key
-		if(apiKey == null || apiKey.equals("")) {
-			initialSetupApiKey(ctx);
-		}
+        try{
+		    apiKey = BankTransactionsProvider.getApiKey(ctx);
+        }
+        catch (IllegalArgumentException e){
+            //Initialize API key if it is not set
+            initialSetupApiKey(ctx);
+            apiKey = BankTransactionsProvider.getApiKey(ctx);
+        }
 
 		intent.putExtra(IBankTransactionsProvider.API_KEY,apiKey);
 		setResult(RESULT_OK, intent);
