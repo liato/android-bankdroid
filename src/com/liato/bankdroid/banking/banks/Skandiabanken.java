@@ -2,6 +2,8 @@ package com.liato.bankdroid.banking.banks;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -196,6 +198,13 @@ public class Skandiabanken extends Bank {
     				Transaction transaction = new Transaction(date, description, Helpers.parseBalance(ammountString));
     				transactions.add(transaction);
     			}
+			    
+    			Collections.sort(transactions, new Comparator<Transaction>() {
+    	            public int compare(Transaction t1, Transaction t2) {
+    	                return t2.compareTo(t1);
+    	            }
+    	        });
+    			
     			account.setTransactions(transactions);
 			}
 			
