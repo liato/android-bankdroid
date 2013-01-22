@@ -227,7 +227,7 @@ public class BankFactory {
         case IBankTypes.SVENSKASPEL:
             return new SvenskaSpel(context);
         case IBankTypes.EASYCARD:
-        	return new EasyCard(context);
+            return new EasyCard(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
