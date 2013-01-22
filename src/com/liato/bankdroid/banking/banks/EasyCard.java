@@ -38,7 +38,7 @@ public class EasyCard extends Bank {
 
     private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_NUMBER;
 
-    private Pattern reAccounts = Pattern.compile("<h2>MasterCard,\\s([0-9]*)[^:]*:[^:]*:[^:]*:[^:]*[^>]*>([0-9\\s,]*)[^:]*:[^:]*:[^:]*:[^>]*>([0-9\\s,]*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private Pattern reAccounts = Pattern.compile("<h2>MasterCard,\\s([0-9]*)[^:]*:[^:]*:[^:]*:[^:]*[^>]*>([0-9\\s,]*)[^:]*:[^:]*:[^:]*:[^>]*>([0-9\\s,]*)[^:]*:[^:]*:[^:]*:[^>]*>([0-9\\s,]*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private Pattern reTransactions = Pattern.compile("<td\\snowrap>([0-9-]*)<\\/td><td\\snowrap>[^,]*,\\s([^,]*)[^<]*<\\/td><td\\snowrap\\sclass='cp-wp-td-right'>[^<]*<\\/td><td\\snowrap\\sclass='cp-wp-td-right'>([0-9\\s,]*)", Pattern.CASE_INSENSITIVE);
     private Pattern rePostData = Pattern.compile("<input\\stype=\"hidden\"\\sname=\"([0-9A-z_]*)\"\\sid=\"[0-9A-z_]*\"\\svalue=\"([^\"]*)\"\\s\\/>", Pattern.CASE_INSENSITIVE);
 
@@ -124,14 +124,15 @@ public class EasyCard extends Bank {
             // Our data!
             String account_number = matcher.group(2).toString().trim(); // 123123123
             BigDecimal credit_left_amount = Helpers.parseBalance(matcher.group(2).toString().trim()); // 3 748,87
-            BigDecimal credit_spent_amount = Helpers.parseBalance(matcher.group(3).toString().trim()); // 1 083,63
-
+            BigDecimal credit_amount = Helpers.parseBalance(matcher.group(4).toString().trim()); // 30 000,00
+            BigDecimal credit_spent_amount = credit_amount.subtract(credit_left_amount).negate(); // 26 251,13
+            
             // Construct accounts
-            Account credit_left = new Account("Kredit", credit_left_amount, account_number + ":left", Account.CCARD);
-            Account credit_spent = new Account("└ Utnyttjad kredit", credit_spent_amount, account_number + ":spent", Account.OTHER);
-
-            accounts.add(credit_left);
+            Account credit_spent = new Account("Saldo", credit_spent_amount, account_number + ":saldo", Account.CCARD);
+            Account credit_left  = new Account("Kredit", credit_left_amount, account_number + ":kredit", Account.OTHER);
+            
             accounts.add(credit_spent);
+            accounts.add(credit_left);
         }
 
         // No accounts found no profit...
@@ -142,25 +143,19 @@ public class EasyCard extends Bank {
         // Find transactions
         Matcher tMatcher = reTransactions.matcher(response);
 
-        ArrayList<Transaction> credit_left_transactions = new ArrayList<Transaction>();
-        ArrayList<Transaction> credit_spent_transactions = new ArrayList<Transaction>();
-
+        ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+     
         while (tMatcher.find()) {
             String date = tMatcher.group(1).toString().trim(); // 2013-01-15
             String transaction = tMatcher.group(2).toString().trim(); // EBG HOSPITALITY
             BigDecimal amount = Helpers.parseBalance(tMatcher.group(3).toString()); // 214,00
 
-            credit_left_transactions.add(new Transaction(date, transaction, amount.negate()));
-            credit_spent_transactions.add(new Transaction(date, transaction, amount));
+            transactions.add(new Transaction(date, transaction, amount.negate()));
         }
 
         // Add transactions to account.
         for (Account account : accounts) {
-            if (account.getType() == Account.CCARD) {
-                account.setTransactions(credit_left_transactions);
-            } else {
-                account.setTransactions(credit_spent_transactions);
-            }
+            account.setTransactions(transactions);
         }
 
         super.updateComplete();
