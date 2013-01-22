@@ -27,34 +27,34 @@ import com.liato.bankdroid.provider.IBankTypes;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class EasyCard extends Bank {
-    private static final String TAG = "EasyCard";
-    private static final String NAME = "EasyCard";
-    private static final String NAME_SHORT = "easycard";
-    private static final String URL = "https://kundportal.cerdo.se/collectorpub/card/default.aspx";
-    private static final int BANKTYPE_ID = IBankTypes.EASYCARD;
+    private static final String TAG         = "EasyCard";
+    private static final String NAME        = "EasyCard";
+    private static final String NAME_SHORT  = "easycard";
+    private static final String URL         = "https://kundportal.cerdo.se/collectorpub/card/default.aspx";
+    private static final int BANKTYPE_ID    = IBankTypes.EASYCARD;
 
-    private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_NUMBER;
+    private static final int INPUT_TYPE_USERNAME    = InputType.TYPE_CLASS_NUMBER;
     private static final String INPUT_HINT_USERNAME = "XXXXXXXXX";
 
     private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_NUMBER;
 
-    private Pattern reAccounts = Pattern.compile("<h2>MasterCard,\\s([0-9]*)[^:]*:[^:]*:[^:]*:[^:]*[^>]*>([0-9\\s,]*)[^:]*:[^:]*:[^:]*:[^>]*>([0-9\\s,]*)[^:]*:[^:]*:[^:]*:[^>]*>([0-9\\s,]*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-    private Pattern reTransactions = Pattern.compile("<td\\snowrap>([0-9-]*)<\\/td><td\\snowrap>[^,]*,\\s([^,]*)[^<]*<\\/td><td\\snowrap\\sclass='cp-wp-td-right'>[^<]*<\\/td><td\\snowrap\\sclass='cp-wp-td-right'>([0-9\\s,]*)", Pattern.CASE_INSENSITIVE);
-    private Pattern rePostData = Pattern.compile("<input\\stype=\"hidden\"\\sname=\"([0-9A-z_]*)\"\\sid=\"[0-9A-z_]*\"\\svalue=\"([^\"]*)\"\\s\\/>", Pattern.CASE_INSENSITIVE);
+    private Pattern reAccounts      = Pattern.compile("<h2>MasterCard,\\s([0-9]*)[^:]*:[^:]*:[^:]*:[^:]*[^>]*>([0-9\\s,]*)[^:]*:[^:]*:[^:]*:[^>]*>([0-9\\s,]*)[^:]*:[^:]*:[^:]*:[^>]*>([0-9\\s,]*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private Pattern reTransactions  = Pattern.compile("<td\\snowrap>([0-9-]*)<\\/td><td\\snowrap>[^,]*,\\s([^,]*)[^<]*<\\/td><td\\snowrap\\sclass='cp-wp-td-right'>[^<]*<\\/td><td\\snowrap\\sclass='cp-wp-td-right'>([0-9\\s,]*)", Pattern.CASE_INSENSITIVE);
+    private Pattern rePostData      = Pattern.compile("<input\\stype=\"hidden\"\\sname=\"([0-9A-z_]*)\"\\sid=\"[0-9A-z_]*\"\\svalue=\"([^\"]*)\"\\s\\/>", Pattern.CASE_INSENSITIVE);
 
     private String response = null;
 
     public EasyCard(Context context) {
         super(context);
 
-        super.TAG = TAG;
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
-        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
-        super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
-        super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
+        super.TAG                   = TAG;
+        super.NAME                  = NAME;
+        super.NAME_SHORT            = NAME_SHORT;
+        super.BANKTYPE_ID           = BANKTYPE_ID;
+        super.URL                   = URL;
+        super.INPUT_TYPE_USERNAME   = INPUT_TYPE_USERNAME;
+        super.INPUT_HINT_USERNAME   = INPUT_HINT_USERNAME;
+        super.INPUT_TYPE_PASSWORD   = INPUT_TYPE_PASSWORD;
     }
 
     public EasyCard(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
@@ -65,9 +65,9 @@ public class EasyCard extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException, ClientProtocolException, IOException {
 
-        urlopen = new Urllib(true);
-        response = urlopen.open(EasyCard.URL);
-        List<NameValuePair> postData = new ArrayList<NameValuePair>();
+        urlopen                         = new Urllib(true);
+        response                        = urlopen.open(EasyCard.URL);
+        List<NameValuePair> postData    = new ArrayList<NameValuePair>();
 
         // Find hidden required fields.
         Matcher matcher = rePostData.matcher(response);
@@ -122,10 +122,10 @@ public class EasyCard extends Bank {
 
         if (matcher.find()) {
             // Our data!
-            String account_number = matcher.group(2).toString().trim(); // 123123123
-            BigDecimal credit_left_amount = Helpers.parseBalance(matcher.group(2).toString().trim()); // 3 748,87
-            BigDecimal credit_amount = Helpers.parseBalance(matcher.group(4).toString().trim()); // 30 000,00
-            BigDecimal credit_spent_amount = credit_amount.subtract(credit_left_amount).negate(); // 26 251,13
+            String account_number           = matcher.group(2).toString().trim(); // 123123123
+            BigDecimal credit_left_amount   = Helpers.parseBalance(matcher.group(2).toString().trim()); // 3 748,87
+            BigDecimal credit_amount        = Helpers.parseBalance(matcher.group(4).toString().trim()); // 30 000,00
+            BigDecimal credit_spent_amount  = credit_amount.subtract(credit_left_amount).negate(); // 26 251,13
             
             // Construct accounts
             Account credit_spent = new Account("Saldo", credit_spent_amount, account_number + ":saldo", Account.CCARD);
@@ -146,9 +146,9 @@ public class EasyCard extends Bank {
         ArrayList<Transaction> transactions = new ArrayList<Transaction>();
      
         while (tMatcher.find()) {
-            String date = tMatcher.group(1).toString().trim(); // 2013-01-15
-            String transaction = tMatcher.group(2).toString().trim(); // EBG HOSPITALITY
-            BigDecimal amount = Helpers.parseBalance(tMatcher.group(3).toString()); // 214,00
+            String date         = tMatcher.group(1).toString().trim(); // 2013-01-15
+            String transaction  = tMatcher.group(2).toString().trim(); // EBG HOSPITALITY
+            BigDecimal amount   = Helpers.parseBalance(tMatcher.group(3).toString()); // 214,00
 
             transactions.add(new Transaction(date, transaction, amount.negate()));
         }

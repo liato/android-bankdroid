@@ -198,7 +198,8 @@ public class Skandiabanken extends Bank {
     				Transaction transaction = new Transaction(date, description, Helpers.parseBalance(ammountString));
     				transactions.add(transaction);
     			}
-			    
+	            
+			    // Sort transactions by date
     			Collections.sort(transactions, new Comparator<Transaction>() {
     	            public int compare(Transaction t1, Transaction t2) {
     	                return t2.compareTo(t1);
