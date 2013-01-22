@@ -123,10 +123,8 @@ public class EasyCard extends Bank {
         if (matcher.find()) {
             // Our data!
             String account_number = matcher.group(2).toString().trim(); // 123123123
-            BigDecimal credit_left_amount = Helpers.parseBalance(matcher.group(2).toString().trim()); // 3
-                                                                                                      // 748,87
-            BigDecimal credit_spent_amount = Helpers.parseBalance(matcher.group(3).toString().trim()); // 1
-                                                                                                       // 083,63
+            BigDecimal credit_left_amount = Helpers.parseBalance(matcher.group(2).toString().trim()); // 3 748,87
+            BigDecimal credit_spent_amount = Helpers.parseBalance(matcher.group(3).toString().trim()); // 1 083,63
 
             // Construct accounts
             Account credit_left = new Account("Kredit", credit_left_amount, account_number + ":left", Account.CCARD);
@@ -149,8 +147,7 @@ public class EasyCard extends Bank {
 
         while (tMatcher.find()) {
             String date = tMatcher.group(1).toString().trim(); // 2013-01-15
-            String transaction = tMatcher.group(2).toString().trim(); // EBG
-                                                                      // HOSPITALITY
+            String transaction = tMatcher.group(2).toString().trim(); // EBG HOSPITALITY
             BigDecimal amount = Helpers.parseBalance(tMatcher.group(3).toString()); // 214,00
 
             credit_left_transactions.add(new Transaction(date, transaction, amount.negate()));
