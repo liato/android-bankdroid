@@ -99,7 +99,7 @@ public class EasyCard extends Bank {
             } else if (response.contains("sedan du")) {
                 throw new BankException(res.getText(R.string.bank_closed).toString());
             } else if(!response.contains("Valuta")) {
-                throw new BankException("General error");
+                throw new BankException(res.getText(R.string.unable_to_login).toString());
             }
         } catch (ClientProtocolException e) {
             throw new BankException(e.getMessage());
