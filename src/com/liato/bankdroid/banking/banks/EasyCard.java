@@ -110,6 +110,7 @@ public class EasyCard extends Bank {
 
     @Override
     public void update() throws BankException, LoginException, BankChoiceException {
+    
         super.update();
 
         if (username == null || password == null || username.length() != 9 || password.length() == 0) {
@@ -141,24 +142,33 @@ public class EasyCard extends Bank {
             throw new BankException(res.getText(R.string.no_accounts_found).toString());
         }
 
+        super.updateComplete();
+    }
+    
+    @Override
+    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException 
+    {
+        super.updateTransactions(account, urlopen);
+        
         // Find transactions
-        Matcher tMatcher = reTransactions.matcher(response);
-
+        Matcher matcher                     = reTransactions.matcher(response);
         ArrayList<Transaction> transactions = new ArrayList<Transaction>();
      
-        while (tMatcher.find()) {
-            String date         = tMatcher.group(1).toString().trim(); // 2013-01-15
-            String transaction  = tMatcher.group(2).toString().trim(); // EBG HOSPITALITY
-            BigDecimal amount   = Helpers.parseBalance(tMatcher.group(3).toString()); // 214,00
+        while (matcher.find()) {
+            String date         = matcher.group(1).toString().trim(); // 2013-01-15
+            String transaction  = matcher.group(2).toString().trim(); // EBG HOSPITALITY
+            BigDecimal amount   = Helpers.parseBalance(matcher.group(3).toString()); // 214,00
 
             transactions.add(new Transaction(date, transaction, amount.negate()));
         }
-
-        // Add transactions to account.
-        for (Account account : accounts) {
-            account.setTransactions(transactions);
-        }
-
-        super.updateComplete();
+        
+        account.setTransactions(transactions);
+    }
+    
+    @Override
+    public void closeConnection() {
+        super.closeConnection();
+        response = null;
     }
 }
+    
