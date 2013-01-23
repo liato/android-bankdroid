@@ -88,16 +88,19 @@ public class EasyCard extends Bank {
 
     @Override
     public Urllib login() throws LoginException, BankException {
-
+        
         try {
             LoginPackage lp = preLogin();
-            response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+            response        = urlopen.open(lp.getLoginTarget(), lp.getPostData());
 
             // The string "Valuta" is always present on successful login.
-            if (!response.contains("Valuta")) {
+            if(response.contains("Inloggningen misslyckades")) {
                 throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+            } else if (response.contains("sedan du")) {
+                throw new BankException(res.getText(R.string.bank_closed).toString());
+            } else if(!response.contains("Valuta")) {
+                throw new BankException("General error");
             }
-
         } catch (ClientProtocolException e) {
             throw new BankException(e.getMessage());
         } catch (IOException e) {
