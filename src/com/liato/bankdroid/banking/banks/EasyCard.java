@@ -96,9 +96,7 @@ public class EasyCard extends Bank {
             // The string "Valuta" is always present on successful login.
             if(response.contains("Inloggningen misslyckades")) {
                 throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-            } else if (response.contains("sedan du")) {
-                throw new BankException(res.getText(R.string.bank_closed).toString());
-            } else if(!response.contains("Valuta")) {
+            } else if (response.contains("sedan du") || !response.contains("Valuta")) {
                 throw new BankException(res.getText(R.string.unable_to_login).toString());
             }
         } catch (ClientProtocolException e) {
