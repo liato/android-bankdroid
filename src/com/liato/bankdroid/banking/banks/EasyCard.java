@@ -124,14 +124,19 @@ public class EasyCard extends Bank {
 
         if (matcher.find()) {
             // Our data!
-            String account_number           = matcher.group(2).toString().trim(); // 123123123
+            String account_number           = matcher.group(1).toString().trim(); // 123123123
+            
+            if(!account_number.equalsIgnoreCase(this.username)) {
+                throw new BankException(res.getText(R.string.unable_to_login).toString());
+            }
+            
             BigDecimal credit_left_amount   = Helpers.parseBalance(matcher.group(2).toString().trim()); // 3 748,87
             BigDecimal credit_amount        = Helpers.parseBalance(matcher.group(4).toString().trim()); // 30 000,00
             BigDecimal credit_spent_amount  = credit_amount.subtract(credit_left_amount).negate(); // 26 251,13
             
             // Construct accounts
-            Account credit_spent = new Account("Saldo", credit_spent_amount, account_number + ":saldo", Account.CCARD);
-            Account credit_left  = new Account("Kredit", credit_left_amount, account_number + ":kredit", Account.OTHER);
+            Account credit_spent = new Account("Saldo", credit_spent_amount, this.username + ":saldo", Account.CCARD);
+            Account credit_left  = new Account("Kredit", credit_left_amount, this.username + ":kredit", Account.OTHER);
             
             accounts.add(credit_spent);
             accounts.add(credit_left);
