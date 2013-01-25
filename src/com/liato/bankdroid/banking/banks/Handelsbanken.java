@@ -19,6 +19,8 @@ package com.liato.bankdroid.banking.banks;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -167,6 +169,14 @@ public class Handelsbanken extends Bank {
 			while (matcher.find()) {
 				transactions.add(new Transaction(matcher.group(1).trim(), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3))));
 			}
+			
+			// Sort transactions by date
+			Collections.sort(transactions, new Comparator<Transaction>() {
+                public int compare(Transaction t1, Transaction t2) {
+                    return t2.compareTo(t1);
+                }
+            });
+			
 			account.setTransactions(transactions);
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
