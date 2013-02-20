@@ -50,9 +50,6 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
-import org.apache.http.util.EntityUtils;
-
-import android.util.Log;
 
 public class Urllib {
     public static String DEFAULT_USER_AGENT = "Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17";
@@ -238,8 +235,8 @@ public class Urllib {
     	return acceptInvalidCertificates;
     }
     
-    public void setUserAgent(String userAgent)
-    {
+    public void setUserAgent(String userAgent) {
     	this.userAgent = userAgent; 
     }
+    
 }

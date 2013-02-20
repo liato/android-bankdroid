@@ -28,9 +28,16 @@ import java.util.List;
 import org.apache.http.NameValuePair;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.os.Build;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 public class Helpers {
+	private static String USER_AGENT;
     private final static String[] currencies = {"AED", "AFN", "ALL", "AMD", "ANG", "AOA", "ARS", "AUD",
         "AWG", "AZN", "BAM", "BBD", "BDT", "BGN", "BHD", "BIF",
         "BMD", "BND", "BOB", "BRL", "BSD", "BTN", "BWP", "BYR",
@@ -222,5 +229,47 @@ public class Helpers {
     public static String formatDate(Date date) {
     	return DATE_FORMAT.format(date);
     }
+    
+    public static String getAppUserAgentString(Context context) {
+    	if (USER_AGENT != null) return USER_AGENT;
+        String appName = context.getResources().getString(R.string.app_name);
+        String appVersion = "";
+        int height = 0;
+        int width = 0;
+        DisplayMetrics display = context.getResources().getDisplayMetrics();
+        Configuration config = context.getResources().getConfiguration();
+ 
+        // Always send screen dimension for portrait mode
+        if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            height = display.widthPixels;
+            width = display.heightPixels;
+        } else {
+            width = display.widthPixels;
+            height = display.heightPixels;
+        }
+ 
+        try {
+            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_CONFIGURATIONS);
+            appVersion = packageInfo.versionName;
+        } catch (PackageManager.NameNotFoundException ignore) {
+            // this should never happen, we are looking up ourself
+        }
+ 
+        // Tries to conform to default android UA string without the Safari / webkit noise, plus adds the screen dimensions
+        USER_AGENT = String.format("%1$s/%2$s (%3$s; U; Android %4$s; %5$s-%6$s; %12$s Build/%7$s; %8$s) %9$dX%10$d %11$s %12$s"
+            , appName
+            , appVersion
+            , System.getProperty("os.name", "Linux")
+            , Build.VERSION.RELEASE
+            , config.locale.getLanguage().toLowerCase()
+            , config.locale.getCountry().toLowerCase()
+            , Build.ID
+            , Build.BRAND
+            , width
+            , height
+            , Build.MANUFACTURER
+            , Build.MODEL);
+        return USER_AGENT;
+    }    
 
 }
