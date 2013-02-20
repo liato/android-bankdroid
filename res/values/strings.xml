@@ -13,6 +13,7 @@
     <string name="menu_edit">Edit</string>
     <string name="menu_remove">Remove</string>
     <string name="invalid_username_password">Invalid username or password.</string>
+    <string name="invalid_username">Invalid username.</string>
     <string name="invalid_card_number">Invalid card number.</string>
     <string name="unable_to_find">Unable to find</string>
     <string name="no_accounts_found">No accounts found</string>

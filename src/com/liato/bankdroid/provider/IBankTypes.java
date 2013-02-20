@@ -86,4 +86,5 @@ public interface IBankTypes {
     public static final int AKELIUSSPAR = 62;
     public static final int SVENSKASPEL = 63;
     public static final int EASYCARD = 64;
+    public static final int APPEAKPOKER = 65;
 }

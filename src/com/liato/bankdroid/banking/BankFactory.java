@@ -47,6 +47,7 @@ import com.liato.bankdroid.banking.banks.IKEA;
 import com.liato.bankdroid.banking.banks.IkanoBank;
 import com.liato.bankdroid.banking.banks.Jojo;
 import com.liato.bankdroid.banking.banks.lansforsakringar.Lansforsakringar;
+import com.liato.bankdroid.banking.banks.AppeakPoker;
 import com.liato.bankdroid.banking.banks.EasyCard;
 import com.liato.bankdroid.banking.banks.McDonalds;
 import com.liato.bankdroid.banking.banks.NordeaDK;
@@ -228,6 +229,8 @@ public class BankFactory {
             return new SvenskaSpel(context);
         case IBankTypes.EASYCARD:
             return new EasyCard(context);
+        case IBankTypes.APPEAKPOKER:
+            return new AppeakPoker(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -300,6 +303,7 @@ public class BankFactory {
         banks.add(new Marginalen(context));
         banks.add(new SvenskaSpel(context));
         banks.add(new EasyCard(context));
+        banks.add(new AppeakPoker(context));
         
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
