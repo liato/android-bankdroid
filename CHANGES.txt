@@ -1,3 +1,7 @@
+v1.9.5: (2013-02-21)
+* Fix for Länsförsäkringar
++ Support for Appeak Poker
+
 1.9.4: (2013-01-04)
 * Fix for ICA Banken transactions (thanks to fruktsallad)
 * Fix for Länsförsäkringar
