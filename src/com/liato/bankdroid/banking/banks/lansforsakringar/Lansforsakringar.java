@@ -209,13 +209,13 @@ public class Lansforsakringar extends Bank {
         	accounts.add(new Account(a.getAccountName(), new BigDecimal(a.getBalance()), a.getAccountNumber()));
         	//a.getLedger() should be saved to database, used when fetching transactions
         	mAccountLedger.put(a.getAccountNumber(), a.getLedger());
-        	balance = balance.add(new BigDecimal(a.getDispoibleAmount()));
+        	balance = balance.add(new BigDecimal(a.getBalance()));
         }
         ar = readJsonValue(API_BASEURL + "account/bytype", objectAsJson(new AccountsRequest(AccountsRequest.Type.SAVING)), AccountsResponse.class);
         for (com.liato.bankdroid.banking.banks.lansforsakringar.model.response.Account a : ar.getAccounts()) {
-        	accounts.add(new Account(a.getAccountName(), new BigDecimal(a.getDispoibleAmount()), a.getAccountNumber()));
+        	accounts.add(new Account(a.getAccountName(), new BigDecimal(a.getBalance()), a.getAccountNumber()));
             mAccountLedger.put(a.getAccountNumber(), a.getLedger());
-        	balance = balance.add(new BigDecimal(a.getDispoibleAmount()));
+        	balance = balance.add(new BigDecimal(a.getBalance()));
         }        
         if (accounts.isEmpty()) {
         	throw new BankException(res.getText(R.string.no_accounts_found).toString());
