@@ -1,3 +1,6 @@
+v1.9.5.1: (2013-02-26)
+* Fix for Länsförsäkringar saving accounts
+
 v1.9.5: (2013-02-21)
 * Fix for Länsförsäkringar
 + Support for Appeak Poker

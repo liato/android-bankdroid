@@ -52,7 +52,7 @@ public class ICABanken extends Bank {
     private static final int BANKTYPE_ID = IBankTypes.ICABANKEN;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
-    private static final String INPUT_HINT_USERNAME = "ÅÅMMDD-XXXX";
+    private static final String INPUT_HINT_USERNAME = "ÅÅÅÅMMDD-XXXX";
     private static final boolean STATIC_BALANCE = false;
 
     private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
