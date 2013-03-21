@@ -141,8 +141,8 @@ public class AkeliusInvest extends Bank {
 		Matcher matcher;
 		try {
 			response = urlopen.open("https://online.akeliusinvest.com/AccountPortfolio.mws");
-			
 			matcher = reAccounts.matcher(response);
+            int accId = 0;
 			while (matcher.find()) {
                 /*
                  * Capture groups:
@@ -159,13 +159,14 @@ public class AkeliusInvest extends Bank {
 //						matcher.group(1).replaceFirst("(", "(\n");
 //					}
                
-				accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim() + " (Tillgängligt belopp)", Helpers.parseBalance(matcher.group(5).trim()), matcher.group(2).trim()));
-                Account account = new Account(Html.fromHtml(matcher.group(1)).toString().trim() + " (Saldo)", Helpers.parseBalance(matcher.group(6).trim()), "a:" + matcher.group(2).trim());
+				accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim() + " (Tillgängligt belopp)", Helpers.parseBalance(matcher.group(5).trim()), Integer.toString(accId)));
+                Account account = new Account(Html.fromHtml(matcher.group(1)).toString().trim() + " (Saldo)", Helpers.parseBalance(matcher.group(6).trim()), "a:" + accId);
                 account.setAliasfor(matcher.group(1).trim());
                 
                 accounts.add(account);      
 	                
                 balance = balance.add(Helpers.parseBalance(matcher.group(5)));
+                accId++;
 			}
 						if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
