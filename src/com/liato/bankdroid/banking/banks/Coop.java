@@ -75,7 +75,10 @@ public class Coop extends Bank {
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
         urlopen = new Urllib();
-        response = urlopen.open("https://www.coop.se/Mina-sidor/Logga-in-puffsida/");
+        urlopen.addHeader("Origin", "https://www.coop.se");
+        urlopen.addHeader("Referer", "https://www.coop.se/Mina-sidor/Logga-in-puffsida/?li=True");
+        response = urlopen.open("https://www.coop.se/Mina-sidor/Logga-in-puffsida/?li=True");
+        
         Matcher matcher = reViewState.matcher(response);
         if (!matcher.find()) {
             throw new BankException(res.getText(R.string.unable_to_find).toString()+" viewstate.");
@@ -90,10 +93,9 @@ public class Coop extends Bank {
         postData.add(new BasicNameValuePair("TextBoxUserName", username));
         postData.add(new BasicNameValuePair("TextBoxPassword", password));
         postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
-        postData.add(new BasicNameValuePair("__EVENTTARGET", ""));
-        postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
+        postData.add(new BasicNameValuePair("ButtonLogin", ""));
 //        postData.add(new BasicNameValuePair("__EVENTVALIDATION", strEventValidation));
-        return new LoginPackage(urlopen, postData, response, "https://www.coop.se/Mina-sidor/Logga-in-puffsida/");
+        return new LoginPackage(urlopen, postData, response, "https://www.coop.se/Mina-sidor/Logga-in-puffsida/?li=True");
     }
 
 
