@@ -3,6 +3,7 @@ v1.9.5.1: (2013-02-26)
 
 v1.9.5: (2013-02-21)
 * Fix for Länsförsäkringar
++ Support for Svenska Spel (thanks to nixi)
 + Support for Appeak Poker
 
 1.9.4: (2013-01-04)

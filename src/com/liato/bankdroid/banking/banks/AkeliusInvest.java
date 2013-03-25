@@ -17,6 +17,7 @@ package com.liato.bankdroid.banking.banks;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -60,6 +61,7 @@ public class AkeliusInvest extends Bank {
 	//private Pattern reBalanceSald = Pattern.compile("account\\.aspx\\?id=([^\"]+).+?>([^<]+)</a[^D]*Saldo([0-9 .,-]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	// private Pattern reBalance = Pattern.compile("AccountStatement\\.mws\\?selectedaccount=([^\"]+).+?>([^<]+)</a.+?Disponibelt([0-9 .,-]+)[^<]*<br/>.+?Saldo([0-9 .,-]+)", Pattern.CASE_INSENSITIVE);
 	private Pattern reTransactions = Pattern.compile("top\">([^<]+)</td>\\s*<td[^>]+>([^<]+)</td>\\s*<td[^>]+>([^<]+)</td>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private HashMap<String, String> mIdMappings = new HashMap<String, String>();
 	
 	public AkeliusInvest(Context context) {
 		super(context);
@@ -159,6 +161,7 @@ public class AkeliusInvest extends Bank {
 //						matcher.group(1).replaceFirst("(", "(\n");
 //					}
                
+                mIdMappings.put(Integer.toString(accId), matcher.group(2).trim());           
 				accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim() + " (Tillgängligt belopp)", Helpers.parseBalance(matcher.group(5).trim()), Integer.toString(accId)));
                 Account account = new Account(Html.fromHtml(matcher.group(1)).toString().trim() + " (Saldo)", Helpers.parseBalance(matcher.group(6).trim()), "a:" + accId);
                 account.setAliasfor(matcher.group(1).trim());
@@ -183,11 +186,12 @@ public class AkeliusInvest extends Bank {
 	@Override
 	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
 		super.updateTransactions(account, urlopen);
-		if (account.getId().startsWith("a:")) return; // No transactions for "saldo"-accounts
+        if (account.getId().startsWith("a:") || !mIdMappings.containsKey(account.getId())) return; // No transactions for "saldo"-accounts
+        String accountId = mIdMappings.get(account.getId());
 		String response = null;
 		Matcher matcher;
 		try {
-			response = urlopen.open("https://online.akeliusinvest.com/AccountStatement.mws?selectedaccount="+account.getId());
+			response = urlopen.open("https://online.akeliusinvest.com/AccountStatement.mws?selectedaccount="+accountId);
 			matcher = reTransactions.matcher(response);
 			/* 				ICA-banken	Akelius Invest
 			 * Beskrivning	1			2
