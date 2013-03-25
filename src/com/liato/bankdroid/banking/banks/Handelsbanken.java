@@ -52,7 +52,7 @@ public class Handelsbanken extends Bank {
 	private static final String NAME_SHORT = "handelsbanken";
 	private static final String URL = "https://m.handelsbanken.se/";
 	private static final int BANKTYPE_ID = IBankTypes.HANDELSBANKEN;
-    private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+    private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT;
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
 
 	private Pattern reBalance = Pattern.compile("block-link\\s*\"\\s*href=\"[^\"]*?/primary/_-([^\"]+)\"><span>([^<]+)</span>.*?SEK(?:&nbsp;|\\s*)?([0-9\\s.,-ÃÂ]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
