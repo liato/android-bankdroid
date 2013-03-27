@@ -57,7 +57,7 @@ public class AkeliusSpar extends Bank {
 
 	private Pattern reLogintoken = Pattern.compile("logintoken\"\\s+value=\"([^\"]+)\"");
 	private Pattern reError = Pattern.compile("<label\\s+class=\"error\">(.+?)</label>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-	private Pattern reAccounts = Pattern.compile("<tr>\\s*<td[^>]+>([^<]+)</td>\\s*<td[^>]+><a[^?]+\\?selectedaccount=([^\"]+)\">([^<]+)</a></td>\\s*<td[^>]+>([^<]+)</td>\\s*<td[^>]+>([^<]+)</td>\\s*<td[^>]+>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
+	private Pattern reAccounts = Pattern.compile("<tr>\\s*<td[^>]*>([^<]+)</td>\\s*<td[^>]*><a[^?]+\\?selectedaccount=([^\"]+)\"[^>]*>([^<]+)</a></td>\\s*<td[^>]+>([^<]+)</td>\\s*<td[^>]+>([^<]+)</td>\\s*<td[^>]+>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
 	//private Pattern reBalanceDisp = Pattern.compile("account\\.aspx\\?id=([^\"]+).+?>([^<]+)</a.+?Disponibelt([0-9 .,-]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	//private Pattern reBalanceSald = Pattern.compile("account\\.aspx\\?id=([^\"]+).+?>([^<]+)</a[^D]*Saldo([0-9 .,-]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	// private Pattern reBalance = Pattern.compile("AccountStatement\\.mws\\?selectedaccount=([^\"]+).+?>([^<]+)</a.+?Disponibelt([0-9 .,-]+)[^<]*<br/>.+?Saldo([0-9 .,-]+)", Pattern.CASE_INSENSITIVE);
