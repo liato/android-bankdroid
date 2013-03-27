@@ -69,19 +69,19 @@ public abstract class AbsIkanoPartner extends Bank {
         response = urlopen.open("https://partner.ikanobank.se/web/engines/page.aspx?structid=" + structId);
         Document d = Jsoup.parse(response);
         Element e = d.getElementById("__VIEWSTATE");
-        if (e == null || e.attr("value", null) == null) {
+        if (e == null || e.attr("value") == null) {
             throw new BankException(res.getText(R.string.unable_to_find).toString() + " ViewState.");
         }
         String viewState = e.attr("value");
 
         e = d.getElementById("__EVENTVALIDATION");
-        if (e == null || e.attr("value", null) == null) {
+        if (e == null || e.attr("value") == null) {
             throw new BankException(res.getText(R.string.unable_to_find).toString() + " EventValidation.");
         }
         String eventValidation = e.attr("value");
 
         e = d.select("#LoginCustomerDiv > div").first();
-        if (e == null || e.attr("id", null) == null || e.attr("id").split("_", 2).length < 2) {
+        if (e == null || e.attr("id") == null || e.attr("id").split("_", 2).length < 2) {
             throw new BankException(res.getText(R.string.unable_to_find).toString() + " ctl.");
         }
         String ctl = e.attr("id").split("_", 2)[0];
@@ -104,7 +104,8 @@ public abstract class AbsIkanoPartner extends Bank {
             LoginPackage lp = preLogin();
             response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
             if (response.contains("eller personnumme") || response.contains("elaktigt personnummer")
-                    || response.contains("ontrollera personnummer") || response.contains("elaktig inloggningskod")) {
+                    || response.contains("ontrollera personnummer") || response.contains("elaktig inloggningskod")
+                    || response.contains("elaktig självbetjäningskod")) {
                 throw new LoginException(res.getText(R.string.invalid_username_password).toString());
             }
 
@@ -126,7 +127,7 @@ public abstract class AbsIkanoPartner extends Bank {
         urlopen = login();
         Document d = Jsoup.parse(response);
         Element element = d.select("#primary-nav > li:eq(1) > a").first();
-        if (element != null && element.attr("href", null) != null) {
+        if (element != null && element.attr("href") != null) {
             String myAccountUrl = element.attr("href");
             try {
                 response = urlopen.open("https://partner.ikanobank.se/" + myAccountUrl);
