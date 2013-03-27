@@ -1,3 +1,7 @@
+v1.9.5.2: (2013-03-27)
+* Fix for Coop
+* Show multiple Nordnet accounts
+
 v1.9.5.1: (2013-02-26)
 * Fix for Länsförsäkringar saving accounts
 

@@ -23,7 +23,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
 
-public class Skoda extends IkanoPartnerBase {
+public class Skoda extends AbsIkanoPartner {
 	private static final String TAG = "Skoda";
 	private static final String NAME = "Skodakortet";
 	private static final String NAME_SHORT = "skoda";
