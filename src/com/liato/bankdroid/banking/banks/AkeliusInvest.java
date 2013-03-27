@@ -180,6 +180,8 @@ public class AkeliusInvest extends Bank {
 		}
 		catch (IOException e) {
 			throw new BankException(e.getMessage());
+		} finally {
+		    super.updateComplete();
 		}
 	}
 
@@ -212,8 +214,5 @@ public class AkeliusInvest extends Bank {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        finally {
-            super.updateComplete();
-        }
 	}		
 }

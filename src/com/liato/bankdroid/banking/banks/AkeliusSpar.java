@@ -180,7 +180,9 @@ public class AkeliusSpar extends Bank {
 		}
 		catch (IOException e) {
 			throw new BankException(e.getMessage());
-		}
+		} finally {
+            super.updateComplete();
+        }
 	}
 
 	@Override
@@ -212,8 +214,5 @@ public class AkeliusSpar extends Bank {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        finally {
-            super.updateComplete();
-        }
 	}		
 }
