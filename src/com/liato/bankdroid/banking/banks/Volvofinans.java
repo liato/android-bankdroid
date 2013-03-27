@@ -17,6 +17,7 @@
 package com.liato.bankdroid.banking.banks;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,12 +32,12 @@ import org.json.JSONTokener;
 
 import android.content.Context;
 import android.text.InputType;
-import android.util.Log;
 
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
@@ -142,4 +143,39 @@ public class Volvofinans extends Bank {
 	      super.updateComplete();
 		}
 	}
+	
+    @Override
+    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+        super.updateTransactions(account, urlopen);
+        String response = null;
+        try {
+            response = urlopen.open("https://www.volvokort.com/privat/kund/kortkonto/info/kontoutdrag.html?kontonummer="
+                    + URLEncoder.encode(account.getId()));
+            ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+            account.setTransactions(transactions);
+            JSONObject object = (JSONObject) new JSONTokener(response).nextValue();
+            JSONArray data = object.getJSONArray("data");
+
+            int length = data.length();
+            for (int index = 0; index < length; index++) {
+                JSONObject acc = data.getJSONObject(index);
+                transactions.add(new Transaction(acc.getString("datum"), acc.getString("text"), Helpers
+                        .parseBalance(acc.getString("belopp"))));
+            }
+            account.setTransactions(transactions);
+            if (accounts.isEmpty()) {
+                throw new BankException(res.getText(R.string.no_accounts_found).toString());
+            }
+
+        } catch (ClientProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 }
