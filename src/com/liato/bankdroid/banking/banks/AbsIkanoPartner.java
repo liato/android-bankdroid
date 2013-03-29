@@ -156,7 +156,7 @@ public abstract class AbsIkanoPartner extends Bank {
                 // last account in the list.
                 this.balance = accounts.get(accounts.size() - 1).getBalance();
                 ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-                es = d.select("#ShowCustomerTransactionPurchasesInformationDiv table tr:has('td')");
+                es = d.select("#ShowCustomerTransactionPurchasesInformationDiv table tr:has(td)");
                 for (Element el : es) {
                     if (el.childNodeSize() == 6) {
                         Transaction transaction = new Transaction(el.child(0).text().trim(), el.child(1).text().trim(),
