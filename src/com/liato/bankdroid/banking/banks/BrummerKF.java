@@ -114,7 +114,7 @@ public class BrummerKF extends Bank {
 		try {
 			LoginPackage lp = preLogin();
 			String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-			Log.e(TAG,response);
+
 			Matcher matcher = reError.matcher(response);
 			if (matcher.find()) {
 			    String errormsg = Html.fromHtml(matcher.group(1).trim()).toString();
@@ -148,7 +148,6 @@ public class BrummerKF extends Bank {
 		Matcher matcher;
 		try {
 			response = urlopen.open("https://www.brummer.se/sv/online/privat/");
-		 Log.e(TAG,response);
 			matcher = reAccounts.matcher(response);
 			
 			while (matcher.find()) {
