@@ -1,0 +1,368 @@
+v1.9.5.2: (2013-03-27)
+* Fix for Coop
+* Show multiple Nordnet accounts
+
+v1.9.5.1: (2013-02-26)
+* Fix for Länsförsäkringar saving accounts
+
+v1.9.5: (2013-02-21)
+* Fix for Länsförsäkringar
++ Support for Svenska Spel (thanks to nixi)
++ Support for Appeak Poker
+
+1.9.4: (2013-01-04)
+* Fix for ICA Banken transactions (thanks to fruktsallad)
+* Fix for Länsförsäkringar
+* Fix for Skandiabanken accounts without transactions
+* Fix for Amex transactions (thanks to goober)
+* Fixes for Marginalen Bank (thanks to jsiverskog)
+
+
+1.9.3: (2012-11-29)
++ Support for Marginalen Bank (thanks to jsiverskog)
+* Fix for password saving in Android 4.2+ (thanks to gfu)
+* Fix for ICA (thanks to oskla129)
+* Fix reappearing accounts on ICA Banken
+
+
+1.9.2: (2012-10-21)
+* Fix for Länsförsäkringar - Now uses the same API as their official app
+
+
+1.9.1: (2012-10-11)
++ Support for Chalmrest (thanks to emilan)
+* Fix for Västtrafik (thanks to erifre)
+* Fix for Nordea captcha - login as many times as you want with the built in captcha breaker
+* Fix for Bioklubben
+* Fix for PayPal
+* Better auto updates with SEB
+* Fix for EverydayCard (thanks  to d95andek)
+* Fix for Volvofinans (thanks to d95andek)
+- Removed support for Steam Wallet
+
+
+1.9.0: (2012-06-25)
++ Support for Ticket Rikskortet
++ Support for Bioklubben
+* Fix for Meniga (thanks to bjooork)
+* Fix for Nordea DK (thanks to goober)
+* Fix for Västtrafik (thanks to erifre)
+* Fix for Statoil Mastercard
+* Fix for SAS Eurobonus Mastercard
+* Fix for Eurocard
+
+
+1.8.9: (2012-04-16)
++ New setting: Number of simultaneous notifications
+* Fix for graphical bug on devices running older versions of Android (sorry for the poor testing before release)
+
+
+1.8.8: (2012-04-13)
++ Support for Meniga (thanks to bjooork)
++ New notification setting: Display change only
++ Disable thumbnail in recent apps list (Honeycomb, ICS)
+* Fix for Skandiabanken, now using their internal JSON-api (thanks to woody)
+* Fix for Jojo (thanks to wanders)
+* Fix for Rikslunchen (thanks to mafa73)
+* Fix for IKEA
+
+
+1.8.7: (2012-01-29)
+* Fix for SEB
+* Fix for double lock pattern when opening transactions view from widget
+
+
+1.8.6: (2012-01-29)
+* Fix for SEB 
+* Fix for LED color picker on pre ICS devices
+
+
+1.8.5: (2012-01-27)
++ Support for LED notifications
++ Support for Akelius Invest
+* Fix for Coop
+* Fix for Hemköp
+* Fix for SEB
+* Fix for SevenDay
+* Fix for ICA
+
+
+1.8.4: (2011-12-04)
+* Fix for Coop
+* Fix for Länsförsäkringar (thanks to MatsKarlsson!)
++ Support for Everydaycard (thanks to d95andek!)
++ Hardware acceleration is now activated for Honeycomb and ICS
+* Smarter automatic updates
+
+
+1.8.3: (2011-11-13)
++ Support for American Express
++ Support for Västtrafik
+* Fix for SEB
+
+
+1.8.1: (2011-09-26)
++ Support for Danske Bank
++ Support for Nordea (Danmark) (thanks to goober!)
+* Fix for Skandiabanken (thanks to woody!)
+
+
+1.8.0: (2011-08-24)
++ Support for AudiKortet
++ Support for Chevrolet Big Plus Card
++ Support for Djurgårdskortet
++ Support for IKEA HANDLA Kort
++ Support for Nordnetdirekt
++ Support for PlusGirot
++ Support for Preem Privatkort
++ Support for Quintessentially Credit Card
++ Support for SaabKortet
++ Support for Seatkortet
++ Support for Shell MasterCard
++ Support for Skandiabanken (thanks to woody)
++ Support for Skodakortet
++ Support for Volkswagenkortet
++ Support for wallet MasterCard
+* Fix for ICA
++ Support for Sony Ericcson LiveView notifications (thanks to firetech)
++ New setting: Only update between user defined times (thanks to woody)
+* Fix for security bug where a user could circumvent the password protection
+* Calculate the total amount correctly
++ Donate button added
+
+
+1.7.3 (2011-05-04)
+* Fix for Jojo
++ Support for OpelKortet
++ Support for SJ Prio MasterCard
++ Support for Sparbanken Syd
++ Support for Sparbanken Öresund
++ Show old CSN loans
++ Multi-bank support for Swedbank
++ New setting: Display balance without decimals
++ New setting: Smallest change to trigger notification
+
+
+1.7.2: (2011-04-14)
+* Fix for Swedbank transactions (update account from app to see transactions)
+* Fix for Länsförsäkringar
++ New setting: Update transaction history from widget
+
+
+1.7.1: (2011-04-12)
+* Fix for Swedbank
+* For for Payson when using multiple currencies
+* Support for multiple currencies in DinersClub
+* Improved error handling for CSN
++ Progress bar in webview
++ Bank icons when choosing a bank
++ Setting: Disable visible pattern on pattern lock
+
+
+1.7.0: (2011-03-25)
++ Support for SevenDay
++ Support for Nordnet
++ Support for Osuuspankki/Andelsbanken
++ Support for Volvofinans
++ Support for Resurs Bank
++ Support for Länsförsäkringar Pension
++ Support for McDonald's Presentkort
++ New setting: Open main view or transactions view from widget
++ Loans information for Swedbank
++ Support for additional currencies for Nordea
+* Repayments to CSN are shown as transactions
+* Fixed FC-bug in Länsförsäkringar if user had pension account
+* Sort and display all transactions for SEB
+* New logo for Ikano Bank (after complaints from Ikano that the old one did not follow their graphic guidelines)
+* Fix for FirstCard
+* Sorted transactions for Statoil and Eurobonus
+* Show all transactions for Eurocard
+* "Home" button clears history stack
+
+
+1.6.3: (2011-02-06)
+* FC fix when opening settings
+
+
+1.6.2: (2011-02-05)
++ Support for SEB (automatic website login doesn't work yet)
++ Support for SAS EuroBonus Mastercard
++ Support for Rikslunchen
++ Support for Hemköp Kundkort
++ Transactions for Diners Club
+* PayPal business accounts are now supported
++ Content Provider - Lets other apps use data from Bankdroid after user confirmation
+
+
+1.6.1: (2010-12-29)
+* Fix for FC when using pattern lock in landscape mode
+* Larger hit box on "Home" button
+
+
+1.6.0: (2010-12-29)
++ Login to any of your banks website automatically by clicking the WWW-button.
+* Design changes
+* Eurocard widgetbug fixed
+* Fix for Ikano Bank
+
+
+1.5.3: (2010-12-21)
++ Support for Ikano Bank
++ MedMera Faktura for Coop 
+* Multiple accounts for Eurocard
+
+
+1.5.2: (2010-12-18)
++ Support for Diners Club
++ Transactions for Länsförsäkringar 
+
+
+1.5.1: (2010-12-15)
++ Funds and loans for Länsförsäkringar
+* MedMera Visa for Coop fixed
+* Fix for Handelsbanken
+* Password field show numeric keyboard if appropriate
+
+
+1.5.0: (2010-12-12)
++ Support for Jojo Reskassa
++ Support for Steam Wallet
++ Support for Avanza (again...)
++ New setting: Round balance on widgets
++ Clicking a widget shows transactions for that account.
+* Additional account information for OKQ8 and Statoil
+* Fix for ICA Banken
+* Fix for Coop
+
+
+1.4.4: (2010-11-26)
++ Support for Payson
+* Länsförsäkringar fixad
+* Coop login problems fixed/improved
++ New settings: Blur account balance on widgets
+
+
+1.4.3: (2010-11-19)
+- Support for Avanza removed
+* PayPal is working again
+* Show all transactions for Statoil
+* Fix for EuroCard
+* Fix for First Card
+* Hidden accounts are not counted towards the total sum
+* Replaced password lock with pattern lock
++ Support for Remote Notifier plugin
++ Support for OpenWatch plugin
++ Custom notification sound
++ New setting: Don't update transactions on automatic updates
+
+
+1.4.2: (2010-11-03)
+* Fixed username field for Avanza
+
+
+1.4.1: (2010-11-03)
+* Fix for Nordea
+
+
+1.4.0: (2010-11-02)
++ Support for OKQ8 (thanks to cola)
++ Support for PayPal
++ Support for Eurocard with transactions
++ Support for First Card with transactions
+* Avanza was split into Avanza and AvanzaMini
++ Nordea credit cards (Visa Gold and others)
++ Transactions for Coop MedMera Visa 
+* Statoil Mastercard fixed
+* Transactions for Handelsbanken fixed
+* A bit faster updates by skipping an unnecessary login when fetching transactions (thanks to DEGE)
+* Notifications show changes for accounts, not banks.
++ Encryption for passwords
++ Option to hide accounts
++ Option to disable notifications for accounts
++ New setting: Choose which notifications to display (funds, loands, credit cards)
+* Every bank has a pre defined keyboard layout (numeric for Nordea, email for PayPal)
+* Loans are not counted towards the total bank sum
+
+
+1.3.1: (2010-09-20)
+* Fix for Swedbank
+* Fix for Avanza
++ Support for Avanza mini
++ Support for Villabanken
+
+
+1.3.0: (2010-09-19)
+* Widgets with Handelsbanken accounts are working again
+* Transactions for ICA Banken
+* Coop now also works with "MedMera-kortet"
+* Transactions for Coop MedMera
+* Transactions for Handelsbanken
+* Hit box for updating from widgets is larger
+* Support for loans in Swedbank
+* Support for funds and loans in Nordea
+* Widget with transparent background
++ Support for ICA Kortet with transactions
++ Support for Statoil MasterCard with transactions
++ Support for Avanza
+
+
+1.2.1: (2010-07-13)
+* Added missing ICA Banken logo
+* Fix amount formatting
+
+
+1.2.0: (2010-07-12)
+* Fixed Nordea bug (login failed when user had an "e-faktura" waiting)
+* New design
+* Confirm password field
++ Link to the banks website
++ Support for Handelsbanken
++ Support for Coop
++ Transaction history for Nordea
++ Transaction history for Swedbank
+* Improved login error detection
++ Support for QVGA devices
+
+
+1.1.4: (2010-06-03)
+* Fix for Nordea
+
+
+1.1.3: (2010-06-02)
++ New widget size, 2x1
+* Widgets are updated on boot
+
+
+1.1.2: (2010-05-31)
+* Working fix for ICA Banken
+
+
+1.1.1: (2010-05-31)
+* Fix for FC bug with widgets
+* Fix for ICA Banken
+
+
+1.1.0: (2010-05-31)
++ Widgets
++ Automatic updates
++ Notifications on account changes
++ Support for Länsförsäkringar
++ Improved application lock
+
+
+1.0.3: (2010-05-16)
++ Option to password protect the application
+
+
+1.0.2: (2010-05-12)
+* Fix for Swedbank
+
+
+1.0.1: (2010-05-10)
++ Support for ICA Banken
+
+
+1.0.0: (2010-05-05)
++ First public release
++ Support for Nordea
++ Support for Swedbank

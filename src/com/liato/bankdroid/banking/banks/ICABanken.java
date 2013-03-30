@@ -52,7 +52,7 @@ public class ICABanken extends Bank {
     private static final int BANKTYPE_ID = IBankTypes.ICABANKEN;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
-    private static final String INPUT_HINT_USERNAME = "ÅÅMMDD-XXXX";
+    private static final String INPUT_HINT_USERNAME = "ÅÅÅÅMMDD-XXXX";
     private static final boolean STATIC_BALANCE = false;
 
     private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
@@ -158,7 +158,7 @@ public class ICABanken extends Bank {
                 mIdMappings.put(Integer.toString(accid), matcher.group(1).trim());           
                 accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim() + " (Disponibelt)", Helpers.parseBalance(matcher.group(3).trim()), Integer.toString(accid)));
                 Account account = new Account(Html.fromHtml(matcher.group(2)).toString().trim() + " (Saldo)", Helpers.parseBalance(matcher.group(4).trim()), "a:" + accid);
-                account.setAliasfor(matcher.group(1).trim());
+                account.setAliasfor(Integer.toString(accid));
                 accounts.add(account);
 
                 balance = balance.add(Helpers.parseBalance(matcher.group(3)));

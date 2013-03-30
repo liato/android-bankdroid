@@ -48,6 +48,8 @@ import com.liato.bankdroid.banking.banks.IKEA;
 import com.liato.bankdroid.banking.banks.IkanoBank;
 import com.liato.bankdroid.banking.banks.Jojo;
 import com.liato.bankdroid.banking.banks.lansforsakringar.Lansforsakringar;
+import com.liato.bankdroid.banking.banks.AppeakPoker;
+import com.liato.bankdroid.banking.banks.EasyCard;
 import com.liato.bankdroid.banking.banks.McDonalds;
 import com.liato.bankdroid.banking.banks.NordeaDK;
 import com.liato.bankdroid.banking.banks.Nordnet;
@@ -85,6 +87,7 @@ import com.liato.bankdroid.banking.banks.Wallet;
 import com.liato.bankdroid.banking.banks.Meniga;
 import com.liato.bankdroid.banking.banks.Marginalen;
 import com.liato.bankdroid.banking.banks.Nordea.Nordea;
+import com.liato.bankdroid.banking.banks.SvenskaSpel;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.db.Crypto;
 import com.liato.bankdroid.db.DBAdapter;
@@ -224,10 +227,16 @@ public class BankFactory {
         	return new Chalmrest(context);
         case IBankTypes.MARGINALEN:
             return new Marginalen(context);
+        case IBankTypes.SVENSKASPEL:
+            return new SvenskaSpel(context);
+        case IBankTypes.EASYCARD:
+            return new EasyCard(context);
+        case IBankTypes.APPEAKPOKER:
+            return new AppeakPoker(context);
         case IBankTypes.TRUSTBUDDY:
-        	return new TrustBuddy(context);
+            return new TrustBuddy(context);
         case IBankTypes.BRUMMER_KF:
-        	return new BrummerKF(context);
+       	    return new BrummerKF(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -299,7 +308,10 @@ public class BankFactory {
         banks.add(new Bioklubben(context));
         banks.add(new Chalmrest(context));
         banks.add(new Marginalen(context));
-
+        banks.add(new SvenskaSpel(context));
+        banks.add(new EasyCard(context));
+        banks.add(new AppeakPoker(context));
+        
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));

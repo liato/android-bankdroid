@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Nullbyte <http://nullbyte.eu>
+ * Copyright (C) 2013 Nullbyte <http://nullbyte.eu>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,13 @@
 package com.liato.bankdroid.banking.banks;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -28,15 +33,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import android.content.Context;
 import android.text.InputType;
-import android.util.Log;
 
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
@@ -52,6 +60,9 @@ public class Volvofinans extends Bank {
 	private static final int BANKTYPE_ID = IBankTypes.VOLVOFINANS;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅÅÅMMDDXXXX";
+    private static SimpleDateFormat DATE_PARSER = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
+    private static SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd", new Locale("sv_SE"));
+    private HashMap<String, String> mAccountUrlMappings = new HashMap<String, String>();
     
 	public Volvofinans(Context context) {
 		super(context);
@@ -122,7 +133,12 @@ public class Volvofinans extends Bank {
 				int length = data.length();
 				for (int index = 0; index < length; index++) {
 					JSONObject account = data.getJSONObject(index);
-					accounts.add(new Account(account.getString("kontonummer"), Helpers.parseBalance(account.getString("disponibeltBelopp")).subtract(Helpers.parseBalance(account.getString("limit"))), "1"));
+					Document d = Jsoup.parse(account.getString("namnUrl"));
+					Element e = d.getElementsByTag("a").first();
+					if (e != null && e.attr("href") != null) {
+    					mAccountUrlMappings.put(account.getString("kontonummer"), e.attr("href").replace("/info.html", "/info/kontoutdrag.html"));
+					}
+					accounts.add(new Account(String.format("%s (%s)", account.getString("namn"), account.getString("kontonummer")), Helpers.parseBalance(account.getString("disponibeltBelopp")).subtract(Helpers.parseBalance(account.getString("limit"))), account.getString("kontonummer")));
 				}
 			}
 			catch (JSONException e) {
@@ -142,4 +158,49 @@ public class Volvofinans extends Bank {
 	      super.updateComplete();
 		}
 	}
+	
+    @Override
+    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+        super.updateTransactions(account, urlopen);
+        String response = null;
+        String url = mAccountUrlMappings.get(account.getId());
+        if (url != null) {
+            try {
+                response = urlopen.open("https://www.volvokort.com" + url);
+                ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+                account.setTransactions(transactions);
+                JSONObject object = (JSONObject) new JSONTokener(response).nextValue();
+                JSONArray data = object.getJSONArray("data");
+
+                int length = data.length();
+                for (int index = 0; index < length; index++) {
+                    JSONObject acc = data.getJSONObject(index);
+                    String date = acc.getString("datum");
+                    try {
+                        Date d = DATE_PARSER.parse(date);
+                        date = DATE_FORMATTER.format(d);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    
+                    transactions.add(new Transaction(date, acc.getString("text"), Helpers
+                            .parseBalance(acc.getString("belopp")).negate()));
+                }
+                account.setTransactions(transactions);
+                if (accounts.isEmpty()) {
+                    throw new BankException(res.getText(R.string.no_accounts_found).toString());
+                }
+
+            } catch (ClientProtocolException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (JSONException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
 }

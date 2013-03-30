@@ -23,11 +23,11 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
 
-public class Skoda extends IkanoPartnerBase {
+public class Skoda extends AbsIkanoPartner {
 	private static final String TAG = "Skoda";
 	private static final String NAME = "Skodakortet";
 	private static final String NAME_SHORT = "skoda";
-	private static final String URL = "https://partner.ikanobank.se/web/engines/page.aspx?structid=1541";
+	private static final String URL = "https://partner.ikanobank.se/web/engines/page.aspx?structid=2461";
 	private static final int BANKTYPE_ID = Bank.SKODA;
 
     public Skoda(Context context) {
@@ -37,7 +37,7 @@ public class Skoda extends IkanoPartnerBase {
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;
         super.URL = URL;
-        this.structId = "1541";
+        this.structId = "2461";
     }
 
     public Skoda(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {

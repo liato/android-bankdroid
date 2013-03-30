@@ -84,6 +84,9 @@ public interface IBankTypes {
     public static final int CHALMREST = 60;
     public static final int MARGINALEN = 61;
     public static final int AKELIUSSPAR = 62;
-    public static final int TRUSTBUDDY = 63;    
-    public static final int BRUMMER_KF = 64;
+    public static final int SVENSKASPEL = 63;
+    public static final int EASYCARD = 64;
+    public static final int APPEAKPOKER = 65;
+    public static final int TRUSTBUDDY = 66;    
+    public static final int BRUMMER_KF = 67;
 }

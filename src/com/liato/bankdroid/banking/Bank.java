@@ -420,5 +420,9 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     public boolean getDisplayDecimals() {
         return DISPLAY_DECIMALS;
     }
+    
+    protected Context getContext() {
+    	return context;
+    }
 
 }

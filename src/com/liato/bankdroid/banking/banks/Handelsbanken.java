@@ -19,6 +19,8 @@ package com.liato.bankdroid.banking.banks;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,7 +52,7 @@ public class Handelsbanken extends Bank {
 	private static final String NAME_SHORT = "handelsbanken";
 	private static final String URL = "https://m.handelsbanken.se/";
 	private static final int BANKTYPE_ID = IBankTypes.HANDELSBANKEN;
-    private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+    private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT;
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
 
 	private Pattern reBalance = Pattern.compile("block-link\\s*\"\\s*href=\"[^\"]*?/primary/_-([^\"]+)\"><span>([^<]+)</span>.*?SEK(?:&nbsp;|\\s*)?([0-9\\s.,-ÃÂ]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
@@ -167,6 +169,14 @@ public class Handelsbanken extends Bank {
 			while (matcher.find()) {
 				transactions.add(new Transaction(matcher.group(1).trim(), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3))));
 			}
+			
+			// Sort transactions by date
+			Collections.sort(transactions, new Comparator<Transaction>() {
+                public int compare(Transaction t1, Transaction t2) {
+                    return t2.compareTo(t1);
+                }
+            });
+			
 			account.setTransactions(transactions);
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block

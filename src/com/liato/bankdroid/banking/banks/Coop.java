@@ -75,7 +75,10 @@ public class Coop extends Bank {
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
         urlopen = new Urllib();
-        response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/");
+        urlopen.addHeader("Origin", "https://www.coop.se");
+        urlopen.addHeader("Referer", "https://www.coop.se/Mina-sidor/Logga-in-puffsida/?li=True");
+        response = urlopen.open("https://www.coop.se/Mina-sidor/Logga-in-puffsida/?li=True");
+        
         Matcher matcher = reViewState.matcher(response);
         if (!matcher.find()) {
             throw new BankException(res.getText(R.string.unable_to_find).toString()+" viewstate.");
@@ -87,14 +90,12 @@ public class Coop extends Bank {
 //        }
 //        String strEventValidation = matcher.group(1);
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
-        postData.add(new BasicNameValuePair("ctl00$ContentPlaceHolderTodo$ContentPlaceHolderMainPageContainer$ContentPlaceHolderMainPageWithNavigationAndGlobalTeaser$ContentPlaceHolderPreContent$RegisterMediumUserForm$TextBoxUserName", username));
-        postData.add(new BasicNameValuePair("ctl00$ContentPlaceHolderTodo$ContentPlaceHolderMainPageContainer$ContentPlaceHolderMainPageWithNavigationAndGlobalTeaser$ContentPlaceHolderPreContent$RegisterMediumUserForm$TextBoxPassword", password));
-        postData.add(new BasicNameValuePair("ctl00$ContentPlaceHolderTodo$ContentPlaceHolderMainPageContainer$ContentPlaceHolderMainPageWithNavigationAndGlobalTeaser$ContentPlaceHolderPreContent$RegisterMediumUserForm$ButtonLogin", "Logga in"));
+        postData.add(new BasicNameValuePair("TextBoxUserName", username));
+        postData.add(new BasicNameValuePair("TextBoxPassword", password));
         postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
-        postData.add(new BasicNameValuePair("__EVENTTARGET", ""));
-        postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
+        postData.add(new BasicNameValuePair("ButtonLogin", ""));
 //        postData.add(new BasicNameValuePair("__EVENTVALIDATION", strEventValidation));
-        return new LoginPackage(urlopen, postData, response, "https://www.coop.se/Mina-sidor/Oversikt/");
+        return new LoginPackage(urlopen, postData, response, "https://www.coop.se/Mina-sidor/Logga-in-puffsida/?li=True");
     }
 
 
@@ -103,16 +104,7 @@ public class Coop extends Bank {
         try {
             LoginPackage lp = preLogin();
             response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-            if (response.contains("forfarande logga in med ditt personnummer")) {
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-                if (prefs.getBoolean("debug_mode", false) && prefs.getBoolean("debug_coop_sendmail", false)) {
-                    Intent i = new Intent(android.content.Intent.ACTION_SEND);
-                    i.setType("plain/text");
-                    i.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"android@nullbyte.eu"});
-                    i.putExtra(android.content.Intent.EXTRA_SUBJECT, "Bankdroid - Coop Error");
-                    i.putExtra(android.content.Intent.EXTRA_TEXT, response);
-                    context.startActivity(i);
-                }
+            if (response.contains("felaktiga")) {
                 throw new LoginException(res.getText(R.string.invalid_username_password).toString());
             }
         }
