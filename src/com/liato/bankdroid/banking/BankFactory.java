@@ -246,6 +246,7 @@ public class BankFactory {
 	public static ArrayList<Bank> listBanks(Context context) {
 		ArrayList<Bank> banks = new ArrayList<Bank>();
 		banks.add(new AkeliusInvest(context));
+		banks.add(new AkeliusSpar(context));
 		banks.add(new TrustBuddy(context));
 		banks.add(new BrummerKF(context));
 		banks.add(new Swedbank(context));
