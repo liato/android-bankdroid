@@ -28,6 +28,7 @@ import com.liato.bankdroid.banking.banks.Audi;
 import com.liato.bankdroid.banking.banks.Avanza;
 import com.liato.bankdroid.banking.banks.AvanzaMini;
 import com.liato.bankdroid.banking.banks.Bioklubben;
+import com.liato.bankdroid.banking.banks.BrummerKF;
 import com.liato.bankdroid.banking.banks.CSN;
 import com.liato.bankdroid.banking.banks.Chalmrest;
 import com.liato.bankdroid.banking.banks.Chevrolet;
@@ -75,6 +76,7 @@ import com.liato.bankdroid.banking.banks.SparbankenSyd;
 import com.liato.bankdroid.banking.banks.Statoil;
 import com.liato.bankdroid.banking.banks.Swedbank;
 import com.liato.bankdroid.banking.banks.TestBank;
+import com.liato.bankdroid.banking.banks.TrustBuddy;
 import com.liato.bankdroid.banking.banks.Vasttrafik;
 import com.liato.bankdroid.banking.banks.Villabanken;
 import com.liato.bankdroid.banking.banks.Volkswagen;
@@ -222,6 +224,10 @@ public class BankFactory {
         	return new Chalmrest(context);
         case IBankTypes.MARGINALEN:
             return new Marginalen(context);
+        case IBankTypes.TRUSTBUDDY:
+        	return new TrustBuddy(context);
+        case IBankTypes.BRUMMER_KF:
+        	return new BrummerKF(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -231,7 +237,8 @@ public class BankFactory {
 	public static ArrayList<Bank> listBanks(Context context) {
 		ArrayList<Bank> banks = new ArrayList<Bank>();
 		banks.add(new AkeliusInvest(context));
-		banks.add(new AkeliusSpar(context));
+		banks.add(new TrustBuddy(context));
+		banks.add(new BrummerKF(context));
 		banks.add(new Swedbank(context));
 		banks.add(new Nordea(context));
 		banks.add(new ICABanken(context));
