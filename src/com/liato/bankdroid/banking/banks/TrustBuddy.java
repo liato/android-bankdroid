@@ -1,5 +1,5 @@
 /* Copyright (C) 2012 Nullbyte <http://nullbyte.eu>, first version by Snah@Swedroid 2012-01-06
- * Modified for Akelius Spar by Per Wigren <per.wigren@gmail.com>
+ * Modified for TrustBuddy by Per Wigren <per.wigren@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,10 +49,10 @@ public class TrustBuddy extends Bank {
 	private static final String NAME_SHORT = "trustbuddy";
 	private static final String URL = "https://www.trustbuddy.com/";
 	private static final int BANKTYPE_ID = IBankTypes.TRUSTBUDDY;
-    private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT;
-    private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_TEXT;
-    private static final String INPUT_HINT_USERNAME = "Your email";
-    private static final boolean STATIC_BALANCE = true;
+	private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT;
+	private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_TEXT;
+	private static final String INPUT_HINT_USERNAME = "Your email";
+	private static final boolean STATIC_BALANCE = true;
 
 	private Pattern reError = Pattern.compile("<h3>error\\s*:\\s*</h3>\\s*<p>\\s*(.*?)\\s*</p>",Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reAccounts = Pattern.compile("<h1>\\s*([^<]+).*?>Balans: ([0-9, ]+) ([A-Z]{3})<",Pattern.CASE_INSENSITIVE | Pattern.DOTALL);	
@@ -64,10 +64,10 @@ public class TrustBuddy extends Bank {
 		super.NAME_SHORT = NAME_SHORT;
 		super.BANKTYPE_ID = BANKTYPE_ID;
 		super.URL = URL;
-        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
-        super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
-        super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
-        super.STATIC_BALANCE = STATIC_BALANCE;
+		super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
+		super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
+		super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
+		super.STATIC_BALANCE = STATIC_BALANCE;
 	}
 
 	public TrustBuddy(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
@@ -150,38 +150,4 @@ public class TrustBuddy extends Bank {
 			throw new BankException(e.getMessage());
 		}
 	}
-
-	@Override
-	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
-		super.updateTransactions(account, urlopen);
-/*		if (account.getId().startsWith("a:")) return; // No transactions for "saldo"-accounts
-		String response = null;
-		Matcher matcher;
-		try {
-			response = urlopen.open("https://www.online.akeliusspar.se/AccountStatement.mws?selectedaccount="+account.getId());
-			matcher = reTransactions.matcher(response);
-			// 				ICA-banken	Akelius Invest
-			// Beskrivning	1			2
-			// Datum		2			1
-			// Belopp		3			3
-			//
-			
-			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-			while (matcher.find()) {
-				transactions.add(new Transaction(matcher.group(1).trim(), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3))));
-			}
-			
-			account.setTransactions(transactions);
-		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        finally {
-            super.updateComplete();
-        }
-       */
-	}		
 }
