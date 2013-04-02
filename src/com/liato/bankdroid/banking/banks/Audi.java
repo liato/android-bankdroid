@@ -23,7 +23,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
 
-public class Audi extends IkanoPartnerBase {
+public class Audi extends AbsIkanoPartner {
 	private static final String TAG = "Audi";
 	private static final String NAME = "AudiKortet";
 	private static final String NAME_SHORT = "audi";
