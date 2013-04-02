@@ -46,7 +46,7 @@ public class SvenskaSpel extends Bank {
 	private static final String NAME_SHORT = "svenskaspel";
 	private static final String URL = "https://m.svenskaspel.se/Customer/Login?returnUrl=/MinaSpel";
 	private static final int BANKTYPE_ID = Bank.SVENSKASPEL;
-	private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+	private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT;
 	private static final int INPUT_TITLETEXT_USERNAME = R.string.card_number;
 
     private Pattern reBalance = Pattern.compile("Balance\\\":\\\"([^<]+)\\\",", Pattern.CASE_INSENSITIVE);

@@ -1,19 +1,23 @@
 v1.9.5.3: (2013-04-02)
 * Fix for Skodakortet
 * Fix for Volvofinans transactions
-* Fix for reappearing Akelis spar/invest accounts
+* Fix for reappearing Akelius Spar/Invest accounts
+
 
 v1.9.5.2: (2013-03-27)
 * Fix for Coop
 * Show multiple Nordnet accounts
 
+
 v1.9.5.1: (2013-02-26)
 * Fix for Länsförsäkringar saving accounts
+
 
 v1.9.5: (2013-02-21)
 * Fix for Länsförsäkringar
 + Support for Svenska Spel (thanks to nixi)
 + Support for Appeak Poker
+
 
 1.9.4: (2013-01-04)
 * Fix for ICA Banken transactions (thanks to fruktsallad)
