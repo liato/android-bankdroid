@@ -27,14 +27,21 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 
 import android.content.Context;
 import android.text.InputType;
+import android.util.Log;
 
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
@@ -90,14 +97,27 @@ public class Rikslunchen extends Bank {
 		postData.add(new BasicNameValuePair("c0-id", "0"));
 		postData.add(new BasicNameValuePair("batchId", "1"));
 		postData.add(new BasicNameValuePair("page", "%2Friks-cp%2Fcheck_balance.html"));
-		postData.add(new BasicNameValuePair("httpSessionId", ""));
 		postData.add(new BasicNameValuePair("scriptSessionId", ""));
 
 		HttpClient httpclient = new DefaultHttpClient();
-		HttpPost httppost = new HttpPost("http://www.rikslunchen.se/riks-cp/dwr/call/plaincall/cardUtil.getCardData.dwr");
+		CookieStore cookieStore = new BasicCookieStore();
+		HttpContext httpContext = new BasicHttpContext();
+		httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+
+		// Connect to check_balance to get a session cookie
+		HttpPost httppost = new HttpPost("http://www.rikslunchen.se/riks-cp/check_balance.html");
+		HttpResponse response = httpclient.execute(httppost, httpContext);
+
+		Cookie c = cookieStore.getCookies().get(0);
+		postData.add(new BasicNameValuePair("c0-param1", "string:" + c.getValue()));
+		postData.add(new BasicNameValuePair("httpSessionId", c.getValue()));
+
+		response.getEntity().consumeContent();
+
+		httppost = new HttpPost("http://www.rikslunchen.se/riks-cp/dwr/call/plaincall/cardUtil.getCardData.dwr");
 		httppost.setEntity(new UrlEncodedFormEntity(postData));
 
-		HttpResponse response = httpclient.execute(httppost);
+		response = httpclient.execute(httppost, httpContext);
 		InputStream streamResponse = response.getEntity().getContent();
 		StringWriter writer = new StringWriter();
 		IOUtils.copy(streamResponse, writer);
@@ -139,6 +159,8 @@ public class Rikslunchen extends Bank {
 			BigDecimal balance = Helpers.parseBalance(myResponse.substring(begin + 9, end - 2));
 
 			accounts.add(new Account("Rikslunchen", balance, "1"));
+		} catch (StringIndexOutOfBoundsException e) {
+			Log.e(TAG, "StringIndexOutOfBoundsException", e);
 		} finally {
 			super.updateComplete();
 		}
