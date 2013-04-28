@@ -1,3 +1,10 @@
+v1.9.5.4: (2013-04-28)
+* Fix for Rikslunchen (thanks to chrfle)
+* Fix for Audikortet (maybe)
++ Support for TrustBuddy (thanks to Tuxie)
++ Support for Brummer Privat KF (thanks to Tuxie)
+
+
 v1.9.5.3: (2013-04-02)
 * Fix for Skodakortet
 * Fix for Volvofinans transactions
