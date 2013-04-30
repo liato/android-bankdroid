@@ -88,6 +88,7 @@ import com.liato.bankdroid.banking.banks.Meniga;
 import com.liato.bankdroid.banking.banks.Marginalen;
 import com.liato.bankdroid.banking.banks.Nordea.Nordea;
 import com.liato.bankdroid.banking.banks.SvenskaSpel;
+import com.liato.bankdroid.banking.banks.Zidisha;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.db.Crypto;
 import com.liato.bankdroid.db.DBAdapter;
@@ -237,6 +238,8 @@ public class BankFactory {
             return new TrustBuddy(context);
         case IBankTypes.BRUMMER_KF:
        	    return new BrummerKF(context);
+        case IBankTypes.ZIDISHA:
+       	    return new Zidisha(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -312,6 +315,7 @@ public class BankFactory {
         banks.add(new SvenskaSpel(context));
         banks.add(new EasyCard(context));
         banks.add(new AppeakPoker(context));
+        banks.add(new Zidisha(context));
         
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
