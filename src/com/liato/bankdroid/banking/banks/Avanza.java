@@ -30,6 +30,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
 import android.text.Html;
+import android.util.Log;
 
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
@@ -50,8 +51,10 @@ public class Avanza extends Bank {
 	private static final String URL = "https://www.avanza.se/";
     private static final int BANKTYPE_ID = IBankTypes.AVANZA;
 	
-	private Pattern reAccounts = Pattern.compile("depa\\.jsp\\?depotnr=([^\"]+)[^>]+>[^<]+</a>\\s*</td>\\s*<td[^>]+>(.+?)\\s(Private|Pro|Premium|Bas).*?<td[^>]+>([^<]+)</td>\\s*<td[^>]+>([^<]+)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private Pattern reAccounts = Pattern.compile("depa\\.jsp\\?depotnr=([^\"]+)[^>]+>[^<]+</a>\\s*</td>\\s*<td[^>]+>(.+?)\\s(Private|Pro|Premium|Bas).*?>.*?( - (.*?))?</span>.*?<td[^>]+>([^<]+)</td>\\s*<td[^>]+>([^<]+)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private Pattern reTransactions = Pattern.compile("(?:warrantguide\\.jsp|aktie\\.jsp)(?:.*?)orderbookId=(?:.*?)>(.*?)<(?:.*?)<nobr>(?:.*?)<nobr>(?:.*?)<nobr>(.*?)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private Pattern reConnect = Pattern.compile("Kopplat till (\\d+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	
 	public Avanza(Context context) {
 		super(context);
 		super.TAG = TAG;
@@ -113,13 +116,34 @@ public class Avanza extends Bank {
                  * Capture groups:
                  * GROUP                EXAMPLE DATA
                  * 1: ID                3505060
-                 * 2: Type              Aktie- och fondkonto Premium Silver
-                 * 4: % since purchase  1,90
-                 * 5: Amount in SEK     820
-                 *    
-                 */    
-			    accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(5)), matcher.group(1).trim()));
-				balance = balance.add(Helpers.parseBalance(matcher.group(5)));
+                 * 2: Type              Aktie- och fondkonto
+                 * 5: Custom name       ISK
+                 * 6: % since purchase  1,90
+                 * 7: Amount in SEK     820
+                 */
+				String account_name = matcher.group(5);
+				if (account_name == null) {
+					account_name = matcher.group(2);
+				}
+				else if (account_name.matches("Kopplat till \\d+")) {
+					Matcher mConnect = reConnect.matcher(account_name);
+					mConnect.matches();
+					String idConnect = mConnect.group(1);
+					account_name = matcher.group(2);
+					for(Account a : accounts) {
+						if (a.getId().equals(idConnect)) {
+							accounts.add(new Account(
+									a.getName() + " (netto)",
+									a.getBalance().add(Helpers.parseBalance(matcher.group(7))),
+									idConnect+"_netto"
+							));
+							break;
+						}
+					}
+				}
+				
+			    accounts.add(new Account(account_name.trim(), Helpers.parseBalance(matcher.group(7)), matcher.group(1).trim()));
+				balance = balance.add(Helpers.parseBalance(matcher.group(7)));
 			}
 			if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
