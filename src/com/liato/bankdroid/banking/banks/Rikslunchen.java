@@ -108,7 +108,12 @@ public class Rikslunchen extends Bank {
 		HttpPost httppost = new HttpPost("http://www.rikslunchen.se/riks-cp/check_balance.html");
 		HttpResponse response = httpclient.execute(httppost, httpContext);
 
-		Cookie c = cookieStore.getCookies().get(0);
+		List<Cookie> cookies = cookieStore.getCookies();
+		if (cookies.size() == 0) {
+			throw new BankException("No session cookie found, login will fail.");
+		}
+
+		Cookie c = cookies.get(0);
 		postData.add(new BasicNameValuePair("c0-param1", "string:" + c.getValue()));
 		postData.add(new BasicNameValuePair("httpSessionId", c.getValue()));
 
