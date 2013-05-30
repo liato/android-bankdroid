@@ -130,15 +130,15 @@ public class Zidisha extends Bank {
 			
 			while (matcher.find()) {
 				/*
-				 * 1: Insättningar
-				 * 2: Tillgängligt
-				 * 3: Utlånat
-				 * 4: Balans
+				 * 1: Funds uploaded
+				 * 2: Available for withdrawal
+				 * 3: Lent by me
+				 * 4: Total Impact
 				 */
 				Account insattningar = new Account("Insättningar", Helpers.parseBalance(matcher.group(1)), "insattningar");
 				Account tillgangligt = new Account("Tillgängligt", Helpers.parseBalance(matcher.group(2)), "tillgangligt");
 				Account utlanat      = new Account("Utlånat",      Helpers.parseBalance(matcher.group(3)), "utlanat");
-				Account balans       = new Account("Balans",       Helpers.parseBalance(matcher.group(4)), "balans");
+				Account balans       = new Account("Påverkan",     Helpers.parseBalance(matcher.group(4)), "impact");
 
 				insattningar.setCurrency("USD");
 				tillgangligt.setCurrency("USD");
