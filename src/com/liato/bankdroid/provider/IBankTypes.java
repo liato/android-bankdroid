@@ -91,4 +91,5 @@ public interface IBankTypes {
     public static final int BRUMMER_KF = 67;
     public static final int ZIDISHA = 68;
     public static final int BETTERGLOBE = 69;
+    public static final int FOREX = 70;
 }
