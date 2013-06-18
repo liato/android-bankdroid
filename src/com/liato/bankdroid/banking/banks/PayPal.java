@@ -29,7 +29,6 @@ import org.apache.http.message.BasicNameValuePair;
 import android.content.Context;
 import android.text.Html;
 import android.text.InputType;
-import android.util.Log;
 
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
@@ -76,6 +75,7 @@ public class PayPal extends Bank {
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
         urlopen = new Urllib(true);
+        urlopen.setUserAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1468.0 Safari/537.36");
         //Get cookies and url to post to
         response = urlopen.open("https://www.paypal.com/en");
         Matcher matcher = reFormAction.matcher(response);
