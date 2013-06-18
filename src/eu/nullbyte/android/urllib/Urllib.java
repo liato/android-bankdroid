@@ -50,6 +50,7 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 
 public class Urllib {
     public static String DEFAULT_USER_AGENT = "Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17";
@@ -105,17 +106,19 @@ public class Urllib {
     public String open(String url, List<NameValuePair> postData) throws ClientProtocolException, IOException {
     	return open(url, postData, false);
     }
-   
-    
     public String open(String url, List<NameValuePair> postData, boolean forcePost) throws ClientProtocolException, IOException {
+        return EntityUtils.toString(openAsHttpResponse(url, postData, forcePost).getEntity());
+    }
+
+    public HttpResponse openAsHttpResponse(String url, List<NameValuePair> postData, boolean forcePost) throws ClientProtocolException, IOException {
         this.currentURI = url;
-        String response;
+        HttpResponse response;
         String[] headerKeys = (String[]) this.headers.keySet().toArray(new String[headers.size()]);
         String[] headerVals = (String[]) this.headers.values().toArray(new String[headers.size()]);
         ResponseHandler<String> responseHandler = new BasicResponseHandler();
         HttpUriRequest request;
         if ((postData == null || postData.isEmpty()) && !forcePost) {
-            //URL urli = new URL(url); 
+            //URL urli = new URL(url);
             request = new HttpGet(url);
         }
         else {
@@ -124,19 +127,21 @@ public class Urllib {
         }
         if (userAgent != null)
             request.addHeader("User-Agent", userAgent);
-        
+
         for (int i = 0; i < headerKeys.length; i++) {
             request.addHeader(headerKeys[i], headerVals[i]);
         }
-        response = httpclient.execute(request, responseHandler, context);
-        
+
+        response = httpclient.execute(request, context);
+
         //HttpUriRequest currentReq = (HttpUriRequest)context.getAttribute(ExecutionContext.HTTP_REQUEST);
         //HttpHost currentHost = (HttpHost)context.getAttribute(ExecutionContext.HTTP_TARGET_HOST);
         //this.currentURI = currentHost.toURI() + currentReq.getURI();
         this.currentURI = request.getURI().toString();
-        
+
         return response;
-    }    
+    }
+
     public InputStream openStream(String url) throws ClientProtocolException, IOException {
         return openStream(url, new BasicHttpEntity(), false);
     }
