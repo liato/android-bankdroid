@@ -18,20 +18,22 @@
 package com.liato.bankdroid.banking.banks;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import android.content.Context;
-import android.text.Html;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.liato.bankdroid.Helpers;
@@ -50,17 +52,10 @@ public class Hemkop extends Bank {
     private static final String TAG = "Hemkop";
     private static final String NAME = "Hemköp Kundkort";
     private static final String NAME_SHORT = "hemkop";
-    private static final String URL = "https://kundkort.hemkop.se/showdoc.asp?docid=1209";
+    private static final String URL = "https://www.hemkop.se/Mina-sidor/Logga-in/";
     private static final int BANKTYPE_ID = IBankTypes.HEMKOP;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
-    private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅÅÅMMDDXXXX";
-
-    private Pattern reBalance = Pattern.compile("<span id=\"ctl00_cpTop_lblAktuelltSaldoRubrik\">(.*):</span>\\s*<strong><span id=\"ctl00_cpTop_lbl(AktuelltSaldo)\">(.*)</span></strong>");
-    private Pattern reBonusIn = Pattern.compile("<span id=\"ctl00_cpTop_lblBonusInfoRubrik\">(.*):</span>\\s*<strong><span id=\"ctl00_cpTop_lbl(BonusInfo)\">(.*)</span></strong>");
-    private Pattern reBonusMonth = Pattern.compile("<span id=\"ctl00_cpTop_lblBonusInfoSumRubrik\">(.*):</span>\\s*<strong><span id=\"ctl00_cpTop_lbl(BonusInfoSum)\">(.*)</span></strong>");
-    private Pattern reTransaction = Pattern.compile("<tr class=\\s*\"transaction_row\">\\s*<td class=\"date\">\\s*(.*)\\s*</td>\\s*<td class=\"event\">\\s*(.*)\\s*</td>\\s*(<td class=\"currency\">\\s*(.*)\\s*</td>\\s*)?<td class=\"value\">\\s*(.*)\\s*</td>\\s*</tr>");
-    // space here due to a bug on the bonus transactions page -^^^^
 
     private String response = null;
 
@@ -72,7 +67,6 @@ public class Hemkop extends Bank {
         super.BANKTYPE_ID = BANKTYPE_ID;
         super.URL = URL;
         super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
-        super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
         super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
     }
 
@@ -86,23 +80,44 @@ public class Hemkop extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(true);
+        urlopen = new Urllib(true, true);
+        response = urlopen.open("https://www.hemkop.se/Mina-sidor/Logga-in/");
+        
+        Document d = Jsoup.parse(response);
+        Element e = d.getElementById("__VIEWSTATE");
+        if (e == null || e.attr("value") == null) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString() + " ViewState.");
+        }
+        String viewState = e.attr("value");
+
+        e = d.getElementById("__EVENTVALIDATION");
+        if (e == null || e.attr("value") == null) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString() + " EventValidation.");
+        }
+        String eventValidation = e.attr("value");
+        
+        
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
-        postData.add(new BasicNameValuePair("hemkop_personnummer", username));
-        postData.add(new BasicNameValuePair("hemkop_password", password));
-        postData.add(new BasicNameValuePair("login", "Logga in"));
-        return new LoginPackage(urlopen, postData, response, "https://kundkort.hemkop.se/scripts/cgiip.exe/WService=axfood/axfood/common/loginhemkopkundkort.p");
+        postData.add(new BasicNameValuePair("__EVENTTARGET", "ctl00$MainContent$BtnLogin"));
+        postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
+        postData.add(new BasicNameValuePair("__VIEWSTATE", viewState));
+        postData.add(new BasicNameValuePair("__SCROLLPOSITIONX", "0"));
+        postData.add(new BasicNameValuePair("__SCROLLPOSITIONY", "266"));
+        postData.add(new BasicNameValuePair("__EVENTVALIDATION", eventValidation));
+        postData.add(new BasicNameValuePair("ctl00$uiTopMenu$Search", ""));
+        postData.add(new BasicNameValuePair("ctl00$MainContent$tbUsername", username));
+        postData.add(new BasicNameValuePair("ctl00$MainContent$tbPassword", password));
+        return new LoginPackage(urlopen, postData, response, "https://www.hemkop.se/Mina-sidor/Logga-in/");
     }
 
     public Urllib login() throws LoginException, BankException {
         try {
             LoginPackage lp = preLogin();
             response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-            if (response.contains("status=failed")) {
+            if (!response.contains("Inloggad som")) {
                 throw new LoginException(res.getText(R.string.invalid_username_password).toString());
             }
-            //Login result contains a meta redirect to this page.
-            response = urlopen.open("https://kundkort.hemkop.se/showdoc.asp?docid=780&show=minasidor");
+            response = urlopen.open("https://www.hemkop.se/Mina-sidor/Bonussaldo/");
         }
         catch (ClientProtocolException e) {
             throw new BankException(e.getMessage());
@@ -122,17 +137,19 @@ public class Hemkop extends Bank {
 
         urlopen = login();
         
-        ArrayList<Pattern> arrPat = new ArrayList<Pattern>();
-        arrPat.add(reBalance);    // Balance (for VISA only)
-        arrPat.add(reBonusIn);    // Collected bonus before this month
-        arrPat.add(reBonusMonth); // Collected bonus this month
-        
-        for (Pattern p : arrPat) {
-            Matcher matcher = p.matcher(response);
-            if (matcher.find()) {
-                accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), matcher.group(2).trim()));
-                balance = balance.add(Helpers.parseBalance(matcher.group(3)));
-            }
+        Document d = Jsoup.parse(response);
+    	Elements amounts = d.select(".bonusStatement .amount");
+    	Elements names = d.select(".bonusStatement .label");
+        for (int i = 0; i < Math.min(amounts.size(), names.size()); i++) {
+        	Element amount = amounts.get(i);
+        	Element name = names.get(i);
+    		BigDecimal accountBalance = Helpers.parseBalance(amount.ownText());
+    		Account account = new Account(name.ownText().replace(":", "").trim(), accountBalance, String.format("acc_%d", i));
+    		if (i > 0) {
+    			account.setAliasfor("acc_0");
+    		}
+            accounts.add(account);
+            balance = balance.add(accountBalance);
         }
 
         if (accounts.isEmpty()) {
@@ -145,46 +162,28 @@ public class Hemkop extends Bank {
     @Override
     public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
         super.updateTransactions(account, urlopen);
-     
+        if (!"acc_0".equals(account.getId())) return;
         try {
-            String url = null;
-            GregorianCalendar from = new GregorianCalendar();
-            GregorianCalendar tom = new GregorianCalendar();
-            if (account.getId().equals("AktuelltSaldo")) {
-                // Get a year's worth of card transactions (VISA only)
-                from.set(Calendar.YEAR, from.get(Calendar.YEAR) - 1);
-                url = String.format("https://kundkort.hemkop.se/showdoc.asp?docid=785&hemkop_datumFrom=%tF&hemkop_datumTom=%tF", from, tom);
-            } else if (account.getId().equals("BonusInfo")) {
-                // Get a year's worth of bonus transactions (shopping within Hemköp) until the current month.
-                from.set(Calendar.YEAR, from.get(Calendar.YEAR) - 1);
-                tom.set(Calendar.DATE, 0);
-                url = String.format("https://kundkort.hemkop.se/showdoc.asp?docid=849&hemkop_datumFrom=%tF&hemkop_datumTom=%tF", from, tom);
-            } else if (account.getId().equals("BonusInfoSum")) {
-                // Get a bonus transactions (shopping within Hemköp) during the current month.
-                from.set(Calendar.DATE, 1);
-                url = String.format("https://kundkort.hemkop.se/showdoc.asp?docid=849&hemkop_datumFrom=%tF&hemkop_datumTom=%tF", from, tom);
-            }
-            
-            if (url != null) {
-                response = urlopen.open(url);
-    
-                Matcher matcher = reTransaction.matcher(response);
-                ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-                while (matcher.find()) {
-                    Transaction t = new Transaction(matcher.group(1).trim(),
-                            Html.fromHtml(matcher.group(2)).toString().trim(),
-                            Helpers.parseBalance(matcher.group(5)));
-                    if (matcher.group(4) != null && matcher.group(4).length() > 0) {
-                        t.setCurrency(Html.fromHtml(matcher.group(4)).toString().trim());
-                    }
-                    transactions.add(t);
+            response = urlopen.open("https://www.hemkop.se/Mina-sidor/Kontoutdrag/");
+            Document d = Jsoup.parse(response);
+        	Elements es = d.select(".transactions tbody tr");
+            ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+            for (Element e : es) {
+                Transaction t = new Transaction(e.child(1).ownText().trim(),
+                					e.child(0).ownText().trim(),
+                        Helpers.parseBalance(e.child(3).ownText()));
+                if (!TextUtils.isEmpty(e.child(2).ownText())) {
+                    t.setCurrency(Helpers.parseCurrency(e.child(2).ownText().trim(), "SEK"));
                 }
-                account.setTransactions(transactions);
-            }
+                transactions.add(t);
+        	}
+            account.setTransactions(transactions);
         } catch (ClientProtocolException e) {
-            Log.e(TAG, e.getMessage());
+        	e.printStackTrace();
+            Log.e(TAG, e.getMessage() != null ? e.getMessage() : "");
         } catch (IOException e) {
-            Log.e(TAG, e.getMessage());
+        	e.printStackTrace();
+            Log.e(TAG,  e.getMessage() != null ? e.getMessage() : "");
         }
         finally {
             super.updateComplete();
