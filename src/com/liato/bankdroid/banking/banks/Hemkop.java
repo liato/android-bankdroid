@@ -156,6 +156,39 @@ public class Hemkop extends Bank {
             throw new BankException(res.getText(R.string.no_accounts_found).toString());
         }
         
+        Account account = accounts.get(0);
+        try {
+            response = urlopen.open("https://www.hemkop.se/Mina-sidor/Kontoutdrag/");
+            d = Jsoup.parse(response);
+        	Elements es = d.select(".transactions tbody tr");
+            ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+            for (Element e : es) {
+                Transaction t = new Transaction(e.child(1).ownText().trim(),
+                					e.child(0).ownText().trim(),
+                        Helpers.parseBalance(e.child(3).ownText()));
+                if (!TextUtils.isEmpty(e.child(2).ownText())) {
+                    t.setCurrency(Helpers.parseCurrency(e.child(2).ownText().trim(), "SEK"));
+                }
+                transactions.add(t);
+        	}
+            account.setTransactions(transactions);
+            
+            es = d.select(".currentBalance,.disposable");
+            int i = 0;
+            for (Element e : es) {
+            	Account a = new Account(e.child(0).ownText().trim(), Helpers.parseBalance(e.child(1).ownText()), String.format("acc_cc_%d", i));
+            	a.setAliasfor("acc_0");
+            	i++;
+            }
+            
+        } catch (ClientProtocolException e) {
+        	e.printStackTrace();
+            Log.e(TAG, e.getMessage() != null ? e.getMessage() : "");
+        } catch (IOException e) {
+        	e.printStackTrace();
+            Log.e(TAG,  e.getMessage() != null ? e.getMessage() : "");
+        }        
+        
         super.updateComplete();
     }
 
