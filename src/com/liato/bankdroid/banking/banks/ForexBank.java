@@ -51,7 +51,7 @@ public class ForexBank extends Bank {
     private Pattern reAccountBalance = Pattern.compile("balance.*\\>(\\d+,\\d\\d)", Pattern.MULTILINE);
     private Pattern reDisposable = Pattern.compile("disposable.*\\>(\\d+,\\d\\d)", Pattern.MULTILINE);
 
-    private Pattern reTransactions = Pattern.compile("item\\stransaction.*(\\d{4}-\\d{2}-\\d{2}).*>(\\d+,\\d{2}).*left\">\\s*(.*?)\\s*</div>", Pattern.MULTILINE | Pattern.DOTALL);
+    private Pattern reTransactions = Pattern.compile("item\\stransaction.+?(\\d{4}-\\d{2}-\\d{2}?).+?(-?\\d+,\\d{2}).*?left\">\\s+(.+?)\\s+</div>", Pattern.MULTILINE | Pattern.DOTALL);
 
     private HashMap<String, String> mIdMappings = new HashMap<String, String>();
 
@@ -208,6 +208,7 @@ public class ForexBank extends Bank {
         try {
             response = urlopen.open(BASE_URL + "/mobilepayment/transigo/account/overview/accountTransactions?cvokey=" + accountId);
             response = response.replace("&nbsp;", "");
+            Log.d(TAG, response);
             matcher = reTransactions.matcher(response);
             ArrayList<Transaction> transactions = new ArrayList<Transaction>();
             while (matcher.find()) {
