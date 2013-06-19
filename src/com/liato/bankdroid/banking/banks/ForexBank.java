@@ -1,9 +1,23 @@
 package com.liato.bankdroid.banking.banks;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+
 import android.content.Context;
 import android.text.Html;
 import android.text.InputType;
 import android.util.Log;
+
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.Account;
@@ -13,20 +27,8 @@ import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
-import eu.nullbyte.android.urllib.Urllib;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import eu.nullbyte.android.urllib.Urllib;
 
 public class ForexBank extends Bank {
     // Logon url: https://nettbank.edb.com/mobilepayment/index.jsp?n_bank=0087&nativeapp=android
@@ -208,7 +210,6 @@ public class ForexBank extends Bank {
         try {
             response = urlopen.open(BASE_URL + "/mobilepayment/transigo/account/overview/accountTransactions?cvokey=" + accountId);
             response = response.replace("&nbsp;", "");
-            Log.d(TAG, response);
             matcher = reTransactions.matcher(response);
             ArrayList<Transaction> transactions = new ArrayList<Transaction>();
             while (matcher.find()) {
