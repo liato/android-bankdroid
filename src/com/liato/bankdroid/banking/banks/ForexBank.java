@@ -47,7 +47,7 @@ public class ForexBank extends Bank {
     private Pattern reTranId = Pattern.compile("p_tranid\" value=\"(\\d+)\"", Pattern.MULTILINE);
     private Pattern reFallbackQuery = Pattern.compile("fallbackQuery\"\\svalue=\"(.*)\"", Pattern.MULTILINE);
 
-    private Pattern reAccountIds = Pattern.compile("ransactions\\?cvokey=(\\d+)", Pattern.MULTILINE);
+    private Pattern reAccountIds = Pattern.compile("ransactions\\?cvokey=(.\\d+)", Pattern.MULTILINE);
     private Pattern reAccountNumbers = Pattern.compile("account_number.*\\>(\\d+)", Pattern.MULTILINE);
     private Pattern reAccountName = Pattern.compile("account_name.*\\>(.+)<", Pattern.MULTILINE);
     private Pattern reAccountBalance = Pattern.compile("balance.*\\>(\\d+,\\d\\d)", Pattern.MULTILINE);
@@ -177,13 +177,18 @@ public class ForexBank extends Bank {
             Matcher mAccountBalances = reAccountBalance.matcher(result);
             Matcher mDisposables = reDisposable.matcher(result);
 
-            if(mAccountIds.find() && mAccountNumbers.find() && mAccountNames.find() && mAccountBalances.find() && mDisposables.find())  {
+            if(mAccountIds.find() && mAccountNumbers.find() && mAccountNames.find() && mAccountBalances.find())  {
                 for (int i = 0; i < mAccountNumbers.groupCount() ; i++) {
                     mIdMappings.put(Integer.toString(i+1), mAccountIds.group(i+1));
-                    accounts.add(new Account(Html.fromHtml(mAccountNames.group(i+1)).toString().trim() + " (Disponibelt)", Helpers.parseBalance(mDisposables.group(i+1).trim()), Integer.toString(i+1)));
-                    Account account = new Account(Html.fromHtml(mAccountNames.group(i+1)).toString().trim() + " (Saldo)", Helpers.parseBalance(mAccountBalances.group(i+1).trim()), "a:" + i+1);
-                    account.setAliasfor(Integer.toString(i+1));
-                    accounts.add(account);
+                    if(mDisposables.find()) {
+                        accounts.add(new Account(Html.fromHtml(mAccountNames.group(i+1)).toString().trim() + " (Disponibelt)", Helpers.parseBalance(mDisposables.group(i+1).trim()), Integer.toString(i+1)));
+                        Account account = new Account(Html.fromHtml(mAccountNames.group(i+1)).toString().trim() + " (Saldo)", Helpers.parseBalance(mAccountBalances.group(i+1).trim()), "a:" + i+1);
+                        account.setAliasfor(Integer.toString(i+1));
+                        accounts.add(account);
+                    }
+                    else {
+                        accounts.add(new Account(Html.fromHtml(mAccountNames.group(i+1)).toString().trim(), Helpers.parseBalance(mAccountBalances.group(i+1).trim()), Integer.toString(i+1)));
+                    }
 
                     balance = balance.add(Helpers.parseBalance(mAccountBalances.group(i+1)));
                 }
