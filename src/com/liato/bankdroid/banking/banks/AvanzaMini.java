@@ -25,6 +25,9 @@ import java.util.regex.Pattern;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import android.content.Context;
 import android.text.Html;
@@ -67,10 +70,27 @@ public class AvanzaMini extends Bank {
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
         urlopen = new Urllib(true, true);
+        String response = urlopen.open("https://www.avanza.se/mini/logga_in/");
+        Document d = Jsoup.parse(response);
+        Element e = d.getElementById("javax.faces.ViewState");
+        if (e == null || e.attr("value") == null) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString() + " ViewState.");
+        }
+        String viewState = e.attr("value");
+        e = d.select("input[type=submit]").first();
+        if (e == null || e.attr("value") == null || e.attr("name") == null) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString() + " SubmitValue.");
+        }
+        String submitButtonName = e.attr("name");
+        String submitButtonValue = e.attr("value");
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
+        postData.add(new BasicNameValuePair("login", "login"));
         postData.add(new BasicNameValuePair("username", username));
         postData.add(new BasicNameValuePair("password", password));
-        return new LoginPackage(urlopen, postData, null, "https://www.avanza.se/aza/login/login.jsp");
+        postData.add(new BasicNameValuePair("conversationPropagation", "none"));
+        postData.add(new BasicNameValuePair("javax.faces.ViewState", viewState));
+        postData.add(new BasicNameValuePair(submitButtonName, submitButtonValue));
+        return new LoginPackage(urlopen, postData, null, "https://www.avanza.se/mini/logga_in/");
     }
 
 	@Override
@@ -78,8 +98,9 @@ public class AvanzaMini extends Bank {
 		String response = null;
 		try {
 			LoginPackage lp = preLogin();
+			urlopen.addHeader("Referer", "https://www.avanza.se/mini/logga_in/");
 			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-			if (response.contains("Felaktigt") && !response.contains("Logga ut")) {
+			if (response.contains("Felaktigt") && response.contains("Logga in")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}
 			
@@ -100,7 +121,7 @@ public class AvanzaMini extends Bank {
 		String response = null;
 		Matcher matcher;
 		try {
-			response = urlopen.open("https://www.avanza.se/mini/mitt_konto/index.html");
+			response = urlopen.open("https://www.avanza.se/mini/mitt_konto/");
 			matcher = reAvanzaMini.matcher(response);
 	        if (matcher.find()) {
 	            int count = 1;
