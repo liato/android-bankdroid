@@ -177,6 +177,7 @@ public class Hemkop extends Bank {
             for (Element e : es) {
             	Account a = new Account(e.child(0).ownText().trim(), Helpers.parseBalance(e.child(1).ownText()), String.format("acc_cc_%d", i));
             	a.setAliasfor("acc_0");
+            	accounts.add(a);
             	i++;
             }
             
