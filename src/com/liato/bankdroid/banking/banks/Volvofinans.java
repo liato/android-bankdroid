@@ -56,7 +56,7 @@ public class Volvofinans extends Bank {
 	private static final String TAG = "Volvofinans";
 	private static final String NAME = "Volvofinans";
 	private static final String NAME_SHORT = "volvofinans";
-	private static final String URL = "https://secure.volvokort.com/";
+	private static final String URL = "https://inloggad.volvofinans.se/privat/inloggning/forenklad.html";
 	private static final int BANKTYPE_ID = IBankTypes.VOLVOFINANS;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅÅÅMMDDXXXX";
@@ -88,9 +88,9 @@ public class Volvofinans extends Bank {
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         postData.add(new BasicNameValuePair("username", username));
         postData.add(new BasicNameValuePair("password", password));
-        postData.add(new BasicNameValuePair("TARGET", "https://www.volvokort.com/privat/inloggning/redirect.html"));
-        postData.add(new BasicNameValuePair("REFERER", "https://www.volvokort.com/privat/inloggning/forenklad.html"));
-        return new LoginPackage(urlopen, postData, null, "https://secure.volvokort.com/neas/KodAuth");
+        postData.add(new BasicNameValuePair("TARGET", "https://inloggad.volvofinans.se/privat/inloggning/redirect.html"));
+        postData.add(new BasicNameValuePair("REFERER", "https://inloggad.volvofinans.se/privat/inloggning/forenklad.html"));
+        return new LoginPackage(urlopen, postData, null, "https://secure.volvofinans.se/neas/KodAuth");
     }
 
     @Override
@@ -125,7 +125,7 @@ public class Volvofinans extends Bank {
 		urlopen = login();
 		String response = null;
 		try {
-			response = urlopen.open("https://www.volvokort.com/privat/kund/kortkonto/oversikt/kortkonton.html");
+			response = urlopen.open("https://inloggad.volvofinans.se/privat/kund/kortkonto/oversikt/kortkonton.html");
 			try {
 				JSONObject object = (JSONObject) new JSONTokener(response).nextValue();
 				JSONArray data = object.getJSONArray("data");
@@ -166,7 +166,7 @@ public class Volvofinans extends Bank {
         String url = mAccountUrlMappings.get(account.getId());
         if (url != null) {
             try {
-                response = urlopen.open("https://www.volvokort.com" + url);
+                response = urlopen.open("https://inloggad.volvofinans.se" + url);
                 ArrayList<Transaction> transactions = new ArrayList<Transaction>();
                 account.setTransactions(transactions);
                 JSONObject object = (JSONObject) new JSONTokener(response).nextValue();
