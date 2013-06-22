@@ -1,0 +1,36 @@
+--------------------------------------------------------------------------------
+Development
+--------------------------------------------------------------------------------
+  liato                             https://github.com/liato
+  DEGE1                             https://github.com/DEGE1
+  Magnus Hagander                   https://github.com/mhagander
+  Pierre Chateau                    https://github.com/PMC
+  Magnus Andersson                  https://github.com/magnusart
+  cork                              https://github.com/cork
+  Emil Hesslow                      https://github.com/WizKid
+  Peter Björkman                    https://github.com/woody2
+  Joakim Andersson                  https://github.com/firetech
+  Mathias Åhsberg                   https://github.com/goober
+  Lars Wiklund                      https://github.com/lawi75
+  Fredrik Lindberg                  https://github.com/fredriklindberg
+  Erik Fredriksen                   https://github.com/erifre
+  Mats Karlsson                     https://github.com/MatsKarlsson
+  Snah                              https://github.com/Snaah
+  Jonas Björk                       https://github.com/bjooork
+  Anders Waldenborg                 https://github.com/wanders
+  Mattias Fagerström                https://github.com/mafa73
+  Jacob Siverskog                   https://github.com/jsiverskog
+  Andreas Gunnerås                  https://github.com/d95andek
+  Emil Andersson                    https://github.com/emilan
+  oskla129                          https://github.com/oskla129
+  Per Wigren                        https://github.com/Tuxie
+  Joakim Lundborg                   https://github.com/cortex
+  Jonathan Hjertström               https://github.com/nixi
+  Tim Jansson                       https://github.com/timtux
+  Christer Fletcher                 https://github.com/chrfle
+  Richard Ginzburg                  https://github.com/rickythefox
+ 
+--------------------------------------------------------------------------------
+Beta testing
+--------------------------------------------------------------------------------
+  Swedroid users                    http://goo.gl/9tJeH
