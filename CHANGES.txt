@@ -1,3 +1,13 @@
+v1.9.6.0: (2013-06-22)
+* Fix for PayPal
+* Fix for Hemköp
+* Fix for ICA
+* Fix for Volvofinans
++ Support for Forex Bank (thanks till rickythefox)
++ Support for BetterGlobe (thanks to Tuxie)
++ Support for Zidisha (thanks to Tuxie)
+
+
 v1.9.5.4: (2013-04-28)
 * Fix for Rikslunchen (thanks to chrfle)
 * Fix for Audikortet (maybe)
