@@ -16,22 +16,88 @@
 
 package com.liato.bankdroid.banking;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+
+import net.sf.andhsli.hotspotlogin.SimpleCrypto;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.preference.PreferenceManager;
-
-import com.liato.bankdroid.banking.banks.*;
-import com.liato.bankdroid.banking.banks.lansforsakringar.Lansforsakringar;
+import com.liato.bankdroid.banking.banks.icabanken.ICABanken;
+import com.liato.bankdroid.banking.banks.AkeliusInvest;
+import com.liato.bankdroid.banking.banks.AkeliusSpar;
+import com.liato.bankdroid.banking.banks.AmericanExpress;
+import com.liato.bankdroid.banking.banks.AppeakPoker;
+import com.liato.bankdroid.banking.banks.Audi;
+import com.liato.bankdroid.banking.banks.Avanza;
+import com.liato.bankdroid.banking.banks.AvanzaMini;
+import com.liato.bankdroid.banking.banks.BetterGlobe;
+import com.liato.bankdroid.banking.banks.Bioklubben;
+import com.liato.bankdroid.banking.banks.BrummerKF;
+import com.liato.bankdroid.banking.banks.CSN;
+import com.liato.bankdroid.banking.banks.Chalmrest;
+import com.liato.bankdroid.banking.banks.Chevrolet;
+import com.liato.bankdroid.banking.banks.Coop;
+import com.liato.bankdroid.banking.banks.DanskeBank;
+import com.liato.bankdroid.banking.banks.DinersClub;
+import com.liato.bankdroid.banking.banks.Djurgarden;
+import com.liato.bankdroid.banking.banks.EasyCard;
+import com.liato.bankdroid.banking.banks.EurobonusMastercard;
+import com.liato.bankdroid.banking.banks.Eurocard;
+import com.liato.bankdroid.banking.banks.Everydaycard;
+import com.liato.bankdroid.banking.banks.FirstCard;
+import com.liato.bankdroid.banking.banks.ForexBank;
+import com.liato.bankdroid.banking.banks.Handelsbanken;
+import com.liato.bankdroid.banking.banks.Hemkop;
+import com.liato.bankdroid.banking.banks.ICA;
+import com.liato.bankdroid.banking.banks.IKEA;
+import com.liato.bankdroid.banking.banks.IkanoBank;
+import com.liato.bankdroid.banking.banks.Jojo;
+import com.liato.bankdroid.banking.banks.Marginalen;
+import com.liato.bankdroid.banking.banks.McDonalds;
+import com.liato.bankdroid.banking.banks.Meniga;
+import com.liato.bankdroid.banking.banks.NordeaDK;
+import com.liato.bankdroid.banking.banks.Nordnet;
+import com.liato.bankdroid.banking.banks.Nordnetdirekt;
+import com.liato.bankdroid.banking.banks.OKQ8;
+import com.liato.bankdroid.banking.banks.Opel;
+import com.liato.bankdroid.banking.banks.Osuuspankki;
+import com.liato.bankdroid.banking.banks.PayPal;
+import com.liato.bankdroid.banking.banks.Payson;
+import com.liato.bankdroid.banking.banks.PlusGirot;
+import com.liato.bankdroid.banking.banks.Preem;
+import com.liato.bankdroid.banking.banks.Quintessentially;
+import com.liato.bankdroid.banking.banks.ResursBank;
+import com.liato.bankdroid.banking.banks.Rikslunchen;
+import com.liato.bankdroid.banking.banks.SEB;
+import com.liato.bankdroid.banking.banks.SJPrio;
+import com.liato.bankdroid.banking.banks.Saab;
+import com.liato.bankdroid.banking.banks.Seat;
+import com.liato.bankdroid.banking.banks.SevenDay;
+import com.liato.bankdroid.banking.banks.Shell;
+import com.liato.bankdroid.banking.banks.Skandiabanken;
+import com.liato.bankdroid.banking.banks.Skoda;
+import com.liato.bankdroid.banking.banks.SparbankenOresund;
+import com.liato.bankdroid.banking.banks.SparbankenSyd;
+import com.liato.bankdroid.banking.banks.Statoil;
+import com.liato.bankdroid.banking.banks.SvenskaSpel;
+import com.liato.bankdroid.banking.banks.Swedbank;
+import com.liato.bankdroid.banking.banks.TestBank;
+import com.liato.bankdroid.banking.banks.TicketRikskortet;
+import com.liato.bankdroid.banking.banks.TrustBuddy;
+import com.liato.bankdroid.banking.banks.Vasttrafik;
+import com.liato.bankdroid.banking.banks.Villabanken;
+import com.liato.bankdroid.banking.banks.Volkswagen;
+import com.liato.bankdroid.banking.banks.Volvofinans;
+import com.liato.bankdroid.banking.banks.Wallet;
+import com.liato.bankdroid.banking.banks.Zidisha;
 import com.liato.bankdroid.banking.banks.Nordea.Nordea;
+import com.liato.bankdroid.banking.banks.lansforsakringar.Lansforsakringar;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.db.Crypto;
 import com.liato.bankdroid.db.DBAdapter;
 import com.liato.bankdroid.provider.IBankTypes;
-import net.sf.andhsli.hotspotlogin.SimpleCrypto;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
 
 public class BankFactory {
 
