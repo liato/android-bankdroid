@@ -25,6 +25,7 @@ import java.util.Locale;
 import org.apache.http.client.ClientProtocolException;
 
 import android.content.Context;
+import android.os.Build;
 import android.text.InputType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,6 +57,7 @@ public class ICABanken extends Bank {
 
 	private static final String API_KEY = "A026CF97-5F6A-438D-A921-AA3406A6CE09";
 	private static final String API_URL = "https://appserver.icabanken.se";
+	private static final String API_VERSION = "1.0";
 
 	public ICABanken(Context context) {
 		super(context);
@@ -78,14 +80,20 @@ public class ICABanken extends Bank {
 
 	public Urllib login() throws LoginException, BankException {
 		urlopen = new Urllib();
-		urlopen.addHeader("ApiVersion", "1.0");
+		urlopen.addHeader("ApiVersion", API_VERSION);
 		urlopen.addHeader("Accept", "application/json");
 		urlopen.addHeader("ApiKey", API_KEY);
-		String response = null;
-		try {
-			response = urlopen.open(API_URL + "/login?customerId=" + username
-					+ "&password=" + password);
+		urlopen.addHeader("ClientHardware", Build.MODEL);
+		urlopen.addHeader("ClientOS", "Android");
+		urlopen.addHeader("ClientOSVersion", Integer.toString(Build.VERSION.SDK_INT));
 
+		try {
+			String response = urlopen.open(API_URL + "/login?customerId="
+					+ username + "&password=" + password);
+			if(response == null || "".equals(response)) {
+				throw new LoginException(res.getText(
+						R.string.invalid_username_password).toString());
+			}
 			ObjectMapper vObjectMapper = new ObjectMapper();
 			vObjectMapper.setDateFormat(new SimpleDateFormat(
 					"yyyy-MM-dd hh:mm:ss", new Locale("sv", "SE")));
@@ -95,11 +103,9 @@ public class ICABanken extends Bank {
 			addAccounts(loginResponse.getAccountList());
 
 		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new BankException(e.getMessage());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new BankException(e.getMessage());
 		}
 		return urlopen;
 	}
@@ -141,6 +147,7 @@ public class ICABanken extends Bank {
 			alias.setAliasfor(icaAccount.getAccountId());
 			accounts.add(account);
 			accounts.add(alias);
+			balance.add(account.getBalance());
 		}
 	}
 
