@@ -27,6 +27,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
+import android.text.Html;
 
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
@@ -173,7 +174,7 @@ public class TicketRikskortet extends Bank {
                  * 
                  */
 
-                transactions.add(new Transaction(matcher.group(1), matcher.group(2).trim(), Helpers.parseBalance(matcher.group(3))));
+                transactions.add(new Transaction(matcher.group(1), Html.fromHtml(matcher.group(2).trim()).toString(), Helpers.parseBalance(matcher.group(3))));
             }
             account.setTransactions(transactions);
         } catch (ClientProtocolException e) {

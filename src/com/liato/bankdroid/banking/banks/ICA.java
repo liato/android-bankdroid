@@ -79,6 +79,7 @@ public class ICA extends Bank {
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
         urlopen = new Urllib(true);
+        urlopen.setUserAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1468.0 Safari/537.36");
         String response = urlopen.open("https://www.ica.se/logga-in/");
         Matcher matcher = reViewState.matcher(response);
         if (!matcher.find()) {
@@ -99,8 +100,8 @@ public class ICA extends Bank {
         postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
         postData.add(new BasicNameValuePair("__EVENTVALIDATION", strEventValidation));
         postData.add(new BasicNameValuePair("LoginView1$userName", username));
-        postData.add(new BasicNameValuePair("LoginView1$password", password));
-        
+        postData.add(new BasicNameValuePair("LoginView1$passWord", password));
+        postData.add(new BasicNameValuePair("LoginView1$RememberMe", "on"));
         return new LoginPackage(urlopen, postData, response, "https://www.ica.se/logga-in/");
     }
 

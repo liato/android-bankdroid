@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -178,6 +177,7 @@ public class Hemkop extends Bank {
             for (Element e : es) {
             	Account a = new Account(e.child(0).ownText().trim(), Helpers.parseBalance(e.child(1).ownText()), String.format("acc_cc_%d", i));
             	a.setAliasfor("acc_0");
+            	accounts.add(a);
             	i++;
             }
             
@@ -195,6 +195,7 @@ public class Hemkop extends Bank {
     @Override
     public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
         super.updateTransactions(account, urlopen);
+        /*
         if (!"acc_0".equals(account.getId())) return;
         try {
             response = urlopen.open("https://www.hemkop.se/Mina-sidor/Kontoutdrag/");
@@ -221,5 +222,6 @@ public class Hemkop extends Bank {
         finally {
             super.updateComplete();
         }
+        */
     }
 }

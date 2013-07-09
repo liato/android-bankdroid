@@ -47,7 +47,7 @@ public class DinersClub extends Bank {
 	private static final String TAG = "DinersClub";
 	private static final String NAME = "Diners Club";
 	private static final String NAME_SHORT = "dinersclub";
-	private static final String URL = "https://www.dinersclub.se/dcs/login.aspx";
+	private static final String URL = "https://secure.dinersclub.se/dcs/login.aspx";
 	private static final int BANKTYPE_ID = IBankTypes.DINERSCLUB;
 	
     private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
@@ -78,7 +78,7 @@ public class DinersClub extends Bank {
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
         urlopen = new Urllib(true);
-        response = urlopen.open("https://www.dinersclub.se/dcs/login.aspx");
+        response = urlopen.open("https://secure.dinersclub.se/dcs/login.aspx");
         Matcher matcher = reViewState.matcher(response);
         if (!matcher.find()) {
             throw new BankException(res.getText(R.string.unable_to_find).toString()+" ViewState.");
@@ -100,7 +100,7 @@ public class DinersClub extends Bank {
         postData.add(new BasicNameValuePair("ctl00$MainContent$Login1$Password", password));
         postData.add(new BasicNameValuePair("ctl00$MainContent$Login1$LoginButton", "Logga in"));
 
-        return new LoginPackage(urlopen, postData, response, "https://www.dinersclub.se/dcs/login.aspx");
+        return new LoginPackage(urlopen, postData, response, "https://secure.dinersclub.se/dcs/login.aspx");
     }
 
 	public Urllib login() throws LoginException, BankException {
@@ -127,9 +127,9 @@ public class DinersClub extends Bank {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		urlopen = login();
-		if (!"https://www.dinersclub.se/dcs/eSaldo/Default.aspx".equalsIgnoreCase(urlopen.getCurrentURI())) {
+		if (!"https://secure.dinersclub.se/dcs/eSaldo/Default.aspx".equalsIgnoreCase(urlopen.getCurrentURI())) {
 		    try {
-                response = urlopen.open("https://www.dinersclub.se/dcs/eSaldo/Default.aspx");
+                response = urlopen.open("https://secure.dinersclub.se/dcs/eSaldo/Default.aspx");
             }
             catch (ClientProtocolException e) {
                 throw new BankException(e.getMessage());
@@ -179,7 +179,7 @@ public class DinersClub extends Bank {
 		Matcher matcher;
 		try {
 			/* We're going to look at all the pages until we find one that has transactions on it */
-			response = urlopen.open(String.format("https://www.dinersclub.se/dcs/eSaldo/%s", invoiceUrl));
+			response = urlopen.open(String.format("https://secure.dinersclub.se/dcs/eSaldo/%s", invoiceUrl));
 			matcher = reTransactions.matcher(response);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 
