@@ -29,6 +29,11 @@ Development
   Tim Jansson                       https://github.com/timtux
   Christer Fletcher                 https://github.com/chrfle
   Richard Ginzburg                  https://github.com/rickythefox
+  ScuttleSE                         https://github.com/ScuttleSE
+
+
+  Stats at:
+  https://github.com/liato/android-bankdroid/graphs/contributors?type=a
  
 --------------------------------------------------------------------------------
 Beta testing
