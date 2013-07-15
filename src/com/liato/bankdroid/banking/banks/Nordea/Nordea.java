@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.liato.bankdroid.banking.banks.Nordea;
+package com.liato.bankdroid.banking.banks.nordea;
 
 import java.io.IOException;
 import java.util.ArrayList;
