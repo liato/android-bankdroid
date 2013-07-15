@@ -177,21 +177,19 @@ public class ForexBank extends Bank {
             Matcher mAccountBalances = reAccountBalance.matcher(result);
             Matcher mDisposables = reDisposable.matcher(result);
 
-            if(mAccountIds.find() && mAccountNumbers.find() && mAccountNames.find() && mAccountBalances.find())  {
-                for (int i = 0; i < mAccountNumbers.groupCount() ; i++) {
-                    mIdMappings.put(Integer.toString(i+1), mAccountIds.group(i+1));
-                    if(mDisposables.find()) {
-                        accounts.add(new Account(Html.fromHtml(mAccountNames.group(i+1)).toString().trim() + " (Disponibelt)", Helpers.parseBalance(mDisposables.group(i+1).trim()), Integer.toString(i+1)));
-                        Account account = new Account(Html.fromHtml(mAccountNames.group(i+1)).toString().trim() + " (Saldo)", Helpers.parseBalance(mAccountBalances.group(i+1).trim()), "a:" + i+1);
-                        account.setAliasfor(Integer.toString(i+1));
-                        accounts.add(account);
-                    }
-                    else {
-                        accounts.add(new Account(Html.fromHtml(mAccountNames.group(i+1)).toString().trim(), Helpers.parseBalance(mAccountBalances.group(i+1).trim()), Integer.toString(i+1)));
-                    }
-
-                    balance = balance.add(Helpers.parseBalance(mAccountBalances.group(i+1)));
+            while(mAccountIds.find() && mAccountNumbers.find() && mAccountNames.find() && mAccountBalances.find())  {
+                mIdMappings.put(Integer.toString(1), mAccountIds.group(1));
+                if(!mAccountIds.group(1).startsWith("-") && mDisposables.find()) {
+                    accounts.add(new Account(Html.fromHtml(mAccountNames.group(1)).toString().trim() + " (Disponibelt)", Helpers.parseBalance(mDisposables.group(1).trim()), Integer.toString(1)));
+                    Account account = new Account(Html.fromHtml(mAccountNames.group(1)).toString().trim() + " (Saldo)", Helpers.parseBalance(mAccountBalances.group(1).trim()), "a:" + 1);
+                    account.setAliasfor(Integer.toString(1));
+                    accounts.add(account);
                 }
+                else {
+                    accounts.add(new Account(Html.fromHtml(mAccountNames.group(1)).toString().trim(), Helpers.parseBalance(mAccountBalances.group(1).trim()), Integer.toString(1)));
+                }
+
+                balance = balance.add(Helpers.parseBalance(mAccountBalances.group(1)));
             }
             if (accounts.isEmpty()) {
                 throw new BankException(res.getText(R.string.no_accounts_found).toString());
