@@ -92,7 +92,7 @@ import com.liato.bankdroid.banking.banks.Volkswagen;
 import com.liato.bankdroid.banking.banks.Volvofinans;
 import com.liato.bankdroid.banking.banks.Wallet;
 import com.liato.bankdroid.banking.banks.Zidisha;
-import com.liato.bankdroid.banking.banks.Nordea.Nordea;
+import com.liato.bankdroid.banking.banks.nordea.Nordea;
 import com.liato.bankdroid.banking.banks.lansforsakringar.Lansforsakringar;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.db.Crypto;

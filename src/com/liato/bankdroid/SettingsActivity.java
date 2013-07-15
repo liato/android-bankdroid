@@ -33,7 +33,7 @@ import com.liato.bankdroid.appwidget.AutoRefreshService;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.banks.Swedbank;
-import com.liato.bankdroid.banking.banks.Nordea.Nordea;
+import com.liato.bankdroid.banking.banks.nordea.Nordea;
 import com.liato.bankdroid.lockpattern.ChooseLockPattern;
 import com.liato.bankdroid.lockpattern.ConfirmLockPattern;
 import com.liato.bankdroid.lockpattern.LockPatternUtils;
