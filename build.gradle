@@ -31,6 +31,14 @@ android {
     compileSdkVersion 17
     buildToolsVersion "17.0.0"
 
+    defaultConfig {
+        versionCode 160
+        versionName '1.9.6.0'
+        minSdkVersion 4
+        targetSdkVersion 4
+        packageName 'com.liato.bankdroid'
+    }
+
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
