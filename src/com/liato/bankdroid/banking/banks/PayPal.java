@@ -25,10 +25,15 @@ import java.util.regex.Pattern;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import android.content.Context;
 import android.text.Html;
 import android.text.InputType;
+import android.text.TextUtils;
+import android.util.Log;
 
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
@@ -50,7 +55,7 @@ public class PayPal extends Bank {
 	private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT | + InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
 	private static final boolean STATIC_BALANCE = true;
 	
-	private Pattern reFormAction = Pattern.compile("<form.*?action=\"([^\"]+)\".*?login_form.*?>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	private Pattern reFormAction = Pattern.compile("<form.*?action=\"([^\"]+)\".*?login_form.*?>", Pattern.CASE_INSENSITIVE);
 	private Pattern reBalance = Pattern.compile("PayPal\\s*balance:\\s*(?:</strong>)?<span\\s*class=\"balance\">[^<]+<[^<]+>\\s*(?:<strong>)?[^0-9,.-]*([0-9,. ]+)([A-Z]+)\\s*(?:</strong>)?\\s*<[^<]+>\\s*</span>", Pattern.CASE_INSENSITIVE);
 	private Pattern reAccounts = Pattern.compile("row\">([^>]+)</td>\\s*<td\\s*class=\"textright\">\\s*<[^>]+>\\s*[^0-9,.-]*([0-9,. ]+)([A-Z]+)\\s*<[^>]+>\\s*</td>", Pattern.CASE_INSENSITIVE);
 	private String response = null;
@@ -78,10 +83,12 @@ public class PayPal extends Bank {
         urlopen.setUserAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1468.0 Safari/537.36");
         //Get cookies and url to post to
         response = urlopen.open("https://www.paypal.com/en");
-        Matcher matcher = reFormAction.matcher(response);
+        Document d = Jsoup.parse(response);
+        Element e = d.select("form[name=login_form]").first();
+        
         String strPostUrl;
-        if (matcher.find()) {
-            strPostUrl = Html.fromHtml(matcher.group(1)).toString();
+        if (e != null && !TextUtils.isEmpty(e.attr("action"))) {
+            strPostUrl = e.attr("action");
         }
         else {
             throw new BankException(res.getText(R.string.unable_to_find).toString()+" post url.");
@@ -101,6 +108,7 @@ public class PayPal extends Bank {
         postData.add(new BasicNameValuePair("bp_ks3", ""));
         postData.add(new BasicNameValuePair("flow_name", "xpt/Marketing_CommandDriven/homepage/IndividualsHome"));
         postData.add(new BasicNameValuePair("fso", "k2TDENTlxEJnhbuYDYFmKMyVq0kUZPsdK6j3V1gPUwuZvyAmzzpRs4Cmjet0z19AwlxXfW"));
+        Log.d("HEJ", "Posturl: " + strPostUrl);
         return new LoginPackage(urlopen, postData, response, strPostUrl);
     }
 
