@@ -30,6 +30,7 @@ Development
   Christer Fletcher                 https://github.com/chrfle
   Richard Ginzburg                  https://github.com/rickythefox
   ScuttleSE                         https://github.com/ScuttleSE
+  Andreas Knifh                     https://github.com/knifhen
 
 
   Stats at:
