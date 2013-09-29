@@ -308,7 +308,7 @@ public class BankFactory {
         banks.add(new Seat(context));
         banks.add(new Skoda(context));
         banks.add(new IKEA(context));
-        banks.add(new DanskeBank(context));
+//        banks.add(new DanskeBank(context));
         banks.add(new NordeaDK(context));
         banks.add(new Vasttrafik(context));
         banks.add(new Everydaycard(context));
