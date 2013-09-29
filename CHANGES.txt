@@ -1,9 +1,20 @@
+v1.9.6.1: (2013-09-30)
+* Fix for PayPal
+* Fix for Diners Club (thanks to ScuttleSE)
+* ICA Banken uses their API (thanks to goober)
+* Fix for multiple accounts in Forex Bank (thanks to rickythefox)
+* Fix for Villabanken (thanks to knifhen)
++ Support for SAS EuroBonus MasterCard Norway
+- Removed Danske Bank
+- Removed Sparbanken Öresund
+
+
 v1.9.6.0: (2013-06-22)
 * Fix for PayPal
 * Fix for Hemköp
 * Fix for ICA
 * Fix for Volvofinans
-+ Support for Forex Bank (thanks till rickythefox)
++ Support for Forex Bank (thanks to rickythefox)
 + Support for BetterGlobe (thanks to Tuxie)
 + Support for Zidisha (thanks to Tuxie)
 
