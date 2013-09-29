@@ -92,4 +92,5 @@ public interface IBankTypes {
     public static final int ZIDISHA = 68;
     public static final int BETTERGLOBE = 69;
     public static final int FOREX = 70;
+    public final static int SASEUROBONUSMASTERCARD_NO = 71;
 }

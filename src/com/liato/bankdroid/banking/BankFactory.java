@@ -24,7 +24,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.preference.PreferenceManager;
-import com.liato.bankdroid.banking.banks.icabanken.ICABanken;
+
 import com.liato.bankdroid.banking.banks.AkeliusInvest;
 import com.liato.bankdroid.banking.banks.AkeliusSpar;
 import com.liato.bankdroid.banking.banks.AmericanExpress;
@@ -44,6 +44,7 @@ import com.liato.bankdroid.banking.banks.DinersClub;
 import com.liato.bankdroid.banking.banks.Djurgarden;
 import com.liato.bankdroid.banking.banks.EasyCard;
 import com.liato.bankdroid.banking.banks.EurobonusMastercard;
+import com.liato.bankdroid.banking.banks.EurobonusMastercardNo;
 import com.liato.bankdroid.banking.banks.Eurocard;
 import com.liato.bankdroid.banking.banks.Everydaycard;
 import com.liato.bankdroid.banking.banks.FirstCard;
@@ -93,6 +94,7 @@ import com.liato.bankdroid.banking.banks.Volvofinans;
 import com.liato.bankdroid.banking.banks.Wallet;
 import com.liato.bankdroid.banking.banks.Zidisha;
 import com.liato.bankdroid.banking.banks.Nordea.Nordea;
+import com.liato.bankdroid.banking.banks.icabanken.ICABanken;
 import com.liato.bankdroid.banking.banks.lansforsakringar.Lansforsakringar;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.db.Crypto;
@@ -151,6 +153,8 @@ public class BankFactory {
             return new IkanoBank(context);
         case IBankTypes.SASEUROBONUSMASTERCARD:
         	return new EurobonusMastercard(context);
+        case IBankTypes.SASEUROBONUSMASTERCARD_NO:
+        	return new EurobonusMastercardNo(context);
         case IBankTypes.RIKSLUNCHEN:
             return new Rikslunchen(context);            
         case IBankTypes.HEMKOP:
@@ -323,6 +327,7 @@ public class BankFactory {
         banks.add(new Zidisha(context));
         banks.add(new BetterGlobe(context));
         banks.add(new ForexBank(context));
+        banks.add(new EurobonusMastercardNo(context));
         
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
