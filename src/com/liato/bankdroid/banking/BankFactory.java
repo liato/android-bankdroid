@@ -290,7 +290,7 @@ public class BankFactory {
         banks.add(new McDonalds(context));
         banks.add(new SJPrio(context));
         banks.add(new SparbankenSyd(context));
-        banks.add(new SparbankenOresund(context));
+//        banks.add(new SparbankenOresund(context));
         banks.add(new Opel(context));
         banks.add(new Skandiabanken(context));
         banks.add(new AmericanExpress(context));
