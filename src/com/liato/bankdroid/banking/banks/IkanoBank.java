@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Nullbyte <http://nullbyte.eu>
+ * Copyright (C) 2013 Nullbyte <http://nullbyte.eu>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ public class IkanoBank extends Bank {
 
     private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+.*?value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
     private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+.*?value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
-    private Pattern reAccounts = Pattern.compile("(ctl\\d{1,}_rptAccountList_ctl\\d{1,}_RowLink)[^>]+>([^<]+)</a>\\s*</td>\\s*<td>([^<]+)</td>\\s*<td>[^<]+</td>\\s*<td[^>]+>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
+    private Pattern reAccounts = Pattern.compile("(ctl\\d{1,}_rptAccountList_ctl\\d{1,}_RowLink)[^>]+>([^<]+)</a>\\s*</td>\\s*<td>([^<]+)</td>\\s*<td>[^<]+</td>\\s*<td[^>]+>[^<]+</td>\\s*<td[^>]+>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
     private Pattern reTransactions = Pattern.compile("<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>([^<]+)</td>\\s*<td>[^<]+</td>\\s*<td[^>]+>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
     private Pattern reErrorMessage = Pattern.compile("<div\\s*class=\"(?:error|message)-box-inner\">\\s*<div>\\s*<p>(.+)</p");
     private String response = null;
