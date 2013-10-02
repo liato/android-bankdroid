@@ -144,7 +144,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 		RemoteViews views = new RemoteViews(context.getPackageName(), layoutId);
         views.setTextViewText(R.id.txtWidgetAccountname, account.getName().toUpperCase());
         views.setTextViewText(R.id.txtWidgetAccountnameBlur, account.getName().toUpperCase());
-        views.setTextViewText(R.id.txtWidgetAccountbalance, Helpers.formatBalance(account.getBalance(), account.getCurrency(), defprefs.getBoolean("round_widget_balance", false)));
+        views.setTextViewText(R.id.txtWidgetAccountbalance, Helpers.formatBalance(account.getBalance(), account.getCurrency(), defprefs.getBoolean("round_widget_balance", false), bank.getDecimalFormatter()));
 		views.setImageViewResource(R.id.imgWidgetIcon, bank.getImageResource());
 		if (bank.isDisabled()) {
 			views.setViewVisibility(R.id.frmWarning, View.VISIBLE);

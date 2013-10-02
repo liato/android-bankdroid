@@ -105,22 +105,24 @@ public class Helpers {
         }
         return ret;
     }
-    public static String formatBalance(BigDecimal balance, String curr, boolean round) {
+    public static String formatBalance(BigDecimal balance, String curr, boolean round, DecimalFormat format) {
         DecimalFormatSymbols dfs = new DecimalFormatSymbols();
         dfs.setDecimalSeparator(',');
         dfs.setGroupingSeparator(' ');
-        DecimalFormat currency;
-        if (!round) {
-            currency = new DecimalFormat("#,##0.00 ");
-        }
-        else {
-            currency = new DecimalFormat("#,##0 ");  
+        DecimalFormat currency = format;
+        if (currency == null) {
+	        if (!round) {
+	            currency = new DecimalFormat("#,##0.00 ");
+	        }
+	        else {
+	            currency = new DecimalFormat("#,##0 ");  
+	        }
         }
         currency.setDecimalFormatSymbols(dfs);
         return currency.format(balance.doubleValue())+curr;
     }
     public static String formatBalance(BigDecimal balance, String curr) {
-        return formatBalance(balance, curr, false);
+        return formatBalance(balance, curr, false, null);
     }
     public static String formatBalance(Double balance, String curr) {
         return formatBalance(new BigDecimal(balance), curr);

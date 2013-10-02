@@ -18,6 +18,7 @@ package com.liato.bankdroid.banking;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,12 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
 
+import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.Resources.NotFoundException;
+import android.text.InputType;
+import android.util.Log;
+
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
@@ -34,12 +41,6 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.db.DBAdapter;
 import com.liato.bankdroid.provider.IBankTypes;
-
-import android.content.Context;
-import android.content.res.Resources;
-import android.content.res.Resources.NotFoundException;
-import android.text.InputType;
-import android.util.Log;
 
 import eu.nullbyte.android.urllib.Urllib;
 
@@ -423,6 +424,10 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     
     protected Context getContext() {
     	return context;
+    }
+    
+    public DecimalFormat getDecimalFormatter() {
+    	return null;
     }
 
 }

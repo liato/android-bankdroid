@@ -50,7 +50,7 @@ public class McDonalds extends Bank {
 	private static final int BANKTYPE_ID = Bank.MCDONALDS;
 	private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
 	private static final boolean INPUT_HIDDEN_PASSWORD = true;
-	private static final int INPUT_TITLETEXT_USERNAME = R.string.card_number;	
+	private static final int INPUT_TITLETEXT_USERNAME = R.string.card_number;
 
     private Pattern reBalance = Pattern.compile("saldo:\\s*([0-9,. -]+)\\s*kronor");
     private Pattern reTransactions = Pattern.compile("<tr><td>(\\d{2}-\\d{2}-\\d{2})\\s*\\d{2}:\\d{2}</td><td>([^<]+)</td><td>[^<]+</td><td>([^<]+)</td></tr>");

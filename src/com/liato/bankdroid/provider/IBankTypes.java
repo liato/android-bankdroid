@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Nullbyte <http://nullbyte.eu>
+ * Copyright (C) 2013 Nullbyte <http://nullbyte.eu>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,4 +93,5 @@ public interface IBankTypes {
     public static final int BETTERGLOBE = 69;
     public static final int FOREX = 70;
     public final static int SASEUROBONUSMASTERCARD_NO = 71;
+    public final static int BITCOIN = 72;
 }

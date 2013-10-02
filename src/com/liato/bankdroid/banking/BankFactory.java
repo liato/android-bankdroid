@@ -94,6 +94,7 @@ import com.liato.bankdroid.banking.banks.Volvofinans;
 import com.liato.bankdroid.banking.banks.Wallet;
 import com.liato.bankdroid.banking.banks.Zidisha;
 import com.liato.bankdroid.banking.banks.Nordea.Nordea;
+import com.liato.bankdroid.banking.banks.bitcoin.Bitcoin;
 import com.liato.bankdroid.banking.banks.icabanken.ICABanken;
 import com.liato.bankdroid.banking.banks.lansforsakringar.Lansforsakringar;
 import com.liato.bankdroid.banking.exceptions.BankException;
@@ -249,6 +250,8 @@ public class BankFactory {
         	return new BetterGlobe(context);
         case IBankTypes.FOREX:
             return new ForexBank(context);
+        case IBankTypes.BITCOIN:
+            return new Bitcoin(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -328,6 +331,7 @@ public class BankFactory {
         banks.add(new BetterGlobe(context));
         banks.add(new ForexBank(context));
         banks.add(new EurobonusMastercardNo(context));
+        banks.add(new Bitcoin(context));
         
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
