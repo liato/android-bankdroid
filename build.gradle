@@ -1,0 +1,55 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.5.1'
+    }
+}
+apply plugin: 'android'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+	compile 'commons-io:commons-io:2.1'
+	compile 'com.google.collections:google-collections:1.0'
+	compile 'com.fasterxml.jackson.core:jackson-core:2.1.0'
+	compile 'com.fasterxml.jackson.core:jackson-databind:2.1.0'
+	compile 'com.fasterxml.jackson.core:jackson-annotations:2.1.0' 
+	compile  'org.jsoup:jsoup:1.7.2'
+                      
+    // compile fileTree(dir: 'libs', include: '*.jar')
+}
+
+tasks.withType(Compile) {
+    options.encoding = "UTF-8"
+}
+
+android {
+    compileSdkVersion 17
+    buildToolsVersion "17.0.0"
+
+    defaultConfig {
+        versionCode 160
+        versionName '1.9.6.0'
+        minSdkVersion 4
+        targetSdkVersion 4
+        packageName 'com.liato.bankdroid'
+    }
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            resources.srcDirs = ['src']
+            aidl.srcDirs = ['src']
+            renderscript.srcDirs = ['src']
+            res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
+        }
+
+        instrumentTest.setRoot('tests')
+    }
+}
