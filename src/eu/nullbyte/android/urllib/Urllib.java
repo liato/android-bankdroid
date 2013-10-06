@@ -19,6 +19,7 @@ package eu.nullbyte.android.urllib;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.security.cert.Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,6 +72,10 @@ public class Urllib {
 	}	
 
 	public Urllib(boolean acceptInvalidCertificates, boolean allowCircularRedirects) {
+		this(acceptInvalidCertificates, allowCircularRedirects, null);
+	}
+	
+	public Urllib(boolean acceptInvalidCertificates, boolean allowCircularRedirects, List<Certificate> certificates) {
 		this.acceptInvalidCertificates = acceptInvalidCertificates;
 		this.headers = new HashMap<String, String>();
     	HttpParams params = new BasicHttpParams(); 
@@ -81,7 +86,7 @@ public class Urllib {
 		if (acceptInvalidCertificates) {
 	        SchemeRegistry registry = new SchemeRegistry();
 	        registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-	        registry.register(new Scheme("https", new EasySSLSocketFactory(), 443));
+	        registry.register(new Scheme("https", new EasySSLSocketFactory(certificates), 443));
 	        ClientConnectionManager manager = new ThreadSafeClientConnManager(params, registry);
 	        httpclient = new DefaultHttpClient(manager, params);
 		}

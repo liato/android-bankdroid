@@ -24,10 +24,14 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.security.KeyStore;
+import java.security.cert.Certificate;
+import java.util.List;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.scheme.LayeredSocketFactory;
@@ -48,11 +52,27 @@ public class EasySSLSocketFactory implements SocketFactory,
 		LayeredSocketFactory {
 
 	private SSLContext sslcontext = null;
+	private List<Certificate> certificates;
 
-	private static SSLContext createEasySSLContext() throws IOException {
+	private SSLContext createEasySSLContext() throws IOException {
 		try {
 			SSLContext context = SSLContext.getInstance("TLS");
-			context.init(null, new TrustManager[] { new TrivialTrustManager() }, null);
+			if (certificates != null) {
+			String keyStoreType = KeyStore.getDefaultType();
+			KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+			keyStore.load(null, null);
+			for (int i = 0; i < certificates.size(); i++) {
+		       keyStore.setCertificateEntry("ca_" + i, certificates.get(i));
+		    }
+			
+			String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
+			TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
+			tmf.init(keyStore);
+			
+			context.init(null, tmf.getTrustManagers(), null);
+			} else {
+				context.init(null, new TrustManager[] { new TrivialTrustManager() }, null);
+			}
 			return context;
 		} catch (Exception e) {
 			throw new IOException(e.getMessage());
@@ -64,6 +84,10 @@ public class EasySSLSocketFactory implements SocketFactory,
 			this.sslcontext = createEasySSLContext();
 		}
 		return this.sslcontext;
+	}
+	
+	public EasySSLSocketFactory(List<Certificate> certificates) {
+		this.certificates = certificates;
 	}
 
 	/**

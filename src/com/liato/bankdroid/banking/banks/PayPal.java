@@ -44,6 +44,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class PayPal extends Bank {
@@ -79,7 +80,7 @@ public class PayPal extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(true);
+        urlopen = new Urllib(true, false, CertificateReader.getCertificates(context, R.raw.cert_paypal));
         urlopen.setUserAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1468.0 Safari/537.36");
         //Get cookies and url to post to
         response = urlopen.open("https://www.paypal.com/en");

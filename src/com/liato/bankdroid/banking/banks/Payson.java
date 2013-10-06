@@ -40,6 +40,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Payson extends Bank {
@@ -75,7 +76,7 @@ public class Payson extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(true);
+        urlopen = new Urllib(true, false, CertificateReader.getCertificates(context, R.raw.cert_payson));
         response = urlopen.open("https://www.payson.se/signin/");
         Matcher matcher = reViewState.matcher(response);
         if (!matcher.find()) {
@@ -114,6 +115,7 @@ public class Payson extends Bank {
 			throw new BankException(e.getMessage());
 		}
 		catch (IOException e) {
+			e.printStackTrace();
 			throw new BankException(e.getMessage());
 		}
 		return urlopen;

@@ -44,6 +44,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Nordea extends Bank {
@@ -84,7 +85,7 @@ public class Nordea extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib();
+        urlopen = new Urllib(true, false, CertificateReader.getCertificates(context, R.raw.cert_nordea));
         Matcher matcher;
         String response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/login.html");
         matcher = reCSRF.matcher(response);
