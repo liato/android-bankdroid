@@ -18,3 +18,9 @@ local.properties
 dev/
 src/com/liato/bankdroid/db/Crypto.*
 src/com/liato/bankdroid/db/Crypto.java.dev
+
+target/
+.idea
+.gradle
+*.iml
+build/
