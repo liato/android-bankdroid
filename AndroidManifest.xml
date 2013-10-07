@@ -3,6 +3,9 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	package="com.liato.bankdroid"
 	android:versionName="1.9.6.2-RC1" android:versionCode="162">
+    <uses-sdk
+        android:targetSdkVersion="10"
+        android:minSdkVersion="7" />
 	<application
 		android:icon="@drawable/icon"
 		android:label="@string/app_name"
@@ -162,11 +165,8 @@
 			</intent-filter>
 		</activity>
 	</application>
-	<uses-sdk
-		android:targetSdkVersion="4"
-		android:minSdkVersion="4" />
 	<uses-permission
-		android:name="android.permission.INTERNET"></uses-permission>
+		android:name="android.permission.INTERNET" />
 	<uses-permission
 		android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 	<uses-permission
