@@ -27,9 +27,6 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.text.Html;
 
 import com.liato.bankdroid.Helpers;
@@ -42,6 +39,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Coop extends Bank {
@@ -74,7 +72,7 @@ public class Coop extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib();
+        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_coop));
         urlopen.addHeader("Origin", "https://www.coop.se");
         urlopen.addHeader("Referer", "https://www.coop.se/Mina-sidor/Logga-in-puffsida/?li=True");
         response = urlopen.open("https://www.coop.se/Mina-sidor/Logga-in-puffsida/?li=True");

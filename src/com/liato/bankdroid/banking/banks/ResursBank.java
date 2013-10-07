@@ -40,6 +40,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class ResursBank extends Bank {
@@ -71,7 +72,7 @@ public class ResursBank extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib();
+        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_resursbank));
         response = urlopen.open("https://secure.resurs.se/internetbank/default.jsp");
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         postData.add(new BasicNameValuePair("kontonummer", username));

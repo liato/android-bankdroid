@@ -42,6 +42,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class BetterGlobe extends Bank {
@@ -82,7 +83,8 @@ public class BetterGlobe extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(true,true);
+        urlopen = new Urllib();
+        urlopen.setAllowCircularRedirects(true);
 		HashMap<String, String> headers = urlopen.getHeaders();
 		headers.put("Referer","http://betterglobe.com/login.aspx?lang=sv-SE");
     	List <NameValuePair> postData = new ArrayList <NameValuePair>();

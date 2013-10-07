@@ -27,7 +27,6 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
-import android.text.Html;
 import android.text.InputType;
 import android.util.Log;
 
@@ -35,12 +34,12 @@ import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Zidisha extends Bank {
@@ -82,7 +81,8 @@ public class Zidisha extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(true,true);
+        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_zidisha));
+        urlopen.setAllowCircularRedirects(true);
         response = urlopen.open("https://www.zidisha.org/");
         Matcher mUserGuess = reUserGuess.matcher(response);
         if (!mUserGuess.find()) {

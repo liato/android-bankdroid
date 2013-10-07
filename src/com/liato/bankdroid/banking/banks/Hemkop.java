@@ -45,6 +45,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Hemkop extends Bank {
@@ -79,7 +80,8 @@ public class Hemkop extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(true, true);
+        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_hemkop));
+        urlopen.setAllowCircularRedirects(true);
         response = urlopen.open("https://www.hemkop.se/Mina-sidor/Logga-in/");
         
         Document d = Jsoup.parse(response);

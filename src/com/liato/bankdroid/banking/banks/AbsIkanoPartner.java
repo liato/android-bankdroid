@@ -40,6 +40,7 @@ import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public abstract class AbsIkanoPartner extends Bank {
@@ -65,7 +66,7 @@ public abstract class AbsIkanoPartner extends Bank {
 
     @Override
     protected LoginPackage preLogin() throws BankException, ClientProtocolException, IOException {
-        urlopen = new Urllib(true);
+        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_ikanopartner));
         response = urlopen.open("https://partner.ikanobank.se/web/engines/page.aspx?structid=" + structId);
         Document d = Jsoup.parse(response);
         Element e = d.getElementById("__VIEWSTATE");

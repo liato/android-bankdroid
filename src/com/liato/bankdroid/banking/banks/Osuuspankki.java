@@ -39,6 +39,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Osuuspankki extends Bank {
@@ -70,7 +71,7 @@ public class Osuuspankki extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib();
+        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_osuuspankki));
         response = urlopen.open("https://www.op.fi/op?kielikoodi=sv");
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         postData.add(new BasicNameValuePair("REQUEST_LOGIN_ATTEMPTED", "true"));

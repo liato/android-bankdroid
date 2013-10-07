@@ -51,6 +51,7 @@ import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Rikslunchen extends Bank {
@@ -86,9 +87,10 @@ public class Rikslunchen extends Bank {
 
 	@Override
 	protected LoginPackage preLogin() throws BankException, ClientProtocolException, IOException {
-		urlopen = new Urllib(true, true);
+        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_rikslunchen));
+        urlopen.setAllowCircularRedirects(true);
 
-		List<NameValuePair> postData = new ArrayList<NameValuePair>();
+        List<NameValuePair> postData = new ArrayList<NameValuePair>();
 		postData.add(new BasicNameValuePair("c0-param0", "string:" + password));
 		postData.add(new BasicNameValuePair("callCount", "1"));
 		postData.add(new BasicNameValuePair("windowName", ""));

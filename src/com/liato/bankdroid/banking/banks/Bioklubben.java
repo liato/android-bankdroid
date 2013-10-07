@@ -36,13 +36,14 @@ import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Bioklubben extends Bank {
 	private static final String TAG = "Bioklubben";
 	private static final String NAME = "Bioklubben";
 	private static final String NAME_SHORT = "bioklubben";
-	private static final String URL = "http://bioklubben.sfbio.se/user/login";
+	private static final String URL = "https://bioklubben.sfbio.se/user/login";
 	private static final int BANKTYPE_ID = Bank.BIOKLUBBEN;
 	private static final boolean DISPLAY_DECIMALS = false;
 
@@ -71,22 +72,8 @@ public class Bioklubben extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(true);
-        /*
-        response = urlopen.open("https://www.edenred.se/sv/System/Logga-in/");
-        Matcher matcher = reViewState.matcher(response);
-        if (!matcher.find()) {
-            throw new BankException(res.getText(R.string.unable_to_find).toString()+" ViewState.");
-        }
-        String viewState = matcher.group(1);
+        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_bioklubben));
 
-        matcher = reEventValidation.matcher(response);
-        if (!matcher.find()) {
-            throw new BankException(res.getText(R.string.unable_to_find).toString()+" EventValidation.");
-        }
-        String eventValidation = matcher.group(1);            
-        */
-        
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         postData.add(new BasicNameValuePair("name", username));
         postData.add(new BasicNameValuePair("pass", password));
@@ -109,6 +96,7 @@ public class Bioklubben extends Bank {
             throw new BankException(e.getMessage());
         }
         catch (IOException e) {
+            e.printStackTrace();
             throw new BankException(e.getMessage());
         }
         return urlopen;

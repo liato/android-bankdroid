@@ -45,6 +45,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class AmericanExpress extends Bank {
@@ -76,7 +77,8 @@ public class AmericanExpress extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(true, true);
+        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_americanexpress));
+        urlopen.setAllowCircularRedirects(true);
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         response = urlopen.open("https://home.americanexpress.com/home/se/home_c.shtml");
         List <NameValuePair> postData = new ArrayList <NameValuePair>();

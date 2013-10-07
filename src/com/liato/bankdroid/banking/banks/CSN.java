@@ -43,6 +43,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class CSN extends Bank {
@@ -84,7 +85,8 @@ public class CSN extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(false, true);
+        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_csn));
+        urlopen.setAllowCircularRedirects(true);
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         urlopen.addHeader("Referer", "https://www.csn.se/bas/");
         response = urlopen.open("https://www.csn.se/bas/inloggning/pinkod.do");
@@ -124,6 +126,7 @@ public class CSN extends Bank {
 			throw new BankException("login:CPE:"+e.getCause().getMessage());
 		}
 		catch (IOException e) {
+            e.printStackTrace();
 			throw new BankException("login:IOE:"+e.getMessage());
 		}
 		return urlopen;

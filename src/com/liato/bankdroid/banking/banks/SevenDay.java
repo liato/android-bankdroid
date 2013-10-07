@@ -39,6 +39,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class SevenDay extends Bank {
@@ -75,7 +76,7 @@ public class SevenDay extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib();
+        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_sevenday));
         response = urlopen.open("https://www.sevenday.se/mina-sidor/mina-sidor.htm");
         
         Matcher matcher = reViewState.matcher(response);

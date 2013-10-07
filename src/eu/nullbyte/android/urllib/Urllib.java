@@ -16,14 +16,6 @@
 
 package eu.nullbyte.android.urllib;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.security.cert.Certificate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -53,51 +45,55 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.Certificate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 public class Urllib {
     public static String DEFAULT_USER_AGENT = "Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17";
-    
     private String userAgent = DEFAULT_USER_AGENT;
     private DefaultHttpClient httpclient;
-	private HttpContext context;
+	private HttpContext mContext;
 	private String currentURI;
-	private boolean acceptInvalidCertificates = false;
 	private String charset = HTTP.UTF_8;
 	private HashMap<String, String> headers;
-	
-	public Urllib() {
-		this(false);
-	}
-	public Urllib(boolean acceptInvalidCertificates) {
-		this(acceptInvalidCertificates, false);
-	}	
 
-	public Urllib(boolean acceptInvalidCertificates, boolean allowCircularRedirects) {
-		this(acceptInvalidCertificates, allowCircularRedirects, null);
-	}
-	
-	public Urllib(boolean acceptInvalidCertificates, boolean allowCircularRedirects, List<Certificate> certificates) {
-		this.acceptInvalidCertificates = acceptInvalidCertificates;
+
+    public Urllib() {
+        this(null);
+    }
+
+	public Urllib(Certificate[] pins) {
 		this.headers = new HashMap<String, String>();
     	HttpParams params = new BasicHttpParams(); 
     	HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
         HttpProtocolParams.setContentCharset(params, this.charset);
         params.setBooleanParameter("http.protocol.expect-continue", false);
-        if (allowCircularRedirects) params.setBooleanParameter("http.protocol.allow-circular-redirects", true);
-		if (acceptInvalidCertificates) {
-	        SchemeRegistry registry = new SchemeRegistry();
-	        registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-	        registry.register(new Scheme("https", new EasySSLSocketFactory(certificates), 443));
-	        ClientConnectionManager manager = new ThreadSafeClientConnManager(params, registry);
-	        httpclient = new DefaultHttpClient(manager, params);
-		}
-		else {
-            SchemeRegistry registry = new SchemeRegistry();
-            registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-            registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
-            ClientConnectionManager  manager = new ThreadSafeClientConnManager(params, registry);
-			httpclient = new DefaultHttpClient(manager, params);
-		}
-    	context = new BasicHttpContext();
+        boolean noCertValidation = false;
+        SchemeRegistry registry = new SchemeRegistry();
+        registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+        try {
+            registry.register(new Scheme("https", noCertValidation ? new EasySSLSocketFactory() : pins != null ? new CertPinningSSLSocketFactory(pins) : SSLSocketFactory.getSocketFactory(), 443));
+        } catch (UnrecoverableKeyException e) {
+            e.printStackTrace();
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        }
+        ClientConnectionManager manager = new ThreadSafeClientConnManager(params, registry);
+        httpclient = new DefaultHttpClient(manager, params);
+    	mContext = new BasicHttpContext();
     }
     
     public String open(String url) throws ClientProtocolException, IOException {
@@ -137,10 +133,10 @@ public class Urllib {
             request.addHeader(headerKeys[i], headerVals[i]);
         }
 
-        response = httpclient.execute(request, context);
+        response = httpclient.execute(request, mContext);
 
-        //HttpUriRequest currentReq = (HttpUriRequest)context.getAttribute(ExecutionContext.HTTP_REQUEST);
-        //HttpHost currentHost = (HttpHost)context.getAttribute(ExecutionContext.HTTP_TARGET_HOST);
+        //HttpUriRequest currentReq = (HttpUriRequest)mContext.getAttribute(ExecutionContext.HTTP_REQUEST);
+        //HttpHost currentHost = (HttpHost)mContext.getAttribute(ExecutionContext.HTTP_TARGET_HOST);
         //this.currentURI = currentHost.toURI() + currentReq.getURI();
         this.currentURI = request.getURI().toString();
 
@@ -199,8 +195,8 @@ public class Urllib {
         httpclient.getConnectionManager().shutdown();
     }
     
-    public HttpContext getContext() {
-    	return context;
+    public HttpContext getmContext() {
+    	return mContext;
     }
     
     public String getCurrentURI() {
@@ -214,7 +210,13 @@ public class Urllib {
     public void setContentCharset(String charset) {
         this.charset = charset;
         HttpProtocolParams.setContentCharset(httpclient.getParams(), this.charset);
-    }    
+    }
+
+
+    public void setAllowCircularRedirects(boolean allow) {
+        httpclient.getParams().setBooleanParameter("http.protocol.allow-circular-redirects", allow);
+    }
+
     public void addHeader(String key, String value) {
         this.headers.put(key, value);
     }
@@ -240,10 +242,6 @@ public class Urllib {
         return this.headers;
     }
 
-    
-    public boolean acceptsInvalidCertificates() {
-    	return acceptInvalidCertificates;
-    }
     
     public void setUserAgent(String userAgent) {
     	this.userAgent = userAgent; 

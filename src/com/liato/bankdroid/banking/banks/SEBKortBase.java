@@ -40,6 +40,7 @@ import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public abstract class SEBKortBase extends Bank {
@@ -70,7 +71,7 @@ public abstract class SEBKortBase extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(true);
+        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_sebkort));
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         response = urlopen.open(String.format("https://application.sebkort.com/nis/external/%s/login.do", provider_part));
         urlopen.addHeader("Referer", String.format("https://application.sebkort.com/nis/external/%s/login.do", provider_part));
@@ -165,9 +166,6 @@ public abstract class SEBKortBase extends Bank {
 	@Override
 	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
 		super.updateTransactions(account, urlopen);
-		if (!urlopen.acceptsInvalidCertificates()) { //Should never happen, but we'll check it anyway.
-			urlopen = login();
-		}
 		if (account.getType() != Account.CCARD) return;
 		String response = null;
 		Matcher matcher;
