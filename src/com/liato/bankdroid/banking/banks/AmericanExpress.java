@@ -125,10 +125,7 @@ public class AmericanExpress extends Bank {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		
-		Log.d(TAG, "Logging in...");
 		urlopen = login();
-        Log.d(TAG, "Url after login: " + urlopen.getCurrentURI());
-		
 		Matcher matcher = reAccounts.matcher(response);
 		
 		while (matcher.find()) {
@@ -183,7 +180,7 @@ public class AmericanExpress extends Bank {
                                                      Helpers.parseBalance(matcher.group(3).trim()).negate()));
                 }
                 catch (ParseException e) {
-                    Log.d(TAG, "Unable to parse date: " + matcher.group(1).trim());
+                    Log.w(TAG, "Unable to parse date: " + matcher.group(1).trim());
                 }
 			}
 			account.setTransactions(transactions);

@@ -109,7 +109,6 @@ public class PayPal extends Bank {
         postData.add(new BasicNameValuePair("bp_ks3", ""));
         postData.add(new BasicNameValuePair("flow_name", "xpt/Marketing_CommandDriven/homepage/IndividualsHome"));
         postData.add(new BasicNameValuePair("fso", "k2TDENTlxEJnhbuYDYFmKMyVq0kUZPsdK6j3V1gPUwuZvyAmzzpRs4Cmjet0z19AwlxXfW"));
-        Log.d("HEJ", "Posturl: " + strPostUrl);
         return new LoginPackage(urlopen, postData, response, strPostUrl);
     }
 
