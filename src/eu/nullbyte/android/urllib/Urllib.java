@@ -63,7 +63,7 @@ import java.util.List;
 
 public class Urllib {
     public static String DEFAULT_USER_AGENT = "Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17";
-    private static boolean TRUST_SYSTEM_KEYSTORE = true;
+    private static boolean TRUST_SYSTEM_KEYSTORE = false;
     private String userAgent = DEFAULT_USER_AGENT;
     private DefaultHttpClient httpclient;
 	private HttpContext mContext;
