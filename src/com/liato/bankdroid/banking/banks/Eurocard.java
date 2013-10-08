@@ -104,7 +104,7 @@ public class Eurocard extends Bank {
 		try {
 			LoginPackage lp = preLogin();
 			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-			if (response.contains("Felaktig kombination")) {
+			if (response.contains("Felaktig kombination") || response.contains("ett felaktigt") || response.contains("invalid login")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}
 			

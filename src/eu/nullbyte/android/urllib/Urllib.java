@@ -16,6 +16,10 @@
 
 package eu.nullbyte.android.urllib;
 
+import android.util.Log;
+
+import com.liato.bankdroid.BuildConfig;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -59,6 +63,7 @@ import java.util.List;
 
 public class Urllib {
     public static String DEFAULT_USER_AGENT = "Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17";
+    private static boolean TRUST_SYSTEM_KEYSTORE = true;
     private String userAgent = DEFAULT_USER_AGENT;
     private DefaultHttpClient httpclient;
 	private HttpContext mContext;
@@ -77,11 +82,10 @@ public class Urllib {
     	HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
         HttpProtocolParams.setContentCharset(params, this.charset);
         params.setBooleanParameter("http.protocol.expect-continue", false);
-        boolean noCertValidation = false;
         SchemeRegistry registry = new SchemeRegistry();
         registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
         try {
-            registry.register(new Scheme("https", noCertValidation ? new EasySSLSocketFactory() : pins != null ? new CertPinningSSLSocketFactory(pins) : SSLSocketFactory.getSocketFactory(), 443));
+            registry.register(new Scheme("https", pins != null && !TRUST_SYSTEM_KEYSTORE && BuildConfig.DEBUG ? new CertPinningSSLSocketFactory(pins) : SSLSocketFactory.getSocketFactory(), 443));
         } catch (UnrecoverableKeyException e) {
             e.printStackTrace();
         } catch (KeyManagementException e) {

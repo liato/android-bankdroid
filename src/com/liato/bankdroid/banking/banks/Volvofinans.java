@@ -84,7 +84,7 @@ public class Volvofinans extends Bank {
 	@Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_volvofinans));
+        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_volvofinans, R.raw.cert_volvofinans_logged_in));
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         postData.add(new BasicNameValuePair("username", username));

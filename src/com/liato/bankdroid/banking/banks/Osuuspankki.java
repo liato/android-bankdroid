@@ -71,7 +71,7 @@ public class Osuuspankki extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_osuuspankki));
+        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_osuuspankki, R.raw.cert_osuuspankki_mobile));
         response = urlopen.open("https://www.op.fi/op?kielikoodi=sv");
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         postData.add(new BasicNameValuePair("REQUEST_LOGIN_ATTEMPTED", "true"));
@@ -96,6 +96,7 @@ public class Osuuspankki extends Bank {
 		} catch (ClientProtocolException e) {
 			throw new BankException(e.getMessage());
 		} catch (IOException e) {
+            e.printStackTrace();
 			throw new BankException(e.getMessage());
 		}
 		return urlopen;

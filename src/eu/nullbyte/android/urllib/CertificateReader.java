@@ -47,13 +47,13 @@ public class CertificateReader {
             String[] pins = new String[certs.length];
             for (int i = 0; i < certs.length; i++) {
                 Certificate cert = certs[i];
+                String hash = getCertificateHash(cert);
+                pins[i] = hash;
                 try {
                     MessageDigest digest = MessageDigest.getInstance("SHA1");
                     byte[] publicKey = cert.getPublicKey().getEncoded();
                     byte[] pin = digest.digest(publicKey);
                     pins[i] = CertificateReader.byteArrayToHexString(pin);
-//                    System.out.println("pin=" + CertificateReader.byteArrayToHexString(pin) + ", version=" + ((X509Certificate)cert).getVersion() + ", ca="
-//                            + ((X509Certificate) cert).getSubjectDN());
                 } catch (NoSuchAlgorithmException e) {
                     e.printStackTrace();
                 }
@@ -72,5 +72,17 @@ public class CertificateReader {
             data += Integer.toHexString(b[i] & 0xf);
         }
         return data;
+    }
+
+    public static String getCertificateHash(Certificate cert) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA1");
+            byte[] publicKey = cert.getPublicKey().getEncoded();
+            byte[] pin = digest.digest(publicKey);
+            return CertificateReader.byteArrayToHexString(pin);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

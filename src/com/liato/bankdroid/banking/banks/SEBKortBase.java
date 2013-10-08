@@ -97,7 +97,7 @@ public abstract class SEBKortBase extends Bank {
 		try {
 			LoginPackage lp = preLogin();
 			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-			if (response.contains("elaktig kombination")) {
+			if (response.contains("elaktig kombination") || response.contains("ett felaktigt") || response.contains("invalid login")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}
 		}
@@ -105,6 +105,7 @@ public abstract class SEBKortBase extends Bank {
 			throw new BankException(e.getMessage());
 		}
 		catch (IOException e) {
+            e.printStackTrace();
 			throw new BankException(e.getMessage());
 		}
 		return urlopen;
