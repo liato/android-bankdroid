@@ -30,8 +30,8 @@ android {
     buildToolsVersion "17.0.0"
 
     defaultConfig {
-        versionCode 162
-        versionName '1.9.6.2-RC1'
+        versionCode 163
+        versionName '1.9.6.2-RC2 (Certpinning)'
         minSdkVersion 7
         targetSdkVersion 10
         packageName 'com.liato.bankdroid'
@@ -49,5 +49,36 @@ android {
         }
 
         instrumentTest.setRoot('tests')
+    }
+
+    final Console console = System.console();
+    if (console != null) {
+
+        // Building from console
+        signingConfigs {
+            release {
+                storeFile file("release.keystore")
+                storePassword console.readLine("\nEnter keystore password: ")
+                keyAlias "andmrkt"
+                keyPassword console.readLine("Enter key password: ")
+            }
+        }
+
+    } else {
+
+        // Building from IDE
+        signingConfigs {
+            release {
+
+            }
+        }
+
+    }
+
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
     }
 }
