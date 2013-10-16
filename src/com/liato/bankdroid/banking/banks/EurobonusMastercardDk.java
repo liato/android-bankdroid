@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Nullbyte <http://nullbyte.eu>
+ * Copyright (C) 2013 Nullbyte <http://nullbyte.eu>
  * Contributors: mhagander
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,22 +24,22 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
 
-public class EurobonusMastercard extends SEBKortBase {
-	private static final String TAG = "EurobonusMastercard";
-	private static final String NAME = "SAS EuroBonus MasterCard (Sweden)";
-	private static final String NAME_SHORT = "ebmaster";
-	private static final int BANKTYPE_ID = Bank.SASEUROBONUSMASTERCARD;
+public class EurobonusMastercardDk extends SEBKortBase {
+	private static final String TAG = "EurobonusMastercardDk";
+	private static final String NAME = "SAS EuroBonus MasterCard (Denmark)";
+	private static final String NAME_SHORT = "ebmaster_dk";
+	private static final int BANKTYPE_ID = Bank.SASEUROBONUSMASTERCARD_DK;
 
-	public EurobonusMastercard(Context context) {
-		super(context, "sase", "0102");
+	public EurobonusMastercardDk(Context context) {
+		super(context, "sadk", "0101");
 		super.TAG = TAG;
 		super.NAME = NAME;
 		super.NAME_SHORT = NAME_SHORT;
 		super.BANKTYPE_ID = BANKTYPE_ID;
 	}
-	
-	public EurobonusMastercard(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
-		super(username, password, context, "sase", "0102");
+
+	public EurobonusMastercardDk(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+		super(username, password, context, "sadk", "0101");
 	}
 
 }
