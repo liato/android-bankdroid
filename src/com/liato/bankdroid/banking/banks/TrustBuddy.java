@@ -79,7 +79,7 @@ public class TrustBuddy extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_trustbuddy));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_trustbuddy));
         urlopen.setAllowCircularRedirects(true);
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         postData.add(new BasicNameValuePair("username", username));

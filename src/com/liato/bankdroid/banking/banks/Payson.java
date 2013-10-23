@@ -76,7 +76,7 @@ public class Payson extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_payson));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_payson));
         response = urlopen.open("https://www.payson.se/signin/");
         Matcher matcher = reViewState.matcher(response);
         if (!matcher.find()) {

@@ -75,7 +75,7 @@ public class FirstCard extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_firstcard));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_firstcard));
         response = urlopen.open("https://www.firstcard.se/login.jsp");
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         postData.add(new BasicNameValuePair("op", "login"));                

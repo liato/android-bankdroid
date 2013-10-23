@@ -71,7 +71,7 @@ public class Jojo extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
     ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_jojo));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_jojo));
         response = urlopen.open("http://www.skanetrafiken.se/templates/StartPage.aspx?id=2182&epslanguage=SV");
         Matcher matcher = reViewState.matcher(response);
         if (!matcher.find()) {

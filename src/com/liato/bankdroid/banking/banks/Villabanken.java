@@ -70,7 +70,7 @@ public class Villabanken extends Bank {
 
 	@Override
 	protected LoginPackage preLogin() throws BankException, ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_villabanken));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_villabanken));
 		String response = urlopen.open(URL);
 		Matcher matcher = reRequestDigest.matcher(response);
 		if (!matcher.find()) {

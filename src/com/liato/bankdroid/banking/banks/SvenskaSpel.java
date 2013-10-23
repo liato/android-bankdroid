@@ -71,7 +71,7 @@ public class SvenskaSpel extends Bank {
 
 	@Override
 	protected LoginPackage preLogin() throws BankException, ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_svenskaspel));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_svenskaspel));
 
 		List<NameValuePair> postData = new ArrayList<NameValuePair>();
 		postData.add(new BasicNameValuePair("username", username));

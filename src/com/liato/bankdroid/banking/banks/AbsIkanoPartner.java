@@ -66,7 +66,7 @@ public abstract class AbsIkanoPartner extends Bank {
 
     @Override
     protected LoginPackage preLogin() throws BankException, ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_ikanopartner));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_ikanopartner));
         response = urlopen.open("https://partner.ikanobank.se/web/engines/page.aspx?structid=" + structId);
         Document d = Jsoup.parse(response);
         Element e = d.getElementById("__VIEWSTATE");

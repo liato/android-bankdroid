@@ -83,7 +83,7 @@ public class BetterGlobe extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib();
+        urlopen = new Urllib(context);
         urlopen.setAllowCircularRedirects(true);
 		HashMap<String, String> headers = urlopen.getHeaders();
 		headers.put("Referer","http://betterglobe.com/login.aspx?lang=sv-SE");

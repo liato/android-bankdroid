@@ -83,7 +83,7 @@ public class Swedbank extends Bank {
 	@Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_swedbank));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_swedbank));
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         Matcher matcher;
         response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/login.html");

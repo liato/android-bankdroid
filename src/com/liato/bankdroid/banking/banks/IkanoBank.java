@@ -83,7 +83,7 @@ public class IkanoBank extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_ikanobank));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_ikanobank));
         response = urlopen.open("https://secure.ikanobank.se/login");
         Matcher matcher;
         if (response.contains("Banken är stängd")) {

@@ -76,7 +76,7 @@ public class SevenDay extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_sevenday));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_sevenday));
         response = urlopen.open("https://www.sevenday.se/mina-sidor/mina-sidor.htm");
         
         Matcher matcher = reViewState.matcher(response);

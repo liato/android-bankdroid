@@ -87,7 +87,7 @@ public class Everydaycard extends Bank {
 
     private LoginPackage preLoginInternal(String url) throws BankException,
     		ClientProtocolException, IOException {
-    	urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_everydaycard));
+    	urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_everydaycard));
     	List <NameValuePair> postData = new ArrayList <NameValuePair>();
     	postData.add(new BasicNameValuePair("nextPage", "firstPage"));                
     	postData.add(new BasicNameValuePair("username", username));

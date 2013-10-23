@@ -104,7 +104,7 @@ public class Lansforsakringar extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        Urllib weblogin = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_lansforsakringar));
+        Urllib weblogin = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_lansforsakringar));
         weblogin.setAllowCircularRedirects(true);
 
         String response = weblogin.open("https://mobil.lansforsakringar.se/lf-mobile/pages/login.faces");
@@ -131,7 +131,7 @@ public class Lansforsakringar extends Bank {
     }
 
     public Urllib login() throws LoginException, BankException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_lansforsakringar));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_lansforsakringar));
         urlopen.addHeader("Content-Type", "application/json; charset=UTF-8");
         urlopen.addHeader("DeviceId", UUID.randomUUID().toString());
         urlopen.addHeader("deviceInfo", "Galaxy Nexus;4.1.1;1.8;Portrait");

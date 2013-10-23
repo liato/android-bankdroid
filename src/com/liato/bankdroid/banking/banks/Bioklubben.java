@@ -72,7 +72,7 @@ public class Bioklubben extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_bioklubben));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_bioklubben));
 
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         postData.add(new BasicNameValuePair("name", username));

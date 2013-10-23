@@ -72,7 +72,7 @@ public class Nordnet extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_nordnet));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_nordnet));
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         response = urlopen.open("https://www.nordnet.se/mux/login/startSE.html");
         

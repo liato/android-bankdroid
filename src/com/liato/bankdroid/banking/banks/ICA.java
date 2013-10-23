@@ -79,7 +79,7 @@ public class ICA extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_ica));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_ica));
         urlopen.setUserAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1468.0 Safari/537.36");
         String response = urlopen.open("https://www.ica.se/logga-in/");
         Matcher matcher = reViewState.matcher(response);

@@ -74,7 +74,7 @@ public abstract class IkanoPartnerBase extends Bank {
 	@Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_ikanopartner));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_ikanopartner));
         response = urlopen.open("https://partner.ikanobank.se/web/engines/page.aspx?structid="+structId);
         Matcher matcher = reViewState.matcher(response);
         if (!matcher.find()) {

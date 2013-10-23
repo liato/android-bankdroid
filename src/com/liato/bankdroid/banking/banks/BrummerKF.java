@@ -84,7 +84,7 @@ public class BrummerKF extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_brummer));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_brummer));
         urlopen.setAllowCircularRedirects(true);
         response = urlopen.open("https://www.brummer.se/sv/online/privat/Login/");
         

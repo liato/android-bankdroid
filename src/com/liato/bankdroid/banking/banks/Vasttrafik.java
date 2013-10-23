@@ -70,7 +70,7 @@ public class Vasttrafik extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
     ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_vasttrafik));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_vasttrafik));
         response = urlopen.open("https://www.vasttrafik.se/mina-sidor/logga-in/");
 
 		Matcher matcher = reViewState.matcher(response);

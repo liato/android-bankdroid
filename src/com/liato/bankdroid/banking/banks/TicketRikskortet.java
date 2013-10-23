@@ -74,7 +74,7 @@ public class TicketRikskortet extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_ticketrikskortet));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_ticketrikskortet));
         response = urlopen.open("https://www.edenred.se/sv/System/Logga-in/");
         Matcher matcher = reViewState.matcher(response);
         if (!matcher.find()) {

@@ -66,7 +66,7 @@ public class EasyCard extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException, ClientProtocolException, IOException {
 
-        urlopen                         = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_easycard));
+        urlopen                         = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_easycard));
         response                        = urlopen.open(EasyCard.URL);
         List<NameValuePair> postData    = new ArrayList<NameValuePair>();
 

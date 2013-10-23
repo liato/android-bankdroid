@@ -77,7 +77,7 @@ public class AmericanExpress extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_americanexpress));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_americanexpress));
         urlopen.setAllowCircularRedirects(true);
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         response = urlopen.open("https://home.americanexpress.com/home/se/home_c.shtml");

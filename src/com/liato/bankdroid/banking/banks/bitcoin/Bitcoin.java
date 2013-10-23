@@ -74,7 +74,7 @@ public class Bitcoin extends Bank {
 	}
 
 	public Urllib login() throws LoginException, BankException {
-		urlopen = new Urllib();
+		urlopen = new Urllib(context);
 
 		try {
 			String response = urlopen.open(API_URL + username);

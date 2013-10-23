@@ -60,7 +60,7 @@ public class Meniga extends Bank{
 
     @Override
     protected LoginPackage preLogin() throws BankException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_meniga));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_meniga));
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         response = urlopen.open("https://www.meniga.is/Mobile");
         List<NameValuePair> postData = new ArrayList<NameValuePair>();

@@ -81,7 +81,7 @@ public class Zidisha extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_zidisha));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_zidisha));
         urlopen.setAllowCircularRedirects(true);
         response = urlopen.open("https://www.zidisha.org/");
         Matcher mUserGuess = reUserGuess.matcher(response);

@@ -79,7 +79,7 @@ public class Steam extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_steam));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_steam));
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         postData.add(new BasicNameValuePair("redir", "account"));
         postData.add(new BasicNameValuePair("username", username));

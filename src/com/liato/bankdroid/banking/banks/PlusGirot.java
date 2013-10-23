@@ -74,7 +74,7 @@ public class PlusGirot extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_plusgirot));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_plusgirot));
         // Request first page to get cookies
         response = urlopen.open("https://kontoutdrag.plusgirot.se/ku/html/epostllg.htm");
 

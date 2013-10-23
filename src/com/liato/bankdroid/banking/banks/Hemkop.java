@@ -80,7 +80,7 @@ public class Hemkop extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_hemkop));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_hemkop));
         urlopen.setAllowCircularRedirects(true);
         response = urlopen.open("https://www.hemkop.se/Mina-sidor/Logga-in/");
         

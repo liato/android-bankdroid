@@ -79,7 +79,7 @@ public class ForexBank extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_forexbank));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_forexbank));
         String baseUrl = "https://nettbank.edb.com";
         String res = urlopen.open(baseUrl + "/mobilepayment/index.jsp?n_bank=0087&nativeapp=android");
         String formAction = "";

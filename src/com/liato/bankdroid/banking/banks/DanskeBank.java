@@ -85,7 +85,7 @@ public class DanskeBank extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_danskebank));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_danskebank));
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         urlopen.addHeader("Referer", "https://mobil.danskebank.se/");
 

@@ -87,7 +87,7 @@ public class AkeliusSpar extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_akeliusspar));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_akeliusspar));
         String response = urlopen.open("https://www.online.akeliusspar.se/login.mws");
         Matcher matcher = reLogintoken.matcher(response);
         if (!matcher.find()) {

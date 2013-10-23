@@ -76,7 +76,7 @@ public class Skandiabanken extends Bank {
 
 	@Override
 	public Urllib login() throws LoginException, BankException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_skandiabanken));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_skandiabanken));
 
 		HashMap<String, String> headers = urlopen.getHeaders();
 		headers.put(HTTP_HEADER_SMARTREFILL_APPLICATION_ID,

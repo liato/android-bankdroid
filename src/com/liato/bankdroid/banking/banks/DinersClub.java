@@ -77,7 +77,7 @@ public class DinersClub extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_dinersclub));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_dinersclub));
         try {
             response = urlopen.open("https://secure.dinersclub.se/dcs/login.aspx");
         } catch (IOException e) {

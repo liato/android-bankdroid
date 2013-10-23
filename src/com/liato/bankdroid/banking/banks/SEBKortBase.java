@@ -71,7 +71,7 @@ public abstract class SEBKortBase extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_sebkort));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_sebkort));
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         response = urlopen.open(String.format("https://application.sebkort.com/nis/external/%s/login.do", provider_part));
         urlopen.addHeader("Referer", String.format("https://application.sebkort.com/nis/external/%s/login.do", provider_part));

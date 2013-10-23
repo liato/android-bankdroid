@@ -16,7 +16,9 @@
 
 package eu.nullbyte.android.urllib;
 
-import android.util.Log;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.liato.bankdroid.BuildConfig;
 
@@ -63,20 +65,21 @@ import java.util.List;
 
 public class Urllib {
     public static String DEFAULT_USER_AGENT = "Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17";
-    private static boolean TRUST_SYSTEM_KEYSTORE = false;
     private String userAgent = DEFAULT_USER_AGENT;
     private DefaultHttpClient httpclient;
-	private HttpContext mContext;
+	private HttpContext mHttpContext;
 	private String currentURI;
 	private String charset = HTTP.UTF_8;
 	private HashMap<String, String> headers;
+    private Context mContext;
 
 
-    public Urllib() {
-        this(null);
+    public Urllib(Context context) {
+        this(context, null);
     }
 
-	public Urllib(Certificate[] pins) {
+	public Urllib(Context context, Certificate[] pins) {
+        mContext = context;
 		this.headers = new HashMap<String, String>();
     	HttpParams params = new BasicHttpParams(); 
     	HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
@@ -84,8 +87,10 @@ public class Urllib {
         params.setBooleanParameter("http.protocol.expect-continue", false);
         SchemeRegistry registry = new SchemeRegistry();
         registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean trustSystemKeystore = prefs.getBoolean("debug_mode", false) && prefs.getBoolean("no_cert_pinning", false);
         try {
-            registry.register(new Scheme("https", pins != null && !TRUST_SYSTEM_KEYSTORE && BuildConfig.DEBUG ? new CertPinningSSLSocketFactory(pins) : SSLSocketFactory.getSocketFactory(), 443));
+            registry.register(new Scheme("https", pins != null && !trustSystemKeystore ? new CertPinningSSLSocketFactory(pins) : SSLSocketFactory.getSocketFactory(), 443));
         } catch (UnrecoverableKeyException e) {
             e.printStackTrace();
         } catch (KeyManagementException e) {
@@ -97,7 +102,7 @@ public class Urllib {
         }
         ClientConnectionManager manager = new ThreadSafeClientConnManager(params, registry);
         httpclient = new DefaultHttpClient(manager, params);
-    	mContext = new BasicHttpContext();
+    	mHttpContext = new BasicHttpContext();
     }
     
     public String open(String url) throws ClientProtocolException, IOException {
@@ -137,10 +142,10 @@ public class Urllib {
             request.addHeader(headerKeys[i], headerVals[i]);
         }
 
-        response = httpclient.execute(request, mContext);
+        response = httpclient.execute(request, mHttpContext);
 
-        //HttpUriRequest currentReq = (HttpUriRequest)mContext.getAttribute(ExecutionContext.HTTP_REQUEST);
-        //HttpHost currentHost = (HttpHost)mContext.getAttribute(ExecutionContext.HTTP_TARGET_HOST);
+        //HttpUriRequest currentReq = (HttpUriRequest)mHttpContext.getAttribute(ExecutionContext.HTTP_REQUEST);
+        //HttpHost currentHost = (HttpHost)mHttpContext.getAttribute(ExecutionContext.HTTP_TARGET_HOST);
         //this.currentURI = currentHost.toURI() + currentReq.getURI();
         this.currentURI = request.getURI().toString();
 
@@ -199,8 +204,8 @@ public class Urllib {
         httpclient.getConnectionManager().shutdown();
     }
     
-    public HttpContext getmContext() {
-    	return mContext;
+    public HttpContext getmHttpContext() {
+    	return mHttpContext;
     }
     
     public String getCurrentURI() {

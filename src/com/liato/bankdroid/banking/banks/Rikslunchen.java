@@ -87,7 +87,7 @@ public class Rikslunchen extends Bank {
 
 	@Override
 	protected LoginPackage preLogin() throws BankException, ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_rikslunchen));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_rikslunchen));
         urlopen.setAllowCircularRedirects(true);
 
         List<NameValuePair> postData = new ArrayList<NameValuePair>();

@@ -75,7 +75,7 @@ public class McDonalds extends Bank {
 
 	@Override
 	protected LoginPackage preLogin() throws BankException, ClientProtocolException, IOException {
-		urlopen = new Urllib();
+		urlopen = new Urllib(context);
 
 		List<NameValuePair> postData = new ArrayList<NameValuePair>();
 		postData.add(new BasicNameValuePair("__Click", "0"));

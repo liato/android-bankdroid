@@ -78,7 +78,7 @@ public class Eurocard extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_eurocard));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_eurocard));
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         response = urlopen.open("https://secure.eurocard.se/nis/external/ecse/login.do");
         urlopen.addHeader("Referer", String.format("https://secure.eurocard.se/nis/external/ecse/login.do"));

@@ -91,7 +91,7 @@ public class NordeaDK extends Bank {
 	protected LoginPackage preLogin() throws BankException,
 			ClientProtocolException, IOException {
 		if (urlopen == null) {
-            urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_nordea_dk));
+            urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_nordea_dk));
 		}
 		response = urlopen
 				.open("https://www.netbank.nordea.dk/mnetbank/index.jsp");

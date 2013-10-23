@@ -72,7 +72,7 @@ public abstract class MobilbankenBase extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_mobilbanken));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_mobilbanken));
         urlopen.setAllowCircularRedirects(true);
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         String postUrl = String.format("https://mobil-banken.se/%s/login.html", targetId);

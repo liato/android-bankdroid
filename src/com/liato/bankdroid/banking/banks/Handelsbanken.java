@@ -85,7 +85,7 @@ public class Handelsbanken extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_handelsbanken));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_handelsbanken));
         response = urlopen.open("https://m.handelsbanken.se/primary/");
         Matcher matcher = reLoginUrl.matcher(response);
         if (!matcher.find()) {

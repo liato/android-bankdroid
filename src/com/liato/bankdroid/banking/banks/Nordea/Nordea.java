@@ -85,7 +85,7 @@ public class Nordea extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_nordea));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_nordea));
         Matcher matcher;
         String response = urlopen.open("https://mobil.nordea.se/banking-nordea/nordea-c3/login.html");
         matcher = reCSRF.matcher(response);

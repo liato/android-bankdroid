@@ -85,7 +85,7 @@ public class CSN extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(CertificateReader.getCertificates(context, R.raw.cert_csn));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_csn));
         urlopen.setAllowCircularRedirects(true);
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         urlopen.addHeader("Referer", "https://www.csn.se/bas/");
