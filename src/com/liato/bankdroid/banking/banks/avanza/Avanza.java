@@ -22,10 +22,13 @@ import android.util.Base64;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.banks.avanza.model.AccountOverview;
+import com.liato.bankdroid.banking.banks.avanza.model.Position;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
@@ -36,6 +39,9 @@ import org.apache.http.client.ClientProtocolException;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
@@ -79,9 +85,19 @@ public class Avanza extends Bank {
             ObjectMapper vObjectMapper = new ObjectMapper();
             AccountOverview r = vObjectMapper.readValue(httpResponse.getEntity().getContent(), AccountOverview.class);
             for (com.liato.bankdroid.banking.banks.avanza.model.Account account : r.getAccounts()) {
-                Account a = new Account(account.getAccountName(), new BigDecimal(account.getBalance()), account.getAccountId());
+                Account a = new Account(account.getAccountName(), new BigDecimal(account.getOwnCapital()), account.getAccountId());
                 if (!account.getCurrencyAccounts().isEmpty()) {
                     a.setCurrency(account.getCurrencyAccounts().get(0).getCurrency());
+                }
+                if (!account.getPositionAggregations().isEmpty() && !account.getPositionAggregations().get(0).getPositions().isEmpty()) {
+                    List<Position> positions = account.getPositionAggregations().get(0).getPositions();
+                    Date now = new Date();
+                    ArrayList<Transaction> transactions = new ArrayList<Transaction>(positions.size());
+                    for (Position p : positions) {
+                        Transaction t = new Transaction(Helpers.formatDate(now), p.getInstrumentName(), BigDecimal.valueOf(p.getProfit()), a.getCurrency());
+                        transactions.add(t);
+                    }
+                    a.setTransactions(transactions);
                 }
                 accounts.add(a);
             }
@@ -102,9 +118,9 @@ public class Avanza extends Bank {
     public void update() throws BankException, LoginException,
             BankChoiceException {
         super.update();
-        if (TextUtils.isEmpty(username)) {
+        if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
             throw new LoginException(res.getText(
-                    R.string.invalid_bitcoin_address).toString());
+                    R.string.invalid_username_password).toString());
         }
         login();
         if (accounts.isEmpty()) {
