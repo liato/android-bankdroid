@@ -1,3 +1,11 @@
+v1.9.6.2: (2013-11-03)
+* Fix for Avanza (thanks to NanoRage)
+* Fix for Ikano Bank
+* Improved security of secure connection with certificate pinning
++ Support for Eurobonus Mastercard Denmark
++ Support for Bitcoin
+
+
 v1.9.6.1: (2013-09-30)
 * Fix for PayPal
 * Fix for Diners Club (thanks to ScuttleSE)

@@ -31,6 +31,7 @@ Development
   Richard Ginzburg                  https://github.com/rickythefox
   ScuttleSE                         https://github.com/ScuttleSE
   Andreas Knifh                     https://github.com/knifhen
+  NanoRage                          https://github.com/NanoRage
 
 
   Stats at:
