@@ -18,9 +18,14 @@ package eu.nullbyte.android.urllib;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.os.Build;
 import android.preference.PreferenceManager;
 
 import com.liato.bankdroid.BuildConfig;
+import com.liato.bankdroid.R;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -65,7 +70,7 @@ import java.util.List;
 
 public class Urllib {
     public static String DEFAULT_USER_AGENT = "Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17";
-    private String userAgent = DEFAULT_USER_AGENT;
+    private String userAgent = null;
     private DefaultHttpClient httpclient;
 	private HttpContext mHttpContext;
 	private String currentURI;
@@ -81,6 +86,7 @@ public class Urllib {
 	public Urllib(Context context, Certificate[] pins) {
         mContext = context;
 		this.headers = new HashMap<String, String>();
+        userAgent = createUserAgentString();
     	HttpParams params = new BasicHttpParams(); 
     	HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
         HttpProtocolParams.setContentCharset(params, this.charset);
@@ -254,6 +260,32 @@ public class Urllib {
     
     public void setUserAgent(String userAgent) {
     	this.userAgent = userAgent; 
+    }
+
+    private String createUserAgentString() {
+        String appName = mContext.getString(R.string.app_name);
+        String packageName = "";
+        String appVersion = "";
+
+        try {
+            PackageInfo packageInfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), PackageManager.GET_CONFIGURATIONS);
+            packageName = packageInfo.packageName;
+            appVersion = packageInfo.versionName;
+        } catch (PackageManager.NameNotFoundException ignore) {
+        }
+
+        Configuration config = mContext.getResources().getConfiguration();
+        return String.format("%1$s/%2$s (%3$s; U; Android %4$s; %5$s-%6$s; %10$s Build/%7$s; %8$s) %9$s %10$s"
+                , appName
+                , appVersion
+                , System.getProperty("os.name", "Linux")
+                , Build.VERSION.RELEASE
+                , config.locale.getLanguage().toLowerCase()
+                , config.locale.getCountry().toLowerCase()
+                , Build.ID
+                , Build.BRAND
+                , Build.MANUFACTURER
+                , Build.MODEL);
     }
     
 }

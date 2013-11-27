@@ -73,7 +73,6 @@ public class Avanza extends Bank {
     public Urllib login() throws LoginException, BankException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_avanza));
         urlopen.addHeader("ctag", "1122334455");
-        urlopen.setUserAgent("Avanza Bank 131 (iPhone; iPhone OS 6.1.4; sv_SE)");
         urlopen.addHeader("Authorization", "Basic " + Base64.encodeToString(new String(username + ":" + password).getBytes(), Base64.NO_WRAP));
 
         try {
