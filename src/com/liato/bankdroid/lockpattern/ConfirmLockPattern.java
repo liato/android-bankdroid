@@ -55,8 +55,7 @@ public class ConfirmLockPattern extends Activity {
     public static final String FOOTER_TEXT = "com.liato.bankdroid.footer";
     public static final String HEADER_WRONG_TEXT = "com.liato.bankdroid.header_wrong";
     public static final String FOOTER_WRONG_TEXT = "com.liato.bankdroid.footer_wrong";
-    public static final String DISABLE_BACK_KEY = "com.liato.bankdroid.ConfirmLockPattern.disable_back_key";
-    
+
     // how long we wait to clear a wrong pattern
     private static final int WRONG_PATTERN_CLEAR_TIMEOUT_MS = 2000;
 
@@ -75,7 +74,6 @@ public class ConfirmLockPattern extends Activity {
     private CharSequence mFooterText;
     private CharSequence mHeaderWrongText;
     private CharSequence mFooterWrongText;
-    private boolean mDisableBackButton = false;
 
 
     private enum Stage {
@@ -110,7 +108,6 @@ public class ConfirmLockPattern extends Activity {
             mFooterText = intent.getCharSequenceExtra(FOOTER_TEXT);
             mHeaderWrongText = intent.getCharSequenceExtra(HEADER_WRONG_TEXT);
             mFooterWrongText = intent.getCharSequenceExtra(FOOTER_WRONG_TEXT);
-            mDisableBackButton = intent.getBooleanExtra(DISABLE_BACK_KEY, false);
         }
 
         mLockPatternView.setTactileFeedbackEnabled(mLockPatternUtils.isTactileFeedbackEnabled());
@@ -147,12 +144,16 @@ public class ConfirmLockPattern extends Activity {
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-      if (keyCode == KeyEvent.KEYCODE_BACK && this.mDisableBackButton) {
-          return true;
-      }
-      return super.onKeyDown(keyCode, event);
-    }    
-    
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+            homeIntent.addCategory(Intent.CATEGORY_HOME);
+            homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(homeIntent);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();

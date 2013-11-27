@@ -216,7 +216,6 @@ public class LockableActivity extends Activity {
 
 	private void launchPatternLock() {
         Intent intent = new Intent(this, ConfirmLockPattern.class);
-        intent.putExtra(ConfirmLockPattern.DISABLE_BACK_KEY, true);
         intent.putExtra(ConfirmLockPattern.HEADER_TEXT, getText(R.string.patternlock_header));
         startActivityForResult(intent, PATTERNLOCK_UNLOCK);         
 	}
