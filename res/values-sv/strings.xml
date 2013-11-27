@@ -59,7 +59,7 @@
 	<string name="update_transaction_history_title">Uppdatera kontoutdrag</string>
 	<string name="update_transaction_history_summary">Uppdatera kontoutdrag vid automatiska uppdateringar</string>
 	<string name="number_of_notifications_title">Antal notifieringar</string>
-	<string name="number_of_notifications_summary">Antal notifieringa som visas samtidigt</string>
+	<string name="number_of_notifications_summary">Antal notifieringar som visas samtidigt</string>
 	<string name="appearance_title">Utseende</string>
 	<string name="widgets_title">Widgets</string>
 	<string name="round_widget_balance_title">Avrunda saldo på widgets</string>
