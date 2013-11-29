@@ -186,7 +186,7 @@ public class Urllib {
         String[] headerKeys = (String[]) this.headers.keySet().toArray(new String[headers.size()]);
         String[] headerVals = (String[]) this.headers.values().toArray(new String[headers.size()]);
         HttpUriRequest request;
-        if (postData == null && !forcePost) {
+        if (!forcePost) {
             request = new HttpGet(url);
         }
         else {

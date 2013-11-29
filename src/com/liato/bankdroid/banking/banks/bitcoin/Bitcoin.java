@@ -58,9 +58,6 @@ public class Bitcoin extends Bank {
 		super.NAME_SHORT = NAME_SHORT;
 		super.BANKTYPE_ID = BANKTYPE_ID;
 		super.URL = URL;
-		super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
-		super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
-		super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
 		super.STATIC_BALANCE = STATIC_BALANCE;
 		super.currency = "BTC";
 		super.INPUT_HIDDEN_PASSWORD = INPUT_HIDDEN_PASSWORD;
@@ -89,7 +86,7 @@ public class Bitcoin extends Bank {
 			accounts.add(a);
 			setCurrency("BTC");
 		} catch (JsonParseException e) {
-			throw new LoginException(res.getText(
+			throw new BankException(res.getText(
 					R.string.invalid_bitcoin_address).toString());
 		}catch (ClientProtocolException e) {
 			e.printStackTrace();

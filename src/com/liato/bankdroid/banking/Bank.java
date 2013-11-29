@@ -324,7 +324,6 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
                     a.setHidden(oa.isHidden());
                     a.setNotify(oa.isNotify());
                     a.setCurrency(oa.getCurrency());
-                    a.setAliasfor(oa.getAliasfor());
                 }
             }
             a.setBank(this);
@@ -350,6 +349,8 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
             if (lp == null) {
                 throw new BankException("No automatic login for this bank. preLogin() is not implemented or has failed.");
             }
+            //TODO: Skip the form submission. Login using Bank.login(...) and transfer cookies to webview. The user is now logged in
+            //      and can me directed to any page.
             String html = String.format(preloader,
                     "function go(){document.getElementById('submitform').submit(); }", // Javascript function
                     Helpers.renderForm(lp.getLoginTarget(), lp.getPostData())+"<script type=\"text/javascript\">setTimeout('go()', 1000);</script>" // HTML

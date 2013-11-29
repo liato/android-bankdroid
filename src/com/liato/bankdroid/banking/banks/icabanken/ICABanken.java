@@ -126,14 +126,13 @@ public class ICABanken extends Bank {
 			throw new BankException(res.getText(R.string.no_accounts_found)
 					.toString());
 		}
+        super.updateComplete();
 
 	}
 
 	@Override
 	public void updateTransactions(Account account, Urllib urlopen)
 			throws LoginException, BankException {
-		super.updateTransactions(account, urlopen);
-		super.updateComplete();
 	}
 
 	private void addAccounts(IcaBankenAccountList pAccountList) {
