@@ -52,7 +52,7 @@ public class AmericanExpress extends Bank {
 	private static final String TAG = "AmericanExpress";
 	private static final String NAME = "American Express";
 	private static final String NAME_SHORT = "americanexpress";
-	private static final String URL = "https://home.americanexpress.com/home/se/home_c.shtml";
+	private static final String URL = "https://www.americanexpress.com/home/se/home_c.shtml";
 	private static final int BANKTYPE_ID = IBankTypes.AMERICANEXPRESS;
 	
 	private Pattern reAccounts = Pattern.compile("leftnav'\\)\">([^<]+)</a>\\r*\\s*</div>\\r*\\s*</td>\\r*\\s*<td\\s*id=\"headerSectionLeft\"\\s*colspan=\"6\">\\r*\\s*<span\\s*class=\"cardTitle\">.*?sorted_index=(\\d{1,})&?[^>]+>([^<]+)</a>.*?Utest[\\&aring;|å]ende skuld\\s*</div>\\r*\\s*<div[^>]+>[^<]+</div>\\r*\\s*<div[^>]+>([^<]+)</div>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
@@ -77,10 +77,10 @@ public class AmericanExpress extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_americanexpress));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_americanexpress, R.raw.cert_americanexpress2, R.raw.cert_americanexpress3));
         urlopen.setAllowCircularRedirects(true);
         urlopen.setContentCharset(HTTP.ISO_8859_1);
-        response = urlopen.open("https://home.americanexpress.com/home/se/home_c.shtml");
+        response = urlopen.open("https://www.americanexpress.com/home/se/home_c.shtml");
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
 
         postData.add(new BasicNameValuePair("request_type", "LogLogonHandler"));
