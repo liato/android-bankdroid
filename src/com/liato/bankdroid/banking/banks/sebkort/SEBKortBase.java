@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Nullbyte <http://nullbyte.eu>
+ * Copyright (C) 2013 Nullbyte <http://nullbyte.eu>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,22 +58,31 @@ public abstract class SEBKortBase extends Bank {
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
     private static final boolean STATIC_BALANCE = true;
-    ObjectMapper mObjectMapper = new ObjectMapper();
+    private ObjectMapper mObjectMapper = new ObjectMapper();
     private String response = null;
-    private String provider_part;
-    private String prodgroup;
+    private String mProviderPart;
+    private String mProdgroup;
+    private String mApiBase;
+    private int[] mCertificates;
     private BasicNameValuePair mParamsTarget;
     private BasicNameValuePair mParamsErrorTarget;
     private Map<Account, String> mBillingUnitIds = new HashMap<Account, String>();
 
-    public SEBKortBase(Context context, String provider_part, String prodgroup) {
+
+    public SEBKortBase(Context context, String providerPart, String prodgroup) {
+        this(context, providerPart, prodgroup, "secure.sebkort.com", new int[] {R.raw.cert_sebkort});
+    }
+
+    public SEBKortBase(Context context, String providerPart, String prodgroup, String apiBase, int[] certificates) {
         super(context);
         super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
         super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
         super.STATIC_BALANCE = STATIC_BALANCE;
-        this.provider_part = provider_part;
-        this.prodgroup = prodgroup;
-        super.URL = String.format("https://secure.sebkort.com/nis/m/%s/external/t/login/index", provider_part);
+        super.URL = String.format("https://%s/nis/m/%s/external/t/login/index", apiBase, providerPart);
+        mProviderPart = providerPart;
+        mProdgroup = prodgroup;
+        mApiBase = apiBase;
+        mCertificates = certificates;
         mObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mObjectMapper.configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false);
         mParamsTarget = new BasicNameValuePair("target", URL);
@@ -85,38 +94,43 @@ public abstract class SEBKortBase extends Bank {
         this.update(username, password);
     }
 
+    public SEBKortBase(String username, String password, Context context, String url, String prodgroup, String apiBase, int[] certificates) throws BankException, LoginException, BankChoiceException {
+        this(context, url, prodgroup, apiBase, certificates);
+        this.update(username, password);
+    }
+
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_sebkort));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, mCertificates));
         //Get required cookies
-        response = urlopen.open(String.format("https://secure.sebkort.com/nis/m/%s/external/t/login/index", provider_part));
+        response = urlopen.open(String.format("https://%s/nis/m/%s/external/t/login/index", mApiBase, mProviderPart));
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.clear();
         postData.add(new BasicNameValuePair("SEB_Referer", "/nis"));
         postData.add(new BasicNameValuePair("SEB_Auth_Mechanism", "5"));
         postData.add(new BasicNameValuePair("TYPE", "LOGIN"));
         postData.add(new BasicNameValuePair("CURRENT_METHOD", "PWD"));
-        postData.add(new BasicNameValuePair("UID", prodgroup + username.toUpperCase()));
+        postData.add(new BasicNameValuePair("UID", mProdgroup + username.toUpperCase()));
         postData.add(new BasicNameValuePair("PASSWORD", password));
-        postData.add(new BasicNameValuePair("prodgroup", prodgroup));
+        postData.add(new BasicNameValuePair("mProdgroup", mProdgroup));
         postData.add(mParamsTarget);
         postData.add(mParamsErrorTarget);
-        return new LoginPackage(urlopen, postData, response, "https://secure.sebkort.com/auth4/Authentication/select.jsp");
+        return new LoginPackage(urlopen, postData, response, String.format("https://%s/auth4/Authentication/select.jsp", mApiBase));
     }
 
     @Override
     public Urllib login() throws LoginException, BankException {
         try {
             LoginPackage lp = preLogin();
-            urlopen.addHeader("Origin", "https://secure.sebkort.com");
-            urlopen.addHeader("Referer", String.format("https://secure.sebkort.com/nis/m/%s/external/t/login/index", provider_part));
+            urlopen.addHeader("Origin", String.format("https://%s", mApiBase));
+            urlopen.addHeader("Referer", String.format("https://%s/nis/m/%s/external/t/login/index", mApiBase, mProviderPart));
             urlopen.addHeader("X-Requested-With", "XMLHttpRequest");
             List<NameValuePair> postData = lp.getPostData();
             postData.remove(mParamsTarget);
             postData.remove(mParamsErrorTarget);
-            postData.add(new BasicNameValuePair("target", String.format("/nis/m/%s/login/loginSuccess", provider_part)));
-            postData.add(new BasicNameValuePair("errorTarget", String.format("/nis/m/%s/external/login/loginError", provider_part)));
+            postData.add(new BasicNameValuePair("target", String.format("/nis/m/%s/login/loginSuccess", mProviderPart)));
+            postData.add(new BasicNameValuePair("errorTarget", String.format("/nis/m/%s/external/login/loginError", mProviderPart)));
 
             LoginResponse r = mObjectMapper.readValue(urlopen.openStream(lp.getLoginTarget(), postData, true),
                     LoginResponse.class);
@@ -140,8 +154,8 @@ public abstract class SEBKortBase extends Bank {
         }
         urlopen = login();
         try {
-            UserResponse ur = mObjectMapper.readValue(urlopen.openStream(String.format("https://secure.sebkort.com/nis/m/%s/a/user", provider_part)), UserResponse.class);
-            BillingUnitsResponse br = mObjectMapper.readValue(urlopen.openStream(String.format("https://secure.sebkort.com/nis/m/%s/a/billingUnits", provider_part)), BillingUnitsResponse.class);
+            UserResponse ur = mObjectMapper.readValue(urlopen.openStream(String.format("https://%s/nis/m/%s/a/user", mApiBase, mProviderPart)), UserResponse.class);
+            BillingUnitsResponse br = mObjectMapper.readValue(urlopen.openStream(String.format("https://%s/nis/m/%s/a/billingUnits", mApiBase, mProviderPart)), BillingUnitsResponse.class);
 
             //TODO: Handle multiple cards?
             BillingUnit bu = br.getBody().get(0);
@@ -177,7 +191,7 @@ public abstract class SEBKortBase extends Bank {
         super.updateTransactions(account, urlopen);
         if (account.getType() != Account.CCARD) return;
         try {
-            PendingTransactionsResponse r = mObjectMapper.readValue(urlopen.openStream(String.format("https://secure.sebkort.com/nis/m/%s/a/pendingTransactions/%s", provider_part, mBillingUnitIds.get(account))), PendingTransactionsResponse.class);
+            PendingTransactionsResponse r = mObjectMapper.readValue(urlopen.openStream(String.format("https://%s/nis/m/%s/a/pendingTransactions/%s", mApiBase, mProviderPart, mBillingUnitIds.get(account))), PendingTransactionsResponse.class);
             ArrayList<Transaction> transactions = new ArrayList<Transaction>();
             for (CardGroup cg : r.getBody().getCardGroups()) {
                 for (TransactionGroup tg : cg.getTransactionGroups()) {

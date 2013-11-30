@@ -39,7 +39,7 @@ public class Chevrolet extends SEBKortBase {
 	}
 	
 	public Chevrolet(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
-		super(username, password, context, "wase", "0086");
+		super(username, password, context, "chse", "0086");
 	}
 
 }

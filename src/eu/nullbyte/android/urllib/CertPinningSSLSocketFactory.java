@@ -19,6 +19,8 @@ package eu.nullbyte.android.urllib;
  * under the License.
  */
 
+import android.util.Log;
+
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.params.HttpConnectionParams;
@@ -40,7 +42,7 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 
 public class CertPinningSSLSocketFactory extends SSLSocketFactory {
-
+    private final static String TAG = CertPinningSSLSocketFactory.class.getSimpleName();
 	private SSLContext sslcontext = null;
     private Certificate[] certificates;
 
@@ -76,6 +78,7 @@ public class CertPinningSSLSocketFactory extends SSLSocketFactory {
     public Socket connectSocket(Socket sock, String host, int port,
 			InetAddress localAddress, int localPort, HttpParams params)
 			throws IOException, UnknownHostException, ConnectTimeoutException {
+        Log.v(TAG, "SSL socket connecting to: " + host);
 		int connTimeout = HttpConnectionParams.getConnectionTimeout(params);
 		int soTimeout = HttpConnectionParams.getSoTimeout(params);
 

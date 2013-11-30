@@ -281,7 +281,8 @@ public class BankEditActivity extends LockableActivity implements OnClickListene
 	                });
 				}
 				else {
-    				builder.setMessage(this.exc.getMessage()).setTitle(res.getText(R.string.could_not_create_account))
+                    exc.printStackTrace();
+                    builder.setMessage(this.exc.getMessage()).setTitle(res.getText(R.string.could_not_create_account))
     				.setIcon(android.R.drawable.ic_dialog_alert)
     				.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
     					public void onClick(DialogInterface dialog, int id) {
