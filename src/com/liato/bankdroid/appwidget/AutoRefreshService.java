@@ -320,8 +320,10 @@ public class AutoRefreshService extends Service {
 					db.disableBank(bank.getDbId());
 				}
                 catch (BankChoiceException e) {
+                }
+                catch (Exception e) {
                     Log.e(TAG, "Error while updating bank '" + bank.getDbId()
-                            + "'; LoginException: " + e.getMessage());
+                            + "'; Exception: " + e.getMessage());
                 }
 			}
 

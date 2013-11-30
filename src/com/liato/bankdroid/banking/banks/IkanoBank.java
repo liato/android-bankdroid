@@ -176,11 +176,13 @@ public class IkanoBank extends Bank {
         matcher = reViewState.matcher(response);
         if (!matcher.find()) {
             Log.e(TAG, "Unable to find ViewState. L156.");
+            return;
         }
         String strViewState = matcher.group(1);
         matcher = reEventValidation.matcher(response);
         if (!matcher.find()) {
             Log.e(TAG, "Unable to find EventValidation. L161.");
+            return;
         }
         String strEventValidation = matcher.group(1);       
 
