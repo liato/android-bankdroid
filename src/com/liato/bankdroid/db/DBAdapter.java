@@ -19,6 +19,7 @@ package com.liato.bankdroid.db;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import net.sf.andhsli.hotspotlogin.SimpleCrypto;
 import android.content.ContentValues;
@@ -174,7 +175,7 @@ public class DBAdapter {
                 vals.put("aliasfor", acc.getAliasfor());
 	            mDb.insert("accounts", null, vals);
 	            if (acc.getAliasfor() == null || acc.getAliasfor().length() == 0) {
-    	            ArrayList<Transaction> transactions = acc.getTransactions();
+    	            List<Transaction> transactions = acc.getTransactions();
     	            if (transactions != null && !transactions.isEmpty()) {
     	                deleteTransactions(new Long(bankId).toString()+"_"+acc.getId());
     		            for(Transaction transaction : transactions) {

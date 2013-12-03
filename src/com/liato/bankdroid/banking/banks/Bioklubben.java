@@ -15,42 +15,43 @@
  */
 package com.liato.bankdroid.banking.banks;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.message.BasicNameValuePair;
-
 import android.content.Context;
+import android.text.InputType;
 
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.message.BasicNameValuePair;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Bioklubben extends Bank {
-	private static final String TAG = "Bioklubben";
-	private static final String NAME = "Bioklubben";
-	private static final String NAME_SHORT = "bioklubben";
-	private static final String URL = "https://bioklubben.sfbio.se/user/login";
-	private static final int BANKTYPE_ID = Bank.BIOKLUBBEN;
-	private static final boolean DISPLAY_DECIMALS = false;
-
-    private Pattern reBalance = Pattern.compile("pointsblock-bignumber-bn\">([^<]+)</div>");
-
+    private static final String TAG = "Bioklubben";
+    private static final String NAME = "Bioklubben";
+    private static final String NAME_SHORT = "bioklubben";
+    private static final String URL = "http://bioklubben.sf.se/Start.aspx";
+    private static final int BANKTYPE_ID = Bank.BIOKLUBBEN;
+    private static final boolean DISPLAY_DECIMALS = false;
     private String response = null;
-    
+
     public Bioklubben(Context context) {
         super(context);
         super.TAG = TAG;
@@ -59,7 +60,8 @@ public class Bioklubben extends Bank {
         super.BANKTYPE_ID = BANKTYPE_ID;
         super.URL = URL;
         super.DISPLAY_DECIMALS = DISPLAY_DECIMALS;
-        
+        super.INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT | + InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
+        super.INPUT_HINT_USERNAME = context.getString(R.string.email);
         currency = context.getString(R.string.points);
     }
 
@@ -68,34 +70,49 @@ public class Bioklubben extends Bank {
         this.update(username, password);
     }
 
-    
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_bioklubben));
+        urlopen.setAllowCircularRedirects(true);
+        response = urlopen.open("http://bioklubben.sf.se/Start.aspx");
 
-        List <NameValuePair> postData = new ArrayList <NameValuePair>();
-        postData.add(new BasicNameValuePair("name", username));
-        postData.add(new BasicNameValuePair("pass", password));
-        postData.add(new BasicNameValuePair("form_build_id", "form-5fab45c2b5bcacfe564ef96cf8329a82"));
-        postData.add(new BasicNameValuePair("form_id", "user_login"));
-        postData.add(new BasicNameValuePair("op", "Logga in"));
-        postData.add(new BasicNameValuePair("persistent_login", "1"));
-        return new LoginPackage(urlopen, postData, response, "https://bioklubben.sfbio.se/user/login");
+        Document d = Jsoup.parse(response);
+        Element e = d.getElementById("__VIEWSTATE");
+        if (e == null || e.attr("value") == null) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString() + " ViewState.");
+        }
+        String viewState = e.attr("value");
+
+        e = d.getElementById("__EVENTVALIDATION");
+        if (e == null || e.attr("value") == null) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString() + " EventValidation.");
+        }
+        String eventValidation = e.attr("value");
+
+
+        List<NameValuePair> postData = new ArrayList<NameValuePair>();
+        postData.add(new BasicNameValuePair("__EVENTTARGET", "ctl00$ContentPlaceHolder1$LoginUserControl$LogonButton"));
+        postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
+        postData.add(new BasicNameValuePair("__VIEWSTATE", viewState));
+        postData.add(new BasicNameValuePair("__EVENTVALIDATION", eventValidation));
+        postData.add(new BasicNameValuePair("ctl00_toolkitscriptmanager_HiddenField", ""));
+        postData.add(new BasicNameValuePair("ctl00$toolkitscriptmanager", "ctl00$UpdatePanel|ctl00$ContentPlaceHolder1$LoginUserControl$LogonButton"));
+        postData.add(new BasicNameValuePair("ctl00$ContentPlaceHolder1$LoginUserControl$LoginNameTextBox", username));
+        postData.add(new BasicNameValuePair("ctl00$ContentPlaceHolder1$LoginUserControl$PasswordTextBox", password));
+        return new LoginPackage(urlopen, postData, response, "http://bioklubben.sf.se/Start.aspx");
     }
 
     public Urllib login() throws LoginException, BankException {
         try {
             LoginPackage lp = preLogin();
-            response = urlopen.open(lp.getLoginTarget(), lp.getPostData());         
+            response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
             if (response.contains("Felaktigt anv")) {
                 throw new LoginException(res.getText(R.string.invalid_username_password).toString());
             }
-        }
-        catch (ClientProtocolException e) {
+        } catch (ClientProtocolException e) {
             throw new BankException(e.getMessage());
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             throw new BankException(e.getMessage());
         }
@@ -109,19 +126,31 @@ public class Bioklubben extends Bank {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();
-        Matcher matcher = reBalance.matcher(response);
-        if (matcher.find()) {
-            /*
-             * Capture groups:
-             * GROUP                EXAMPLE DATA
-             * 1: Balance           218
-             * 
-             */
-            BigDecimal b = Helpers.parseBalance(matcher.group(1));
+        try {
+            Document d = Jsoup.parse(urlopen.open("http://bioklubben.sf.se/MyPurchases.aspx?ParentTreeID=1&TreeID=1"));
+            Element e = d.getElementById("ctl00_ContentPlaceHolder1_BonusPointsLabel");
+            if (e == null) {
+                throw new BankException(res.getText(R.string.unable_to_find).toString() + " points element.");
+            }
+            BigDecimal b = Helpers.parseBalance(e.text());
             Account a = new Account("Poäng", b, "1");
             a.setCurrency(context.getString(R.string.points));
             accounts.add(a);
-            balance = balance.add(Helpers.parseBalance(matcher.group(1)));
+            balance = balance.add(a.getBalance());
+
+            Elements es = d.select(".GridViewStd_Item");
+            List<Transaction> transactions = new ArrayList<Transaction>();
+            if (es != null) {
+                for (Element el : es) {
+                    transactions.add(new Transaction(el.child(0).text().trim(), el.child(1).text().trim(), Helpers.parseBalance(el.child(2).text())));
+                }
+            }
+            a.setTransactions(transactions);
+
+        } catch (IOException e) {
+            if (e == null) {
+                throw new BankException(e.getMessage());
+            }
         }
         if (accounts.isEmpty()) {
             throw new BankException(res.getText(R.string.no_accounts_found).toString());

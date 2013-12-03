@@ -28,6 +28,7 @@
     <string name="bank">Bank</string>
     <string name="custom_name">Eget Namn (frivilligt)</string>
     <string name="error_desc">Senaste uppdateringsförsöket misslyckades och uppdateringar för detta konto har inaktiverats. Se till att lösenord och användarnamn är korrekt angivet och tryck på spara-knappen.</string>
+    <string name="email">E-post</string>
 
     <string name="cancel">AVBRYT</string>
     <string name="save">SPARA</string>

@@ -159,7 +159,7 @@ public class Urllib {
     }
 
     public InputStream openStream(String url) throws ClientProtocolException, IOException {
-        return openStream(url, new BasicHttpEntity(), false);
+        return openStream(url, (HttpEntity)null, false);
     }
     
     public HttpEntity toEntity(List<NameValuePair> postData) {
@@ -186,7 +186,7 @@ public class Urllib {
         String[] headerKeys = (String[]) this.headers.keySet().toArray(new String[headers.size()]);
         String[] headerVals = (String[]) this.headers.values().toArray(new String[headers.size()]);
         HttpUriRequest request;
-        if (!forcePost) {
+        if (!forcePost && postData == null) {
             request = new HttpGet(url);
         }
         else {

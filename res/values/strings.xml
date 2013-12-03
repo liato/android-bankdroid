@@ -28,7 +28,7 @@
     <string name="extras_field">Extras</string>
     <string name="bank">Bank</string>
     <string name="error_desc">The last update was unsuccessful and updates for this account have been disabled. Make sure you\'ve entered your username and password correctly and press the save button.</string>
-
+    <string name="email">E-mail</string>
 
     <string name="cancel">CANCEL</string>
     <string name="save">SAVE</string>
