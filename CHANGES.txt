@@ -1,3 +1,12 @@
+v1.9.6.3: (2013-12-05)
+* Fix for American Express
+* Fix for Eurocard
+* Fix for SAS Eurobonus Mastercard
+* Fix for Statoil Mastercard
+* Fix for Bioklubben
+* Fix for SJPrio
+* Various bugfixes
+
 v1.9.6.2: (2013-11-03)
 * Fix for Avanza (thanks to NanoRage)
 * Fix for Ikano Bank
