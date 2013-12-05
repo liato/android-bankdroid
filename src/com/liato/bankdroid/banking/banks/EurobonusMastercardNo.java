@@ -32,7 +32,7 @@ public class EurobonusMastercardNo extends SEBKortBase {
 	private static final int BANKTYPE_ID = Bank.SASEUROBONUSMASTERCARD_NO;
 
 	public EurobonusMastercardNo(Context context) {
-		super(context, "sano", "0102");
+		super(context, "sano", "0117");
 		super.TAG = TAG;
 		super.NAME = NAME;
 		super.NAME_SHORT = NAME_SHORT;
@@ -40,7 +40,7 @@ public class EurobonusMastercardNo extends SEBKortBase {
 	}
 	
 	public EurobonusMastercardNo(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
-		super(username, password, context, "sano", "0102");
+		super(username, password, context, "sano", "0117");
 	}
 
 }
