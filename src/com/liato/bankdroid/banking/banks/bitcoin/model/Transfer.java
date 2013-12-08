@@ -32,6 +32,9 @@ public class Transfer implements Serializable {
 	private List<Out> mOut = Collections.emptyList();
 	@JsonProperty("result")
 	private long mResult;
+    @JsonProperty("note")
+    private String mNote;
+
 
 	@JsonProperty("size")
 	public long getSize() {
@@ -92,5 +95,10 @@ public class Transfer implements Serializable {
 	public long getResult() {
 		return mResult;
 	}
+
+    @JsonProperty("note")
+    public String getNote() {
+        return mNote;
+    }
 
 }

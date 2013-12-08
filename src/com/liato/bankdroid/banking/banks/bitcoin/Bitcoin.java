@@ -26,6 +26,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.Account;
@@ -80,6 +81,8 @@ public class Bitcoin extends Bank {
 						R.string.invalid_username_password).toString());
 			}
 			ObjectMapper vObjectMapper = new ObjectMapper();
+            vObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            vObjectMapper.configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false);
 			BlockchainResponse r = vObjectMapper.readValue(urlopen.open(API_URL + username), BlockchainResponse.class);
 			Account a = new Account("Bitcoin", new BigDecimal(r.getFinalBalance()).divide(BigDecimal.valueOf(100000000)), "1");
 			a.setCurrency("BTC");
