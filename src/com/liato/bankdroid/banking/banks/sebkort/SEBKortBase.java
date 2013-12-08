@@ -157,22 +157,22 @@ public abstract class SEBKortBase extends Bank {
             UserResponse ur = mObjectMapper.readValue(urlopen.openStream(String.format("https://%s/nis/m/%s/a/user", mApiBase, mProviderPart)), UserResponse.class);
             BillingUnitsResponse br = mObjectMapper.readValue(urlopen.openStream(String.format("https://%s/nis/m/%s/a/billingUnits", mApiBase, mProviderPart)), BillingUnitsResponse.class);
 
-            //TODO: Handle multiple cards?
-            BillingUnit bu = br.getBody().get(0);
-
-            Account account = new Account("Disponibelt belopp", Helpers.parseBalance(bu.getDisposableAmount()), bu.getArrangementNumber());
-            account.setType(Account.CCARD);
-            mBillingUnitIds.put(account, bu.getBillingUnitId());
-            accounts.add(account);
-            balance = balance.add(account.getBalance());
-            account = new Account("Saldo", Helpers.parseBalance(bu.getBalance()), bu.getArrangementNumber() + "_2");
-            account.setType(Account.OTHER);
-            account.setAliasfor(bu.getArrangementNumber());
-            accounts.add(account);
-            account = new Account("Köpgräns", Helpers.parseBalance(bu.getCreditAmountNumber()), bu.getArrangementNumber() + "_3");
-            account.setType(Account.OTHER);
-            account.setAliasfor(bu.getArrangementNumber());
-            accounts.add(account);
+            boolean multipleAccounts = br.getBody().size() > 1;
+            for (BillingUnit bu : br.getBody()) {
+                Account account = new Account(formatAccountName(bu.getArrangementNumber(), "Disponibelt belopp", multipleAccounts), Helpers.parseBalance(bu.getDisposableAmount()), bu.getArrangementNumber());
+                account.setType(Account.CCARD);
+                mBillingUnitIds.put(account, bu.getBillingUnitId());
+                accounts.add(account);
+                balance = balance.add(account.getBalance());
+                account = new Account(formatAccountName(bu.getArrangementNumber(), "Saldo", multipleAccounts), Helpers.parseBalance(bu.getBalance()), bu.getArrangementNumber() + "_2");
+                account.setType(Account.OTHER);
+                account.setAliasfor(bu.getArrangementNumber());
+                accounts.add(account);
+                account = new Account(formatAccountName(bu.getArrangementNumber(), "Köpgräns", multipleAccounts), Helpers.parseBalance(bu.getCreditAmountNumber()), bu.getArrangementNumber() + "_3");
+                account.setType(Account.OTHER);
+                account.setAliasfor(bu.getArrangementNumber());
+                accounts.add(account);
+            }
 
             if (accounts.isEmpty()) {
                 throw new BankException(res.getText(R.string.no_accounts_found).toString());
@@ -184,6 +184,10 @@ public abstract class SEBKortBase extends Bank {
         } finally {
             super.updateComplete();
         }
+    }
+
+    private String formatAccountName(String accountNumber, String name, boolean includeAccountNnumber) {
+        return includeAccountNnumber ? String.format("%s (%s)", accountNumber, name) : name;
     }
 
     @Override
