@@ -1,3 +1,10 @@
+v1.9.6.4: (2013-12-13)
+* Fix for SAS Eurobonus Mastercard Norway﻿
+* Fix for SEB Cards (Eurocard, SAS Eurobonus, Statoil, SJ Prio...) with multiple accounts﻿
+* Fix for Bitcoin where transfers had notes
+* Fix for ICA Banken
+
+
 v1.9.6.3: (2013-12-05)
 * Fix for American Express
 * Fix for Eurocard
@@ -6,6 +13,7 @@ v1.9.6.3: (2013-12-05)
 * Fix for Bioklubben
 * Fix for SJPrio
 * Various bugfixes
+
 
 v1.9.6.2: (2013-11-03)
 * Fix for Avanza (thanks to NanoRage)
