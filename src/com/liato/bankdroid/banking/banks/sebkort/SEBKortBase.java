@@ -70,7 +70,7 @@ public abstract class SEBKortBase extends Bank {
 
 
     public SEBKortBase(Context context, String providerPart, String prodgroup) {
-        this(context, providerPart, prodgroup, "secure.sebkort.com", new int[] {R.raw.cert_sebkort});
+        this(context, providerPart, prodgroup, "secure.sebkort.com", new int[]{R.raw.cert_sebkort});
     }
 
     public SEBKortBase(Context context, String providerPart, String prodgroup, String apiBase, int[] certificates) {
@@ -161,16 +161,19 @@ public abstract class SEBKortBase extends Bank {
             for (BillingUnit bu : br.getBody()) {
                 Account account = new Account(formatAccountName(bu.getArrangementNumber(), "Disponibelt belopp", multipleAccounts), Helpers.parseBalance(bu.getDisposableAmount()), bu.getArrangementNumber());
                 account.setType(Account.CCARD);
+                account.setCurrency(currency);
                 mBillingUnitIds.put(account, bu.getBillingUnitId());
                 accounts.add(account);
                 balance = balance.add(account.getBalance());
                 account = new Account(formatAccountName(bu.getArrangementNumber(), "Saldo", multipleAccounts), Helpers.parseBalance(bu.getBalance()), bu.getArrangementNumber() + "_2");
                 account.setType(Account.OTHER);
                 account.setAliasfor(bu.getArrangementNumber());
+                account.setCurrency(currency);
                 accounts.add(account);
                 account = new Account(formatAccountName(bu.getArrangementNumber(), "Köpgräns", multipleAccounts), Helpers.parseBalance(bu.getCreditAmountNumber()), bu.getArrangementNumber() + "_3");
                 account.setType(Account.OTHER);
                 account.setAliasfor(bu.getArrangementNumber());
+                account.setCurrency(currency);
                 accounts.add(account);
             }
 
@@ -200,7 +203,7 @@ public abstract class SEBKortBase extends Bank {
             for (CardGroup cg : r.getBody().getCardGroups()) {
                 for (TransactionGroup tg : cg.getTransactionGroups()) {
                     for (com.liato.bankdroid.banking.banks.sebkort.model.Transaction t : tg.getTransactions()) {
-                        transactions.add(new Transaction(Helpers.formatDate(new Date(t.getOriginalAmountDateDate())), t.getDescription(), BigDecimal.valueOf(t.getAmountNumber()).negate()));
+                        transactions.add(new Transaction(Helpers.formatDate(new Date(t.getOriginalAmountDateDate())), t.getDescription(), BigDecimal.valueOf(t.getAmountNumber()).negate(), account.getCurrency()));
                     }
                 }
             }

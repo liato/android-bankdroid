@@ -158,7 +158,7 @@ public class BankFactory {
         case IBankTypes.SASEUROBONUSMASTERCARD_NO:
         	return new EurobonusMastercardNo(context);
         case IBankTypes.SASEUROBONUSMASTERCARD_DK:
-            return new EurobonusMastercardNo(context);
+            return new EurobonusMastercardDk(context);
         case IBankTypes.RIKSLUNCHEN:
             return new Rikslunchen(context);            
         case IBankTypes.HEMKOP:

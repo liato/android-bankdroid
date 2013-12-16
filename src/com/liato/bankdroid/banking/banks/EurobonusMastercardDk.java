@@ -26,21 +26,22 @@ import com.liato.bankdroid.banking.exceptions.LoginException;
 
 
 public class EurobonusMastercardDk extends SEBKortBase {
-	private static final String TAG = "EurobonusMastercardDk";
-	private static final String NAME = "SAS EuroBonus MasterCard (Denmark)";
-	private static final String NAME_SHORT = "ebmaster_dk";
-	private static final int BANKTYPE_ID = Bank.SASEUROBONUSMASTERCARD_DK;
+    private static final String TAG = "EurobonusMastercardDk";
+    private static final String NAME = "SAS EuroBonus MasterCard (Denmark)";
+    private static final String NAME_SHORT = "ebmaster_dk";
+    private static final int BANKTYPE_ID = Bank.SASEUROBONUSMASTERCARD_DK;
 
-	public EurobonusMastercardDk(Context context) {
-		super(context, "sadk", "0101");
-		super.TAG = TAG;
-		super.NAME = NAME;
-		super.NAME_SHORT = NAME_SHORT;
-		super.BANKTYPE_ID = BANKTYPE_ID;
-	}
+    public EurobonusMastercardDk(Context context) {
+        super(context, "sadk", "0101");
+        super.TAG = TAG;
+        super.NAME = NAME;
+        super.NAME_SHORT = NAME_SHORT;
+        super.BANKTYPE_ID = BANKTYPE_ID;
+        super.currency = "DKK";
+    }
 
-	public EurobonusMastercardDk(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
-		super(username, password, context, "sadk", "0101");
-	}
+    public EurobonusMastercardDk(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+        super(username, password, context, "sadk", "0101");
+    }
 
 }
