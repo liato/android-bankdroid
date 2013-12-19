@@ -56,7 +56,7 @@ public class ICABanken extends Bank {
 	private static final String INPUT_HINT_USERNAME = "ÅÅÅÅMMDD-XXXX";
 	private static final boolean STATIC_BALANCE = false;
 
-	private static final String API_KEY = "A026CF97-5F6A-438D-A921-AA3406A6CE09";
+	private static final String API_KEY = "9A75DD46-82EE-449B-9F78-F11F636BB7BE";
 	private static final String API_URL = "https://appserver.icabanken.se";
 	private static final String API_VERSION = "1.0";
 
