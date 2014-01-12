@@ -375,7 +375,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         return new SessionPackage(html, null);
     }
 
-    protected LoginPackage preLogin() throws BankException, ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         return null;
     }
 

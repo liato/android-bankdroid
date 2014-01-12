@@ -144,7 +144,7 @@ public class Rikslunchen extends Bank {
 
             myResponse = lp.getResponse();
 
-        } catch (ClientProtocolException e) {
+        } catch (IOException e) {
             throw new BankException(e.getMessage());
         }
         return urlopen;
@@ -157,7 +157,7 @@ public class Rikslunchen extends Bank {
             throw new LoginException(res.getText(R.string.invalid_card_number).toString());
         }
         try {
-            urlopen = new Urllib(context);
+            urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_rikslunchen));
             urlopen.addHeader("Authorization", "basic Q0g6ODlAUHFqJGw4NyMjTVM=");
             urlopen.addHeader("SOAPAction", "");
             urlopen.addHeader("Content-Type", "text/xml;charset=UTF-8");
