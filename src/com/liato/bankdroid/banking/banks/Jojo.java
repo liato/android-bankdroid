@@ -16,18 +16,8 @@
 
 package com.liato.bankdroid.banking.banks;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.message.BasicNameValuePair;
-
 import android.content.Context;
-import android.text.Html;
+import android.text.InputType;
 
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
@@ -37,6 +27,18 @@ import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.message.BasicNameValuePair;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
@@ -48,9 +50,6 @@ public class Jojo extends Bank {
     private static final String URL = "https://www.skanetrafiken.se/templates/MSRootPage.aspx?id=2935&epslanguage=SV";
     private static final int BANKTYPE_ID = IBankTypes.JOJO;
 
-    private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
-    private Pattern reAccounts = Pattern.compile("\"></a>\\s*</td>\\s*<td\\s*class=\"cardinfoaligntop\">\\s*<a\\s*id=\"ctl\\d*_fullRegion_mainRegion_CardInformation1_mRepeaterMyCards_ctl(\\d{2,3})_LinkButton\\d{1,3}\"[^>]+>([^<]+)</a>\\s*</td>\\s*<td[^>]+>\\s*<a\\s*id=\"ctl00_fullRegion_mainRegion_CardInformation1_mRepeaterMyCards_ctl\\d{2,3}_LinkButton\\d{1,3}\"[^>]+>([^<]+)</a>", Pattern.CASE_INSENSITIVE);
-    private Pattern reBalance = Pattern.compile("labelsaldoinfo\">([^<]+)<", Pattern.CASE_INSENSITIVE);
     private String response = null;
 
     public Jojo(Context context) {
@@ -60,6 +59,9 @@ public class Jojo extends Bank {
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;
         super.URL = URL;
+        super.INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+        super.INPUT_TITLETEXT_USERNAME = R.string.card_number;
+        super.INPUT_TITLETEXT_PASSWORD = R.string.cvc;
     }
 
     public Jojo(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
@@ -70,37 +72,25 @@ public class Jojo extends Bank {
 
     @Override
     protected LoginPackage preLogin() throws BankException,
-    ClientProtocolException, IOException {
+            IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_jojo));
-        response = urlopen.open("http://www.skanetrafiken.se/templates/StartPage.aspx?id=2182&epslanguage=SV");
-        Matcher matcher = reViewState.matcher(response);
-        if (!matcher.find()) {
-            throw new BankException(res.getText(R.string.unable_to_find).toString()+" ViewState.");
-        }
-        String strViewState = matcher.group(1);
-        List <NameValuePair> postData = new ArrayList <NameValuePair>();
-        postData.add(new BasicNameValuePair("__EVENTTARGET", ""));
-        postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
-        postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
-        postData.add(new BasicNameValuePair("ctl00$ctl00$UsernameTextBox", username));
-        postData.add(new BasicNameValuePair("ctl00$ctl00$PasswordTextBox", password));
-        postData.add(new BasicNameValuePair("ctl00$ctl00$LoginButton", "Logga in"));
-
-        return new LoginPackage(urlopen, postData, response, "https://www.skanetrafiken.se/templates/StartPage.aspx?id=2182&epslanguage=SV");
+        List<NameValuePair> postData = new ArrayList<NameValuePair>();
+        postData.add(new BasicNameValuePair("cardno", username));
+        postData.add(new BasicNameValuePair("backno", password));
+        postData.add(new BasicNameValuePair("ST_CHECK_SALDO", "Se saldo"));
+        return new LoginPackage(urlopen, postData, response, "https://www.shop.skanetrafiken.se/kollasaldo.html");
     }
 
     public Urllib login() throws LoginException, BankException {
         try {
             LoginPackage lp = preLogin();
             response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-            if (response.contains("Inloggningen misslyckades")) {
-                throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+            if (response.contains("Kortnumret finns inte.")) {
+                throw new LoginException(res.getText(R.string.invalid_card_number).toString());
             }
-        }
-        catch (ClientProtocolException e) {
+        } catch (ClientProtocolException e) {
             throw new BankException(e.getMessage());
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new BankException(e.getMessage());
         }
         return urlopen;
@@ -113,62 +103,22 @@ public class Jojo extends Bank {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();
-        try {
-            response = urlopen.open("https://www.skanetrafiken.se/templates/CardInformation.aspx?id=26957&epslanguage=SV");
-            Matcher matcher;
-            Matcher matcher_b;
-            matcher = reViewState.matcher(response);
-            if (!matcher.find()) {
-                throw new BankException(res.getText(R.string.unable_to_find).toString()+" ViewState.");
-            }			
-            String strViewState = matcher.group(1);
-
-            matcher = reAccounts.matcher(response);
-            while (matcher.find()) {
-                /*
-                 * Capture groups:
-                 * GROUP                EXAMPLE DATA
-                 * 1: ID                01
-                 * 2: Name              Nytt
-                 * 3: Card number       1111111111
-                 * 
-                 */
-
-                List <NameValuePair> postData = new ArrayList <NameValuePair>();
-                postData.add(new BasicNameValuePair("__EVENTTARGET", ""));
-                postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
-                postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
-                postData.add(new BasicNameValuePair("ctl00$fullRegion$mainRegion$CardInformation1$mRepeaterMyCards$ctl" + matcher.group(1) + "$Button", "Kortinfo"));
-                String accinfo = urlopen.open("https://www.skanetrafiken.se/templates/CardInformation.aspx?id=26957&epslanguage=SV", postData);
-
-                matcher_b = reBalance.matcher(accinfo);
-                if (matcher_b.find()) {
-                    /*
-                     * Capture groups:
-                     * GROUP                EXAMPLE DATA
-                     * 1: Amount            592,80 kr
-                     * 
-                     */
-
-                    accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim() , Helpers.parseBalance(matcher_b.group(1)), matcher.group(1)));
-                    balance = balance.add(Helpers.parseBalance(matcher_b.group(1)));
-                }
-            }
-
-            if (accounts.isEmpty()) {
-                throw new BankException(res.getText(R.string.no_accounts_found).toString());
-            }
+        Document d = Jsoup.parse(response);
+        Element e = d.select(".saldo_ok_wrapper > table > tbody tr:eq(0) > td:eq(1)").first();
+        if (e != null) {
+            accounts.add(new Account("Tillgängligt nu", Helpers.parseBalance(e.text()), "1"));
+            balance = balance.add(Helpers.parseBalance(e.text()));
         }
-        catch (ClientProtocolException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        e = d.select(".saldo_ok_wrapper > table > tbody tr:eq(1) > td:eq(1)").first();
+        if (e != null) {
+            accounts.add(new Account("Att hämta", Helpers.parseBalance(e.text()), "1"));
+            balance = balance.add(Helpers.parseBalance(e.text()));
         }
-        catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }		
-        finally {
-            super.updateComplete();
+
+
+        if (accounts.isEmpty()) {
+            throw new BankException(res.getText(R.string.no_accounts_found).toString());
         }
+        super.updateComplete();
     }
 }
