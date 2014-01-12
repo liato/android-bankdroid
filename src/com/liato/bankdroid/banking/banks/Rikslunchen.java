@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Nullbyte <http://nullbyte.eu>
+ * Copyright (C) 2014 Nullbyte <http://nullbyte.eu>
  * Contributors: PMC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -61,103 +61,101 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class Rikslunchen extends Bank {
 
-	private static final String TAG = "Rikslunchen";
-	private static final String NAME = "Rikslunchen";
-	private static final String NAME_SHORT = "rikslunchen";
-	private static final String URL = "http://www.rikslunchen.se/index.html";
-	private static final int BANKTYPE_ID = Bank.RIKSLUNCHEN;
+    private static final String TAG = "Rikslunchen";
+    private static final String NAME = "Rikslunchen";
+    private static final String NAME_SHORT = "rikslunchen";
+    private static final String URL = "http://www.rikslunchen.se/index.html";
+    private static final int BANKTYPE_ID = Bank.RIKSLUNCHEN;
 
-	private String myResponse = "";
+    private String myResponse = "";
 
-	public Rikslunchen(Context context) {
-		super(context);
-		super.TAG = TAG;
-		super.NAME = NAME;
-		super.NAME_SHORT = NAME_SHORT;
-		super.BANKTYPE_ID = BANKTYPE_ID;
-		super.URL = URL;
-		super.INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
-		super.INPUT_TITLETEXT_USERNAME = R.string.card_id;
+    public Rikslunchen(Context context) {
+        super(context);
+        super.TAG = TAG;
+        super.NAME = NAME;
+        super.NAME_SHORT = NAME_SHORT;
+        super.BANKTYPE_ID = BANKTYPE_ID;
+        super.URL = URL;
+        super.INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+        super.INPUT_TITLETEXT_USERNAME = R.string.card_id;
         super.INPUT_HIDDEN_PASSWORD = true;
-	}
+    }
 
-	public Rikslunchen(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
-		this(context);
-		this.update(username, password);
-	}
+    public Rikslunchen(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+        this(context);
+        this.update(username, password);
+    }
 
-	@Override
-	protected LoginPackage preLogin() throws BankException, ClientProtocolException, IOException {
+    @Override
+    protected LoginPackage preLogin() throws BankException, ClientProtocolException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_rikslunchen));
         urlopen.setAllowCircularRedirects(true);
 
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
-		postData.add(new BasicNameValuePair("c0-param0", "string:" + username));
-		postData.add(new BasicNameValuePair("callCount", "1"));
-		postData.add(new BasicNameValuePair("windowName", ""));
-		postData.add(new BasicNameValuePair("c0-scriptName", "cardUtil"));
-		postData.add(new BasicNameValuePair("c0-methodName", "getCardData"));
-		postData.add(new BasicNameValuePair("c0-id", "0"));
-		postData.add(new BasicNameValuePair("batchId", "1"));
-		postData.add(new BasicNameValuePair("page", "%2Friks-cp%2Fcheck_balance.html"));
-		postData.add(new BasicNameValuePair("scriptSessionId", ""));
+        postData.add(new BasicNameValuePair("c0-param0", "string:" + username));
+        postData.add(new BasicNameValuePair("callCount", "1"));
+        postData.add(new BasicNameValuePair("windowName", ""));
+        postData.add(new BasicNameValuePair("c0-scriptName", "cardUtil"));
+        postData.add(new BasicNameValuePair("c0-methodName", "getCardData"));
+        postData.add(new BasicNameValuePair("c0-id", "0"));
+        postData.add(new BasicNameValuePair("batchId", "1"));
+        postData.add(new BasicNameValuePair("page", "%2Friks-cp%2Fcheck_balance.html"));
+        postData.add(new BasicNameValuePair("scriptSessionId", ""));
 
-		HttpClient httpclient = new DefaultHttpClient();
-		CookieStore cookieStore = new BasicCookieStore();
-		HttpContext httpContext = new BasicHttpContext();
-		httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+        HttpClient httpclient = new DefaultHttpClient();
+        CookieStore cookieStore = new BasicCookieStore();
+        HttpContext httpContext = new BasicHttpContext();
+        httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
 
-		// Connect to check_balance to get a session cookie
-		HttpPost httppost = new HttpPost("http://www.rikslunchen.se/riks-cp/check_balance.html");
-		HttpResponse response = httpclient.execute(httppost, httpContext);
+        // Connect to check_balance to get a session cookie
+        HttpPost httppost = new HttpPost("http://www.rikslunchen.se/riks-cp/check_balance.html");
+        HttpResponse response = httpclient.execute(httppost, httpContext);
 
-		List<Cookie> cookies = cookieStore.getCookies();
-		if (cookies.size() == 0) {
-			throw new BankException("No session cookie found, login will fail.");
-		}
+        List<Cookie> cookies = cookieStore.getCookies();
+        if (cookies.size() == 0) {
+            throw new BankException("No session cookie found, login will fail.");
+        }
 
-		Cookie c = cookies.get(0);
-		postData.add(new BasicNameValuePair("c0-param1", "string:" + c.getValue()));
-		postData.add(new BasicNameValuePair("httpSessionId", c.getValue()));
+        Cookie c = cookies.get(0);
+        postData.add(new BasicNameValuePair("c0-param1", "string:" + c.getValue()));
+        postData.add(new BasicNameValuePair("httpSessionId", c.getValue()));
 
-		response.getEntity().consumeContent();
+        response.getEntity().consumeContent();
 
-		httppost = new HttpPost("http://www.rikslunchen.se/riks-cp/dwr/call/plaincall/cardUtil.getCardData.dwr");
-		httppost.setEntity(new UrlEncodedFormEntity(postData));
+        httppost = new HttpPost("http://www.rikslunchen.se/riks-cp/dwr/call/plaincall/cardUtil.getCardData.dwr");
+        httppost.setEntity(new UrlEncodedFormEntity(postData));
 
-		response = httpclient.execute(httppost, httpContext);
-		InputStream streamResponse = response.getEntity().getContent();
-		StringWriter writer = new StringWriter();
-		IOUtils.copy(streamResponse, writer);
+        response = httpclient.execute(httppost, httpContext);
+        InputStream streamResponse = response.getEntity().getContent();
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(streamResponse, writer);
 
-		return new LoginPackage(urlopen, postData, writer.toString(), "http://www.rikslunchen.se/riks-cp/dwr/call/plaincall/cardUtil.getCardData.dwr");
-	}
+        return new LoginPackage(urlopen, postData, writer.toString(), "http://www.rikslunchen.se/riks-cp/dwr/call/plaincall/cardUtil.getCardData.dwr");
+    }
 
-	@Override
-	public Urllib login() throws LoginException, BankException {
-		try {
-			LoginPackage lp = preLogin();
+    @Override
+    public Urllib login() throws LoginException, BankException {
+        try {
+            LoginPackage lp = preLogin();
 
-			if (lp.getResponse().contains("Ange giltigt kortnummer.")) {
-				throw new LoginException(res.getText(R.string.invalid_card_number).toString());
-			}
+            if (lp.getResponse().contains("Ange giltigt kortnummer.")) {
+                throw new LoginException(res.getText(R.string.invalid_card_number).toString());
+            }
 
-			myResponse = lp.getResponse();
+            myResponse = lp.getResponse();
 
-		} catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage());
-		} catch (IOException e) {
-			throw new BankException(e.getMessage());
-		}
-		return urlopen;
-	}
+        } catch (ClientProtocolException e) {
+            throw new BankException(e.getMessage());
+        }
+        return urlopen;
+    }
 
-	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
-		super.update();
-		if (TextUtils.isEmpty(username)) {
-			throw new LoginException(res.getText(R.string.invalid_card_number).toString());
-		}
+    @Override
+    public void update() throws BankException, LoginException, BankChoiceException {
+        super.update();
+        if (TextUtils.isEmpty(username)) {
+            throw new LoginException(res.getText(R.string.invalid_card_number).toString());
+        }
         try {
             urlopen = new Urllib(context);
             urlopen.addHeader("Authorization", "basic Q0g6ODlAUHFqJGw4NyMjTVM=");
@@ -194,7 +192,7 @@ public class Rikslunchen extends Bank {
             throw new BankException(res.getText(R.string.no_accounts_found)
                     .toString());
         }
-		super.updateComplete();
-	}
+        super.updateComplete();
+    }
 
 }
