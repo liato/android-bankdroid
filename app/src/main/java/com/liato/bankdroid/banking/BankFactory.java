@@ -57,6 +57,7 @@ import com.liato.bankdroid.banking.banks.Nordnet;
 import com.liato.bankdroid.banking.banks.Nordnetdirekt;
 import com.liato.bankdroid.banking.banks.OKQ8;
 import com.liato.bankdroid.banking.banks.Opel;
+import com.liato.bankdroid.banking.banks.Ostgotatrafiken;
 import com.liato.bankdroid.banking.banks.Osuuspankki;
 import com.liato.bankdroid.banking.banks.PayPal;
 import com.liato.bankdroid.banking.banks.PlusGirot;
@@ -268,6 +269,8 @@ public class BankFactory {
             return new Sparbankerna(context);
         case IBankTypes.BLEKINGETRAFIKEN:
             return new BlekingeTrafiken(context);
+        case IBankTypes.OSTGOTATRAFIKEN:
+            return new Ostgotatrafiken(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -353,6 +356,7 @@ public class BankFactory {
         banks.add(new SupremeCard(context));
         banks.add(new Sparbankerna(context));
         banks.add(new BlekingeTrafiken(context));
+        banks.add(new Ostgotatrafiken(context));
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
