@@ -84,69 +84,11 @@ public class Rikslunchen extends Bank {
     public Rikslunchen(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
         this(context);
         this.update(username, password);
-    }
 
-    @Override
-    protected LoginPackage preLogin() throws BankException, ClientProtocolException, IOException {
-        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_rikslunchen));
-        urlopen.setAllowCircularRedirects(true);
-
-        List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("c0-param0", "string:" + username));
-        postData.add(new BasicNameValuePair("callCount", "1"));
-        postData.add(new BasicNameValuePair("windowName", ""));
-        postData.add(new BasicNameValuePair("c0-scriptName", "cardUtil"));
-        postData.add(new BasicNameValuePair("c0-methodName", "getCardData"));
-        postData.add(new BasicNameValuePair("c0-id", "0"));
-        postData.add(new BasicNameValuePair("batchId", "1"));
-        postData.add(new BasicNameValuePair("page", "%2Friks-cp%2Fcheck_balance.html"));
-        postData.add(new BasicNameValuePair("scriptSessionId", ""));
-
-        HttpClient httpclient = new DefaultHttpClient();
-        CookieStore cookieStore = new BasicCookieStore();
-        HttpContext httpContext = new BasicHttpContext();
-        httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
-
-        // Connect to check_balance to get a session cookie
-        HttpPost httppost = new HttpPost("http://www.rikslunchen.se/riks-cp/check_balance.html");
-        HttpResponse response = httpclient.execute(httppost, httpContext);
-
-        List<Cookie> cookies = cookieStore.getCookies();
-        if (cookies.size() == 0) {
-            throw new BankException("No session cookie found, login will fail.");
-        }
-
-        Cookie c = cookies.get(0);
-        postData.add(new BasicNameValuePair("c0-param1", "string:" + c.getValue()));
-        postData.add(new BasicNameValuePair("httpSessionId", c.getValue()));
-
-        response.getEntity().consumeContent();
-
-        httppost = new HttpPost("http://www.rikslunchen.se/riks-cp/dwr/call/plaincall/cardUtil.getCardData.dwr");
-        httppost.setEntity(new UrlEncodedFormEntity(postData));
-
-        response = httpclient.execute(httppost, httpContext);
-        InputStream streamResponse = response.getEntity().getContent();
-        StringWriter writer = new StringWriter();
-        IOUtils.copy(streamResponse, writer);
-
-        return new LoginPackage(urlopen, postData, writer.toString(), "http://www.rikslunchen.se/riks-cp/dwr/call/plaincall/cardUtil.getCardData.dwr");
     }
 
     @Override
     public Urllib login() throws LoginException, BankException {
-        try {
-            LoginPackage lp = preLogin();
-
-            if (lp.getResponse().contains("Ange giltigt kortnummer.")) {
-                throw new LoginException(res.getText(R.string.invalid_card_number).toString());
-            }
-
-            myResponse = lp.getResponse();
-
-        } catch (IOException e) {
-            throw new BankException(e.getMessage());
-        }
         return urlopen;
     }
 

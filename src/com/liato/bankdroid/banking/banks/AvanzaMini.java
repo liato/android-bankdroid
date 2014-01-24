@@ -70,7 +70,7 @@ public class AvanzaMini extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_avanza));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_avanza_mini));
         urlopen.setAllowCircularRedirects(true);
         String response = urlopen.open("https://www.avanza.se/mini/logga_in/");
         Document d = Jsoup.parse(response);
