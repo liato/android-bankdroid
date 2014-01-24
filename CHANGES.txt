@@ -1,3 +1,9 @@
+v1.9.6.6: (2014-01-24)
+* Fix for Lunchkortet
+* Fix for Jojo
+* Updated SSL certificates for Ticket Rikskortet, Paypal, Avanza, Avanza Mini and Payson
+
+
 v1.9.6.5: (2013-12-19)
 * Correct currency for SAS Eurobonus Mastercard Norway and Denmark
 * Fix for ICA Banken (new api-key)
