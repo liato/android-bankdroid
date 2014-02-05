@@ -138,7 +138,7 @@ public class Bioklubben extends Bank {
             accounts.add(a);
             balance = balance.add(a.getBalance());
 
-            Elements es = d.select(".GridViewStd_Item");
+            Elements es = d.select(".GridViewStd_Item,.GridViewStd_ItemAlt");
             List<Transaction> transactions = new ArrayList<Transaction>();
             if (es != null) {
                 for (Element el : es) {
