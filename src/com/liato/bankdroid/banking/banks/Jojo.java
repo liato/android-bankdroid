@@ -34,6 +34,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -104,17 +105,23 @@ public class Jojo extends Bank {
         }
         urlopen = login();
         Document d = Jsoup.parse(response);
-        Element e = d.select(".saldo_ok_wrapper > table > tbody tr:eq(0) > td:eq(1)").first();
-        if (e != null) {
-            accounts.add(new Account("Tillgängligt nu", Helpers.parseBalance(e.text()), "1"));
-            balance = balance.add(Helpers.parseBalance(e.text()));
-        }
-        e = d.select(".saldo_ok_wrapper > table > tbody tr:eq(1) > td:eq(1)").first();
-        if (e != null) {
-            accounts.add(new Account("Att hämta", Helpers.parseBalance(e.text()), "1"));
-            balance = balance.add(Helpers.parseBalance(e.text()));
-        }
 
+        Elements es = d.select(".saldo_ok_wrapper > table > tbody tr");
+        if (es != null) {
+            for (int i = 0; i < 2; i++) {
+                int index = es.size()-4+i;
+                if (index >= 0) {
+                    Element e = es.get(index);
+                    Element name = e.select(".first").first();
+                    Element amount = e.select(".right").first();
+                    if (name != null && amount != null) {
+                        Account a = new Account(name.text().replaceAll(":", "").trim(), Helpers.parseBalance(amount.text()), Integer.toString(i));
+                        accounts.add(a);
+                        balance = balance.add(a.getBalance());
+                    }
+                }
+            }
+        }
 
         if (accounts.isEmpty()) {
             throw new BankException(res.getText(R.string.no_accounts_found).toString());
