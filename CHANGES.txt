@@ -1,3 +1,10 @@
+v1.9.6.7: (2014-02-21)
+* Fix login fields parsing for Nordnet
+* Fix for regular Jojo cards
+* Use FLAG_SECURE for ICS and newer to prevent thumbnail in recent tasks list
+* Updated SSL certificates for American Express and Swedbank
+
+
 v1.9.6.6: (2014-01-24)
 * Fix for Lunchkortet
 * Fix for Jojo
