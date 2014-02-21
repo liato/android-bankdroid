@@ -9,9 +9,11 @@ import javax.net.ssl.X509TrustManager;
 
 public class CertPinningTrustManager implements X509TrustManager {
     private Certificate[] certificates;
+    private String host;
 
-    public CertPinningTrustManager(Certificate[] certificates) {
+    public CertPinningTrustManager(Certificate[] certificates, String host) {
         this.certificates = certificates;
+        this.host = host;
     }
 
     public X509Certificate[] getAcceptedIssuers() {
@@ -35,6 +37,6 @@ public class CertPinningTrustManager implements X509TrustManager {
                 }
             }
         }
-        throw new CertificateException("Server certificate not trusted.");
+        throw new CertificateException(host == null ? "Server certificate not trusted." : String.format("Server certificate not trusted for host: %s.", host));
 	}
 }

@@ -19,8 +19,6 @@ package eu.nullbyte.android.urllib;
  * under the License.
  */
 
-import android.util.Log;
-
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.params.HttpConnectionParams;
@@ -43,8 +41,9 @@ import javax.net.ssl.TrustManager;
 
 public class CertPinningSSLSocketFactory extends SSLSocketFactory {
     private final static String TAG = CertPinningSSLSocketFactory.class.getSimpleName();
-	private SSLContext sslcontext = null;
+    private SSLContext sslcontext = null;
     private Certificate[] certificates;
+    private String lastHost;
 
     public CertPinningSSLSocketFactory(Certificate[] certificates) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
         super(null);
@@ -52,51 +51,53 @@ public class CertPinningSSLSocketFactory extends SSLSocketFactory {
         setHostnameVerifier(SSLSocketFactory.STRICT_HOSTNAME_VERIFIER);
     }
 
-	private SSLContext createSSLContext() throws IOException {
+    private SSLContext createSSLContext() throws IOException {
+        //Log.v(TAG, "createSSLContext()");
         try {
             SSLContext context = SSLContext.getInstance("TLS");
-            context.init(null, new TrustManager[] { new CertPinningTrustManager(certificates) }, null);
+            context.init(null, new TrustManager[] { new CertPinningTrustManager(certificates, lastHost) }, null);
             return context;
         } catch (Exception e) {
             throw new IOException(e.getMessage());
         }
-	}
+    }
 
-	private SSLContext getSSLContext() throws IOException {
-		if (this.sslcontext == null) {
-			this.sslcontext = createSSLContext();
-		}
-		return this.sslcontext;
-	}
+    private SSLContext getSSLContext() throws IOException {
+        //Log.v(TAG, "getSSLContext()");
+        if (this.sslcontext == null) {
+            this.sslcontext = createSSLContext();
+        }
+        return this.sslcontext;
+    }
 
-	/**
-	 * @see org.apache.http.conn.scheme.SocketFactory#connectSocket(java.net.Socket,
-	 *      String, int, java.net.InetAddress, int,
-	 *      org.apache.http.params.HttpParams)
-	 */
-	@Override
+    /**
+     * @see org.apache.http.conn.scheme.SocketFactory#connectSocket(java.net.Socket,
+     *      String, int, java.net.InetAddress, int,
+     *      org.apache.http.params.HttpParams)
+     */
+    @Override
     public Socket connectSocket(Socket sock, String host, int port,
-			InetAddress localAddress, int localPort, HttpParams params)
-			throws IOException, UnknownHostException, ConnectTimeoutException {
-        Log.v(TAG, "SSL socket connecting to: " + host);
-		int connTimeout = HttpConnectionParams.getConnectionTimeout(params);
-		int soTimeout = HttpConnectionParams.getSoTimeout(params);
+            InetAddress localAddress, int localPort, HttpParams params)
+            throws IOException, UnknownHostException, ConnectTimeoutException {
+        //Log.v(TAG, "connectSocket(socket: " + sock + ", host: " + host + ", port: " + port + ", localAddress: " + localAddress + ", localPort: " + localPort + ", params: " + params);
+        int connTimeout = HttpConnectionParams.getConnectionTimeout(params);
+        int soTimeout = HttpConnectionParams.getSoTimeout(params);
 
-		InetSocketAddress remoteAddress = new InetSocketAddress(host, port);
-		SSLSocket sslsock = (SSLSocket) ((sock != null) ? sock : createSocket());
+        InetSocketAddress remoteAddress = new InetSocketAddress(host, port);
+        SSLSocket sslsock = (SSLSocket) ((sock != null) ? sock : createSocket());
 
-		if ((localAddress != null) || (localPort > 0)) {
-			// we need to bind explicitly
-			if (localPort < 0) {
-				localPort = 0; // indicates "any"
-			}
-			InetSocketAddress isa = new InetSocketAddress(localAddress,
-					localPort);
-			sslsock.bind(isa);
-		}
+        if ((localAddress != null) || (localPort > 0)) {
+            // we need to bind explicitly
+            if (localPort < 0) {
+                localPort = 0; // indicates "any"
+            }
+            InetSocketAddress isa = new InetSocketAddress(localAddress,
+                    localPort);
+            sslsock.bind(isa);
+        }
 
-		sslsock.connect(remoteAddress, connTimeout);
-		sslsock.setSoTimeout(soTimeout);
+        sslsock.connect(remoteAddress, connTimeout);
+        sslsock.setSoTimeout(soTimeout);
         try {
             getHostnameVerifier().verify(host, sslsock);
             // verifyHostName() didn't blowup - good!
@@ -108,24 +109,27 @@ public class CertPinningSSLSocketFactory extends SSLSocketFactory {
             throw iox;
         }
         return sslsock;
-	}
+    }
 
-	/**
-	 * @see org.apache.http.conn.scheme.SocketFactory#createSocket()
-	 */
+    /**
+     * @see org.apache.http.conn.scheme.SocketFactory#createSocket()
+     */
     @Override
-	public Socket createSocket() throws IOException {
-		return getSSLContext().getSocketFactory().createSocket();
-	}
+    public Socket createSocket() throws IOException {
+        //Log.v(TAG, "createSocket()");
+        return getSSLContext().getSocketFactory().createSocket();
+    }
 
 
-	/**
-	 * @see org.apache.http.conn.scheme.LayeredSocketFactory#createSocket(java.net.Socket,
-	 *      String, int, boolean)
-	 */
+    /**
+     * @see org.apache.http.conn.scheme.LayeredSocketFactory#createSocket(java.net.Socket,
+     *      String, int, boolean)
+     */
     @Override
     public Socket createSocket(Socket socket, String host, int port, boolean autoClose)
-                    throws IOException, UnknownHostException {
-            return getSSLContext().getSocketFactory().createSocket(socket, host, port, autoClose);
-    }		
+            throws IOException, UnknownHostException {
+        //Log.v(TAG, "createSocket(socket: " + socket + ", host: " + host + ", port: " + port + ", autoClose: " + autoClose);
+        lastHost = host;
+        return getSSLContext().getSocketFactory().createSocket(socket, host, port, autoClose);
+    }
 }
