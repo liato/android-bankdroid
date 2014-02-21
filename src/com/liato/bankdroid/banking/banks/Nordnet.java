@@ -26,6 +26,9 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import android.content.Context;
 import android.text.Html;
@@ -43,30 +46,29 @@ import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Nordnet extends Bank {
-	private static final String TAG = "Nordnet";
-	private static final String NAME = "Nordnet";
-	private static final String NAME_SHORT = "nordnet";
-	private static final String URL = "https://www.nordnet.se/mux/login/startSE.html";
-	private static final int BANKTYPE_ID = IBankTypes.NORDNET;
-	
-    
-	private Pattern reLoginFields = Pattern.compile("class=\"formular\">\\s*<fieldset>\\s*<label>[^<]+</label>\\s*<input.*?name=\"([^\"]+)\"[^>]*>\\s*</fieldset>\\s*<fieldset>\\s*<label>[^<]+</label>\\s*<input.*\\s*<input.*name=\"([^\"]+)");
-    private Pattern reBalance = Pattern.compile("<a[^>]+>([^<]+)</a>\\s*<span\\s*class=\"bullet\">.*?</span>\\s*<span>([^\\d]+)([0-9 ]{1,})</span>\\s*</div>\\s*</div>\\s*<div\\s*class=\"value\">\\s*([0-9][^<]+)<");
-	private String response = null;
-	
-	public Nordnet(Context context) {
-		super(context);
-		super.TAG = TAG;
-		super.NAME = NAME;
-		super.NAME_SHORT = NAME_SHORT;
-		super.BANKTYPE_ID = BANKTYPE_ID;
-		super.URL = URL;
-	}
+    private static final String TAG = "Nordnet";
+    private static final String NAME = "Nordnet";
+    private static final String NAME_SHORT = "nordnet";
+    private static final String URL = "https://www.nordnet.se/mux/login/startSE.html";
+    private static final int BANKTYPE_ID = IBankTypes.NORDNET;
 
-	public Nordnet(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
-		this(context);
-		this.update(username, password);
-	}
+    
+    private Pattern reBalance = Pattern.compile("<a[^>]+>([^<]+)</a>\\s*<span\\s*class=\"bullet\">.*?</span>\\s*<span>([^\\d]+)([0-9 ]{1,})</span>\\s*</div>\\s*</div>\\s*<div\\s*class=\"value\">\\s*([0-9][^<]+)<");
+    private String response = null;
+
+    public Nordnet(Context context) {
+        super(context);
+        super.TAG = TAG;
+        super.NAME = NAME;
+        super.NAME_SHORT = NAME_SHORT;
+        super.BANKTYPE_ID = BANKTYPE_ID;
+        super.URL = URL;
+    }
+
+    public Nordnet(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+        this(context);
+        this.update(username, password);
+    }
 
     
     @Override
@@ -75,13 +77,18 @@ public class Nordnet extends Bank {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_nordnet));
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         response = urlopen.open("https://www.nordnet.se/mux/login/startSE.html");
-        
-        Matcher matcher = reLoginFields.matcher(response);
-        if (!matcher.find()) {
-            throw new BankException(res.getText(R.string.unable_to_find).toString()+" login fields.");
+
+        Document d = Jsoup.parse(response);
+        Element e = d.getElementById("input1");
+        if (e == null || "".equals(e.attr("name"))) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString()+" username field.");
         }
-        String loginFieldName = matcher.group(1);
-        String loginFieldPassword = matcher.group(2);
+        String loginFieldName = e.attr("name");
+        e = d.getElementById("pContHidden");
+        if (e == null || "".equals(e.attr("name"))) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString()+" password field.");
+        }
+        String loginFieldPassword = e.attr("name");
 
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         postData.add(new BasicNameValuePair("checksum", ""));
@@ -94,34 +101,34 @@ public class Nordnet extends Bank {
     }
 
     @Override
-	public Urllib login() throws LoginException, BankException {
-		try {
+    public Urllib login() throws LoginException, BankException {
+        try {
             LoginPackage lp = preLogin();
-			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-			if (response.contains("fel vid inloggningen")) {
-				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-			}
-		}
-		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage());
-		}
-		catch (IOException e) {
-			throw new BankException(e.getMessage());
-		}
-		return urlopen;
-	}
+            response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+            if (response.contains("fel vid inloggningen")) {
+                throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+            }
+        }
+        catch (ClientProtocolException e) {
+            throw new BankException(e.getMessage());
+        }
+        catch (IOException e) {
+            throw new BankException(e.getMessage());
+        }
+        return urlopen;
+    }
 
-	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
-		super.update();
-		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
-			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-		}
-		urlopen = login();
-		try {
-			Matcher matcher;
-			matcher = reBalance.matcher(response);
-			while (matcher.find()) {
+    @Override
+    public void update() throws BankException, LoginException, BankChoiceException {
+        super.update();
+        if (username == null || password == null || username.length() == 0 || password.length() == 0) {
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+        }
+        urlopen = login();
+        try {
+            Matcher matcher;
+            matcher = reBalance.matcher(response);
+            while (matcher.find()) {
                 /*
                  * Capture groups:
                  * GROUP                EXAMPLE DATA
@@ -131,25 +138,25 @@ public class Nordnet extends Bank {
                  * 4: Amount            31 337                | 123
                  *  
                  */
-			    Account account = new Account(Html.fromHtml(matcher.group(2)).toString().trim() + " "
+                Account account = new Account(Html.fromHtml(matcher.group(2)).toString().trim() + " "
                         + Html.fromHtml(matcher.group(3)).toString().trim(),
                         Helpers.parseBalance(matcher.group(4)),
                         Html.fromHtml(matcher.group(3)).toString().trim().replaceAll(" ", ""));
 
-			    // Saving accounts contain white space characters in the account number
-			    if (!matcher.group(3).trim().contains(" ")) {
-			        account.setType(Account.FUNDS);
-			    }
-				accounts.add(account);
-				balance = balance.add(Helpers.parseBalance(matcher.group(4)));
-			}
-			
-			if (accounts.isEmpty()) {
-				throw new BankException(res.getText(R.string.no_accounts_found).toString());
-			}
-		}		
+                // Saving accounts contain white space characters in the account number
+                if (!matcher.group(3).trim().contains(" ")) {
+                    account.setType(Account.FUNDS);
+                }
+                accounts.add(account);
+                balance = balance.add(Helpers.parseBalance(matcher.group(4)));
+            }
+
+            if (accounts.isEmpty()) {
+                throw new BankException(res.getText(R.string.no_accounts_found).toString());
+            }
+        }
         finally {
             super.updateComplete();
         }
-	}
+    }
 }
