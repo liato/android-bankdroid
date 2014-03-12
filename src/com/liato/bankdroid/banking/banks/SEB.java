@@ -42,6 +42,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class SEB extends Bank {
@@ -77,7 +78,7 @@ public class SEB extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(true);
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_seb));
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         urlopen.addHeader("Referer", "https://m.seb.se/");
         urlopen.setKeepAliveTimeout(5);

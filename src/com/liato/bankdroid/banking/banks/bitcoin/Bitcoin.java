@@ -26,6 +26,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.Account;
@@ -58,9 +59,6 @@ public class Bitcoin extends Bank {
 		super.NAME_SHORT = NAME_SHORT;
 		super.BANKTYPE_ID = BANKTYPE_ID;
 		super.URL = URL;
-		super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
-		super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
-		super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
 		super.STATIC_BALANCE = STATIC_BALANCE;
 		super.currency = "BTC";
 		super.INPUT_HIDDEN_PASSWORD = INPUT_HIDDEN_PASSWORD;
@@ -74,7 +72,7 @@ public class Bitcoin extends Bank {
 	}
 
 	public Urllib login() throws LoginException, BankException {
-		urlopen = new Urllib();
+		urlopen = new Urllib(context);
 
 		try {
 			String response = urlopen.open(API_URL + username);
@@ -83,13 +81,15 @@ public class Bitcoin extends Bank {
 						R.string.invalid_username_password).toString());
 			}
 			ObjectMapper vObjectMapper = new ObjectMapper();
+            vObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            vObjectMapper.configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false);
 			BlockchainResponse r = vObjectMapper.readValue(urlopen.open(API_URL + username), BlockchainResponse.class);
 			Account a = new Account("Bitcoin", new BigDecimal(r.getFinalBalance()).divide(BigDecimal.valueOf(100000000)), "1");
 			a.setCurrency("BTC");
 			accounts.add(a);
 			setCurrency("BTC");
 		} catch (JsonParseException e) {
-			throw new LoginException(res.getText(
+			throw new BankException(res.getText(
 					R.string.invalid_bitcoin_address).toString());
 		}catch (ClientProtocolException e) {
 			e.printStackTrace();

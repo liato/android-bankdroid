@@ -29,7 +29,6 @@ import org.apache.http.message.BasicNameValuePair;
 import android.content.Context;
 import android.text.Html;
 import android.text.InputType;
-import android.util.Log;
 
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
@@ -41,6 +40,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class FirstCard extends Bank {
@@ -75,7 +75,7 @@ public class FirstCard extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(true);
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_firstcard));
         response = urlopen.open("https://www.firstcard.se/login.jsp");
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         postData.add(new BasicNameValuePair("op", "login"));                

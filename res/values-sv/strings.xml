@@ -28,6 +28,7 @@
     <string name="bank">Bank</string>
     <string name="custom_name">Eget Namn (frivilligt)</string>
     <string name="error_desc">Senaste uppdateringsförsöket misslyckades och uppdateringar för detta konto har inaktiverats. Se till att lösenord och användarnamn är korrekt angivet och tryck på spara-knappen.</string>
+    <string name="email">E-post</string>
 
     <string name="cancel">AVBRYT</string>
     <string name="save">SPARA</string>
@@ -59,7 +60,7 @@
 	<string name="update_transaction_history_title">Uppdatera kontoutdrag</string>
 	<string name="update_transaction_history_summary">Uppdatera kontoutdrag vid automatiska uppdateringar</string>
 	<string name="number_of_notifications_title">Antal notifieringar</string>
-	<string name="number_of_notifications_summary">Antal notifieringa som visas samtidigt</string>
+	<string name="number_of_notifications_summary">Antal notifieringar som visas samtidigt</string>
 	<string name="appearance_title">Utseende</string>
 	<string name="widgets_title">Widgets</string>
 	<string name="round_widget_balance_title">Avrunda saldo på widgets</string>
@@ -69,16 +70,16 @@
 	<string name="notify_min_delta_title">Minsta förändring</string>
 	<string name="notify_min_delta_summary">Visa endast notifiering om saldoförändringar är minst så här stor</string>
 	<string name="widget_opens_transactions_title">Widget-klick öppnar kontoutdrag</string>
-	<string name="widget_opens_transactions_summary">Öppna kontoutdraget för kontot när du klickar på en widget.</string>
+	<string name="widget_opens_transactions_summary">Öppna kontoutdraget för kontot när du klickar på en widget</string>
 	<string name="widget_updates_transactions_title">Uppdatera kontoutdrag från widget</string>
-	<string name="widget_updates_transactions_summary">Uppdatering från widget uppdaterar både saldo och kontoutdrag.</string>
+	<string name="widget_updates_transactions_summary">Uppdatering från widget uppdaterar både saldo och kontoutdrag</string>
 	<string name="notifications_title">Notifieringar</string>
 	<string name="enable_notifications_title">Aktivera notifieringar</string>
 	<string name="enable_notifications_summary">Notifiera vid kontoförändringar</string>
 	<string name="vibrate_title">Vibrera</string>
 	<string name="vibrate_summary">Vibrera vid kontoförändringar</string>
 	<string name="led_title">Blinka LED:en</string>
-	<string name="led_summary">Blinka LED:en vid kontoförändringar. (Fungerar ej på alla enheter.)</string>
+	<string name="led_summary">Blinka LED:en vid kontoförändringar (fungerar ej på alla enheter)</string>
 	<string name="led_color_title">LED-färg</string>
    	<string name="notification_sound_title">Notifieringsljud</string>
 	<string name="notification_sound_summary">Välj ett notifieringsljud</string>

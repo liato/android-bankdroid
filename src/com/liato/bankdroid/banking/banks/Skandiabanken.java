@@ -29,6 +29,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Skandiabanken extends Bank {
@@ -75,7 +76,7 @@ public class Skandiabanken extends Bank {
 
 	@Override
 	public Urllib login() throws LoginException, BankException {
-		urlopen = new Urllib();
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_skandiabanken));
 
 		HashMap<String, String> headers = urlopen.getHeaders();
 		headers.put(HTTP_HEADER_SMARTREFILL_APPLICATION_ID,

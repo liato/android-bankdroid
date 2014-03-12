@@ -148,7 +148,7 @@ public class LiveViewService extends Service {
 	public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
         Log.d(PluginConstants.LOG_TAG, "Enter LiveViewService.onStart.");
-        
+        if (intent == null) return;
 		if (intent.getBooleanExtra(INTENT_EXTRA_ANNOUNCE, false)) {
 			Bundle extras = intent.getExtras();
 			if (extras != null) {

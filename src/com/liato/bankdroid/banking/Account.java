@@ -18,6 +18,7 @@ package com.liato.bankdroid.banking;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.liato.bankdroid.provider.IAccountTypes;
 
@@ -31,14 +32,14 @@ public class Account implements IAccountTypes {
 	private boolean hidden = false;
 	private boolean notify = true;
 	private String currency;
-	private ArrayList<Transaction> transactions;
+	private List<Transaction> transactions;
 	private String aliasfor;
 
-	public ArrayList<Transaction> getTransactions() {
+	public List<Transaction> getTransactions() {
 		return transactions;
 	}
 
-	public void setTransactions(final ArrayList<Transaction> transactions) {
+	public void setTransactions(final List<Transaction> transactions) {
 		this.transactions = transactions;
 	}
 

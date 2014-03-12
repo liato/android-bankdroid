@@ -16,17 +16,8 @@
 
 package com.liato.bankdroid;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-
-import com.liato.bankdroid.banking.Account;
-import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.BankFactory;
-import com.liato.bankdroid.banking.Transaction;
-
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +27,15 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.liato.bankdroid.banking.Account;
+import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.BankFactory;
+import com.liato.bankdroid.banking.Transaction;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TransactionsActivity extends LockableActivity {
 	final static String TAG = "TransactionActivity";
@@ -63,7 +63,7 @@ public class TransactionsActivity extends LockableActivity {
 		viewAccountName.setText(account.getName());
 		viewAccountBalance.setText(Helpers.formatBalance(account.getBalance(), account.getCurrency()));
 		icon.setImageResource(bank.getImageResource());
-		ArrayList<Transaction> transactions = account.getTransactions();
+		List<Transaction> transactions = account.getTransactions();
 
 		if (transactions.size() > 0) {
 			findViewById(R.id.txtTranDesc).setVisibility(View.GONE);
@@ -90,7 +90,7 @@ public class TransactionsActivity extends LockableActivity {
 		private LayoutInflater inflater;
 		private ArrayList<Object> items = new ArrayList<Object>();
 
-		public TransactionsAdapter(ArrayList<Transaction> transactions) {
+		public TransactionsAdapter(List<Transaction> transactions) {
 			inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			if (!transactions.isEmpty()) {
 				String date = transactions.get(0).getDate();

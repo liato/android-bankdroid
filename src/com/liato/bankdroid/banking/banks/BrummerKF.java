@@ -36,12 +36,12 @@ import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class BrummerKF extends Bank {
@@ -84,7 +84,8 @@ public class BrummerKF extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(true,true);
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_brummer));
+        urlopen.setAllowCircularRedirects(true);
         response = urlopen.open("https://www.brummer.se/sv/online/privat/Login/");
         
         Matcher mViewstate = reViewstate.matcher(response);

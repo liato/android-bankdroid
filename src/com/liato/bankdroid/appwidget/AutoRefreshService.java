@@ -139,7 +139,6 @@ public class AutoRefreshService extends Service {
 
 		// http://www.freesound.org/samplesViewSingle.php?id=75235
 		// http://www.freesound.org/samplesViewSingle.php?id=91924
-		//Log.d(TAG, "Notification sound: " + prefs.getString("notification_sound", "none"));
 		if (prefs.getString("notification_sound", null) != null) {
 			notification.sound = Uri.parse(prefs.getString(
 					"notification_sound", null));
@@ -150,7 +149,6 @@ public class AutoRefreshService extends Service {
 			// notification.defaults |= Notification.DEFAULT_VIBRATE;
 		}
 
-		Log.d("LED", "true? " + prefs.getBoolean("notify_with_led", true));
         if (prefs.getBoolean("notify_with_led", true)) {
             notification.ledARGB = prefs.getInt("notify_with_led_color", context.getResources().getColor(R.color.default_led_color));
             notification.flags |= Notification.FLAG_SHOW_LIGHTS;
@@ -241,10 +239,8 @@ public class AutoRefreshService extends Service {
 					continue;
 				}
 				if (bank.isDisabled()) {
-					//Log.d(TAG, bank.getName() + " (" + bank.getDisplayName() + ") is disabled. Skipping refresh.");
 					continue;
 				}
-				//Log.d(TAG, "Refreshing " + bank.getName() + " (" + bank.getDisplayName() + ").");
 				try {
 					currentBalance = bank.getBalance();
 					accounts.clear();
@@ -324,8 +320,10 @@ public class AutoRefreshService extends Service {
 					db.disableBank(bank.getDbId());
 				}
                 catch (BankChoiceException e) {
+                }
+                catch (Exception e) {
                     Log.e(TAG, "Error while updating bank '" + bank.getDbId()
-                            + "'; LoginException: " + e.getMessage());
+                            + "'; Exception: " + e.getMessage());
                 }
 			}
 

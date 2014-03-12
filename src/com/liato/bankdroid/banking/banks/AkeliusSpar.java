@@ -42,6 +42,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class AkeliusSpar extends Bank {
@@ -86,7 +87,7 @@ public class AkeliusSpar extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib();
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_akeliusspar));
         String response = urlopen.open("https://www.online.akeliusspar.se/login.mws");
         Matcher matcher = reLogintoken.matcher(response);
         if (!matcher.find()) {

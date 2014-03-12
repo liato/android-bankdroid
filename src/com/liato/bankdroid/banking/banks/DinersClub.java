@@ -29,7 +29,6 @@ import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
 import android.text.Html;
-import android.util.Log;
 
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
@@ -41,6 +40,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class DinersClub extends Bank {
@@ -77,8 +77,13 @@ public class DinersClub extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(true);
-        response = urlopen.open("https://secure.dinersclub.se/dcs/login.aspx");
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_dinersclub));
+        try {
+            response = urlopen.open("https://secure.dinersclub.se/dcs/login.aspx");
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw e;
+        }
         Matcher matcher = reViewState.matcher(response);
         if (!matcher.find()) {
             throw new BankException(res.getText(R.string.unable_to_find).toString()+" ViewState.");
@@ -171,10 +176,6 @@ public class DinersClub extends Bank {
 	@Override
 	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
 		super.updateTransactions(account, urlopen);
-		if (!urlopen.acceptsInvalidCertificates()) { //Should never happen, but we'll check it anyway.
-			urlopen = login();
-		}
-
 		String response = null;
 		Matcher matcher;
 		try {

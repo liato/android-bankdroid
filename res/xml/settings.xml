@@ -252,12 +252,18 @@
 					android:title="Update freq. in sec."
 					android:summary="Update frequenzy is given in seconds instead of minutes"
 					android:dependency="debug_mode" />
-				<CheckBoxPreference
-					android:key="debug_only_testbank"
-					android:defaultValue="false"
-					android:title="Testbank only"
-					android:summary="Only auto update 'Testbank' banks"
-					android:dependency="debug_mode" />
+                <CheckBoxPreference
+                    android:key="debug_only_testbank"
+                    android:defaultValue="false"
+                    android:title="Testbank only"
+                    android:summary="Only auto update 'Testbank' banks"
+                    android:dependency="debug_mode" />
+                <CheckBoxPreference
+                    android:key="no_cert_pinning"
+                    android:defaultValue="false"
+                    android:title="Don't use certificate pinning"
+                    android:summary="Use the system trust store"
+                    android:dependency="debug_mode" />
 				<!-- <CheckBoxPreference
 					android:key="debug_coop_sendmail"
 					android:defaultValue="false"

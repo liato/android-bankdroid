@@ -16,12 +16,16 @@
 
 package eu.nullbyte.android.urllib;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.os.Build;
+import android.preference.PreferenceManager;
+
+import com.liato.bankdroid.BuildConfig;
+import com.liato.bankdroid.R;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -52,47 +56,59 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.Certificate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 public class Urllib {
     public static String DEFAULT_USER_AGENT = "Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17";
-    
-    private String userAgent = DEFAULT_USER_AGENT;
+    private String userAgent = null;
     private DefaultHttpClient httpclient;
-	private HttpContext context;
+	private HttpContext mHttpContext;
 	private String currentURI;
-	private boolean acceptInvalidCertificates = false;
 	private String charset = HTTP.UTF_8;
 	private HashMap<String, String> headers;
-	
-	public Urllib() {
-		this(false);
-	}
-	public Urllib(boolean acceptInvalidCertificates) {
-		this(acceptInvalidCertificates, false);
-	}	
+    private Context mContext;
 
-	public Urllib(boolean acceptInvalidCertificates, boolean allowCircularRedirects) {
-		this.acceptInvalidCertificates = acceptInvalidCertificates;
+
+    public Urllib(Context context) {
+        this(context, null);
+    }
+
+	public Urllib(Context context, Certificate[] pins) {
+        mContext = context;
 		this.headers = new HashMap<String, String>();
+        userAgent = createUserAgentString();
     	HttpParams params = new BasicHttpParams(); 
     	HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
         HttpProtocolParams.setContentCharset(params, this.charset);
         params.setBooleanParameter("http.protocol.expect-continue", false);
-        if (allowCircularRedirects) params.setBooleanParameter("http.protocol.allow-circular-redirects", true);
-		if (acceptInvalidCertificates) {
-	        SchemeRegistry registry = new SchemeRegistry();
-	        registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-	        registry.register(new Scheme("https", new EasySSLSocketFactory(), 443));
-	        ClientConnectionManager manager = new ThreadSafeClientConnManager(params, registry);
-	        httpclient = new DefaultHttpClient(manager, params);
-		}
-		else {
-            SchemeRegistry registry = new SchemeRegistry();
-            registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-            registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
-            ClientConnectionManager  manager = new ThreadSafeClientConnManager(params, registry);
-			httpclient = new DefaultHttpClient(manager, params);
-		}
-    	context = new BasicHttpContext();
+        SchemeRegistry registry = new SchemeRegistry();
+        registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean trustSystemKeystore = prefs.getBoolean("debug_mode", false) && prefs.getBoolean("no_cert_pinning", false);
+        try {
+            registry.register(new Scheme("https", pins != null && !trustSystemKeystore ? new CertPinningSSLSocketFactory(pins) : SSLSocketFactory.getSocketFactory(), 443));
+        } catch (UnrecoverableKeyException e) {
+            e.printStackTrace();
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        }
+        ClientConnectionManager manager = new ThreadSafeClientConnManager(params, registry);
+        httpclient = new DefaultHttpClient(manager, params);
+    	mHttpContext = new BasicHttpContext();
     }
     
     public String open(String url) throws ClientProtocolException, IOException {
@@ -132,10 +148,10 @@ public class Urllib {
             request.addHeader(headerKeys[i], headerVals[i]);
         }
 
-        response = httpclient.execute(request, context);
+        response = httpclient.execute(request, mHttpContext);
 
-        //HttpUriRequest currentReq = (HttpUriRequest)context.getAttribute(ExecutionContext.HTTP_REQUEST);
-        //HttpHost currentHost = (HttpHost)context.getAttribute(ExecutionContext.HTTP_TARGET_HOST);
+        //HttpUriRequest currentReq = (HttpUriRequest)mHttpContext.getAttribute(ExecutionContext.HTTP_REQUEST);
+        //HttpHost currentHost = (HttpHost)mHttpContext.getAttribute(ExecutionContext.HTTP_TARGET_HOST);
         //this.currentURI = currentHost.toURI() + currentReq.getURI();
         this.currentURI = request.getURI().toString();
 
@@ -143,7 +159,7 @@ public class Urllib {
     }
 
     public InputStream openStream(String url) throws ClientProtocolException, IOException {
-        return openStream(url, new BasicHttpEntity(), false);
+        return openStream(url, (HttpEntity)null, false);
     }
     
     public HttpEntity toEntity(List<NameValuePair> postData) {
@@ -170,7 +186,7 @@ public class Urllib {
         String[] headerKeys = (String[]) this.headers.keySet().toArray(new String[headers.size()]);
         String[] headerVals = (String[]) this.headers.values().toArray(new String[headers.size()]);
         HttpUriRequest request;
-        if (postData == null && !forcePost) {
+        if (!forcePost && postData == null) {
             request = new HttpGet(url);
         }
         else {
@@ -194,8 +210,8 @@ public class Urllib {
         httpclient.getConnectionManager().shutdown();
     }
     
-    public HttpContext getContext() {
-    	return context;
+    public HttpContext getmHttpContext() {
+    	return mHttpContext;
     }
     
     public String getCurrentURI() {
@@ -209,7 +225,13 @@ public class Urllib {
     public void setContentCharset(String charset) {
         this.charset = charset;
         HttpProtocolParams.setContentCharset(httpclient.getParams(), this.charset);
-    }    
+    }
+
+
+    public void setAllowCircularRedirects(boolean allow) {
+        httpclient.getParams().setBooleanParameter("http.protocol.allow-circular-redirects", allow);
+    }
+
     public void addHeader(String key, String value) {
         this.headers.put(key, value);
     }
@@ -236,12 +258,34 @@ public class Urllib {
     }
 
     
-    public boolean acceptsInvalidCertificates() {
-    	return acceptInvalidCertificates;
-    }
-    
     public void setUserAgent(String userAgent) {
     	this.userAgent = userAgent; 
+    }
+
+    private String createUserAgentString() {
+        String appName = mContext.getString(R.string.app_name);
+        String packageName = "";
+        String appVersion = "";
+
+        try {
+            PackageInfo packageInfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), PackageManager.GET_CONFIGURATIONS);
+            packageName = packageInfo.packageName;
+            appVersion = packageInfo.versionName;
+        } catch (PackageManager.NameNotFoundException ignore) {
+        }
+
+        Configuration config = mContext.getResources().getConfiguration();
+        return String.format("%1$s/%2$s (%3$s; U; Android %4$s; %5$s-%6$s; %10$s Build/%7$s; %8$s) %9$s %10$s"
+                , appName
+                , appVersion
+                , System.getProperty("os.name", "Linux")
+                , Build.VERSION.RELEASE
+                , config.locale.getLanguage().toLowerCase()
+                , config.locale.getCountry().toLowerCase()
+                , Build.ID
+                , Build.BRAND
+                , Build.MANUFACTURER
+                , Build.MODEL);
     }
     
 }

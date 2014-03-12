@@ -70,7 +70,7 @@ public class AppeakPoker extends Bank {
 
 	@Override
 	protected LoginPackage preLogin() throws BankException, ClientProtocolException, IOException {
-		urlopen = new Urllib();
+		urlopen = new Urllib(context);
 		List<NameValuePair> postData = new ArrayList<NameValuePair>();
 		return new LoginPackage(urlopen, postData, "", String.format("http://poker.appeak.se/playerInfo/?username=%s", username));
 	}

@@ -40,6 +40,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class PlusGirot extends Bank {
@@ -73,7 +74,7 @@ public class PlusGirot extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(true);
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_plusgirot));
         // Request first page to get cookies
         response = urlopen.open("https://kontoutdrag.plusgirot.se/ku/html/epostllg.htm");
 

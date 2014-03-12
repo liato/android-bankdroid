@@ -128,22 +128,6 @@ public class Helpers {
         return formatBalance(new BigDecimal(balance), curr);
     }
 
-    public static void slowDebug(String TAG, String text) {
-        slowDebug(TAG, text, 100);
-    }
-    public static void slowDebug(String TAG, String text, int sleep) {
-        for (String s : text.split("\n")) {
-            Log.d(TAG, s);
-            try {
-                Thread.sleep(sleep);
-            }
-            catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-    }
-
     static public void setActivityAnimation(Activity activity, int in, int out) {
         try {
             Method method = Activity.class.getMethod("overridePendingTransition", new Class[]{int.class, int.class});

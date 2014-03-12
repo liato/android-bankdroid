@@ -28,7 +28,7 @@
     <string name="extras_field">Extras</string>
     <string name="bank">Bank</string>
     <string name="error_desc">The last update was unsuccessful and updates for this account have been disabled. Make sure you\'ve entered your username and password correctly and press the save button.</string>
-
+    <string name="email">E-mail</string>
 
     <string name="cancel">CANCEL</string>
     <string name="save">SAVE</string>
@@ -71,16 +71,16 @@
 	<string name="notify_min_delta_title">Minimum change</string>
 	<string name="notify_min_delta_summary">Only display a notification if the change is at least this big</string>
 	<string name="widget_opens_transactions_title">Widget click opens transactions</string>
-	<string name="widget_opens_transactions_summary">Open the transactions screen when a widget is clicked. If unchecked the main screen is shown.</string>
-	<string name="widget_updates_transactions_title">Update transactions from widget.</string>
-	<string name="widget_updates_transactions_summary">Updates from widgets will update both the balance and the transaction history.</string>
+	<string name="widget_opens_transactions_summary">If unchecked the main screen is shown</string>
+	<string name="widget_updates_transactions_title">Update transactions from widget</string>
+	<string name="widget_updates_transactions_summary">Updates from widgets will update both the balance and the transaction history</string>
 	<string name="notifications_title">Notifications</string>
 	<string name="enable_notifications_title">Enable notifications</string>
 	<string name="enable_notifications_summary">Notify on account changes</string>
 	<string name="vibrate_title">Vibrate</string>
 	<string name="vibrate_summary">Vibrate on account changes</string>
 	<string name="led_title">Flash LED</string>
-	<string name="led_summary">Flash the LED on account changes. (Not supported by all devices.)</string>
+	<string name="led_summary">Flash the LED on account changes (not supported by all devices)</string>
 	<string name="led_color_title">LED color</string>
    	<string name="notification_sound_title">Notification sound</string>
 	<string name="notification_sound_summary">Select notification sound</string>
@@ -296,7 +296,8 @@
 	<string name="card_id">Card ID</string>
 	<string name="card_number">Card number</string>
 	<string name="bitcoin_address">Bitcoin address</string>
-		
+    <string name="cvc">CVC</string>
+
 	<string name="permission_provider_label">Basic account information and the transaction history</string>
 	<string name="permission_provider_desc">Allows the application to access what banks and accounts are configured in BankDroids. Your Bank credentials are not exposed. Transaction history can also be accessed.</string>
 

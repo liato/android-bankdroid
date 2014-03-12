@@ -39,6 +39,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Nordnetdirekt extends Bank {
@@ -76,7 +77,7 @@ public class Nordnetdirekt extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib();
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_nordnetdirekt));
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         response = urlopen.open("https://www.nordnetdirekt.se/mux/oinloggad/startsida/index.html");
 

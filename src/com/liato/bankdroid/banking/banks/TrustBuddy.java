@@ -35,12 +35,12 @@ import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class TrustBuddy extends Bank {
@@ -79,7 +79,8 @@ public class TrustBuddy extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(true,true);
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_trustbuddy));
+        urlopen.setAllowCircularRedirects(true);
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         postData.add(new BasicNameValuePair("username", username));
         postData.add(new BasicNameValuePair("password", password));

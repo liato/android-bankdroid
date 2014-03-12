@@ -38,6 +38,7 @@ import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class TicketRikskortet extends Bank {
@@ -73,7 +74,7 @@ public class TicketRikskortet extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib();
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_ticketrikskortet));
         response = urlopen.open("https://www.edenred.se/sv/System/Logga-in/");
         Matcher matcher = reViewState.matcher(response);
         if (!matcher.find()) {

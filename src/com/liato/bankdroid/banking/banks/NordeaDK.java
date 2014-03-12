@@ -26,6 +26,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class NordeaDK extends Bank {
@@ -90,7 +91,7 @@ public class NordeaDK extends Bank {
 	protected LoginPackage preLogin() throws BankException,
 			ClientProtocolException, IOException {
 		if (urlopen == null) {
-			urlopen = new Urllib();
+            urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_nordea_dk));
 		}
 		response = urlopen
 				.open("https://www.netbank.nordea.dk/mnetbank/index.jsp");

@@ -40,6 +40,7 @@ import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public abstract class MobilbankenBase extends Bank {
@@ -71,7 +72,8 @@ public abstract class MobilbankenBase extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(true, true);
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_mobilbanken));
+        urlopen.setAllowCircularRedirects(true);
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         String postUrl = String.format("https://mobil-banken.se/%s/login.html", targetId);
         response = urlopen.open(postUrl);

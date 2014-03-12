@@ -71,7 +71,7 @@ public class TestBank extends Bank {
 
 	@Override
 	public Urllib login() throws LoginException, BankException {
-		urlopen = new Urllib();
+		urlopen = new Urllib(context);
 		return urlopen;
 	}
 	

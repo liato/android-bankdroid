@@ -32,7 +32,6 @@ import java.util.regex.Pattern;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.conn.EofSensorInputStream;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
@@ -60,6 +59,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Lansforsakringar extends Bank {
@@ -104,7 +104,9 @@ public class Lansforsakringar extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        Urllib weblogin = new Urllib(false, true);
+        Urllib weblogin = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_lansforsakringar));
+        weblogin.setAllowCircularRedirects(true);
+
         String response = weblogin.open("https://mobil.lansforsakringar.se/lf-mobile/pages/login.faces");
         Matcher matcher = reViewState.matcher(response);
         if (!matcher.find()) {
@@ -129,12 +131,12 @@ public class Lansforsakringar extends Bank {
     }
 
     public Urllib login() throws LoginException, BankException {
-        urlopen = new Urllib();
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_lansforsakringar));
         urlopen.addHeader("Content-Type", "application/json; charset=UTF-8");
         urlopen.addHeader("DeviceId", UUID.randomUUID().toString());
         urlopen.addHeader("deviceInfo", "Galaxy Nexus;4.1.1;1.8;Portrait");
         //TODO: Change user-agent to "lf-android-app" if they block Bankdroid
-        urlopen.setUserAgent(Helpers.getAppUserAgentString(getContext()));
+        //urlopen.setUserAgent("lf-android-app");
 
         NumberResponse nr = readJsonValue(API_BASEURL + "security/client", null, NumberResponse.class);
         ChallengeResponse cr = readJsonValue(API_BASEURL + "security/client", objectAsJson(new ChallengeRequest(nr.getNumber(), nr.getNumberPair(), generateChallenge(nr.getNumber()))), ChallengeResponse.class);

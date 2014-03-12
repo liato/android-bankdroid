@@ -38,6 +38,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Vasttrafik extends Bank {
@@ -69,8 +70,8 @@ public class Vasttrafik extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
     ClientProtocolException, IOException {
-		urlopen = new Urllib(true);
-		response = urlopen.open("https://www.vasttrafik.se/mina-sidor/logga-in/");
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_vasttrafik));
+        response = urlopen.open("https://www.vasttrafik.se/mina-sidor/logga-in/");
 
 		Matcher matcher = reViewState.matcher(response);
 		if (!matcher.find()) {

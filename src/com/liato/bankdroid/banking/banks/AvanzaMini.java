@@ -41,6 +41,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class AvanzaMini extends Bank {
@@ -69,7 +70,8 @@ public class AvanzaMini extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(true, true);
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_avanza_mini));
+        urlopen.setAllowCircularRedirects(true);
         String response = urlopen.open("https://www.avanza.se/mini/logga_in/");
         Document d = Jsoup.parse(response);
         Element e = d.getElementById("javax.faces.ViewState");

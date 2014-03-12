@@ -41,6 +41,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class IkanoBank extends Bank {
@@ -82,7 +83,7 @@ public class IkanoBank extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(true);
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_ikanobank));
         response = urlopen.open("https://secure.ikanobank.se/login");
         Matcher matcher;
         if (response.contains("Banken är stängd")) {
@@ -175,11 +176,13 @@ public class IkanoBank extends Bank {
         matcher = reViewState.matcher(response);
         if (!matcher.find()) {
             Log.e(TAG, "Unable to find ViewState. L156.");
+            return;
         }
         String strViewState = matcher.group(1);
         matcher = reEventValidation.matcher(response);
         if (!matcher.find()) {
             Log.e(TAG, "Unable to find EventValidation. L161.");
+            return;
         }
         String strEventValidation = matcher.group(1);       
 

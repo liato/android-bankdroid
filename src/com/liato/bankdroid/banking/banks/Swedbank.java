@@ -44,6 +44,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Swedbank extends Bank {
@@ -82,7 +83,7 @@ public class Swedbank extends Bank {
 	@Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib();
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_swedbank));
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         Matcher matcher;
         response = urlopen.open("https://mobilbank.swedbank.se/banking/swedbank/login.html");

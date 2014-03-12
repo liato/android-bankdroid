@@ -30,7 +30,6 @@ import com.liato.bankdroid.banking.banks.AkeliusSpar;
 import com.liato.bankdroid.banking.banks.AmericanExpress;
 import com.liato.bankdroid.banking.banks.AppeakPoker;
 import com.liato.bankdroid.banking.banks.Audi;
-import com.liato.bankdroid.banking.banks.Avanza;
 import com.liato.bankdroid.banking.banks.AvanzaMini;
 import com.liato.bankdroid.banking.banks.BetterGlobe;
 import com.liato.bankdroid.banking.banks.Bioklubben;
@@ -44,6 +43,7 @@ import com.liato.bankdroid.banking.banks.DinersClub;
 import com.liato.bankdroid.banking.banks.Djurgarden;
 import com.liato.bankdroid.banking.banks.EasyCard;
 import com.liato.bankdroid.banking.banks.EurobonusMastercard;
+import com.liato.bankdroid.banking.banks.EurobonusMastercardDk;
 import com.liato.bankdroid.banking.banks.EurobonusMastercardNo;
 import com.liato.bankdroid.banking.banks.Eurocard;
 import com.liato.bankdroid.banking.banks.Everydaycard;
@@ -94,6 +94,7 @@ import com.liato.bankdroid.banking.banks.Volvofinans;
 import com.liato.bankdroid.banking.banks.Wallet;
 import com.liato.bankdroid.banking.banks.Zidisha;
 import com.liato.bankdroid.banking.banks.Nordea.Nordea;
+import com.liato.bankdroid.banking.banks.avanza.Avanza;
 import com.liato.bankdroid.banking.banks.bitcoin.Bitcoin;
 import com.liato.bankdroid.banking.banks.icabanken.ICABanken;
 import com.liato.bankdroid.banking.banks.lansforsakringar.Lansforsakringar;
@@ -156,6 +157,8 @@ public class BankFactory {
         	return new EurobonusMastercard(context);
         case IBankTypes.SASEUROBONUSMASTERCARD_NO:
         	return new EurobonusMastercardNo(context);
+        case IBankTypes.SASEUROBONUSMASTERCARD_DK:
+            return new EurobonusMastercardDk(context);
         case IBankTypes.RIKSLUNCHEN:
             return new Rikslunchen(context);            
         case IBankTypes.HEMKOP:
@@ -332,7 +335,8 @@ public class BankFactory {
         banks.add(new ForexBank(context));
         banks.add(new EurobonusMastercardNo(context));
         banks.add(new Bitcoin(context));
-        
+        banks.add(new EurobonusMastercardDk(context));
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));

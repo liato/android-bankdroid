@@ -24,6 +24,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class EasyCard extends Bank {
@@ -65,7 +66,7 @@ public class EasyCard extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException, ClientProtocolException, IOException {
 
-        urlopen                         = new Urllib(true);
+        urlopen                         = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_easycard));
         response                        = urlopen.open(EasyCard.URL);
         List<NameValuePair> postData    = new ArrayList<NameValuePair>();
 

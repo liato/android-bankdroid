@@ -41,6 +41,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Everydaycard extends Bank {
@@ -86,7 +87,7 @@ public class Everydaycard extends Bank {
 
     private LoginPackage preLoginInternal(String url) throws BankException,
     		ClientProtocolException, IOException {
-    	urlopen = new Urllib(true);
+    	urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_everydaycard));
     	List <NameValuePair> postData = new ArrayList <NameValuePair>();
     	postData.add(new BasicNameValuePair("nextPage", "firstPage"));                
     	postData.add(new BasicNameValuePair("username", username));

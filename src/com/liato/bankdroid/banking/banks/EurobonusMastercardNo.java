@@ -19,6 +19,7 @@ package com.liato.bankdroid.banking.banks;
 import android.content.Context;
 
 import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.banks.sebkort.SEBKortBase;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
@@ -31,15 +32,16 @@ public class EurobonusMastercardNo extends SEBKortBase {
 	private static final int BANKTYPE_ID = Bank.SASEUROBONUSMASTERCARD_NO;
 
 	public EurobonusMastercardNo(Context context) {
-		super(context, "sano", "0102");
+		super(context, "sano", "0117");
 		super.TAG = TAG;
 		super.NAME = NAME;
 		super.NAME_SHORT = NAME_SHORT;
 		super.BANKTYPE_ID = BANKTYPE_ID;
-	}
+        super.currency = "NOK";
+    }
 	
 	public EurobonusMastercardNo(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
-		super(username, password, context, "sano", "0102");
+		super(username, password, context, "sano", "0117");
 	}
 
 }
