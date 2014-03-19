@@ -42,6 +42,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class ICABanken extends Bank {
@@ -77,7 +78,7 @@ public class ICABanken extends Bank {
 	}
 
 	public Urllib login() throws LoginException, BankException {
-		urlopen = new Urllib();
+		urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_icabanken, R.raw.cert_icabanken2));
 		urlopen.addHeader("Accept", "application/json");
 
 		try {
