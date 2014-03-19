@@ -1,42 +1,22 @@
 package com.liato.bankdroid.banking.banks.icabanken.model.response;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.liato.bankdroid.banking.banks.icabanken.model.IcaBankenAccountList;
+import com.liato.bankdroid.banking.banks.icabanken.model.IcaBankenAccount;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LoginResponse {
 
-	private String mABCustomerId;
+	private List<IcaBankenAccount> mAccounts;
 
-	private IcaBankenAccountList mAccountList;
-
-	private String mSessionId;
-
-	@JsonProperty("ABCustomerId")
-	public String getABCustomerId() {
-		return mABCustomerId;
+	@JsonProperty("Accounts")
+	public List<IcaBankenAccount> getAccounts() {
+		return mAccounts;
 	}
 
-	public void setABCustomerId(String pABCustomerId) {
-		this.mABCustomerId = pABCustomerId;
-	}
-
-	@JsonProperty("AccountList")
-	public IcaBankenAccountList getAccountList() {
-		return mAccountList;
-	}
-
-	public void setAccountList(IcaBankenAccountList pAccountList) {
-		this.mAccountList = pAccountList;
-	}
-
-	@JsonProperty("SessionId")
-	public String getSessionId() {
-		return mSessionId;
-	}
-
-	public void setSessionId(String pSessionId) {
-		this.mSessionId = pSessionId;
+	public void setAccounts(List<IcaBankenAccount> pAccounts) {
+		this.mAccounts = pAccounts;
 	}
 }

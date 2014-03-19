@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import org.apache.http.client.ClientProtocolException;
@@ -34,7 +35,6 @@ import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.banks.icabanken.model.IcaBankenAccount;
-import com.liato.bankdroid.banking.banks.icabanken.model.IcaBankenAccountList;
 import com.liato.bankdroid.banking.banks.icabanken.model.IcaBankenTransaction;
 import com.liato.bankdroid.banking.banks.icabanken.model.response.LoginResponse;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
@@ -56,9 +56,7 @@ public class ICABanken extends Bank {
 	private static final String INPUT_HINT_USERNAME = "ÅÅÅÅMMDD-XXXX";
 	private static final boolean STATIC_BALANCE = false;
 
-	private static final String API_KEY = "9A75DD46-82EE-449B-9F78-F11F636BB7BE";
 	private static final String API_URL = "https://appserver.icabanken.se";
-	private static final String API_VERSION = "1.0";
 
 	public ICABanken(Context context) {
 		super(context);
@@ -81,15 +79,10 @@ public class ICABanken extends Bank {
 
 	public Urllib login() throws LoginException, BankException {
 		urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_icabanken, R.raw.cert_icabanken2));
-		urlopen.addHeader("ApiVersion", API_VERSION);
 		urlopen.addHeader("Accept", "application/json");
-		urlopen.addHeader("ApiKey", API_KEY);
-		urlopen.addHeader("ClientHardware", Build.MODEL);
-		urlopen.addHeader("ClientOS", "Android");
-		urlopen.addHeader("ClientOSVersion", Integer.toString(Build.VERSION.SDK_INT));
 
 		try {
-			String response = urlopen.open(API_URL + "/login?customerId="
+			String response = urlopen.open(API_URL + "/services/saldo?customerId="
 					+ username + "&password=" + password);
 			if(response == null || "".equals(response)) {
 				throw new LoginException(res.getText(
@@ -101,7 +94,7 @@ public class ICABanken extends Bank {
 			LoginResponse loginResponse = vObjectMapper.readValue(response,
 					LoginResponse.class);
 
-			addAccounts(loginResponse.getAccountList());
+			addAccounts(loginResponse.getAccounts());
 
 		} catch (ClientProtocolException e) {
 			throw new BankException(e.getMessage());
@@ -126,25 +119,26 @@ public class ICABanken extends Bank {
 			throw new BankException(res.getText(R.string.no_accounts_found)
 					.toString());
 		}
-        super.updateComplete();
 
 	}
 
 	@Override
 	public void updateTransactions(Account account, Urllib urlopen)
 			throws LoginException, BankException {
+		super.updateTransactions(account, urlopen);
+		super.updateComplete();
 	}
 
-	private void addAccounts(IcaBankenAccountList pAccountList) {
-		for (IcaBankenAccount icaAccount : pAccountList.getAccounts()) {
+	private void addAccounts(List<IcaBankenAccount> pAccountList) {
+		for (IcaBankenAccount icaAccount : pAccountList) {
 			Account account = new Account(icaAccount.getName()
 					+ " (Disponibelt)", icaAccount.getAvailableAmount(),
-					icaAccount.getAccountId());
+					icaAccount.getAccountNumber());
 			account.setTransactions(mapTransactions(icaAccount));
 			Account alias = new Account(icaAccount.getName() + " (Saldo)",
 					icaAccount.getCurrentAmount(), "a:"
-							+ icaAccount.getAccountId());
-			alias.setAliasfor(icaAccount.getAccountId());
+							+ icaAccount.getAccountNumber());
+			alias.setAliasfor(icaAccount.getAccountNumber());
 			accounts.add(account);
 			accounts.add(alias);
 			balance.add(account.getBalance());
