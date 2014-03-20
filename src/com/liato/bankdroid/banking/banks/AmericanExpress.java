@@ -49,35 +49,35 @@ import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class AmericanExpress extends Bank {
-	private static final String TAG = "AmericanExpress";
-	private static final String NAME = "American Express";
-	private static final String NAME_SHORT = "americanexpress";
-	private static final String URL = "https://www.americanexpress.com/home/se/home_c.shtml";
-	private static final int BANKTYPE_ID = IBankTypes.AMERICANEXPRESS;
-	
-	private Pattern reAccounts = Pattern.compile("leftnav'\\)\">([^<]+)</a>\\r*\\s*</div>\\r*\\s*</td>\\r*\\s*<td\\s*id=\"headerSectionLeft\"\\s*colspan=\"6\">\\r*\\s*<span\\s*class=\"cardTitle\">.*?sorted_index=(\\d{1,})&?[^>]+>([^<]+)</a>.*?Utest[\\&aring;|å]ende skuld\\s*</div>\\r*\\s*<div[^>]+>[^<]+</div>\\r*\\s*<div[^>]+>([^<]+)</div>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-	private Pattern reTransactions = Pattern.compile("id=\"Roc\\d{1,}\"\\s* class='tableStandardText'>\\r*\\s*<td[^>]+>\\r*\\s*(\\d{1,2}\\s[a-z]{3}\\s\\d{4}).*?</a>\\r*\\s*([^<]*).*?amountPadding'>&nbsp;</td>\\r*\\s*<td\\s*class='amountPadding'>.*?([0-9.,\\s]*kr)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-	
-	private String response = null;
+    private static final String TAG = "AmericanExpress";
+    private static final String NAME = "American Express";
+    private static final String NAME_SHORT = "americanexpress";
+    private static final String URL = "https://www.americanexpress.com/home/se/home_c.shtml";
+    private static final int BANKTYPE_ID = IBankTypes.AMERICANEXPRESS;
 
-	public AmericanExpress(Context context) {
-		super(context);
-		super.TAG = TAG;
-		super.NAME = NAME;
-		super.NAME_SHORT = NAME_SHORT;
-		super.BANKTYPE_ID = BANKTYPE_ID;
-		super.URL = URL;
-	}
+    private Pattern reAccounts = Pattern.compile("leftnav'\\)\">([^<]+)</a>\\r*\\s*</div>\\r*\\s*</td>\\r*\\s*<td\\s*id=\"headerSectionLeft\"\\s*colspan=\"6\">\\r*\\s*<span\\s*class=\"cardTitle\">.*?sorted_index=(\\d{1,})&?[^>]+>([^<]+)</a>.*?Utest[\\&aring;|å]ende skuld\\s*</div>\\r*\\s*<div[^>]+>[^<]+</div>\\r*\\s*<div[^>]+>([^<]+)</div>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private Pattern reTransactions = Pattern.compile("id=\"Roc\\d{1,}\"\\s* class='tableStandardText'>\\r*\\s*<td[^>]+>\\r*\\s*(\\d{1,2}\\s[a-z]{3}\\s\\d{4}).*?</a>\\r*\\s*([^<]*).*?amountPadding'>&nbsp;</td>\\r*\\s*<td\\s*class='amountPadding'>.*?([0-9.,\\s]*kr)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
-	public AmericanExpress(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
-		this(context);
-		this.update(username, password);
-	}
+    private String response = null;
+
+    public AmericanExpress(Context context) {
+        super(context);
+        super.TAG = TAG;
+        super.NAME = NAME;
+        super.NAME_SHORT = NAME_SHORT;
+        super.BANKTYPE_ID = BANKTYPE_ID;
+        super.URL = URL;
+    }
+
+    public AmericanExpress(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+        this(context);
+        this.update(username, password);
+    }
 
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_americanexpress, R.raw.cert_americanexpress2, R.raw.cert_americanexpress3, R.raw.cert_americanexpress4));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_americanexpress, R.raw.cert_americanexpress_global));
         urlopen.setAllowCircularRedirects(true);
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         response = urlopen.open("https://www.americanexpress.com/home/se/home_c.shtml");
@@ -101,34 +101,34 @@ public class AmericanExpress extends Bank {
         return new LoginPackage(urlopen, postData, response, "https://global.americanexpress.com/myca/logon/emea/action?request_type=LogLogonHandler&Face=sv_SE");
     }
 
-	@Override
-	public Urllib login() throws LoginException, BankException {
-		try {
-		    LoginPackage lp = preLogin();
-			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-			
-			if (!response.contains("Your Personal Cards")) {
-				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-			}
-		} catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage());
-		} catch (IOException e) {
-			throw new BankException(e.getMessage());
-		}
-		return urlopen;
-	}
-	
-	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
-		super.update();
-		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
-			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-		}
-		
-		urlopen = login();
-		Matcher matcher = reAccounts.matcher(response);
-		
-		while (matcher.find()) {
+    @Override
+    public Urllib login() throws LoginException, BankException {
+        try {
+            LoginPackage lp = preLogin();
+            response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+
+            if (!response.contains("Your Personal Cards")) {
+                throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+            }
+        } catch (ClientProtocolException e) {
+            throw new BankException(e.getMessage());
+        } catch (IOException e) {
+            throw new BankException(e.getMessage());
+        }
+        return urlopen;
+    }
+
+    @Override
+    public void update() throws BankException, LoginException, BankChoiceException {
+        super.update();
+        if (username == null || password == null || username.length() == 0 || password.length() == 0) {
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+        }
+
+        urlopen = login();
+        Matcher matcher = reAccounts.matcher(response);
+
+        while (matcher.find()) {
             /*
              * Capture groups:
              * GROUP                    EXAMPLE DATA
@@ -138,32 +138,32 @@ public class AmericanExpress extends Bank {
              * 4: Amount                1.111,11 kr
              * 
              */   			    
-			accounts.add(new Account(Html.fromHtml(matcher.group(3)).toString().trim(),
-			        Helpers.parseBalance(matcher.group(4)).negate(),
-			        matcher.group(2).trim()));
-			balance = balance.add(Helpers.parseBalance(matcher.group(4)).negate());
-		}
-		
-		if (accounts.isEmpty()) {
-			throw new BankException(res.getText(R.string.no_accounts_found).toString());
-		}
-	    super.updateComplete();
-	}
+            accounts.add(new Account(Html.fromHtml(matcher.group(3)).toString().trim(),
+                    Helpers.parseBalance(matcher.group(4)).negate(),
+                    matcher.group(2).trim()));
+            balance = balance.add(Helpers.parseBalance(matcher.group(4)).negate());
+        }
 
-	@Override
-	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
-		super.updateTransactions(account, urlopen);
+        if (accounts.isEmpty()) {
+            throw new BankException(res.getText(R.string.no_accounts_found).toString());
+        }
+        super.updateComplete();
+    }
 
-		try {
-			response = urlopen.open("https://global.americanexpress.com/myca/intl/estatement/emea/statement.do?request_type=&Face=sv_SE&BPIndex=0&sorted_index=" + account.getId());
-			Matcher matcher = reTransactions.matcher(response);
-			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-			
-			SimpleDateFormat sdfFrom = new SimpleDateFormat("d MMM yyyy", new Locale("sv-SE"));
+    @Override
+    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+        super.updateTransactions(account, urlopen);
+
+        try {
+            response = urlopen.open("https://global.americanexpress.com/myca/intl/estatement/emea/statement.do?request_type=&Face=sv_SE&BPIndex=0&sorted_index=" + account.getId());
+            Matcher matcher = reTransactions.matcher(response);
+            ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+
+            SimpleDateFormat sdfFrom = new SimpleDateFormat("d MMM yyyy", new Locale("sv-SE"));
             SimpleDateFormat sdfTo = new SimpleDateFormat("yyyy-MM-dd");
             Date transactionDate;
-			
-			while (matcher.find()) {
+
+            while (matcher.find()) {
                 /*
                  * Capture groups:
                  * GROUP                    EXAMPLE DATA
@@ -182,14 +182,14 @@ public class AmericanExpress extends Bank {
                 catch (ParseException e) {
                     Log.w(TAG, "Unable to parse date: " + matcher.group(1).trim());
                 }
-			}
-			account.setTransactions(transactions);
-		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}	
+            }
+            account.setTransactions(transactions);
+        } catch (ClientProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 }

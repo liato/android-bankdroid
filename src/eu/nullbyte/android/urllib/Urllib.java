@@ -27,18 +27,28 @@ import android.preference.PreferenceManager;
 import com.liato.bankdroid.BuildConfig;
 import com.liato.bankdroid.R;
 
+import org.apache.http.ConnectionReuseStrategy;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpException;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.AuthenticationHandler;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpRequestRetryHandler;
+import org.apache.http.client.RedirectHandler;
+import org.apache.http.client.RequestDirector;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.UserTokenHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.ConnectionKeepAliveStrategy;
+import org.apache.http.conn.routing.HttpRoutePlanner;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -47,6 +57,7 @@ import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.DefaultRequestDirector;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
@@ -54,6 +65,8 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.HttpProcessor;
+import org.apache.http.protocol.HttpRequestExecutor;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
@@ -72,23 +85,24 @@ public class Urllib {
     public static String DEFAULT_USER_AGENT = "Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17";
     private String userAgent = null;
     private DefaultHttpClient httpclient;
-	private HttpContext mHttpContext;
-	private String currentURI;
-	private String charset = HTTP.UTF_8;
-	private HashMap<String, String> headers;
+    private HttpContext mHttpContext;
+    private String currentURI;
+    private String charset = HTTP.UTF_8;
+    private HashMap<String, String> headers;
     private Context mContext;
+    private CertPinningSSLSocketFactory mSSLSocketFactory;
 
 
     public Urllib(Context context) {
         this(context, null);
     }
 
-	public Urllib(Context context, Certificate[] pins) {
+    public Urllib(Context context, Certificate[] pins) {
         mContext = context;
-		this.headers = new HashMap<String, String>();
+        this.headers = new HashMap<String, String>();
         userAgent = createUserAgentString();
-    	HttpParams params = new BasicHttpParams(); 
-    	HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+        HttpParams params = new BasicHttpParams();
+        HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
         HttpProtocolParams.setContentCharset(params, this.charset);
         params.setBooleanParameter("http.protocol.expect-continue", false);
         SchemeRegistry registry = new SchemeRegistry();
@@ -96,7 +110,8 @@ public class Urllib {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean trustSystemKeystore = prefs.getBoolean("debug_mode", false) && prefs.getBoolean("no_cert_pinning", false);
         try {
-            registry.register(new Scheme("https", pins != null && !trustSystemKeystore ? new CertPinningSSLSocketFactory(pins) : SSLSocketFactory.getSocketFactory(), 443));
+            mSSLSocketFactory = new CertPinningSSLSocketFactory(pins);
+            registry.register(new Scheme("https", pins != null && !trustSystemKeystore ? mSSLSocketFactory : SSLSocketFactory.getSocketFactory(), 443));
         } catch (UnrecoverableKeyException e) {
             e.printStackTrace();
         } catch (KeyManagementException e) {
@@ -107,20 +122,21 @@ public class Urllib {
             e.printStackTrace();
         }
         ClientConnectionManager manager = new ThreadSafeClientConnManager(params, registry);
-        httpclient = new DefaultHttpClient(manager, params);
-    	mHttpContext = new BasicHttpContext();
+        httpclient = new BankdroidHttpClient(manager, params);
+        mHttpContext = new BasicHttpContext();
+
     }
     
     public String open(String url) throws ClientProtocolException, IOException {
-    	return this.open(url, new ArrayList <NameValuePair>());
+        return this.open(url, new ArrayList <NameValuePair>());
     }
     
     public String post(String url) throws ClientProtocolException, IOException {
-    	return this.open(url, new ArrayList <NameValuePair>(), true);
+        return this.open(url, new ArrayList <NameValuePair>(), true);
     }
     
     public String open(String url, List<NameValuePair> postData) throws ClientProtocolException, IOException {
-    	return open(url, postData, false);
+        return open(url, postData, false);
     }
     public String open(String url, List<NameValuePair> postData, boolean forcePost) throws ClientProtocolException, IOException {
         return EntityUtils.toString(openAsHttpResponse(url, postData, forcePost).getEntity());
@@ -163,22 +179,22 @@ public class Urllib {
     }
     
     public HttpEntity toEntity(List<NameValuePair> postData) {
-    	if (postData != null && !postData.isEmpty()) {
-    		try {
-				return new UrlEncodedFormEntity(postData, this.charset);
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			} 
-    	}
-    	return null;
+        if (postData != null && !postData.isEmpty()) {
+            try {
+                return new UrlEncodedFormEntity(postData, this.charset);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
     
     public InputStream openStream(String url, List<NameValuePair> postData, boolean forcePost) throws ClientProtocolException, IOException {
-    	return openStream(url, toEntity(postData), forcePost);
+        return openStream(url, toEntity(postData), forcePost);
     }
     
     public InputStream openStream(String url, String postData, boolean forcePost) throws ClientProtocolException, IOException {
-    	return openStream(url, postData != null ? new StringEntity(postData, this.charset) : null, forcePost);
+        return openStream(url, postData != null ? new StringEntity(postData, this.charset) : null, forcePost);
     }
     
     public InputStream openStream(String url, HttpEntity postData, boolean forcePost) throws ClientProtocolException, IOException {
@@ -211,11 +227,11 @@ public class Urllib {
     }
     
     public HttpContext getmHttpContext() {
-    	return mHttpContext;
+        return mHttpContext;
     }
     
     public String getCurrentURI() {
-    	return currentURI;
+        return currentURI;
     }
     
     public DefaultHttpClient getHttpclient() {
@@ -259,7 +275,7 @@ public class Urllib {
 
     
     public void setUserAgent(String userAgent) {
-    	this.userAgent = userAgent; 
+        this.userAgent = userAgent;
     }
 
     private String createUserAgentString() {
@@ -287,5 +303,49 @@ public class Urllib {
                 , Build.MANUFACTURER
                 , Build.MODEL);
     }
-    
+
+    class BankdroidHttpClient extends DefaultHttpClient {
+
+        BankdroidHttpClient(ClientConnectionManager conman, HttpParams params) {
+            super(conman, params);
+        }
+
+        @Override
+        public <T> T execute(HttpHost target, HttpRequest request, ResponseHandler<? extends T> responseHandler) throws IOException, ClientProtocolException {
+            updateSocketFactoryHost(target);
+            return super.execute(target, request, responseHandler);
+        }
+
+        @Override
+        public <T> T execute(HttpHost target, HttpRequest request, ResponseHandler<? extends T> responseHandler, HttpContext context) throws IOException, ClientProtocolException {
+            updateSocketFactoryHost(target);
+            return super.execute(target, request, responseHandler, context);
+        }
+
+        @Override
+        protected RequestDirector createClientRequestDirector(HttpRequestExecutor requestExec, ClientConnectionManager conman, ConnectionReuseStrategy reustrat, ConnectionKeepAliveStrategy kastrat, HttpRoutePlanner rouplan, HttpProcessor httpProcessor, HttpRequestRetryHandler retryHandler, RedirectHandler redirectHandler, AuthenticationHandler targetAuthHandler, AuthenticationHandler proxyAuthHandler, UserTokenHandler stateHandler, HttpParams params) {
+            return new DefaultishRequestDirector(requestExec, conman, reustrat, kastrat, rouplan, httpProcessor, retryHandler, redirectHandler, targetAuthHandler, proxyAuthHandler, stateHandler, params);
+        }
+    }
+
+    class DefaultishRequestDirector extends DefaultRequestDirector {
+
+        public DefaultishRequestDirector(HttpRequestExecutor requestExec, ClientConnectionManager conman, ConnectionReuseStrategy reustrat, ConnectionKeepAliveStrategy kastrat, HttpRoutePlanner rouplan, HttpProcessor httpProcessor, HttpRequestRetryHandler retryHandler, RedirectHandler redirectHandler, AuthenticationHandler targetAuthHandler, AuthenticationHandler proxyAuthHandler, UserTokenHandler userTokenHandler, HttpParams params) {
+            super(requestExec, conman, reustrat, kastrat, rouplan, httpProcessor, retryHandler, redirectHandler, targetAuthHandler, proxyAuthHandler, userTokenHandler, params);
+        }
+
+        @Override
+        public HttpResponse execute(HttpHost target, HttpRequest request, HttpContext context) throws HttpException, IOException {
+            updateSocketFactoryHost(target);
+            return super.execute(target, request, context);
+        }
+    }
+
+
+    private void updateSocketFactoryHost(HttpHost host) {
+        if (mSSLSocketFactory != null && host != null) {
+            mSSLSocketFactory.setHost(host.getHostName());
+        }
+    }
+
 }

@@ -44,6 +44,7 @@ public class CertPinningSSLSocketFactory extends SSLSocketFactory {
     private SSLContext sslcontext = null;
     private Certificate[] certificates;
     private String lastHost;
+    private CertPinningTrustManager mTrustManager;
 
     public CertPinningSSLSocketFactory(Certificate[] certificates) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
         super(null);
@@ -55,7 +56,8 @@ public class CertPinningSSLSocketFactory extends SSLSocketFactory {
         //Log.v(TAG, "createSSLContext()");
         try {
             SSLContext context = SSLContext.getInstance("TLS");
-            context.init(null, new TrustManager[] { new CertPinningTrustManager(certificates, lastHost) }, null);
+            mTrustManager = new CertPinningTrustManager(certificates, lastHost);
+            context.init(null, new TrustManager[] { mTrustManager }, null);
             return context;
         } catch (Exception e) {
             throw new IOException(e.getMessage());
@@ -131,5 +133,12 @@ public class CertPinningSSLSocketFactory extends SSLSocketFactory {
         //Log.v(TAG, "createSocket(socket: " + socket + ", host: " + host + ", port: " + port + ", autoClose: " + autoClose);
         lastHost = host;
         return getSSLContext().getSocketFactory().createSocket(socket, host, port, autoClose);
+    }
+
+    public void setHost(String host) {
+        lastHost = host;
+        if (mTrustManager != null) {
+            mTrustManager.setHost(host);
+        }
     }
 }

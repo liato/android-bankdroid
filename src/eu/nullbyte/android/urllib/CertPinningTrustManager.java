@@ -39,4 +39,8 @@ public class CertPinningTrustManager implements X509TrustManager {
         }
         throw new CertificateException(host == null ? "Server certificate not trusted." : String.format("Server certificate not trusted for host: %s.", host));
 	}
+
+    public void setHost(String host) {
+        this.host = host;
+    }
 }
