@@ -1,3 +1,9 @@
+v1.9.6.8: (2014-03-21)
+* Updated SSL certificates for American Express
+* Fix for PayPal
+* Fix for ICA Banken (new api-key)
+
+
 v1.9.6.7: (2014-02-21)
 * Fix login fields parsing for Nordnet
 * Fix for regular Jojo cards
