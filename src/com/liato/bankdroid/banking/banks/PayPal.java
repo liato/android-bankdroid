@@ -48,33 +48,33 @@ import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class PayPal extends Bank {
-	private static final String TAG = "PayPal";
-	private static final String NAME = "PayPal";
-	private static final String NAME_SHORT = "paypal";
-	private static final String URL = "https://www.paypal.com/";
-	private static final int BANKTYPE_ID = IBankTypes.PAYPAL;
-	private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT | + InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
-	private static final boolean STATIC_BALANCE = true;
-	
-	private Pattern reFormAction = Pattern.compile("<form.*?action=\"([^\"]+)\".*?login_form.*?>", Pattern.CASE_INSENSITIVE);
-	private Pattern reBalance = Pattern.compile("PayPal\\s*balance:\\s*(?:</strong>)?<span\\s*class=\"balance\">[^<]+<[^<]+>\\s*(?:<strong>)?[^0-9,.-]*([0-9,. ]+)([A-Z]+)\\s*(?:</strong>)?\\s*<[^<]+>\\s*</span>", Pattern.CASE_INSENSITIVE);
-	private Pattern reAccounts = Pattern.compile("row\">([^>]+)</td>\\s*<td\\s*class=\"textright\">\\s*<[^>]+>\\s*[^0-9,.-]*([0-9,. ]+)([A-Z]+)\\s*<[^>]+>\\s*</td>", Pattern.CASE_INSENSITIVE);
-	private String response = null;
-	public PayPal(Context context) {
-		super(context);
-		super.TAG = TAG;
-		super.NAME = NAME;
-		super.NAME_SHORT = NAME_SHORT;
-		super.BANKTYPE_ID = BANKTYPE_ID;
-		super.URL = URL;
-		super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
-		super.STATIC_BALANCE = STATIC_BALANCE;
-	}
+    private static final String TAG = "PayPal";
+    private static final String NAME = "PayPal";
+    private static final String NAME_SHORT = "paypal";
+    private static final String URL = "https://www.paypal.com/";
+    private static final int BANKTYPE_ID = IBankTypes.PAYPAL;
+    private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT | + InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
+    private static final boolean STATIC_BALANCE = true;
 
-	public PayPal(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
-		this(context);
-		this.update(username, password);
-	}
+    private Pattern reFormAction = Pattern.compile("<form.*?action=\"([^\"]+)\".*?login_form.*?>", Pattern.CASE_INSENSITIVE);
+    private Pattern reBalance = Pattern.compile("PayPal\\s*balance:\\s*(?:</strong>)?<span\\s*class=\"balance\">[^<]+<[^<]+>\\s*(?:<strong>)?[^0-9,.-]*([0-9,. ]+)([A-Z]+)\\s*(?:</strong>)?\\s*<[^<]+>\\s*</span>", Pattern.CASE_INSENSITIVE);
+    private Pattern reAccounts = Pattern.compile("row\">([^>]+)</td>\\s*<td\\s*class=\"textright\">\\s*<[^>]+>\\s*[^0-9,.-]*([0-9,. ]+)([A-Z]+)\\s*<[^>]+>\\s*</td>", Pattern.CASE_INSENSITIVE);
+    private String response = null;
+    public PayPal(Context context) {
+        super(context);
+        super.TAG = TAG;
+        super.NAME = NAME;
+        super.NAME_SHORT = NAME_SHORT;
+        super.BANKTYPE_ID = BANKTYPE_ID;
+        super.URL = URL;
+        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
+        super.STATIC_BALANCE = STATIC_BALANCE;
+    }
+
+    public PayPal(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+        this(context);
+        this.update(username, password);
+    }
 
     
     @Override
@@ -112,37 +112,37 @@ public class PayPal extends Bank {
         return new LoginPackage(urlopen, postData, response, strPostUrl);
     }
 
-	@Override
-	public Urllib login() throws LoginException, BankException {
-		try {
-			LoginPackage lp = preLogin();
-			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-			if (response.contains("If you still can't log in") || response.contains("both your email address and password")) {
-				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-			}
-			if (response.contains("your last action could not be completed")) {
-			    throw new BankException("Error: PPL92");
-			}
-		} catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage());
-		} catch (IOException e) {
-			throw new BankException(e.getMessage());
-		}
-		return urlopen;
-	}
-	
-	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
-		super.update();
-		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
-			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-		}
-		urlopen = login();
-		try {
+    @Override
+    public Urllib login() throws LoginException, BankException {
+        try {
+            LoginPackage lp = preLogin();
+            response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+            if (response.contains("If you still can't log in") || response.contains("both your email address and password")) {
+                throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+            }
+            if (response.contains("your last action could not be completed")) {
+                throw new BankException("Error: PPL92");
+            }
+        } catch (ClientProtocolException e) {
+            throw new BankException(e.getMessage());
+        } catch (IOException e) {
+            throw new BankException(e.getMessage());
+        }
+        return urlopen;
+    }
+
+    @Override
+    public void update() throws BankException, LoginException, BankChoiceException {
+        super.update();
+        if (username == null || password == null || username.length() == 0 || password.length() == 0) {
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+        }
+        urlopen = login();
+        try {
             response = urlopen.open("https://www.paypal.com/en/cgi-bin/webscr?cmd=_login-done&login_access="+((int)(System.currentTimeMillis() / 1000L)));
-    		Matcher matcher = reAccounts.matcher(response);
-    		int accId = 1;
-    		while (matcher.find()) {
+            Matcher matcher = reAccounts.matcher(response);
+            int accId = 1;
+            while (matcher.find()) {
                 /*
                  * Capture groups:
                  * GROUP                EXAMPLE DATA
@@ -151,11 +151,11 @@ public class PayPal extends Bank {
                  * 3: currency          SEK
                  * 
                  */
-    		    Account account = new Account(Html.fromHtml(matcher.group(1)).toString().trim(), Helpers.parseBalance(matcher.group(2)), ""+accId);
-    		    account.setCurrency(matcher.group(3).trim());
-    		    accounts.add(account);
-    		    accId++;
-    		}
+                Account account = new Account(Html.fromHtml(matcher.group(1)).toString().trim(), Helpers.parseBalance(matcher.group(2)), ""+accId);
+                account.setCurrency(matcher.group(3).trim());
+                accounts.add(account);
+                accId++;
+            }
             matcher = reBalance.matcher(response);
             if (matcher.find()) {
                 /*
@@ -174,9 +174,9 @@ public class PayPal extends Bank {
                     accounts.add(account);                }
             }
 
-    		if (accounts.isEmpty()) {
-    			throw new BankException(res.getText(R.string.no_accounts_found).toString());
-    		}
+            if (accounts.isEmpty()) {
+                throw new BankException(res.getText(R.string.no_accounts_found).toString());
+            }
         }
         catch (ClientProtocolException e) {
             // TODO Auto-generated catch block
@@ -189,6 +189,6 @@ public class PayPal extends Bank {
         finally {
             super.updateComplete();
         }
-	}
-	
+    }
+
 }
