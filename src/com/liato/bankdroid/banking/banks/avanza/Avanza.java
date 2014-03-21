@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Nullbyte <http://nullbyte.eu>
+ * Copyright (C) 2014 Nullbyte <http://nullbyte.eu>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,21 +47,15 @@ import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Avanza extends Bank {
-    private static final String TAG = "Avanza";
-    private static final String NAME = "Avanza";
-    private static final String NAME_SHORT = "avanza";
-    private static final String URL = "https://www.avanza.se/";
-    private static final int BANKTYPE_ID = IBankTypes.AVANZA;
-
     private static final String API_URL = "https://iphone.avanza.se/iphone-ws/";
 
     public Avanza(Context context) {
         super(context);
-        super.TAG = TAG;
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
+        TAG = "Avanza";
+        NAME = "Avanza";
+        NAME_SHORT = "avanza";
+        URL = "https://www.avanza.se/";
+        BANKTYPE_ID = IBankTypes.AVANZA;
     }
 
     public Avanza(String username, String password, Context context)

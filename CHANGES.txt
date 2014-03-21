@@ -1,5 +1,5 @@
-v1.9.6.8: (2014-03-21)
-* Updated SSL certificates for American Express
+v1.9.6.8: (2014-03-20)
+* Updated SSL certificate for American Express
 * Fix for PayPal
 * Fix for ICA Banken (new api-key)
 
