@@ -20,15 +20,15 @@ public class CertPinningTrustManager implements X509TrustManager {
         return new X509Certificate[0];
     }
 
-	@Override
-	public void checkClientTrusted(X509Certificate[] chain, String authType)
-			throws CertificateException {
+    @Override
+    public void checkClientTrusted(X509Certificate[] chain, String authType)
+            throws CertificateException {
         throw new CertificateException("Client authentication not implemented.");
-	}
+    }
 
-	@Override
-	public void checkServerTrusted(X509Certificate[] chain, String authType)
-			throws java.security.cert.CertificateException {
+    @Override
+    public void checkServerTrusted(X509Certificate[] chain, String authType)
+            throws java.security.cert.CertificateException {
         for (X509Certificate certificate : chain) {
             byte[] publicKey = certificate.getPublicKey().getEncoded();
             for (Certificate pinnedCert : certificates) {
@@ -38,7 +38,7 @@ public class CertPinningTrustManager implements X509TrustManager {
             }
         }
         throw new CertificateException(host == null ? "Server certificate not trusted." : String.format("Server certificate not trusted for host: %s.", host));
-	}
+    }
 
     public void setHost(String host) {
         this.host = host;

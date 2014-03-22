@@ -1,4 +1,4 @@
-package com.liato.bankdroid.banking.banks.Nordea;
+package com.liato.bankdroid.banking.banks.nordea;
 
 import java.util.ArrayList;
 

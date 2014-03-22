@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Nullbyte <http://nullbyte.eu>
+ * Copyright (C) 2014 Nullbyte <http://nullbyte.eu>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,6 @@
 
 package com.liato.bankdroid.banking;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-
-import net.sf.andhsli.hotspotlogin.SimpleCrypto;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -51,7 +47,6 @@ import com.liato.bankdroid.banking.banks.FirstCard;
 import com.liato.bankdroid.banking.banks.ForexBank;
 import com.liato.bankdroid.banking.banks.Handelsbanken;
 import com.liato.bankdroid.banking.banks.Hemkop;
-import com.liato.bankdroid.banking.banks.ICA;
 import com.liato.bankdroid.banking.banks.IKEA;
 import com.liato.bankdroid.banking.banks.IkanoBank;
 import com.liato.bankdroid.banking.banks.Jojo;
@@ -70,7 +65,6 @@ import com.liato.bankdroid.banking.banks.PlusGirot;
 import com.liato.bankdroid.banking.banks.Preem;
 import com.liato.bankdroid.banking.banks.Quintessentially;
 import com.liato.bankdroid.banking.banks.ResursBank;
-import com.liato.bankdroid.banking.banks.Rikslunchen;
 import com.liato.bankdroid.banking.banks.SEB;
 import com.liato.bankdroid.banking.banks.SJPrio;
 import com.liato.bankdroid.banking.banks.Saab;
@@ -93,15 +87,22 @@ import com.liato.bankdroid.banking.banks.Volkswagen;
 import com.liato.bankdroid.banking.banks.Volvofinans;
 import com.liato.bankdroid.banking.banks.Wallet;
 import com.liato.bankdroid.banking.banks.Zidisha;
-import com.liato.bankdroid.banking.banks.Nordea.Nordea;
 import com.liato.bankdroid.banking.banks.avanza.Avanza;
 import com.liato.bankdroid.banking.banks.bitcoin.Bitcoin;
+import com.liato.bankdroid.banking.banks.ica.ICA;
 import com.liato.bankdroid.banking.banks.icabanken.ICABanken;
 import com.liato.bankdroid.banking.banks.lansforsakringar.Lansforsakringar;
+import com.liato.bankdroid.banking.banks.nordea.Nordea;
+import com.liato.bankdroid.banking.banks.rikslunchen.Rikslunchen;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.db.Crypto;
 import com.liato.bankdroid.db.DBAdapter;
 import com.liato.bankdroid.provider.IBankTypes;
+
+import net.sf.andhsli.hotspotlogin.SimpleCrypto;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
 
 public class BankFactory {
 

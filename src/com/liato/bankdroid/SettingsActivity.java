@@ -16,8 +16,6 @@
 
 package com.liato.bankdroid;
 
-import java.math.BigDecimal;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,10 +31,12 @@ import com.liato.bankdroid.appwidget.AutoRefreshService;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.banks.Swedbank;
-import com.liato.bankdroid.banking.banks.Nordea.Nordea;
+import com.liato.bankdroid.banking.banks.nordea.Nordea;
 import com.liato.bankdroid.lockpattern.ChooseLockPattern;
 import com.liato.bankdroid.lockpattern.ConfirmLockPattern;
 import com.liato.bankdroid.lockpattern.LockPatternUtils;
+
+import java.math.BigDecimal;
 
 public class SettingsActivity extends LockablePreferenceActivity implements OnPreferenceClickListener, OnPreferenceChangeListener {
 	private final static String TAG = "SettingsActivity";
