@@ -1,3 +1,9 @@
+v1.9.6.9: (2014-03-24)
+* Updated SSL certificate for Avanza
+* Use Avanza implementation for Avanza Mini.
+* Update ICA implementation to use internal ICA API.
+
+
 v1.9.6.8: (2014-03-20)
 * Updated SSL certificate for American Express
 * Fix for PayPal
