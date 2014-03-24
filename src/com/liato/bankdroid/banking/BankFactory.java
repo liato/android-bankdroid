@@ -51,6 +51,7 @@ import com.liato.bankdroid.banking.banks.IKEA;
 import com.liato.bankdroid.banking.banks.IkanoBank;
 import com.liato.bankdroid.banking.banks.Jojo;
 import com.liato.bankdroid.banking.banks.Marginalen;
+import com.liato.bankdroid.banking.banks.BlekingeTrafiken;
 import com.liato.bankdroid.banking.banks.McDonalds;
 import com.liato.bankdroid.banking.banks.Meniga;
 import com.liato.bankdroid.banking.banks.NordeaDK;
@@ -256,6 +257,8 @@ public class BankFactory {
             return new ForexBank(context);
         case IBankTypes.BITCOIN:
             return new Bitcoin(context);
+        case IBankTypes.BLEKINGETRAFIKEN:
+        	return new BlekingeTrafiken(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -337,7 +340,8 @@ public class BankFactory {
         banks.add(new EurobonusMastercardNo(context));
         banks.add(new Bitcoin(context));
         banks.add(new EurobonusMastercardDk(context));
-
+        banks.add(new BlekingeTrafiken(context));
+        
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
             banks.add(new TestBank(context));

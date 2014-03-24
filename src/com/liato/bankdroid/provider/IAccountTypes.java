@@ -26,4 +26,5 @@ public interface IAccountTypes {
 	public final static int LOANS = 3;
 	public final static int CCARD = 4;
 	public final static int OTHER = 5;
+	public final static int PERIOD = 6;
 }
