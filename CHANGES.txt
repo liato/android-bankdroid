@@ -1,7 +1,12 @@
+v1.9.6.10: (2014-03-24)
+* Updated SSL certificate for Akelius Invest
+* Fix ICA for accounts with transactions
+
+
 v1.9.6.9: (2014-03-24)
 * Updated SSL certificate for Avanza
-* Use Avanza implementation for Avanza Mini.
-* Update ICA implementation to use internal ICA API.
+* Use Avanza implementation for Avanza Mini
+* Update ICA implementation to use internal ICA API
 
 
 v1.9.6.8: (2014-03-20)
