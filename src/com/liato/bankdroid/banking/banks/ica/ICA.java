@@ -85,10 +85,15 @@ public class ICA extends Bank {
             HttpResponse httpResponse = urlopen.openAsHttpResponse(API_URL + "login", null, false);
             if (httpResponse.getStatusLine().getStatusCode() == 401) {
                 LoginError le = readJsonValue(httpResponse, LoginError.class);
-                if (le != null && !TextUtils.isEmpty(le.getMessage())) {
-                    throw new LoginException(le.getMessage());
+                if (le != null && "UsernamePassword".equals(le.getMessageCode())) {
+                    if (!TextUtils.isEmpty(le.getMessage())) {
+                        throw new LoginException(le.getMessage());
+                    } else  {
+                        throw new LoginException(context.getText(
+                                R.string.invalid_username_password).toString());
+                    }
                 } else {
-                    throw new LoginException(context.getText(
+                    throw new BankException(context.getText(
                             R.string.invalid_username_password).toString());
                 }
             }
@@ -107,11 +112,16 @@ public class ICA extends Bank {
             Overview overview = readJsonValue(httpResponse, Overview.class);
 
             if (overview == null) {
-                throw new BankException(context.getString(R.string.unable_to_find) + "overview.");
+                throw new BankException(context.getString(R.string.unable_to_find) + " overview.");
             }
 
+            if (!TextUtils.isEmpty(overview.getAccountName())) {
+                Account account = new Account(overview.getAccountName(), BigDecimal.valueOf(overview.getAvailableAmount()), overview.getAccountNumber());
+                balance = balance.add(account.getBalance());
+                accounts.add(account);
+            }
             for (com.liato.bankdroid.banking.banks.ica.model.Account a : overview.getAccounts()) {
-                Account account  = new Account(a.getName(), BigDecimal.valueOf(a.getAvailableAmount()), a.getAccountNumber());
+                Account account = new Account(a.getName(), BigDecimal.valueOf(a.getAvailableAmount()), a.getAccountNumber());
                 balance = balance.add(account.getBalance());
                 accounts.add(account);
             }

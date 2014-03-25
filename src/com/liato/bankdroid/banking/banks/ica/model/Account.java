@@ -24,7 +24,7 @@ public class Account {
     @JsonProperty("CreditLimit")
     private double creditLimit;
     @JsonProperty("Transactions")
-    private List<Object> transactions = new ArrayList<Object>();
+    private List<Transaction> transactions = new ArrayList<Transaction>();
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("Name")
@@ -88,12 +88,12 @@ public class Account {
     }
 
     @JsonProperty("Transactions")
-    public List<Object> getTransactions() {
+    public List<Transaction> getTransactions() {
         return transactions;
     }
 
     @JsonProperty("Transactions")
-    public void setTransactions(List<Object> transactions) {
+    public void setTransactions(List<Transaction> transactions) {
         this.transactions = transactions;
     }
 
