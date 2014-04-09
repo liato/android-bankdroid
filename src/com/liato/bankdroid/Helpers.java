@@ -87,6 +87,9 @@ public class Helpers {
     private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     public static BigDecimal parseBalance(String balance) {
+        if (balance == null) {
+            return new BigDecimal(0);
+        }
         balance = balance.replaceAll("[^0-9,.-]*", "");
         balance = balance.replace(",", ".");
         if (balance.indexOf(".") != balance.lastIndexOf(".")) {

@@ -265,43 +265,54 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 
 	public static class WidgetService extends Service {
 
-		@Override
-		public void onStart(Intent intent, int startId) {
-			int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
-			Context context = getApplicationContext();
-			String action = intent.getAction();
-			if (action == null) return; 
-			if (action.equals(AutoRefreshService.BROADCAST_WIDGET_REFRESH)) {
-				new WidgetUpdateTask(context, AppWidgetManager.getInstance(context), appWidgetId).execute();
-			}
-	        else if (action.equals(BankdroidWidgetProvider.ACTION_WIDGET_UNBLUR)) {
+        @Override
+        public void onStart(Intent intent, int startId) {
+            handleStart(intent, startId);
+        }
+
+        @Override
+        public int onStartCommand(Intent intent, int flags, int startId) {
+            handleStart(intent, startId);
+            return START_NOT_STICKY;
+        }
+
+        public void handleStart(Intent intent, int startId) {
+            if (intent == null) return;
+            int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
+            Context context = getApplicationContext();
+            String action = intent.getAction();
+            if (action == null) return;
+            if (action.equals(AutoRefreshService.BROADCAST_WIDGET_REFRESH)) {
+                new WidgetUpdateTask(context, AppWidgetManager.getInstance(context), appWidgetId).execute();
+            }
+            else if (action.equals(BankdroidWidgetProvider.ACTION_WIDGET_UNBLUR)) {
                 unblurAppWidget(context, AppWidgetManager.getInstance(context), appWidgetId);
-                
+
                 Handler blurHandler = new Handler();
                 class BlurRunnable implements Runnable {
                     private int mAppWidgetId;
-                    
+
                     public BlurRunnable(int appWidgetId) {
                         this.mAppWidgetId = appWidgetId;
                     }
-    
+
                     @Override
                     public void run() {
                         Context context = getApplicationContext();
                         blurAppWidget(context, AppWidgetManager.getInstance(context), mAppWidgetId);
                     }
-                     
-                 }
-                
+
+                }
+
 
                 SharedPreferences defprefs = PreferenceManager.getDefaultSharedPreferences(context);
-                Integer unblurTimeout = 1000*Integer.parseInt(defprefs.getString("widget_blur_balance_timeout", "5"));                 
+                Integer unblurTimeout = 1000*Integer.parseInt(defprefs.getString("widget_blur_balance_timeout", "5"));
                 blurHandler.postDelayed(new BlurRunnable(appWidgetId), unblurTimeout);
-	        }
+            }
             else if (action.equals(BankdroidWidgetProvider.ACTION_WIDGET_BLUR)) {
                 blurAppWidget(context, AppWidgetManager.getInstance(context), appWidgetId);
             }
-		}
+        }
 
 		@Override
 		public IBinder onBind(Intent arg0) {
