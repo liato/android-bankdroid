@@ -56,7 +56,7 @@ public class ICABanken extends Bank {
     private static final String INPUT_HINT_USERNAME = "ÅÅÅÅMMDD-XXXX";
     private static final boolean STATIC_BALANCE = false;
 
-    private static final String API_KEY = "E063BAEF-F87B-40A6-A309-3A6CC0F1174E";
+    private static final String API_KEY = "8987B80B-A708-4C61-B8CF-350D4BA289F0";
     private static final String API_URL = "https://appserver.icabanken.se";
     private static final String API_VERSION = "1.0";
 
@@ -87,10 +87,10 @@ public class ICABanken extends Bank {
         urlopen.addHeader("ClientHardware", Build.MODEL);
         urlopen.addHeader("ClientOS", "Android");
         urlopen.addHeader("ClientOSVersion", Integer.toString(Build.VERSION.SDK_INT));
+        urlopen.addHeader("ClientAppVersion", "777");
 
         try {
-            String response = urlopen.open(API_URL + "/login?customerId="
-                    + username + "&password=" + password);
+            String response = urlopen.open(String.format("%s/login/passwordlogin?customerId=%s&password=%s", API_URL, username, password));
             if(response == null || "".equals(response)) {
                 throw new LoginException(res.getText(
                         R.string.invalid_username_password).toString());
