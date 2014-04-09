@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.banks.ica.model.LoginError;
 import com.liato.bankdroid.banking.banks.ica.model.Overview;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
@@ -40,7 +41,9 @@ import org.apache.http.client.ClientProtocolException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import eu.nullbyte.android.urllib.CertificateReader;
@@ -119,11 +122,21 @@ public class ICA extends Bank {
                 Account account = new Account(overview.getAccountName(), BigDecimal.valueOf(overview.getAvailableAmount()), overview.getAccountNumber());
                 balance = balance.add(account.getBalance());
                 accounts.add(account);
+                List<Transaction> transactions = new ArrayList<Transaction>();
+                for (com.liato.bankdroid.banking.banks.ica.model.Transaction t : overview.getTransactions()) {
+                    transactions.add(new Transaction(t.getTransactionDate(), t.getDescription(), BigDecimal.valueOf(t.getAmount())));
+                }
+                account.setTransactions(transactions);
             }
             for (com.liato.bankdroid.banking.banks.ica.model.Account a : overview.getAccounts()) {
                 Account account = new Account(a.getName(), BigDecimal.valueOf(a.getAvailableAmount()), a.getAccountNumber());
                 balance = balance.add(account.getBalance());
                 accounts.add(account);
+                List<Transaction> transactions = new ArrayList<Transaction>();
+                for (com.liato.bankdroid.banking.banks.ica.model.Transaction t : a.getTransactions()) {
+                    transactions.add(new Transaction(t.getTransactionDate(), t.getDescription(), BigDecimal.valueOf(t.getAmount())));
+                }
+                account.setTransactions(transactions);
             }
 
             Account account  = new Account("Erhållen bonus i år", BigDecimal.valueOf(overview.getAcquiredBonus()), "bonus");

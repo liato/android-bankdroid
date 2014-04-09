@@ -39,6 +39,8 @@ public class Overview {
     private double creditLimit;
     @JsonProperty("Accounts")
     private List<Account> accounts = new ArrayList<Account>();
+    @JsonProperty("Transactions")
+    private List<Transaction> transactions = new ArrayList<Transaction>();
 
     @JsonProperty("Saldo")
     public double getSaldo() {
@@ -188,6 +190,16 @@ public class Overview {
     @JsonProperty("Accounts")
     public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
+    }
+
+    @JsonProperty("Transactions")
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    @JsonProperty("Transactions")
+    public void setTransactions(List<Transaction> transactions) {
+        this.transactions = transactions;
     }
 
 }
