@@ -1,4 +1,10 @@
-v1.9.6.10: (2014-03-24)
+v1.9.6.11: (2014-04-10)
+* Updated SSL certificate for Swedbank
+* Transactions working for ICA accounts
+* Fix for ICA Banken
+
+
+v1.9.6.10: (2014-03-26)
 * Updated SSL certificate for Akelius Invest
 * Fix ICA for accounts with transactions
 
