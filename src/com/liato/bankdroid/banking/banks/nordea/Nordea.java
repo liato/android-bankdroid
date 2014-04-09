@@ -16,22 +16,12 @@
 
 package com.liato.bankdroid.banking.banks.nordea;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.message.BasicNameValuePair;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.Html;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.liato.bankdroid.Helpers;
@@ -43,6 +33,20 @@ import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.message.BasicNameValuePair;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
@@ -107,8 +111,15 @@ public class Nordea extends Bank {
 			String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
 			if (response.contains("felaktiga uppgifter")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-			}
-			else if (response.contains("nloggningar med ditt personnummer idag")) {
+			} else if (response.contains("nyligen skett till din mobilbank")) {
+                Document d = Jsoup.parse(response);
+                Element e = d.select("div.infoContent").first();
+                if (e != null && !TextUtils.isEmpty(e.text().trim())) {
+                    throw new BankException(e.text().trim());
+                } else {
+                    throw new BankException(res.getText(R.string.unable_to_login).toString());
+                }
+            } else if (response.contains("nloggningar med ditt personnummer idag")) {
 		        Matcher matcher = reCSRF.matcher(response);
 		        if (!matcher.find()) {
 		            throw new BankException(res.getText(R.string.unable_to_find).toString()+" CSRF token.");
