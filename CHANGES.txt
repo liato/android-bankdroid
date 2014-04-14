@@ -1,3 +1,7 @@
+v1.9.6.12: (2014-04-14)
+* Updated SSL certificate for Nordea
+
+
 v1.9.6.11: (2014-04-10)
 * Updated SSL certificate for Swedbank
 * Transactions working for ICA accounts
