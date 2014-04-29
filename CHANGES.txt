@@ -1,3 +1,8 @@
+v1.9.6.13: (2014-04-30)
+* Prevent recent apps thumbnail for pattern lock and settings
+* Updated SSL certificate for American Express, Coop, CSN, Handelsbanken, Osuuspankki, PayPal, Resurs Bank, Sevenday and Zidisha.
+
+
 v1.9.6.12: (2014-04-14)
 * Updated SSL certificate for Nordea
 
