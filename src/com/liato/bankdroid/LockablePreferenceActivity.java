@@ -22,6 +22,7 @@ import com.liato.bankdroid.lockpattern.LockPatternUtils;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceActivity;
@@ -44,6 +45,9 @@ public class LockablePreferenceActivity extends PreferenceActivity {
 		mLockPatternUtils = new LockPatternUtils(this);
         mLockPatternUtils.setVisiblePatternEnabled(mPrefs.getBoolean("patternlock_visible_pattern", true));
         mLockPatternUtils.setTactileFeedbackEnabled(mPrefs.getBoolean("patternlock_tactile_feedback", false));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        }
 	}
 
 	@Override

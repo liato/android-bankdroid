@@ -28,9 +28,11 @@ import com.liato.bankdroid.lockpattern.LockPatternView.OnPatternListener;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.SystemClock;
 import android.os.Bundle;
+import android.view.WindowManager;
 import android.widget.TextView;
 import android.view.KeyEvent;
 import android.view.Window;
@@ -125,6 +127,9 @@ public class ConfirmLockPattern extends Activity {
                 setResult(RESULT_OK);
                 finish();
             }
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
         }
     }
 
