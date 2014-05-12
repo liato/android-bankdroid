@@ -141,6 +141,7 @@ public class Helpers {
     }
 
     public static String parseCurrency(String text, String def) {
+        text = text != null ? text.toLowerCase() : "";
         for (String currency : currencies) {
             if (text.contains(currency)) return currency;
         }
