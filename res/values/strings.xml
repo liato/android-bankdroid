@@ -21,7 +21,9 @@
     <string name="transparent_background">Transparent background</string>
     <string name="bank_closed">The bank is currently closed.</string>
     <string name="unable_to_login">Unable to login. Please try again later.</string>
-    
+    <string name="account_number">Account number</string>
+    <string name="control_code">Control code</string>
+
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="custom_name">Custom Name (optional)</string>

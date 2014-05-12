@@ -22,7 +22,9 @@
     <string name="transparent_background">Transparent bakgrund</string>
     <string name="bank_closed">Banken är för närvarande stängd.</string>
     <string name="unable_to_login">Kunde ej logga in. Var vänlig försök igen senare.</string>
-    
+    <string name="account_number">Kontonummer</string>
+    <string name="control_code">Kontrollkod</string>
+
     <string name="username">Användarnamn</string>
     <string name="password">Lösenord</string>
     <string name="bank">Bank</string>

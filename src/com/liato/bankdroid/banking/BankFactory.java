@@ -33,7 +33,6 @@ import com.liato.bankdroid.banking.banks.BrummerKF;
 import com.liato.bankdroid.banking.banks.CSN;
 import com.liato.bankdroid.banking.banks.Chalmrest;
 import com.liato.bankdroid.banking.banks.Chevrolet;
-import com.liato.bankdroid.banking.banks.coop.Coop;
 import com.liato.bankdroid.banking.banks.DanskeBank;
 import com.liato.bankdroid.banking.banks.DinersClub;
 import com.liato.bankdroid.banking.banks.Djurgarden;
@@ -60,7 +59,6 @@ import com.liato.bankdroid.banking.banks.OKQ8;
 import com.liato.bankdroid.banking.banks.Opel;
 import com.liato.bankdroid.banking.banks.Osuuspankki;
 import com.liato.bankdroid.banking.banks.PayPal;
-import com.liato.bankdroid.banking.banks.payson.Payson;
 import com.liato.bankdroid.banking.banks.PlusGirot;
 import com.liato.bankdroid.banking.banks.Preem;
 import com.liato.bankdroid.banking.banks.Quintessentially;
@@ -76,6 +74,7 @@ import com.liato.bankdroid.banking.banks.Skoda;
 import com.liato.bankdroid.banking.banks.SparbankenOresund;
 import com.liato.bankdroid.banking.banks.SparbankenSyd;
 import com.liato.bankdroid.banking.banks.Statoil;
+import com.liato.bankdroid.banking.banks.SupremeCard;
 import com.liato.bankdroid.banking.banks.SveaDirekt;
 import com.liato.bankdroid.banking.banks.SvenskaSpel;
 import com.liato.bankdroid.banking.banks.Swedbank;
@@ -90,10 +89,12 @@ import com.liato.bankdroid.banking.banks.Wallet;
 import com.liato.bankdroid.banking.banks.Zidisha;
 import com.liato.bankdroid.banking.banks.avanza.Avanza;
 import com.liato.bankdroid.banking.banks.bitcoin.Bitcoin;
+import com.liato.bankdroid.banking.banks.coop.Coop;
 import com.liato.bankdroid.banking.banks.ica.ICA;
 import com.liato.bankdroid.banking.banks.icabanken.ICABanken;
 import com.liato.bankdroid.banking.banks.lansforsakringar.Lansforsakringar;
 import com.liato.bankdroid.banking.banks.nordea.Nordea;
+import com.liato.bankdroid.banking.banks.payson.Payson;
 import com.liato.bankdroid.banking.banks.rikslunchen.Rikslunchen;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.db.Crypto;
@@ -259,6 +260,8 @@ public class BankFactory {
             return new Bitcoin(context);
         case IBankTypes.SVEADIREKT:
             return new SveaDirekt(context);
+        case IBankTypes.SUPREMECARD:
+            return new SupremeCard(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -341,6 +344,7 @@ public class BankFactory {
         banks.add(new Bitcoin(context));
         banks.add(new EurobonusMastercardDk(context));
         banks.add(new SveaDirekt(context));
+        banks.add(new SupremeCard(context));
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 

@@ -96,4 +96,5 @@ public interface IBankTypes {
     public final static int BITCOIN = 72;
     public final static int SASEUROBONUSMASTERCARD_DK = 73;
     public final static int SVEADIREKT  = 74;
+    public final static int SUPREMECARD  = 75;
 }

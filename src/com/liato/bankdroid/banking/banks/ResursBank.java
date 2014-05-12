@@ -44,12 +44,6 @@ import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class ResursBank extends Bank {
-	private static final String TAG = "ResursBank";
-	private static final String NAME = "Resurs Bank";
-	private static final String NAME_SHORT = "resursbank";
-	private static final String URL = "https://secure.resurs.se/internetbank/default.jsp";
-	private static final int BANKTYPE_ID = IBankTypes.RESURSBANK;
-	
 	private Pattern reAccounts = Pattern.compile("kontonummer</td>\\s*<td>([^<]+)</td>\\s*</tr>\\s*<tr>\\s*<td[^>]+>Beviljad\\s*kredit</td>\\s*<td>([^<]+)</td>\\s*</tr>\\s*<tr>\\s*<td[^>]+>Utnyttjad\\s*kredit</td>\\s*<td>([^<]+)</td>\\s*</tr>\\s*<tr>\\s*<td[^>]+>Reserverat\\s*belopp</td>\\s*<td>([^<]+)</td>\\s*</tr>\\s*<tr>\\s*<td[^>]+>Kvar\\s*att\\s*utnyttja</td>\\s*<td>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
 	private Pattern reTransactions = Pattern.compile("<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]*)</td>\\s*<td>([^<]+)</", Pattern.CASE_INSENSITIVE);
 	
@@ -57,11 +51,11 @@ public class ResursBank extends Bank {
 
 	public ResursBank(Context context) {
 		super(context);
-		super.TAG = TAG;
-		super.NAME = NAME;
-		super.NAME_SHORT = NAME_SHORT;
-		super.BANKTYPE_ID = BANKTYPE_ID;
-		super.URL = URL;
+		super.TAG = "ResursBank";
+		super.NAME = "Resurs Bank";
+		super.NAME_SHORT = "resursbank";
+		super.BANKTYPE_ID = IBankTypes.RESURSBANK;
+		super.URL = "https://secure.resurs.se/internetbank/default.jsp";
 	}
 
 	public ResursBank(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
