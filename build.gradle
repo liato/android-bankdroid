@@ -35,8 +35,8 @@ android {
     buildToolsVersion "17.0.0"
 
     defaultConfig {
-        versionCode 183
-        versionName '1.9.6.13'
+        versionCode 184
+        versionName '1.9.6.14'
         minSdkVersion 7
         targetSdkVersion 10
         packageName 'com.liato.bankdroid'
