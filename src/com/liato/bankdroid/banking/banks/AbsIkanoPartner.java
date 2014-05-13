@@ -30,6 +30,7 @@ import org.jsoup.select.Elements;
 
 import android.content.Context;
 import android.text.InputType;
+import android.text.TextUtils;
 
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
@@ -56,6 +57,7 @@ public abstract class AbsIkanoPartner extends Bank {
         super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
         super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
         super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
+        super.STATIC_BALANCE = true;
     }
 
     public AbsIkanoPartner(String username, String password, Context context) throws BankException, LoginException,
@@ -68,35 +70,33 @@ public abstract class AbsIkanoPartner extends Bank {
     protected LoginPackage preLogin() throws BankException, ClientProtocolException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_ikanopartner));
         response = urlopen.open("https://partner.ikanobank.se/web/engines/page.aspx?structid=" + structId);
+
         Document d = Jsoup.parse(response);
-        Element e = d.getElementById("__VIEWSTATE");
-        if (e == null || e.attr("value") == null) {
+        Element viewstate = d.getElementById("__VIEWSTATE");
+        if (viewstate == null || TextUtils.isEmpty(viewstate.val())) {
             throw new BankException(res.getText(R.string.unable_to_find).toString() + " ViewState.");
         }
-        String viewState = e.attr("value");
 
-        e = d.getElementById("__EVENTVALIDATION");
-        if (e == null || e.attr("value") == null) {
+        Element eventvalidation = d.getElementById("__EVENTVALIDATION");
+        if (eventvalidation == null || TextUtils.isEmpty(eventvalidation.val())) {
             throw new BankException(res.getText(R.string.unable_to_find).toString() + " EventValidation.");
         }
-        String eventValidation = e.attr("value");
 
-        e = d.select("#LoginCustomerDiv > div").first();
-        if (e == null || e.attr("id") == null || e.attr("id").split("_", 2).length < 2) {
-            throw new BankException(res.getText(R.string.unable_to_find).toString() + " ctl.");
+        Element userField = d.select("#LoginSpan input[type=text]").first();
+        Element passField = d.select("#LoginSpan input[type=password]").first();
+        Element submitField = d.select("#LoginCustomerDiv input[type=submit]").first();
+
+        if (userField == null || passField == null || submitField == null) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString() + " login fields.");
         }
-        String ctl = e.attr("id").split("_", 2)[0];
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("__VIEWSTATE", viewState));
-        postData.add(new BasicNameValuePair("__EVENTVALIDATION", eventValidation));
-        postData.add(new BasicNameValuePair(ctl
-                + "$LoginWebUserControl$SSNControl$SSNSimpleValueUsercontrol$editValueTextbox", username));
-        postData.add(new BasicNameValuePair(ctl
-                + "$LoginWebUserControl$passwordSimpleValueControl$passwordSimpleValueControl$editValueTextbox",
-                password));
-        postData.add(new BasicNameValuePair(ctl + "$LoginButton", ""));
-        return new LoginPackage(urlopen, postData, response,
-                "https://partner.ikanobank.se/web/engines/page.aspx?structid=" + structId);
+        postData.add(new BasicNameValuePair("__VIEWSTATE", viewstate.val()));
+        postData.add(new BasicNameValuePair("__EVENTVALIDATION", eventvalidation.val()));
+        postData.add(new BasicNameValuePair(userField.attr("name"), username));
+        postData.add(new BasicNameValuePair(passField.attr("name"), password));
+        postData.add(new BasicNameValuePair(submitField.attr("name"), submitField.val()));
+        return new LoginPackage(urlopen, postData, response, "https://partner.ikanobank.se/web/engines/page.aspx?structid=" + structId);
+
     }
 
     @Override
@@ -173,13 +173,11 @@ public abstract class AbsIkanoPartner extends Bank {
                 throw new BankException(e.getMessage());
             } catch (IOException e) {
                 throw new BankException(e.getMessage());
-            } finally {
-                super.updateComplete();
             }
         }
         if (accounts.isEmpty()) {
             throw new BankException(res.getText(R.string.no_accounts_found).toString());
         }
-
+        super.updateComplete();
     }
 }

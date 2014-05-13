@@ -24,11 +24,11 @@ import com.liato.bankdroid.banking.exceptions.LoginException;
 
 
 public class Audi extends AbsIkanoPartner {
-	private static final String TAG = "Audi";
-	private static final String NAME = "AudiKortet";
-	private static final String NAME_SHORT = "audi";
-	private static final String URL = "https://partner.ikanobank.se/web/engines/page.aspx?structid=2177";
-	private static final int BANKTYPE_ID = Bank.AUDI;
+    private static final String TAG = "Audi";
+    private static final String NAME = "AudiKortet";
+    private static final String NAME_SHORT = "audi";
+    private static final String URL = "https://partner.ikanobank.se/web/engines/page.aspx?structid=2177";
+    private static final int BANKTYPE_ID = Bank.AUDI;
 
     public Audi(Context context) {
         super(context);

@@ -24,11 +24,11 @@ import com.liato.bankdroid.banking.exceptions.LoginException;
 
 
 public class Skoda extends AbsIkanoPartner {
-	private static final String TAG = "Skoda";
-	private static final String NAME = "Skodakortet";
-	private static final String NAME_SHORT = "skoda";
-	private static final String URL = "https://partner.ikanobank.se/web/engines/page.aspx?structid=2461";
-	private static final int BANKTYPE_ID = Bank.SKODA;
+    private static final String TAG = "Skoda";
+    private static final String NAME = "Skodakortet";
+    private static final String NAME_SHORT = "skoda";
+    private static final String URL = "https://partner.ikanobank.se/web/engines/page.aspx?structid=2461";
+    private static final int BANKTYPE_ID = Bank.SKODA;
 
     public Skoda(Context context) {
         super(context);

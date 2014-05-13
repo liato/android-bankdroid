@@ -23,12 +23,12 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
 
-public class IKEA extends IkanoPartnerBase {
-	private static final String TAG = "IKEA";
-	private static final String NAME = "IKEA HANDLA kort";
-	private static final String NAME_SHORT = "ikea";
-	private static final String URL = "https://partner.ikanobank.se/web/engines/page.aspx?structid=1420";
-	private static final int BANKTYPE_ID = Bank.IKEA;
+public class IKEA extends AbsIkanoPartner {
+    private static final String TAG = "IKEA";
+    private static final String NAME = "IKEA HANDLA kort";
+    private static final String NAME_SHORT = "ikea";
+    private static final String URL = "https://partner.ikanobank.se/web/engines/page.aspx?structid=1420";
+    private static final int BANKTYPE_ID = Bank.IKEA;
 
     public IKEA(Context context) {
         super(context);
