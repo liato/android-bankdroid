@@ -145,7 +145,7 @@ public class Coop extends Bank {
             InputStream is = urlopen.openStream("https://www.coop.se/ExternalServices/RefundService.svc/RefundSummary", e, true);
             RefundSummaryResponse refsumResp = readJsonValue(is, RefundSummaryResponse.class);
             if (refsumResp != null && refsumResp.getRefundSummaryResult() != null) {
-                Account a = new Account("Återbäring på ditt kort", BigDecimal.valueOf(refsumResp.getRefundSummaryResult().getPeriodRefund()), "1");
+                Account a = new Account("Återbäring på ditt kort", BigDecimal.valueOf(refsumResp.getRefundSummaryResult().getAccountBalance()), "1");
                 a.setCurrency("SEK");
                 accounts.add(a);
             }
