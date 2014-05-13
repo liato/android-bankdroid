@@ -2,7 +2,7 @@
 <manifest
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	package="com.liato.bankdroid"
-	android:versionName="1.9.6.14" android:versionCode="184">
+	android:versionName="1.9.6.15-RC1" android:versionCode="185">
     <uses-sdk
         android:targetSdkVersion="10"
         android:minSdkVersion="7" />
