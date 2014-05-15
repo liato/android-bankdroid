@@ -16,17 +16,11 @@
 
 package com.liato.bankdroid;
 
-import java.io.IOException;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.http.client.CookieStore;
-import org.apache.http.cookie.Cookie;
-
 import android.content.res.Resources.NotFoundException;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -40,6 +34,12 @@ import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Bank.SessionPackage;
 import com.liato.bankdroid.banking.BankFactory;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.http.client.CookieStore;
+import org.apache.http.cookie.Cookie;
+
+import java.io.IOException;
+
 import eu.nullbyte.android.urllib.Urllib;
 
 public class WebViewActivity extends LockableActivity implements OnClickListener {
@@ -47,6 +47,8 @@ public class WebViewActivity extends LockableActivity implements OnClickListener
     private static WebView mWebView;
     private boolean mFirstPageLoaded = false;
     private final LockableActivity activity = this;
+    private Handler mMainThreadhandler = new Handler(Looper.getMainLooper());
+
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -104,7 +106,6 @@ public class WebViewActivity extends LockableActivity implements OnClickListener
             e.printStackTrace();
         }
         mWebView.loadDataWithBaseURL("what://is/this/i/dont/even", preloader, "text/html", "utf-8", null);
-
         Bundle extras = getIntent().getExtras();
         final long bankId = extras.getLong("bankid", -1);
         //final long bankId = -1;
@@ -112,22 +113,27 @@ public class WebViewActivity extends LockableActivity implements OnClickListener
             Runnable generateLoginPage = new Runnable() {
                 public void run() {
                     Bank bank = BankFactory.bankFromDb(bankId, WebViewActivity.this, false);
-                    SessionPackage loginPackage = bank.getSessionPackage(WebViewActivity.this);
-                    CookieStore cookieStore = loginPackage.getCookiestore();
-                    if ((cookieStore != null) && !cookieStore.getCookies().isEmpty()) {
-                        CookieManager cookieManager = CookieManager.getInstance();
-                        String cookieString;
-                        for (Cookie cookie : cookieStore.getCookies()) {
-                            cookieString = String.format("%s=%s;%spath=%s; domain=%s;",
-                                    cookie.getName(), cookie.getValue(),
-                                    cookie.getExpiryDate() == null ? "" : "expires="+cookie.getExpiryDate()+"; ",
-                                    cookie.getPath() == null ? "/" : cookie.getPath(),
-                                    cookie.getDomain());
-                            cookieManager.setCookie(cookie.getDomain(), cookieString);
+                    final SessionPackage loginPackage = bank.getSessionPackage(WebViewActivity.this);
+                    final CookieStore cookieStore = loginPackage.getCookiestore();
+                    mMainThreadhandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if ((cookieStore != null) && !cookieStore.getCookies().isEmpty()) {
+                                CookieManager cookieManager = CookieManager.getInstance();
+                                String cookieString;
+                                for (Cookie cookie : cookieStore.getCookies()) {
+                                    cookieString = String.format("%s=%s;%spath=%s; domain=%s;",
+                                            cookie.getName(), cookie.getValue(),
+                                            cookie.getExpiryDate() == null ? "" : "expires="+cookie.getExpiryDate()+"; ",
+                                            cookie.getPath() == null ? "/" : cookie.getPath(),
+                                            cookie.getDomain());
+                                    cookieManager.setCookie(cookie.getDomain(), cookieString);
+                                }
+                                csm.sync();
+                            }
+                            mWebView.loadDataWithBaseURL("what://is/this/i/dont/even", loginPackage.getHtml(), "text/html", "utf-8", null);
                         }
-                        csm.sync();
-                    }
-                    mWebView.loadDataWithBaseURL("what://is/this/i/dont/even", loginPackage.getHtml(), "text/html", "utf-8", null);
+                    });
                 }
               };
               new Thread(generateLoginPage).start();
