@@ -36,6 +36,7 @@ import com.liato.bankdroid.provider.IBankTypes;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 
 import java.io.IOException;
@@ -85,7 +86,7 @@ public class ICA extends Bank {
         urlopen.addHeader("Authorization", "Basic " + Base64.encodeToString(new String(username + ":" + password).getBytes(), Base64.NO_WRAP));
 
         try {
-            HttpResponse httpResponse = urlopen.openAsHttpResponse(API_URL + "login", null, false);
+            HttpResponse httpResponse = urlopen.openAsHttpResponse(API_URL + "login", new ArrayList<NameValuePair>(), false);
             if (httpResponse.getStatusLine().getStatusCode() == 401) {
                 LoginError le = readJsonValue(httpResponse, LoginError.class);
                 if (le != null && "UsernamePassword".equals(le.getMessageCode())) {
@@ -111,7 +112,7 @@ public class ICA extends Bank {
             }
 
             urlopen.addHeader(AUTHENTICATION_TICKET_HEADER, mHeaders.get(AUTHENTICATION_TICKET_HEADER));
-            httpResponse = urlopen.openAsHttpResponse(API_URL + "user/minasidor", null, false);
+            httpResponse = urlopen.openAsHttpResponse(API_URL + "user/minasidor", new ArrayList<NameValuePair>(), false);
             Overview overview = readJsonValue(httpResponse, Overview.class);
 
             if (overview == null) {
@@ -151,7 +152,7 @@ public class ICA extends Bank {
             }
 
             urlopen.addHeader(LOGOUT_KEY_HEADER, mHeaders.get(LOGOUT_KEY_HEADER));
-            httpResponse = urlopen.openAsHttpResponse(API_URL + "logout", null, false);
+            httpResponse = urlopen.openAsHttpResponse(API_URL + "logout", new ArrayList<NameValuePair>(), false);
             httpResponse.getStatusLine();
         } catch (JsonParseException e) {
             e.printStackTrace();

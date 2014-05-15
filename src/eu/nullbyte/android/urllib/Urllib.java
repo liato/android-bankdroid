@@ -143,19 +143,24 @@ public class Urllib {
     }
 
     public HttpResponse openAsHttpResponse(String url, List<NameValuePair> postData, boolean forcePost) throws ClientProtocolException, IOException {
+        HttpEntity entity = (postData == null || postData.isEmpty()) && !forcePost ? null : new UrlEncodedFormEntity(postData, this.charset);
+        return openAsHttpResponse(url, entity, forcePost);
+    }
+
+    public HttpResponse openAsHttpResponse(String url, HttpEntity entity, boolean forcePost) throws ClientProtocolException, IOException {
         this.currentURI = url;
         HttpResponse response;
         String[] headerKeys = (String[]) this.headers.keySet().toArray(new String[headers.size()]);
         String[] headerVals = (String[]) this.headers.values().toArray(new String[headers.size()]);
         ResponseHandler<String> responseHandler = new BasicResponseHandler();
         HttpUriRequest request;
-        if ((postData == null || postData.isEmpty()) && !forcePost) {
+        if ((entity == null) && !forcePost) {
             //URL urli = new URL(url);
             request = new HttpGet(url);
         }
         else {
             request = new HttpPost(url);
-            ((HttpPost)request).setEntity(new UrlEncodedFormEntity(postData, this.charset));
+            ((HttpPost)request).setEntity(entity);
         }
         if (userAgent != null)
             request.addHeader("User-Agent", userAgent);

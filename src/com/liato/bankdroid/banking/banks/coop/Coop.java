@@ -17,33 +17,47 @@
 package com.liato.bankdroid.banking.banks.coop;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.banks.coop.model.AuthenticateRequest;
 import com.liato.bankdroid.banking.banks.coop.model.AuthenticateResponse;
 import com.liato.bankdroid.banking.banks.coop.model.RefundSummaryRequest;
 import com.liato.bankdroid.banking.banks.coop.model.RefundSummaryResponse;
+import com.liato.bankdroid.banking.banks.coop.model.web.Result;
+import com.liato.bankdroid.banking.banks.coop.model.web.WebAuthenticateRequest;
+import com.liato.bankdroid.banking.banks.coop.model.web.WebTransactionHistoryResponse;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.NameValuePair;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.message.BasicNameValuePair;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -57,15 +71,26 @@ public class Coop extends Bank {
     private static final String URL = "https://www.coop.se/mina-sidor/oversikt/";
     private static final int BANKTYPE_ID = IBankTypes.COOP;
     private static final String APPLICATION_ID = "17B2F3F1-841B-40B5-B91C-A5F33DE73C18";
+    private static final Map<String, String> MONTHS = new HashMap<String, String>();
+    static {
+        String[] ms = new String[] {"januari", "februari", "mars", "april", "maj", "juni", "juli", "augusti", "september", "oktober", "november", "december"};
+        for (int i = 0; i < ms.length; i++) {
+            MONTHS.put(ms[i], String.format("%02d", i+1));
+        }
+    }
 
     private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
  //   private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
     private Pattern reBalance = Pattern.compile("saldo\">([^<]+)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private Pattern reTransactions = Pattern.compile("<td>\\s*(\\d{4}-\\d{2}-\\d{2})\\s*</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]*)</td>\\s*<td>([^<]*)</td>\\s*<td[^>]*>(?:\\s*<a[^>]+>)?([^<]+)(?:</a>\\s*)?</td>", Pattern.CASE_INSENSITIVE);
+    private Pattern rePageGuid = Pattern.compile("pageGuid\"\\s*:\\s*\"([^\"]+)", Pattern.CASE_INSENSITIVE);
     private ObjectMapper mObjectMapper;
     private String response;
     private String mToken;
     private String mUserId;
+    private String mPageGuid;
+    private String mDateMin;
+    private String mDateMax;
 
     public Coop(Context context) {
         super(context);
@@ -74,6 +99,7 @@ public class Coop extends Bank {
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;
         super.URL = URL;
+        super.STATIC_BALANCE = true;
     }
 
     public Coop(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
@@ -87,28 +113,37 @@ public class Coop extends Bank {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_coop));
         urlopen.addHeader("Origin", "https://www.coop.se");
         urlopen.addHeader("Referer", "https://www.coop.se/Mina-sidor/Logga-in-puffsida/?li=True");
-        response = urlopen.open("https://www.coop.se/Mina-sidor/Logga-in-puffsida/?li=True");
-        
-        Matcher matcher = reViewState.matcher(response);
-        if (!matcher.find()) {
-            throw new BankException(res.getText(R.string.unable_to_find).toString()+" viewstate.");
+        response = urlopen.open("https://www.coop.se/");
+        Document d = Jsoup.parse(response);
+        String pageGuid = d.select("input[name=pageGuid]").first().val();
+        WebAuthenticateRequest webAuthReq = new WebAuthenticateRequest(pageGuid, username, password);
+        urlopen.addHeader("Content-Type", "application/json");
+        HttpEntity e = new StringEntity(getObjectmapper().writeValueAsString(webAuthReq));
+
+        HttpResponse httpResponse = urlopen.openAsHttpResponse("https://www.coop.se/Services/PlainService.svc/JsonExecute", e, true);
+        if (httpResponse.getStatusLine().getStatusCode() != 200) {
+            throw new BankException(res.getString(R.string.invalid_username_password));
         }
-        String strViewState = matcher.group(1);
-        List <NameValuePair> postData = new ArrayList <NameValuePair>();
-        postData.add(new BasicNameValuePair("TextBoxUserName", username));
-        postData.add(new BasicNameValuePair("TextBoxPassword", password));
-        postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
-        postData.add(new BasicNameValuePair("ButtonLogin", ""));
-        return new LoginPackage(urlopen, postData, response, "https://www.coop.se/Mina-sidor/Logga-in-puffsida/?li=True");
+
+        LoginPackage lp = new LoginPackage(urlopen, null, response, "https://www.coop.se/Mina-sidor/Oversikt/");
+        lp.setIsLoggedIn(true);
+        return lp;
     }
 
 
     @Override
     public Urllib login() throws LoginException, BankException {
         try {
+            //Coop MedMera Visa information and transactions are not available from the json api
+            //so we'll have to login once to the web site and once to the api.
+            LoginPackage lp = preLogin();
+            if (!lp.isLoggedIn()) {
+                throw new BankException(res.getString(R.string.invalid_username_password));
+            }
+
             AuthenticateRequest authReq = new AuthenticateRequest(username, password, APPLICATION_ID);
             HttpEntity e = new StringEntity(getObjectmapper().writeValueAsString(authReq));
-            urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_coop));
+//            urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_coop));
             urlopen.addHeader("Content-Type", "application/json");
             InputStream is = urlopen.openStream("https://www.coop.se/ExternalServices/UserService.svc/Authenticate", e, true);
             AuthenticateResponse authResponse = readJsonValue(is, AuthenticateResponse.class);
@@ -140,13 +175,71 @@ public class Coop extends Bank {
         login();
 
         try {
+            response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Visa/");
+            Document d = Jsoup.parse(response);
+            Elements historik = d.select("#historik section");
+            if (historik != null && !historik.isEmpty()) {
+                String data = historik.first().attr("data-controller");
+                Matcher m = rePageGuid.matcher(data);
+                if (m.find()) {
+                    mPageGuid = m.group(1);
+                }
+            }
+            Element date = d.getElementById("dateFrom");
+            if (date != null) {
+                mDateMin = date.hasAttr("min") ? date.attr("min") : null;
+                mDateMax = date.hasAttr("max") ? date.attr("max") : null;
+            }
+            Elements es = d.select(".List:contains(Saldo)");
+            if (es != null && !es.isEmpty()) {
+                List<String> names = new ArrayList<String>();
+                List<String> values = new ArrayList<String>();
+                for (Element e : es.first().select("dt")) {
+                    names.add(e.text().replaceAll(":", "").trim());
+                }
+                for (Element e : es.first().select("dd")) {
+                    values.add(e.text().trim());
+                }
+                for (int i = 0; i < Math.min(names.size(), values.size()); i++) {
+                    Account a = new Account(names.get(i), Helpers.parseBalance(values.get(i)), Integer.toString(i));
+                    a.setCurrency(Helpers.parseCurrency(values.get(i), "SEK"));
+                    if (a.getName().toLowerCase().contains("disponibelt")) {
+                        a.setType(Account.REGULAR);
+                        balance = a.getBalance();
+                        setCurrency(a.getCurrency());
+                    } else {
+                        a.setType(Account.OTHER);
+                    }
+
+                    if (i > 0) {
+                        a.setAliasfor("0");
+                    }
+                    accounts.add(a);
+                }
+            }
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+            throw new BankException(e.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new BankException(e.getMessage());
+        }
+
+
+        try {
             RefundSummaryRequest refsumReq = new RefundSummaryRequest(mUserId, mToken, APPLICATION_ID);
             HttpEntity e = new StringEntity(getObjectmapper().writeValueAsString(refsumReq));
             InputStream is = urlopen.openStream("https://www.coop.se/ExternalServices/RefundService.svc/RefundSummary", e, true);
             RefundSummaryResponse refsumResp = readJsonValue(is, RefundSummaryResponse.class);
             if (refsumResp != null && refsumResp.getRefundSummaryResult() != null) {
-                Account a = new Account("Återbäring på ditt kort", BigDecimal.valueOf(refsumResp.getRefundSummaryResult().getAccountBalance()), "1");
+                Account a = new Account("Återbäring på ditt kort", BigDecimal.valueOf(refsumResp.getRefundSummaryResult().getAccountBalance()), "refsummary");
                 a.setCurrency("SEK");
+                if (accounts.isEmpty()) {
+                    balance = a.getBalance();
+                    setCurrency(a.getCurrency());
+                }
+                accounts.add(a);
+                a = new Account(String.format("Återbäring för %s", refsumResp.getRefundSummaryResult().getMonthName()), BigDecimal.valueOf(refsumResp.getRefundSummaryResult().getPeriodRefund()), "refsummary_month");
                 accounts.add(a);
             }
         } catch (JsonParseException e) {
@@ -182,5 +275,35 @@ public class Coop extends Bank {
             e.printStackTrace();
             return null;
         }
+    }
+
+    @Override
+    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+        if (mPageGuid == null || mDateMin == null || mDateMax == null || !"0".equals(account.getId())) return;
+        try {
+            String data = URLEncoder.encode(String.format("{\"page\":1,\"pageSize\":15,\"from\":\"%s\",\"to\":\"%s\"}", mDateMin, mDateMax), "utf-8");
+            String url = String.format("https://www.coop.se/Services/PlainService.svc/JsonExecuteGet?pageGuid=%s&method=GetTransactions&data=%s&_=%s", mPageGuid, data, System.currentTimeMillis());
+            WebTransactionHistoryResponse transactionsResponse = getObjectmapper().readValue(urlopen.openStream(url), WebTransactionHistoryResponse.class);
+            List<Transaction> transactions = new ArrayList<Transaction>();
+            account.setTransactions(transactions);
+            for (Result r : transactionsResponse.getModel().getResults()) {
+                transactions.add(new Transaction(formatDate(r.getDate()), !TextUtils.isEmpty(r.getLocation()) ? r.getLocation() : r.getTitle(), BigDecimal.valueOf(r.getSum())));
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (JsonParseException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String formatDate(String date) {
+        String[] parts = date.split(" ");
+        return String.format("%s-%s-%02d", parts[2], MONTHS.containsKey(parts[1].toLowerCase()) ? MONTHS.get(parts[1].toLowerCase()) : "01", Integer.parseInt(parts[0]));
     }
 }

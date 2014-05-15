@@ -351,10 +351,18 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
             }
             //TODO: Skip the form submission. Login using Bank.login(...) and transfer cookies to webview. The user is now logged in
             //      and can me directed to any page.
-            String html = String.format(preloader,
-                    "function go(){document.getElementById('submitform').submit(); }", // Javascript function
-                    Helpers.renderForm(lp.getLoginTarget(), lp.getPostData())+"<script type=\"text/javascript\">setTimeout('go()', 1000);</script>" // HTML
-            );        
+            String html = "";
+            if (!lp.isLoggedIn()) {
+                html = String.format(preloader,
+                        "function go(){document.getElementById('submitform').submit(); }", // Javascript function
+                        Helpers.renderForm(lp.getLoginTarget(), lp.getPostData())+"<script type=\"text/javascript\">setTimeout('go()', 1000);</script>" // HTML
+                );
+            } else {
+                html = String.format(preloader,
+                        String.format("function go(){window.location=\"%s\" }", lp.getLoginTarget()), // Javascript function
+                        "<script type=\"text/javascript\">setTimeout('go()', 100);</script>" // HTML
+                );
+            }
 
             CookieStore cookies = urlopen.getHttpclient().getCookieStore();
             return new SessionPackage(html, cookies);
@@ -399,11 +407,16 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         private Urllib urllib;
         private List<NameValuePair> postData;
         private String loginTarget;
+        private boolean isLoggedIn = false;
         public LoginPackage(Urllib urllib, List<NameValuePair> postData, String response, String loginTarget) {
             this.urllib = urllib;
             this.postData = postData;
             this.response = response;
             this.loginTarget = loginTarget;
+        }
+
+        public void setIsLoggedIn(boolean loggedIn) {
+            this.isLoggedIn = loggedIn;
         }
         public String getResponse() {
             return response;
@@ -416,6 +429,9 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         }
         public String getLoginTarget() {
             return loginTarget;
+        }
+        public boolean isLoggedIn() {
+            return this.isLoggedIn;
         }
     }    
     

@@ -136,9 +136,9 @@ public class Payson extends Bank {
         urlopen = login();
 
         try {
-            HttpResponse httpResponse = urlopen.openAsHttpResponse(String.format("https://www.payson.se/myaccount/User/GetUserInfo?DateTime=%s", System.currentTimeMillis()), null, false);
+            HttpResponse httpResponse = urlopen.openAsHttpResponse(String.format("https://www.payson.se/myaccount/User/GetUserInfo?DateTime=%s", System.currentTimeMillis()), new ArrayList<NameValuePair>(), false);
             User user = readJsonValue(httpResponse, User.class);
-            httpResponse = urlopen.openAsHttpResponse(String.format("https://www.payson.se/myaccount/History/List2?rows=40&page=1&sidx=&sord=asc&freeTextSearchString=&take=40&currency=&timeSpanStartDate=&timeSpanEndDate=&minAmount=&maxAmount=&purchaseType=&purchasePart=&purchaseStatus=&_=%s", System.currentTimeMillis()), null, false);
+            httpResponse = urlopen.openAsHttpResponse(String.format("https://www.payson.se/myaccount/History/List2?rows=40&page=1&sidx=&sord=asc&freeTextSearchString=&take=40&currency=&timeSpanStartDate=&timeSpanEndDate=&minAmount=&maxAmount=&purchaseType=&purchasePart=&purchaseStatus=&_=%s", System.currentTimeMillis()), new ArrayList<NameValuePair>(), false);
             TransactionHistory thistory = readJsonValue(httpResponse, TransactionHistory.class);
 
             Account account = new Account("Saldo", Helpers.parseBalance(user.getBalance()), "1");

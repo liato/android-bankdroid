@@ -35,11 +35,13 @@ import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -70,7 +72,7 @@ public class Avanza extends Bank {
         urlopen.addHeader("Authorization", "Basic " + Base64.encodeToString(new String(username + ":" + password).getBytes(), Base64.NO_WRAP));
 
         try {
-            HttpResponse httpResponse = urlopen.openAsHttpResponse(API_URL + "account/overview/all", null, false);
+            HttpResponse httpResponse = urlopen.openAsHttpResponse(API_URL + "account/overview/all", new ArrayList<NameValuePair>(), false);
             if (httpResponse.getStatusLine().getStatusCode() == 401) {
                 throw new LoginException(context.getText(
                         R.string.invalid_username_password).toString());

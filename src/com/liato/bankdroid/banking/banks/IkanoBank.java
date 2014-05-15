@@ -216,8 +216,5 @@ public class IkanoBank extends Bank {
         } catch (IOException e) {
             Log.e(TAG, "IOE: "+ e.getMessage());
         }
-        finally {
-            super.updateComplete();
-        }
-    }       	
+    }
 }

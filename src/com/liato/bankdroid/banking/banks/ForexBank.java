@@ -202,6 +202,7 @@ public class ForexBank extends Bank {
         catch (IOException e) {
             throw new BankException(e.getMessage());
         }
+        super.updateComplete();
     }
 
     @Override
@@ -224,9 +225,6 @@ public class ForexBank extends Bank {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        finally {
-            super.updateComplete();
         }
     }
 }
