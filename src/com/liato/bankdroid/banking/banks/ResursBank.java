@@ -44,24 +44,24 @@ import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class ResursBank extends Bank {
-	private Pattern reAccounts = Pattern.compile("kontonummer</td>\\s*<td>([^<]+)</td>\\s*</tr>\\s*<tr>\\s*<td[^>]+>Beviljad\\s*kredit</td>\\s*<td>([^<]+)</td>\\s*</tr>\\s*<tr>\\s*<td[^>]+>Utnyttjad\\s*kredit</td>\\s*<td>([^<]+)</td>\\s*</tr>\\s*<tr>\\s*<td[^>]+>Reserverat\\s*belopp</td>\\s*<td>([^<]+)</td>\\s*</tr>\\s*<tr>\\s*<td[^>]+>Kvar\\s*att\\s*utnyttja</td>\\s*<td>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
-	private Pattern reTransactions = Pattern.compile("<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]*)</td>\\s*<td>([^<]+)</", Pattern.CASE_INSENSITIVE);
-	
-	private String response = null;
+    private Pattern reAccounts = Pattern.compile("kontonummer</td>\\s*<td>([^<]+)</td>\\s*</tr>\\s*<tr>\\s*<td[^>]+>Beviljad\\s*kredit</td>\\s*<td>([^<]+)</td>\\s*</tr>\\s*<tr>\\s*<td[^>]+>Utnyttjad\\s*kredit</td>\\s*<td>([^<]+)</td>\\s*</tr>\\s*<tr>\\s*<td[^>]+>Reserverat\\s*belopp</td>\\s*<td>([^<]+)</td>\\s*</tr>\\s*<tr>\\s*<td[^>]+>Kvar\\s*att\\s*utnyttja</td>\\s*<td>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
+    private Pattern reTransactions = Pattern.compile("<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]*)</td>\\s*<td>([^<]+)</", Pattern.CASE_INSENSITIVE);
 
-	public ResursBank(Context context) {
-		super(context);
-		super.TAG = "ResursBank";
-		super.NAME = "Resurs Bank";
-		super.NAME_SHORT = "resursbank";
-		super.BANKTYPE_ID = IBankTypes.RESURSBANK;
-		super.URL = "https://secure.resurs.se/internetbank/default.jsp";
-	}
+    private String response = null;
 
-	public ResursBank(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
-		this(context);
-		this.update(username, password);
-	}
+    public ResursBank(Context context) {
+        super(context);
+        super.TAG = "ResursBank";
+        super.NAME = "Resurs Bank";
+        super.NAME_SHORT = "resursbank";
+        super.BANKTYPE_ID = IBankTypes.RESURSBANK;
+        super.URL = "https://secure.resurs.se/internetbank/default.jsp";
+    }
+
+    public ResursBank(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+        this(context);
+        this.update(username, password);
+    }
 
     @Override
     protected LoginPackage preLogin() throws BankException,
@@ -75,33 +75,33 @@ public class ResursBank extends Bank {
         return new LoginPackage(urlopen, postData, response, "https://secure.resurs.se/internetbank/login.jsp");
     }
 
-	@Override
-	public Urllib login() throws LoginException, BankException {
-		try {
-		    LoginPackage lp = preLogin();
-			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-			
-			if (response.contains("vid inloggningen")) {
-				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-			}
-		} catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage());
-		} catch (IOException e) {
-			throw new BankException(e.getMessage());
-		}
-		return urlopen;
-	}
-	
-	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
-		super.update();
-		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
-			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-		}
-		
-		urlopen = login();
-	    Matcher matcher = reAccounts.matcher(response);
-		while (matcher.find()) {
+    @Override
+    public Urllib login() throws LoginException, BankException {
+        try {
+            LoginPackage lp = preLogin();
+            response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+
+            if (response.contains("vid inloggningen")) {
+                throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+            }
+        } catch (ClientProtocolException e) {
+            throw new BankException(e.getMessage());
+        } catch (IOException e) {
+            throw new BankException(e.getMessage());
+        }
+        return urlopen;
+    }
+
+    @Override
+    public void update() throws BankException, LoginException, BankChoiceException {
+        super.update();
+        if (username == null || password == null || username.length() == 0 || password.length() == 0) {
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+        }
+
+        urlopen = login();
+        Matcher matcher = reAccounts.matcher(response);
+        while (matcher.find()) {
             /*
              * Capture groups:
              * GROUP                    EXAMPLE DATA
@@ -112,39 +112,45 @@ public class ResursBank extends Bank {
              * 5: Kvar att utnyttja     0,00 kr
              * 
              */
-		    String accountId = Html.fromHtml(matcher.group(1)).toString().trim().replaceAll("[^0-9]*", "");
-			accounts.add(new Account("Beviljad kredit",
-			        Helpers.parseBalance(matcher.group(2)),
-			        "b_"+accountId));
-			
-			BigDecimal utnyttjad = Helpers.parseBalance(matcher.group(3));
-			utnyttjad = utnyttjad.add(Helpers.parseBalance(matcher.group(4)));
-			utnyttjad = utnyttjad.negate();
+            String accountId = Html.fromHtml(matcher.group(1)).toString().trim().replaceAll("[^0-9]*", "");
+            accounts.add(new Account("Beviljad kredit",
+                    Helpers.parseBalance(matcher.group(2)),
+                    "b_"+accountId));
+
+            BigDecimal utnyttjad = Helpers.parseBalance(matcher.group(3));
+            utnyttjad = utnyttjad.add(Helpers.parseBalance(matcher.group(4)));
+            utnyttjad = utnyttjad.negate();
             accounts.add(new Account("Utnyttjad kredit",
                     utnyttjad,
                     "u_"+accountId));
-			
+
             balance = balance.add(Helpers.parseBalance(matcher.group(3)));
             balance = balance.add(utnyttjad);
-		}
-		
-		if (accounts.isEmpty()) {
-			throw new BankException(res.getText(R.string.no_accounts_found).toString());
-		}
-	    super.updateComplete();
-	}
+            accounts.add(new Account("Reserverat belopp",
+                    Helpers.parseBalance(matcher.group(4)),
+                    "r_"+accountId));
+            accounts.add(new Account("Kvar att utnyttja",
+                    Helpers.parseBalance(matcher.group(5)),
+                    "k_"+accountId));
+        }
 
-	@Override
-	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
-		super.updateTransactions(account, urlopen);
-		// Only update transactions for the main account
-		if (!account.getId().startsWith("b_")) return;
-		
-		try {
-			response = urlopen.open("https://secure.resurs.se/internetbank/kontoutdrag.jsp");
-			Matcher matcher = reTransactions.matcher(response);
-			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-			while (matcher.find()) {
+        if (accounts.isEmpty()) {
+            throw new BankException(res.getText(R.string.no_accounts_found).toString());
+        }
+        super.updateComplete();
+    }
+
+    @Override
+    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+        super.updateTransactions(account, urlopen);
+        // Only update transactions for the main account
+        if (!account.getId().startsWith("b_")) return;
+
+        try {
+            response = urlopen.open("https://secure.resurs.se/internetbank/kontoutdrag.jsp");
+            Matcher matcher = reTransactions.matcher(response);
+            ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+            while (matcher.find()) {
                 /*
                  * Capture groups:
                  * GROUP                    EXAMPLE DATA
@@ -154,17 +160,17 @@ public class ResursBank extends Bank {
                  * 4: Amount                -95,00 kr 
                  * 
                  */
-				transactions.add(new Transaction(matcher.group(1),
-				        Html.fromHtml(matcher.group(2)).toString().trim(),
-				        Helpers.parseBalance(matcher.group(4))));
-			}
-			account.setTransactions(transactions);
-		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}	
+                transactions.add(new Transaction(matcher.group(1),
+                        Html.fromHtml(matcher.group(2)).toString().trim(),
+                        Helpers.parseBalance(matcher.group(4))));
+            }
+            account.setTransactions(transactions);
+        } catch (ClientProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 }
