@@ -21,6 +21,6 @@ public class WebTransactionHistoryResponse {
     }
 
     public Model getModel() {
-        return this.d.getModel();
+        return this.d != null ? this.d.getModel() : null;
     }
 }

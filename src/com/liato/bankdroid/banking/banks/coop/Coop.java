@@ -295,7 +295,7 @@ public class Coop extends Bank {
                     setCurrency(a.getCurrency());
                 }
                 accounts.add(a);
-                a = new Account(String.format("Återbäring för %s", refsumResp.getRefundSummaryResult().getMonthName()), BigDecimal.valueOf(refsumResp.getRefundSummaryResult().getPeriodRefund()), "refsummary_month");
+                a = new Account(String.format("Återbäring för %s", refsumResp.getRefundSummaryResult().getMonthName()), BigDecimal.valueOf(refsumResp.getRefundSummaryResult().getTotalRefund()), "refsummary_month");
                 accounts.add(a);
             }
         } catch (JsonParseException e) {
@@ -342,14 +342,16 @@ public class Coop extends Bank {
             String data = URLEncoder.encode(String.format("{\"page\":1,\"pageSize\":15,\"from\":\"%s\",\"to\":\"%s\"}", tp.getMinDate(), tp.getMaxDate()), "utf-8");
             String url = String.format("https://www.coop.se/Services/PlainService.svc/JsonExecuteGet?pageGuid=%s&method=GetTransactions&data=%s&_=%s", tp.getPageGuid(), data, System.currentTimeMillis());
             WebTransactionHistoryResponse transactionsResponse = getObjectmapper().readValue(urlopen.openStream(url), WebTransactionHistoryResponse.class);
-            List<Transaction> transactions = new ArrayList<Transaction>();
-            account.setTransactions(transactions);
-            for (Result r : transactionsResponse.getModel().getResults()) {
-                StringBuilder title = new StringBuilder(!TextUtils.isEmpty(r.getLocation()) ? r.getLocation() : r.getTitle());
-                if (!TextUtils.isEmpty(r.getCardholder())) {
-                    title.append(" (").append(r.getCardholder()).append(")");
+            if (transactionsResponse != null && transactionsResponse.getModel() != null) {
+                List<Transaction> transactions = new ArrayList<Transaction>();
+                account.setTransactions(transactions);
+                for (Result r : transactionsResponse.getModel().getResults()) {
+                    StringBuilder title = new StringBuilder(!TextUtils.isEmpty(r.getLocation()) ? r.getLocation() : r.getTitle());
+                    if (!TextUtils.isEmpty(r.getCardholder())) {
+                        title.append(" (").append(r.getCardholder()).append(")");
+                    }
+                    transactions.add(new Transaction(formatDate(r.getDate()), title.toString(), BigDecimal.valueOf(r.getSum())));
                 }
-                transactions.add(new Transaction(formatDate(r.getDate()), title.toString(), BigDecimal.valueOf(r.getSum())));
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
