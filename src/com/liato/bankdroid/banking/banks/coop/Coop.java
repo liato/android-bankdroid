@@ -79,6 +79,60 @@ public class Coop extends Bank {
         }
     }
 
+    enum AccountType {
+        MEDMERA_KONTO("konto_", "https://www.coop.se/Mina-sidor/Oversikt/MedMera-Konto/"),
+        MEDMERA_VISA("visa_", "https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Visa/");
+
+        String prefix;
+        String url;
+        private AccountType(String prefix, String url) {
+            this.prefix = prefix;
+            this.url = url;
+        }
+
+        public String getPrefix() {
+            return prefix;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+    }
+
+    class TransactionParams {
+        String pageGuid;
+        String minDate;
+        String maxDate;
+
+        public String getPageGuid() {
+            return pageGuid;
+        }
+
+        public void setPageGuid(String pageGuid) {
+            this.pageGuid = pageGuid;
+        }
+
+        public String getMinDate() {
+            return minDate;
+        }
+
+        public void setMinDate(String minDate) {
+            this.minDate = minDate;
+        }
+
+        public String getMaxDate() {
+            return maxDate;
+        }
+
+        public void setMaxDate(String maxDate) {
+            this.maxDate = maxDate;
+        }
+
+        public boolean isValid() {
+            return pageGuid != null && minDate != null && maxDate != null;
+        }
+    }
+
     private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
  //   private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
     private Pattern reBalance = Pattern.compile("saldo\">([^<]+)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
@@ -88,9 +142,7 @@ public class Coop extends Bank {
     private String response;
     private String mToken;
     private String mUserId;
-    private String mPageGuid;
-    private String mDateMin;
-    private String mDateMax;
+    private Map<AccountType, TransactionParams> mTransactionParams = new HashMap<AccountType, TransactionParams>();
 
     public Coop(Context context) {
         super(context);
@@ -134,7 +186,7 @@ public class Coop extends Bank {
     @Override
     public Urllib login() throws LoginException, BankException {
         try {
-            //Coop MedMera Visa information and transactions are not available from the json api
+            //Coop MedMera Kort/Visa information and transactions are not available from the json api
             //so we'll have to login once to the web site and once to the api.
             LoginPackage lp = preLogin();
             if (!lp.isLoggedIn()) {
@@ -175,46 +227,50 @@ public class Coop extends Bank {
         login();
 
         try {
-            response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Visa/");
-            Document d = Jsoup.parse(response);
-            Elements historik = d.select("#historik section");
-            if (historik != null && !historik.isEmpty()) {
-                String data = historik.first().attr("data-controller");
-                Matcher m = rePageGuid.matcher(data);
-                if (m.find()) {
-                    mPageGuid = m.group(1);
-                }
-            }
-            Element date = d.getElementById("dateFrom");
-            if (date != null) {
-                mDateMin = date.hasAttr("min") ? date.attr("min") : null;
-                mDateMax = date.hasAttr("max") ? date.attr("max") : null;
-            }
-            Elements es = d.select(".List:contains(Saldo)");
-            if (es != null && !es.isEmpty()) {
-                List<String> names = new ArrayList<String>();
-                List<String> values = new ArrayList<String>();
-                for (Element e : es.first().select("dt")) {
-                    names.add(e.text().replaceAll(":", "").trim());
-                }
-                for (Element e : es.first().select("dd")) {
-                    values.add(e.text().trim());
-                }
-                for (int i = 0; i < Math.min(names.size(), values.size()); i++) {
-                    Account a = new Account(names.get(i), Helpers.parseBalance(values.get(i)), Integer.toString(i));
-                    a.setCurrency(Helpers.parseCurrency(values.get(i), "SEK"));
-                    if (a.getName().toLowerCase().contains("disponibelt")) {
-                        a.setType(Account.REGULAR);
-                        balance = a.getBalance();
-                        setCurrency(a.getCurrency());
-                    } else {
-                        a.setType(Account.OTHER);
+            for (AccountType at : AccountType.values()) {
+                response = urlopen.open(at.getUrl());
+                Document d = Jsoup.parse(response);
+                Elements historik = d.select("#historik section");
+                TransactionParams params = new TransactionParams();
+                mTransactionParams.put(at, params);
+                if (historik != null && !historik.isEmpty()) {
+                    String data = historik.first().attr("data-controller");
+                    Matcher m = rePageGuid.matcher(data);
+                    if (m.find()) {
+                        params.setPageGuid(m.group(1));
                     }
+                }
+                Element date = d.getElementById("dateFrom");
+                if (date != null) {
+                    params.setMinDate(date.hasAttr("min") ? date.attr("min") : null);
+                    params.setMaxDate(date.hasAttr("max") ? date.attr("max") : null);
+                }
+                Elements es = d.select(".List:contains(Saldo)");
+                if (es != null && !es.isEmpty()) {
+                    List<String> names = new ArrayList<String>();
+                    List<String> values = new ArrayList<String>();
+                    for (Element e : es.first().select("dt")) {
+                        names.add(e.text().replaceAll(":", "").trim());
+                    }
+                    for (Element e : es.first().select("dd")) {
+                        values.add(e.text().trim());
+                    }
+                    for (int i = 0; i < Math.min(names.size(), values.size()); i++) {
+                        Account a = new Account(names.get(i), Helpers.parseBalance(values.get(i)), String.format("%s%d", at.getPrefix(), i));
+                        a.setCurrency(Helpers.parseCurrency(values.get(i), "SEK"));
+                        if (a.getName().toLowerCase().contains("disponibelt")) {
+                            a.setType(Account.REGULAR);
+                            balance = a.getBalance();
+                            setCurrency(a.getCurrency());
+                        } else {
+                            a.setType(Account.OTHER);
+                        }
 
-                    if (i > 0) {
-                        a.setAliasfor("0");
+                        if (i > 0) {
+                            a.setAliasfor(String.format("%s%d", at.getPrefix(), 0));
+                        }
+                        accounts.add(a);
                     }
-                    accounts.add(a);
                 }
             }
         } catch (ClientProtocolException e) {
@@ -279,15 +335,21 @@ public class Coop extends Bank {
 
     @Override
     public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
-        if (mPageGuid == null || mDateMin == null || mDateMax == null || !"0".equals(account.getId())) return;
+        AccountType at = getAccuntType(account.getId());
+        TransactionParams tp = mTransactionParams.get(at);
+        if (at == null || tp == null || !tp.isValid() || !isFirstAccountForType(account.getId())) return;
         try {
-            String data = URLEncoder.encode(String.format("{\"page\":1,\"pageSize\":15,\"from\":\"%s\",\"to\":\"%s\"}", mDateMin, mDateMax), "utf-8");
-            String url = String.format("https://www.coop.se/Services/PlainService.svc/JsonExecuteGet?pageGuid=%s&method=GetTransactions&data=%s&_=%s", mPageGuid, data, System.currentTimeMillis());
+            String data = URLEncoder.encode(String.format("{\"page\":1,\"pageSize\":15,\"from\":\"%s\",\"to\":\"%s\"}", tp.getMinDate(), tp.getMaxDate()), "utf-8");
+            String url = String.format("https://www.coop.se/Services/PlainService.svc/JsonExecuteGet?pageGuid=%s&method=GetTransactions&data=%s&_=%s", tp.getPageGuid(), data, System.currentTimeMillis());
             WebTransactionHistoryResponse transactionsResponse = getObjectmapper().readValue(urlopen.openStream(url), WebTransactionHistoryResponse.class);
             List<Transaction> transactions = new ArrayList<Transaction>();
             account.setTransactions(transactions);
             for (Result r : transactionsResponse.getModel().getResults()) {
-                transactions.add(new Transaction(formatDate(r.getDate()), !TextUtils.isEmpty(r.getLocation()) ? r.getLocation() : r.getTitle(), BigDecimal.valueOf(r.getSum())));
+                StringBuilder title = new StringBuilder(!TextUtils.isEmpty(r.getLocation()) ? r.getLocation() : r.getTitle());
+                if (!TextUtils.isEmpty(r.getCardholder())) {
+                    title.append(" (").append(r.getCardholder()).append(")");
+                }
+                transactions.add(new Transaction(formatDate(r.getDate()), title.toString(), BigDecimal.valueOf(r.getSum())));
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -306,4 +368,23 @@ public class Coop extends Bank {
         String[] parts = date.split(" ");
         return String.format("%s-%s-%02d", parts[2], MONTHS.containsKey(parts[1].toLowerCase()) ? MONTHS.get(parts[1].toLowerCase()) : "01", Integer.parseInt(parts[0]));
     }
+
+    private boolean isFirstAccountForType(String accountId) {
+        for (AccountType at : AccountType.values()) {
+            if (accountId.equals(String.format("%s%d", at.getPrefix(), 0))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private AccountType getAccuntType(String accountId) {
+        for (AccountType at : AccountType.values()) {
+            if (accountId.startsWith(at.getPrefix())) {
+                return at;
+            }
+        }
+        return null;
+    }
+
 }
