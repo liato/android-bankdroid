@@ -129,7 +129,7 @@ public class ResursBank extends Bank {
             accounts.add(new Account("Reserverat belopp",
                     Helpers.parseBalance(matcher.group(4)),
                     "r_"+accountId));
-            accounts.add(new Account("Kvar att utnyttja",
+            accounts.add(new Account("Disponibelt",
                     Helpers.parseBalance(matcher.group(5)),
                     "k_"+accountId));
         }
