@@ -350,7 +350,9 @@ public class Coop extends Bank {
                     if (!TextUtils.isEmpty(r.getCardholder())) {
                         title.append(" (").append(r.getCardholder()).append(")");
                     }
-                    transactions.add(new Transaction(formatDate(r.getDate()), title.toString(), BigDecimal.valueOf(r.getSum())));
+                    if (r.getDate() != null) {
+                        transactions.add(new Transaction(formatDate(r.getDate()), title.toString(), BigDecimal.valueOf(r.getSum())));
+                    }
                 }
             }
         } catch (UnsupportedEncodingException e) {
