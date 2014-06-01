@@ -29,32 +29,15 @@ import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.CookieStore;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
@@ -125,10 +108,13 @@ public class Rikslunchen extends Bank {
             accounts.add(new Account("Rikslunchen", balance, "1"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
+            throw new BankException(e.getMessage());
         } catch (ClientProtocolException e) {
             e.printStackTrace();
+            throw new BankException(e.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
+            throw new BankException(e.getMessage());
         }
         if (accounts.isEmpty()) {
             throw new BankException(res.getText(R.string.no_accounts_found)
