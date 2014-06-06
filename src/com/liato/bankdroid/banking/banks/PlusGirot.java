@@ -49,8 +49,7 @@ public class PlusGirot extends Bank {
 	private static final String NAME_SHORT = "plusgirot";
 	private static final String URL = "https://kontoutdrag.plusgirot.se/";
 	private static final int BANKTYPE_ID = IBankTypes.PLUSGIROT;
-    private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
-	
+
     private Pattern reAccounts = Pattern.compile("<tr>\\s*<td[^>]+>\\s*<font[^>]+>([^<]+)</font>\\s*</td>\\s*<td[^>]+><font[^>]+>\\s*<font[^>]+>([^<]+)</font>\\s*</td>\\s*<td[^>]+>\\s*<font[^>]+>([^<]+)</font>\\s*</td>\\s*<td[^>]+>\\s*<font[^>]+>([^<]+)</font>", Pattern.CASE_INSENSITIVE);
 	private Pattern reTransactions = Pattern.compile("<a[^>]+>([^<]+)</a>\\s*</font>\\s*</td>\\s*<td[^>]+>\\s*<font[^>]+>([^<]+)</font>\\s*</td>\\s*<td[^>]+>\\s*<font[^>]+>([^<]+)</font>\\s*</td>\\s*<td[^>]+>\\s*<font[^>]+>([^<]+)</f", Pattern.CASE_INSENSITIVE);
 	private String response = null;
@@ -62,7 +61,6 @@ public class PlusGirot extends Bank {
 		super.NAME_SHORT = NAME_SHORT;
 		super.BANKTYPE_ID = BANKTYPE_ID;
 		super.URL = URL;
-		super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
 	}
 
 	public PlusGirot(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
