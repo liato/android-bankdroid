@@ -1,3 +1,12 @@
+v1.9.6.15: (2014-06-07)
+* Fix for Coop MedMedmera Visa and Coop Kort
+* Updated SSL certificate for SEB cards (SAS Eurobonus, SJPrio, Statoil and more)
+* Allow all characters when entering username for PlusGirot
+* Updated SevenDay SSL certificate
+* Improvements to ResursBank
+* Login fix for Ikano Partner cards (Ikea, Preem, Shell, Skoda and more)
+
+
 v1.9.6.14: (2014-05-13)
 * Fix for ICA Banken
 * Fix for Payson
