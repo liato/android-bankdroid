@@ -27,12 +27,12 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
-import android.text.Html;
 
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
@@ -48,15 +48,18 @@ public class Villabanken extends Bank {
 	private static final String URL = "https://kundportal.cerdo.se/villabankenpub/card/default.aspx";
 	private static final int BANKTYPE_ID = IBankTypes.VILLABANKEN;
 
-    private final Pattern reDisposableAmount = Pattern.compile("<td[^>]+>((?:Kvar att utnyttja:)+)[^>]+>([^<]+)</span>");
-    private final Pattern reBalance = Pattern.compile("<td[^>]+>((?:Utnyttjad kredit:)+)[^>]+>([^<]+)</span>");
-    private final Pattern reCreditLimit = Pattern.compile("<td[^>]+>((?:Beviljad kredit:)+)[^>]+>([^<]+)</span>");
+    private final Pattern reDisposableAmount = Pattern.compile("<[^>]+>((?:Kvar att utnyttja:)+)[^>]+>([^<]+)");
+    private final Pattern reBalance = Pattern.compile("<[^>]+>((?:Utnyttjad kredit:)+)[^>]+>([^<]+)");
+    private final Pattern reCreditLimit = Pattern.compile("<[^>]+>((?:Beviljad kredit:)+)[^>]+>([^<]+)");
+    private final Pattern reTransactions = Pattern.compile("<[^>]+>(\\d{4}-\\d{2}-\\d{2})[^>]+><[^>]*>+([^<]+)<[^>]*><[^>]*>([^<]+) SEK<");
 	private final Pattern reRequestDigest = Pattern.compile("__REQUESTDIGEST\".*?value=\"([^\"]+)\"");
 	private final Pattern reViewState = Pattern.compile("__VIEWSTATE\".*?value=\"([^\"]+)\"");
 	private final Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\".*?value=\"([^\"]+)\"");
 	private final Pattern reCtl00 = Pattern.compile("\"(ctl00.*?ctl00)\"");
+    private String accountUrl = "https://kundportal.cerdo.se/villabankenpub/card/secure/CardAccountOverview.aspx";;
+    private String accountResponse = null;
 
-	public Villabanken(Context context) {
+    public Villabanken(Context context) {
 		super(context);
 		super.TAG = TAG;
 		super.NAME = NAME;
@@ -73,26 +76,26 @@ public class Villabanken extends Bank {
 	@Override
 	protected LoginPackage preLogin() throws BankException, ClientProtocolException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_villabanken));
-		String response = urlopen.open(URL);
-		Matcher matcher = reRequestDigest.matcher(response);
+		String preLoginResponse = urlopen.open(URL);
+		Matcher matcher = reRequestDigest.matcher(preLoginResponse);
 		if (!matcher.find()) {
 			throw new BankException(res.getText(R.string.unable_to_find).toString() + " request digest.");
 		}
 		String requestDigest = matcher.group(1);
 
-		matcher = reCtl00.matcher(response);
+		matcher = reCtl00.matcher(preLoginResponse);
 		if (!matcher.find()) {
 			throw new BankException(res.getText(R.string.unable_to_find).toString() + " ctl00");
 		}
 		String ctl00 = matcher.group(1);
 
-		matcher = reViewState.matcher(response);
+		matcher = reViewState.matcher(preLoginResponse);
 		if (!matcher.find()) {
 			throw new BankException(res.getText(R.string.unable_to_find).toString() + " view state.");
 		}
 		String viewState = matcher.group(1);
 
-		matcher = reEventValidation.matcher(response);
+		matcher = reEventValidation.matcher(preLoginResponse);
 		if (!matcher.find()) {
 			throw new BankException(res.getText(R.string.unable_to_find).toString() + " event validation.");
 		}
@@ -130,17 +133,18 @@ public class Villabanken extends Bank {
 		postData.add(new BasicNameValuePair("_wpcmWpid", ""));
 		postData.add(new BasicNameValuePair("wpcmVal", ""));
 
-		return new LoginPackage(urlopen, postData, response, URL);
+		return new LoginPackage(urlopen, postData, preLoginResponse, URL);
 	}
 
 	@Override
 	public Urllib login() throws LoginException, BankException {
 		try {
 			LoginPackage lp = preLogin();
-			String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-			if (response.contains("misslyckades")) {
+			String loginResponse = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+			if (loginResponse.contains("misslyckades")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}
+            this.accountResponse = urlopen.open(accountUrl);
 
 		} catch (ClientProtocolException e) {
 			throw new BankException(e.getMessage());
@@ -157,45 +161,52 @@ public class Villabanken extends Bank {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		urlopen = login();
-		String response = null;
+
 		Matcher matcher;
-		try {
-			response = urlopen.open("https://kundportal.cerdo.se/villabankenpub/card/secure/CardAccountOverview.aspx");
 
-            matcher = reDisposableAmount.matcher(response);
-            matcher.find();
-            Account account = new Account("Disponibelt belopp", Helpers.parseBalance(matcher.group(2)), "0");
-            account.setType(Account.CCARD);
-            account.setCurrency(currency);
-            accounts.add(account);
-            balance = balance.add(account.getBalance());
+        matcher = reDisposableAmount.matcher(accountResponse);
+        matcher.find();
+        Account account = new Account("Disponibelt belopp", Helpers.parseBalance(matcher.group(2)), "0");
+        account.setType(Account.CCARD);
+        account.setCurrency(currency);
+        accounts.add(account);
+        balance = balance.add(account.getBalance());
 
-            matcher = reBalance.matcher(response);
-            matcher.find();
-            account = new Account("Saldo", Helpers.parseBalance(matcher.group(2)), "1");
-            account.setType(Account.OTHER);
-            account.setAliasfor("Saldo alias");
-            account.setCurrency(currency);
-            accounts.add(account);
+        matcher = reBalance.matcher(accountResponse);
+        matcher.find();
+        account = new Account("Saldo", Helpers.parseBalance(matcher.group(2)), "1");
+        account.setType(Account.OTHER);
+        account.setAliasfor("Saldo alias");
+        account.setCurrency(currency);
+        accounts.add(account);
 
-            matcher = reCreditLimit.matcher(response);
-            matcher.find();
-            account = new Account("Köpgräns", Helpers.parseBalance(matcher.group(2)), "2");
-            account.setType(Account.OTHER);
-            account.setAliasfor("Köpgräns alias");
-            account.setCurrency(currency);
-            accounts.add(account);
+        matcher = reCreditLimit.matcher(accountResponse);
+        matcher.find();
+        account = new Account("Köpgräns", Helpers.parseBalance(matcher.group(2)), "2");
+        account.setType(Account.OTHER);
+        account.setAliasfor("Köpgräns alias");
+        account.setCurrency(currency);
+        accounts.add(account);
 
-            if (accounts.isEmpty()) {
-				throw new BankException(res.getText(R.string.no_accounts_found).toString());
-			}
+        if (accounts.isEmpty()) {
+            throw new BankException(res.getText(R.string.no_accounts_found).toString());
+        }
 
-		} catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage());
-		} catch (IOException e) {
-			throw new BankException(e.getMessage());
-		} finally {
-			super.updateComplete();
-		}
+        super.updateComplete();
+
 	}
+
+    @Override
+    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+        super.updateTransactions(account, urlopen);
+        if (account.getType() != Account.CCARD) return;
+
+        ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+        Matcher matcher = reTransactions.matcher(accountResponse);
+        while(matcher.find()) {
+            transactions.add(new Transaction(matcher.group(1), matcher.group(2), Helpers.parseBalance(matcher.group(3)).negate(), account.getCurrency()));
+        }
+        account.setTransactions(transactions);
+
+    }
 }
