@@ -48,7 +48,9 @@ public class Villabanken extends Bank {
 	private static final String URL = "https://kundportal.cerdo.se/villabankenpub/card/default.aspx";
 	private static final int BANKTYPE_ID = IBankTypes.VILLABANKEN;
 
-	private final Pattern reAccounts = Pattern.compile("<td[^>]+>((?:utnyttjad|kvar)[^:]+)[^>]+>([^<]+)</span>", Pattern.CASE_INSENSITIVE);
+    private final Pattern reDisposableAmount = Pattern.compile("<td[^>]+>((?:Kvar att utnyttja:)+)[^>]+>([^<]+)</span>");
+    private final Pattern reBalance = Pattern.compile("<td[^>]+>((?:Utnyttjad kredit:)+)[^>]+>([^<]+)</span>");
+    private final Pattern reCreditLimit = Pattern.compile("<td[^>]+>((?:Beviljad kredit:)+)[^>]+>([^<]+)</span>");
 	private final Pattern reRequestDigest = Pattern.compile("__REQUESTDIGEST\".*?value=\"([^\"]+)\"");
 	private final Pattern reViewState = Pattern.compile("__VIEWSTATE\".*?value=\"([^\"]+)\"");
 	private final Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\".*?value=\"([^\"]+)\"");
@@ -160,15 +162,31 @@ public class Villabanken extends Bank {
 		try {
 			response = urlopen.open("https://kundportal.cerdo.se/villabankenpub/card/secure/CardAccountOverview.aspx");
 
-			matcher = reAccounts.matcher(response);
-			Integer accountId = 0;
-			while (matcher.find()) {
-				accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim(), Helpers.parseBalance(matcher.group(2)), accountId.toString()));
-				balance = balance.add(Helpers.parseBalance(matcher.group(2)));
-				accountId += 1;
-			}
+            matcher = reDisposableAmount.matcher(response);
+            matcher.find();
+            Account account = new Account("Disponibelt belopp", Helpers.parseBalance(matcher.group(2)), "0");
+            account.setType(Account.CCARD);
+            account.setCurrency(currency);
+            accounts.add(account);
+            balance = balance.add(account.getBalance());
 
-			if (accounts.isEmpty()) {
+            matcher = reBalance.matcher(response);
+            matcher.find();
+            account = new Account("Saldo", Helpers.parseBalance(matcher.group(2)), "1");
+            account.setType(Account.OTHER);
+            account.setAliasfor("Saldo alias");
+            account.setCurrency(currency);
+            accounts.add(account);
+
+            matcher = reCreditLimit.matcher(response);
+            matcher.find();
+            account = new Account("Köpgräns", Helpers.parseBalance(matcher.group(2)), "2");
+            account.setType(Account.OTHER);
+            account.setAliasfor("Köpgräns alias");
+            account.setCurrency(currency);
+            accounts.add(account);
+
+            if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
 			}
 
