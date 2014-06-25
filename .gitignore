@@ -1,27 +1,47 @@
-.metadata
-.settings
-tmp/**
-.DS_Store
-*.tmp
-*.bak
-tmp/**/*
-*.swp
-*~.nib
-Thumbs.db
-Desktop.ini
-*~
+# built application files
 *.apk
-*.java.orig
-bin
-gen
-local.properties
-dev/
-src/com/liato/bankdroid/db/Crypto.*
-src/com/liato/bankdroid/db/Crypto.java.dev
+*.ap_
 
-target/
-.idea
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# generated files
+bin/
+gen/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+dev/
+*.pyc
+.DS_Store
+*.orig
+
+# Local Eclipse files
+.classpath
+.project
+
+# Android studio
 .gradle
-*.iml
 build/
+*.iws
+*.ipr
+*.swp
+out/
+.idea/libraries
+.idea/workspace.xml
+.idea/misc.xml
+.idea/vcs.xml
+.idea/*
+*.iml
+.idea
+
+
+#Project specific
+app/src/main/java/com/liato/bankdroid/db/Crypto.*
+app/src/main/java/com/liato/bankdroid/db/Crypto.java.dev
+dev/
 release.keystore
