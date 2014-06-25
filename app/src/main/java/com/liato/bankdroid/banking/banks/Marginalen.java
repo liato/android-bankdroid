@@ -65,7 +65,7 @@ public class Marginalen extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_marginalen));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_marginalen, R.raw.cert_marginalen2));
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         Matcher matcher;
         response = urlopen.open(BASE_URL + "engine");
