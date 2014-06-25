@@ -5,6 +5,8 @@ import android.content.Context;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
@@ -40,6 +42,34 @@ public class CertificateReader {
         }
         return certificates.toArray(new Certificate[certificates.size()]);
     }
+
+    public static ClientCertificate getClientCertificate(Context context, int rawResCert, String password) {
+        InputStream is = null;
+        try {
+            KeyStore keyStore = KeyStore.getInstance("PKCS12");
+            is = new BufferedInputStream(context.getResources().openRawResource(rawResCert));
+            keyStore.load(is, password.toCharArray());
+            return new ClientCertificate(keyStore, password);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (CertificateException e) {
+            e.printStackTrace();
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    //noop
+                }
+            }
+        }
+        return null;
+    }
+
 
     public static String[] getPins(Context context, int... rawResCerts) {
         Certificate[] certs = getCertificates(context, rawResCerts);

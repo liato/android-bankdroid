@@ -63,7 +63,7 @@ import com.liato.bankdroid.banking.banks.PlusGirot;
 import com.liato.bankdroid.banking.banks.Preem;
 import com.liato.bankdroid.banking.banks.Quintessentially;
 import com.liato.bankdroid.banking.banks.ResursBank;
-import com.liato.bankdroid.banking.banks.SEB;
+import com.liato.bankdroid.banking.banks.seb.SEB;
 import com.liato.bankdroid.banking.banks.SJPrio;
 import com.liato.bankdroid.banking.banks.Saab;
 import com.liato.bankdroid.banking.banks.Seat;

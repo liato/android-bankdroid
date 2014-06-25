@@ -30,11 +30,14 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.KeyManagementException;
+import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
@@ -45,10 +48,12 @@ public class CertPinningSSLSocketFactory extends SSLSocketFactory {
     private Certificate[] certificates;
     private String lastHost;
     private CertPinningTrustManager mTrustManager;
+    private ClientCertificate mClientCertificate;
 
-    public CertPinningSSLSocketFactory(Certificate[] certificates) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+    public CertPinningSSLSocketFactory(ClientCertificate clientCertificate, Certificate[] certificates) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
         super(null);
         this.certificates = certificates;
+        this.mClientCertificate = clientCertificate;
         setHostnameVerifier(SSLSocketFactory.STRICT_HOSTNAME_VERIFIER);
     }
 
@@ -57,12 +62,20 @@ public class CertPinningSSLSocketFactory extends SSLSocketFactory {
         try {
             SSLContext context = SSLContext.getInstance("TLS");
             mTrustManager = new CertPinningTrustManager(certificates, lastHost);
-            context.init(null, new TrustManager[] { mTrustManager }, null);
+            KeyManager[] keyManagers = null;
+            if  (mClientCertificate != null) {
+                KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+                kmf.init(mClientCertificate.getKeyStore(), mClientCertificate.getPassword().toCharArray());
+                keyManagers = kmf.getKeyManagers();
+            }
+            context.init(keyManagers, new TrustManager[] { mTrustManager }, null);
             return context;
         } catch (Exception e) {
             throw new IOException(e.getMessage());
         }
     }
+
+//    private static KeyManager2 extends KeyManager
 
     private SSLContext getSSLContext() throws IOException {
         //Log.v(TAG, "getSSLContext()");

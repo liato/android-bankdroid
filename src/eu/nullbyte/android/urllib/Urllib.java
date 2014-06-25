@@ -35,6 +35,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
+import org.apache.http.ProtocolException;
 import org.apache.http.client.AuthenticationHandler;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpRequestRetryHandler;
@@ -57,6 +58,7 @@ import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.DefaultRedirectHandler;
 import org.apache.http.impl.client.DefaultRequestDirector;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
@@ -72,6 +74,7 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -98,6 +101,10 @@ public class Urllib {
     }
 
     public Urllib(Context context, Certificate[] pins) {
+        this(context, null, pins);
+    }
+
+    public Urllib(Context context, ClientCertificate clientCert, Certificate[] pins) {
         mContext = context;
         this.headers = new HashMap<String, String>();
         userAgent = createUserAgentString();
@@ -110,7 +117,7 @@ public class Urllib {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean trustSystemKeystore = prefs.getBoolean("debug_mode", false) && prefs.getBoolean("no_cert_pinning", false);
         try {
-            mSSLSocketFactory = new CertPinningSSLSocketFactory(pins);
+            mSSLSocketFactory = new CertPinningSSLSocketFactory(clientCert, pins);
             registry.register(new Scheme("https", pins != null && !trustSystemKeystore ? mSSLSocketFactory : SSLSocketFactory.getSocketFactory(), 443));
         } catch (UnrecoverableKeyException e) {
             e.printStackTrace();
@@ -231,7 +238,7 @@ public class Urllib {
         httpclient.getConnectionManager().shutdown();
     }
     
-    public HttpContext getmHttpContext() {
+    public HttpContext getHttpContext() {
         return mHttpContext;
     }
     
@@ -261,7 +268,6 @@ public class Urllib {
         httpclient.setKeepAliveStrategy(new ConnectionKeepAliveStrategy() { 
             @Override
             public long getKeepAliveDuration(HttpResponse response, HttpContext arg1) {
-                // TODO Auto-generated method stub
                 return seconds;
             }});
     }
@@ -276,6 +282,20 @@ public class Urllib {
     
     public HashMap<String, String> getHeaders() {
         return this.headers;
+    }
+
+    public void setFollowRedirects(boolean follow) {
+        httpclient.setRedirectHandler(follow ? new DefaultRedirectHandler() : new RedirectHandler() {
+            public URI getLocationURI(HttpResponse response,
+                                      HttpContext context) throws ProtocolException {
+                return null;
+            }
+
+            public boolean isRedirectRequested(HttpResponse response,
+                                               HttpContext context) {
+                return false;
+            }
+        });
     }
 
     
