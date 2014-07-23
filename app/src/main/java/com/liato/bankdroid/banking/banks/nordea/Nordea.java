@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.liato.bankdroid.banking.banks;
+package com.liato.bankdroid.banking.banks.nordea;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -48,20 +48,44 @@ public class Nordea extends Bank {
 	private static final String TAG = "Nordea";
 	private static final String NAME = "Nordea";
 	private static final String NAME_SHORT = "nordea";
-	private static final String URL = "https://mobil.nordea.se/";
+	private static final String URL = "https://internetbanken.privat.nordea.se/nsp/login";
 	private static final int BANKTYPE_ID = IBankTypes.NORDEA;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
-    private static final String INPUT_HINT_USERNAME = "ÅÅMMDD-XXXX";
+    private static final String INPUT_HINT_USERNAME = "ÅÅÅÅMMDDXXXX";
     
     private static final int MAX_TRANSACTIONS = 50;
 
-    private Pattern reSimpleLoginLink = Pattern.compile("href=\"(engine\\?(?=[^\"]*usecase=commonlogin)(?=[^\"]*command=commonlogintabcommand)(?=[^\"]*commonlogintab=2)(?=[^\"]*guid=([\\w]*))(?=[^\"]*fpid=([\\w]*))(?=[^\"]*hash=([\\w]*))[^\"]*)", Pattern.CASE_INSENSITIVE);
+    private Pattern reSimpleLoginLink = Pattern.compile(
+            "href=\"(login\\?" +
+            "(?=[^\"]*usecase=commonlogin)" +
+            "(?=[^\"]*command=commonlogintabcommand)" +
+            "(?=[^\"]*guid=([\\w]*))" +
+            "(?=[^\"]*fpid=([\\w]*))" +
+            "(?=[^\"]*commonlogintab=2)" +
+            "(?=[^\"]*hash=([\\w]*))" +
+            "[^\"]*)",
+            Pattern.CASE_INSENSITIVE
+    );
     private Pattern reLoginFormContents = Pattern.compile("<form[^>]+id=\"commonlogin\"[^>]*>(.*?)</form>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private Pattern reNonTextInputField = Pattern.compile("<input(?=[^>]+type=\"((?!text)[^\"]*)\")(?=[^>]+name=\"([^\"]+)\")(?=[^>]+value=\"([^\"]+)\")", Pattern.CASE_INSENSITIVE);
-    
+    private Pattern reNonTelInputField = Pattern.compile("<input(?=[^>]+type=\"((?!tel)[^\"]*)\")(?=[^>]+name=\"([^\"]+)\")(?=[^>]+value=\"([^\"]+)\")", Pattern.CASE_INSENSITIVE);
+
     private Pattern reTransactionFormContents = Pattern.compile("<form(?=[^>]+id=\"accountTransactions\")(?=[^>]+action=\"([^\"]*)\").*?>(.*?)</form>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-    private Pattern reAccountLink = Pattern.compile("href=\"(engine\\?(?=[^\"]*usecase=accountsoverview)(?=[^\"]*command=getcurrenttransactions)(?=[^\"]*currentaccountsoverviewtable=([\\d]+))[^\"]*)[^>]*>(.*?)</a>.*?([*\\d]+).*?([\\d\\.,]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private Pattern reAccountLink = Pattern.compile(
+            "href=\"(core\\?" +
+            "(?=[^\"]*usecase=accountsoverview)" +
+            "(?=[^\"]*command=getcurrenttransactions)" +
+            "(?=[^\"]*currentaccountsoverviewtable=([\\d]+))" +
+            "[^\"]*)[^>]*>" + // End of link attributes
+            "(.*?)" + // Link contents - account name
+            "</a>" +
+            ".*?" + // fast forward
+            "([*\\d]+)" + // censured account number
+            ".*?" + // fast forward
+            "([\\d\\.,]+)", // account balance
+            Pattern.CASE_INSENSITIVE | Pattern.DOTALL
+    );
     private Pattern reTransaction = Pattern.compile("(\\d{4}-\\d{2}-\\d{2})[\n\r <].*?<td.*?>(.*?)</td>.*?<td.*?>.*?</td>.*?<td.*?>([\\s\\d-+,.]*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private Pattern reCurrency = Pattern.compile("Saldo:.*?[\\d\\.,-]+[\\s]*</td>[\\s]*<td[^>]*>([^<]*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     
@@ -91,10 +115,10 @@ public class Nordea extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-		urlopen = new Urllib();
+		urlopen = new Urllib(context);
 		Matcher matcher;
 		// Find "simple login" link
-		this.lastResponse = urlopen.open("https://internetbanken.privat.nordea.se/nsp/engine");
+		this.lastResponse = urlopen.open("https://internetbanken.privat.nordea.se/nsp/login");
 		this.currentPageType = PageType.LOGIN;
 		matcher = reSimpleLoginLink.matcher(this.lastResponse);
 		if (!matcher.find()) {
@@ -110,7 +134,7 @@ public class Nordea extends Bank {
 		}
 		// Extract hidden fields
 		String formContents = matcher.group(1);
-		matcher = reNonTextInputField.matcher(formContents);
+		matcher = reNonTelInputField.matcher(formContents);
 		if (!matcher.find()) {
 			throw new BankException(res.getText(R.string.unable_to_find).toString()+" login fields.");
 		}
@@ -130,7 +154,7 @@ public class Nordea extends Bank {
 		postData.add(new BasicNameValuePair("pin", password));
 		// Submit button is not contained within the form and thus cannot (should not) be found with the InputField matcher
 		postData.add(new BasicNameValuePair("commonlogin$loginLight", "Logga in"));
-		return new LoginPackage(urlopen, postData, this.lastResponse, "https://internetbanken.privat.nordea.se/nsp/engine");
+		return new LoginPackage(urlopen, postData, this.lastResponse, "https://internetbanken.privat.nordea.se/nsp/login");
     }
 
 	@Override
@@ -139,7 +163,7 @@ public class Nordea extends Bank {
 		    LoginPackage lp = preLogin();
 		    this.lastResponse = urlopen.open(lp.getLoginTarget(), lp.getPostData());
 		    this.currentPageType = PageType.ENTRY;
-			if (this.lastResponse.contains("felaktiga uppgifter")) {
+			if (this.lastResponse.contains("fel uppgifter")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}
 			
