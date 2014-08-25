@@ -48,7 +48,8 @@ public class Nordea extends Bank {
 	private static final String TAG = "Nordea";
 	private static final String NAME = "Nordea";
 	private static final String NAME_SHORT = "nordea";
-	private static final String URL = "https://internetbanken.privat.nordea.se/nsp/login";
+	private static final String BASE_URL = "https://internetbanken.privat.nordea.se/nsp/";
+	private static final String LOGIN_URL = BASE_URL + "login";
 	private static final int BANKTYPE_ID = IBankTypes.NORDEA;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
@@ -71,6 +72,14 @@ public class Nordea extends Bank {
     private Pattern reNonTextInputField = Pattern.compile("<input(?=[^>]+type=\"((?!text)[^\"]*)\")(?=[^>]+name=\"([^\"]+)\")(?=[^>]+value=\"([^\"]+)\")", Pattern.CASE_INSENSITIVE);
     private Pattern reNonTelInputField = Pattern.compile("<input(?=[^>]+type=\"((?!tel)[^\"]*)\")(?=[^>]+name=\"([^\"]+)\")(?=[^>]+value=\"([^\"]+)\")", Pattern.CASE_INSENSITIVE);
 
+    // Link to home/overview - PageType.ENTRY
+    private Pattern reHomeLink = Pattern.compile(
+            "href=\"(core[^\"#]*)#?\"" + // The actual url (trim the '#')
+            "[^>]*>" +
+            "[^<]*" +
+            "<img[^>]+id=\"home\"" // Identificator
+            );
+
     private Pattern reTransactionFormContents = Pattern.compile("<form(?=[^>]+id=\"accountTransactions\")(?=[^>]+action=\"([^\"]*)\").*?>(.*?)</form>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private Pattern reAccountLink = Pattern.compile(
             "href=\"(core\\?" +
@@ -88,6 +97,30 @@ public class Nordea extends Bank {
     );
     private Pattern reTransaction = Pattern.compile("(\\d{4}-\\d{2}-\\d{2})[\n\r <].*?<td.*?>(.*?)</td>.*?<td.*?>.*?</td>.*?<td.*?>([\\s\\d-+,.]*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private Pattern reCurrency = Pattern.compile("Saldo:.*?[\\d\\.,-]+[\\s]*</td>[\\s]*<td[^>]*>([^<]*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+
+    // The link to go to the loans overview page
+    private Pattern reLoansLink = Pattern.compile("<a href=\"([^\"#]*)#?\">Lån<");
+    // Link to specific loan
+    private Pattern reLoanLink = Pattern.compile(
+            "href=\"" +
+            "(" + // Start group 1: link url
+            "engine\\?" +
+            "(?=[^\"]*usecase=loansoverview)" +
+            "(?=[^\"]*command=get_loan_details_command)" +
+            "[^\"#]*" + // Rest of link url
+            ")" + // End group 1
+            "#?" + // Trim off a padded #
+            "[^>]*>" + // Rest of link attributes
+            "(.*?)" + // Group 2: Link contents - Loan type (Eg. "Bolån")
+            "</a>" +
+            ".*?" + // Fast forward
+            "\\*+(\\d+)" + // Group 3: Censured loan number
+            ".*?" + // Fast forward
+            "(\\d{4}-\\d{2}-\\d{2})" + // Group 4: "Transaction date" - Latest interest payment date
+            ".*?" + // Fast forward
+            "([\\d\\.,]+)", // Group 5: Loan amount
+            Pattern.CASE_INSENSITIVE | Pattern.DOTALL
+    );
     
     private Pattern reAccountSelect = Pattern.compile("<select[^>]+name=\"transactionaccount\"[^>]*>(.*?)</select>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private Pattern reAccountOption = Pattern.compile("<option[^>]+value=\"([\\d]+)\"[^>]*>.*?([*\\d]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
@@ -101,7 +134,7 @@ public class Nordea extends Bank {
 		super.NAME = NAME;
 		super.NAME_SHORT = NAME_SHORT;
 		super.BANKTYPE_ID = BANKTYPE_ID;
-		super.URL = URL;
+		super.URL = BASE_URL;
         super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
         super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
         super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
@@ -118,14 +151,14 @@ public class Nordea extends Bank {
 		urlopen = new Urllib(context);
 		Matcher matcher;
 		// Find "simple login" link
-		this.lastResponse = urlopen.open("https://internetbanken.privat.nordea.se/nsp/login");
+		this.lastResponse = urlopen.open(LOGIN_URL);
 		this.currentPageType = PageType.LOGIN;
 		matcher = reSimpleLoginLink.matcher(this.lastResponse);
 		if (!matcher.find()) {
 			throw new BankException(res.getText(R.string.unable_to_find).toString()+" login link.");
 		}
 		// Visit login link
-		String link = "https://internetbanken.privat.nordea.se/nsp/" + matcher.group(1);
+		String link = BASE_URL + matcher.group(1);
 		this.lastResponse = urlopen.open(link);
 		this.currentPageType = PageType.SIMPLE_LOGIN;
 		matcher = reLoginFormContents.matcher(this.lastResponse);
@@ -154,7 +187,7 @@ public class Nordea extends Bank {
 		postData.add(new BasicNameValuePair("pin", password));
 		// Submit button is not contained within the form and thus cannot (should not) be found with the InputField matcher
 		postData.add(new BasicNameValuePair("commonlogin$loginLight", "Logga in"));
-		return new LoginPackage(urlopen, postData, this.lastResponse, "https://internetbanken.privat.nordea.se/nsp/login");
+		return new LoginPackage(urlopen, postData, this.lastResponse, LOGIN_URL);
     }
 
 	@Override
@@ -185,6 +218,8 @@ public class Nordea extends Bank {
 		}
 		
 		urlopen = login();
+        String link = null;
+        String loanName = null;
 		Matcher matcher;
 		try {
 			matcher = reAccountLink.matcher(this.lastResponse);
@@ -195,14 +230,39 @@ public class Nordea extends Bank {
 						Html.fromHtml(matcher.group(4)).toString().trim()
 						));
 			}
-			
-			// TODO(Rhoot): Put code for loan, funds and cards back. I don't have either of them so I cannot do it 
-			//              personally, as I don't know what the pages look like.
+
+            // Get loans link
+            matcher = reLoansLink.matcher(this.lastResponse);
+            if (matcher.find()) {
+                link = matcher.group(1);
+                // Go to Loans
+                this.lastResponse = urlopen.open(BASE_URL + link);
+                this.currentPageType = PageType.LOANS;
+                matcher = reLoanLink.matcher(this.lastResponse);
+                // Add loans
+                while (matcher.find()) {
+                    loanName = matcher.group(2) + ' ' + matcher.group(3);
+                    accounts.add(new Account(
+                            loanName,
+                            Helpers.parseBalance(matcher.group(5)),
+                            "l:"+matcher.group(3).trim(),
+                            -1L,
+                            Account.LOANS
+                            ));
+                }
+            }
+			// TODO: Code for funds and credit cards
 
 			if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
 			}
 		}
+        catch (ClientProtocolException e) {
+            throw new BankException(e.getMessage());
+        }
+        catch (IOException e) {
+            throw new BankException(e.getMessage());
+        }
 		finally {
 		    super.updateComplete();
 		}
@@ -228,7 +288,10 @@ public class Nordea extends Bank {
 			
 			String link = null;
 			List<NameValuePair> postData = new ArrayList<NameValuePair>();
-			if(currentPageType == PageType.ENTRY) {
+			if(this.currentPageType == PageType.LOANS) {
+                goHome(); // Go to PageType.ENTRY
+            }
+            if(currentPageType == PageType.ENTRY) {
 				// Find the link to the transaction page
 				matcher = reAccountLink.matcher(this.lastResponse);
 				while (matcher.find()) {
@@ -283,7 +346,7 @@ public class Nordea extends Bank {
 				throw new BankException("This should never happen. If it does: Grats, you broke it.");
 			}
 			// Navigate to it, and parse the results
-			this.lastResponse = urlopen.open("https://internetbanken.privat.nordea.se/nsp/" + link, postData);
+			this.lastResponse = urlopen.open(BASE_URL + link, postData);
 			this.currentPageType = PageType.TRANSACTIONS;
 			matcher = reTransaction.matcher(this.lastResponse);
 			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
@@ -308,11 +371,28 @@ public class Nordea extends Bank {
 			e.printStackTrace();
 		}
 	}
+
+    private void goHome() {
+        String homeLink;
+        Matcher matcher;
+        // Find home link
+        matcher = reHomeLink.matcher(this.lastResponse);
+        if (matcher.find()) {
+            homeLink = matcher.group(1);
+            try {
+                this.lastResponse = urlopen.open(BASE_URL + homeLink);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            this.currentPageType = PageType.ENTRY;
+        }
+    }
 	
 	private static class PageType {
 		public static final int LOGIN = 0;
 		public static final int SIMPLE_LOGIN = 1;
 		public static final int ENTRY = 2;
 		public static final int TRANSACTIONS = 3;
+		public static final int LOANS = 4;
 	}
 }
