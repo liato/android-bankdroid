@@ -162,7 +162,7 @@ public class Coop extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_coop));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_coop, R.raw.cert_coop2));
         urlopen.addHeader("Origin", "https://www.coop.se");
         urlopen.addHeader("Referer", "https://www.coop.se/Mina-sidor/Logga-in-puffsida/?li=True");
         response = urlopen.open("https://www.coop.se/");
