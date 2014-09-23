@@ -90,13 +90,46 @@ public class Nordea extends Bank {
             "(.*?)" + // Link contents - account name
             "</a>" +
             ".*?" + // fast forward
-            "([*\\d]+)" + // censured account number
+            "([*\\d]+)" + // censured account number (account identifier)
             ".*?" + // fast forward
             "([\\d\\.,]+)", // account balance
-            Pattern.CASE_INSENSITIVE | Pattern.DOTALL
+            Pattern.DOTALL
     );
-    private Pattern reTransaction = Pattern.compile("(\\d{4}-\\d{2}-\\d{2})[\n\r <].*?<td.*?>(.*?)</td>.*?<td.*?>.*?</td>.*?<td.*?>([\\s\\d-+,.]*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private Pattern reTransaction = Pattern.compile("(\\d{4}-\\d{2}-\\d{2})[\n\r <].*?<td.*?>(.*?)</td>.*?<td.*?>.*?</td>.*?<td.*?>([\\s\\d+,.-]*)", Pattern.DOTALL);
     private Pattern reCurrency = Pattern.compile("Saldo:.*?[\\d\\.,-]+[\\s]*</td>[\\s]*<td[^>]*>([^<]*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+
+    // The link to go to the credit cards overview page
+    private Pattern reCreditCardsLink = Pattern.compile("<a href=\"([^\"#]*)#?\">Kort<");
+    // Link to specific credit card
+    private Pattern reCreditCardLink = Pattern.compile(
+            "href=\"" +
+            "(" + // Start group 1: link url
+            "engine\\?" +
+            "(?=[^\"]*usecase=viewallcards)" +
+            "(?=[^\"]*command=gettransactionscredit)" + // debit cards have "debit" - but we don't need those
+            "[^\"#]*" + // Rest of link url
+            ")" + // End group 1
+            "[^>]*>" + // Rest of link attributes
+            "(.*?)" + // Group 2: Link contents - Credit card type (Eg. "Nordea Gold")
+            "</a>" +
+            ".*?" + // Fast forward
+            "\\*+(\\d+)", // Group 3: Censured credit card number (account identifier)
+            Pattern.DOTALL
+    );
+    // Credit card transaction entry
+    private Pattern reCreditCardTransaction = Pattern.compile(
+            "(\\d{4}-\\d{2}-\\d{2})</a>" + // Group 1: Transaction date
+            "[^<]*</td>" + // End date col
+            "[^<]*<td[^>]*>" + // Start transaction name col
+            "\\s*([^<]*)\\s*</td>" + // Group 2: (trimmed) Transaction name
+            "[^<]*<td[^>]*>" + // Start recipient name col (same as transaction name?)
+            "[^<]*</td>" + // Transaction name
+            "[^<]*<td[^>]*>" + // Start currency col
+            "\\s*([^<]*)\\s*</td>" + // Group 3: (trimmed) Currency (Empty when SEK?)
+            "[^<]*<td[^>]*>" + // Start amount col
+            "\\s*([\\d,.-]+)", // Group 4: Transaction amount
+            Pattern.DOTALL
+    );
 
     // The link to go to the loans overview page
     private Pattern reLoansLink = Pattern.compile("<a href=\"([^\"#]*)#?\">Lån<");
@@ -114,19 +147,21 @@ public class Nordea extends Bank {
             "(.*?)" + // Group 2: Link contents - Loan type (Eg. "Bolån")
             "</a>" +
             ".*?" + // Fast forward
-            "\\*+(\\d+)" + // Group 3: Censured loan number
+            "\\*+(\\d+)" + // Group 3: Censured loan number (account identifier)
             ".*?" + // Fast forward
             "(\\d{4}-\\d{2}-\\d{2})" + // Group 4: "Transaction date" - Latest interest payment date
             ".*?" + // Fast forward
             "([\\d\\.,]+)", // Group 5: Loan amount
-            Pattern.CASE_INSENSITIVE | Pattern.DOTALL
+            Pattern.DOTALL
     );
     
     private Pattern reAccountSelect = Pattern.compile("<select[^>]+name=\"transactionaccount\"[^>]*>(.*?)</select>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private Pattern reAccountOption = Pattern.compile("<option[^>]+value=\"([\\d]+)\"[^>]*>.*?([*\\d]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     
-    private String lastResponse;    // Nordea has variables that needs to be sent between every single page
-    private int currentPageType;	// Depending on what kind of page we're currently on, the variables will have to be retrieved differently
+    // Nordea generates unique urls on each page load and serves content from session info,
+    // so we need to find new links in lastResponse after each page load.
+    private String lastResponse;
+    private int currentPageType;
     
 	public Nordea(Context context) {
 		super(context);
@@ -217,41 +252,55 @@ public class Nordea extends Bank {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		
-		urlopen = login();
-        String link = null;
-        String loanName = null;
+		// This puts us at PageType.ENTRY
+        urlopen = login();
+        String loanName;
 		Matcher matcher;
 		try {
-			matcher = reAccountLink.matcher(this.lastResponse);
+			// Add regular accounts
+            matcher = reAccountLink.matcher(this.lastResponse);
 			while (matcher.find()) {
 				accounts.add(new Account(
+                        // Account name
 						Html.fromHtml(matcher.group(3)).toString().trim(), 
-						Helpers.parseBalance(matcher.group(5)), 
+						// Balance
+                        Helpers.parseBalance(matcher.group(5)),
+                        // Account identifier - half censured account number: "************1234"
 						Html.fromHtml(matcher.group(4)).toString().trim()
 						));
 			}
 
-            // Get loans link
-            matcher = reLoansLink.matcher(this.lastResponse);
-            if (matcher.find()) {
-                link = matcher.group(1);
-                // Go to Loans
-                this.lastResponse = urlopen.open(BASE_URL + link);
-                this.currentPageType = PageType.LOANS;
-                matcher = reLoanLink.matcher(this.lastResponse);
-                // Add loans
-                while (matcher.find()) {
-                    loanName = matcher.group(2) + ' ' + matcher.group(3);
-                    accounts.add(new Account(
-                            loanName,
-                            Helpers.parseBalance(matcher.group(5)),
-                            "l:"+matcher.group(3).trim(),
-                            -1L,
-                            Account.LOANS
-                            ));
-                }
+            // TODO: Code for funds
+
+            goToPage(PageType.CREDIT_CARDS);
+            matcher = reCreditCardLink.matcher(this.lastResponse);
+            // Add credit cards
+            while (matcher.find()) {
+                accounts.add(new Account(
+                        // Account/Credit card name
+                        matcher.group(2),
+                        // Balance (not available through simple login)
+                        new BigDecimal(0),
+                        // Account/Credit card identifier
+                        "c:" + matcher.group(3),
+                        -1L,
+                        Account.CCARD
+                        ));
             }
-			// TODO: Code for funds and credit cards
+
+            goToPage(PageType.LOANS);
+            matcher = reLoanLink.matcher(this.lastResponse);
+            // Add loans
+            while (matcher.find()) {
+                loanName = matcher.group(2) + ' ' + matcher.group(3);
+                accounts.add(new Account(
+                        loanName,
+                        Helpers.parseBalance(matcher.group(5)),
+                        "l:" + matcher.group(3).trim(),
+                        -1L,
+                        Account.LOANS
+                ));
+            }
 
 			if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
@@ -277,114 +326,190 @@ public class Nordea extends Bank {
 	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
 		super.updateTransactions(account, urlopen);
 
-		//No transaction history for loans, funds and credit cards.
-		int accType = account.getType();
-		if (accType == Account.LOANS || accType == Account.FUNDS || accType == Account.CCARD) return;
+        int accType = account.getType();
 
-		Matcher matcher;
-		try {
-			// We must never browse to a random page without keeping the hashes and stuff from the current page.
-			// Thus, we need to handle it separately depending on if we're still on the entry page or not.
-			
-			String link = null;
-			List<NameValuePair> postData = new ArrayList<NameValuePair>();
-			if(this.currentPageType == PageType.LOANS) {
-                goHome(); // Go to PageType.ENTRY
+        try {
+            switch (accType) {
+                case Account.REGULAR:
+                    updateRegularTransactions(account, urlopen);
+                    break;
+                case Account.CCARD:
+                    updateCreditTransactions(account, urlopen);
+                    break;
+                default:
+                    break;
             }
-            if(currentPageType == PageType.ENTRY) {
-				// Find the link to the transaction page
-				matcher = reAccountLink.matcher(this.lastResponse);
-				while (matcher.find()) {
-					if (Html.fromHtml(matcher.group(4)).toString().trim().equals(account.getId())) {
-						link = matcher.group(1);
-						break;
-					}
-				}
-				if (link == null) {
-					throw new BankException(res.getText(R.string.unable_to_find).toString()+" transactions link.");
-				}
-			}
-			else if(currentPageType == PageType.TRANSACTIONS) {
-				// Find the account dropdown form
-				matcher = reTransactionFormContents.matcher(this.lastResponse);
-				if (!matcher.find()) {
-					throw new BankException(res.getText(R.string.unable_to_find).toString()+" account form.");
-				}
-				link = matcher.group(1);
-				matcher = reNonTextInputField.matcher(matcher.group(2));
-				if (!matcher.find()) {
-					throw new BankException(res.getText(R.string.unable_to_find).toString()+" input fields.");
-				}
-				matcher.reset();
-				// Input fields
-				while (matcher.find()) {
-					// For some odd reason, it does not like us sending the submit button... So don't.
-					if (!matcher.group(1).equals("submit")) {
-						postData.add(new BasicNameValuePair(matcher.group(2), matcher.group(3)));
-					}
-				}
-				postData.add(new BasicNameValuePair("transactionPeriod", "0"));
-				// Account id
-				matcher = reAccountSelect.matcher(this.lastResponse);
-				if (!matcher.find()) {
-					throw new BankException(res.getText(R.string.unable_to_find).toString()+" account selection.");
-				}
-				matcher = reAccountOption.matcher(matcher.group(1));
-				String id = null;
-				while (matcher.find()) {
-					if(matcher.group(2).equals(account.getId())) {
-						id = matcher.group(1);
-						break;
-					}
-				}
-				if (id == null) {
-					throw new BankException(res.getText(R.string.unable_to_find).toString()+" account id.");
-				}
-				postData.add(new BasicNameValuePair("transactionaccount", id));
-			}
-			else {
-				throw new BankException("This should never happen. If it does: Grats, you broke it.");
-			}
-			// Navigate to it, and parse the results
-			this.lastResponse = urlopen.open(BASE_URL + link, postData);
-			this.currentPageType = PageType.TRANSACTIONS;
-			matcher = reTransaction.matcher(this.lastResponse);
-			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-			while (matcher.find() && transactions.size() < MAX_TRANSACTIONS) {
-				String date = Html.fromHtml(matcher.group(1)).toString().trim();
-				String text = Html.fromHtml(matcher.group(2)).toString().trim();
-				BigDecimal amount = Helpers.parseBalance(matcher.group(3));
-				Transaction transaction = new Transaction(date, text, amount);
-				transactions.add(transaction);
-			}
-			account.setTransactions(transactions);
-			// Currency
-			matcher = reCurrency.matcher(this.lastResponse);
-			if (matcher.find()) {
-				account.setCurrency(Html.fromHtml(matcher.group(1)).toString().trim());
-			}
-		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        } catch (ClientProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 	}
 
-    private void goHome() {
-        String homeLink;
+    private void goToPage(int pageType) throws ClientProtocolException, IOException {
+        // Convenience method for going to an overview page
         Matcher matcher;
-        // Find home link
-        matcher = reHomeLink.matcher(this.lastResponse);
+        String link;
+        switch (pageType) {
+            case PageType.ENTRY:
+                // Find home link
+                matcher = reHomeLink.matcher(this.lastResponse);
+                break;
+            case PageType.LOANS:
+                // Find loans link
+                matcher = reLoansLink.matcher(this.lastResponse);
+                break;
+            case PageType.CREDIT_CARDS:
+                // Get credit cards link
+                matcher = reCreditCardsLink.matcher(this.lastResponse);
+                break;
+            default:
+                return;
+        }
+        // Find link to page
         if (matcher.find()) {
-            homeLink = matcher.group(1);
-            try {
-                this.lastResponse = urlopen.open(BASE_URL + homeLink);
-            } catch (IOException e) {
-                e.printStackTrace();
+            link = matcher.group(1);
+            // Go to page
+            this.lastResponse = urlopen.open(BASE_URL + link);
+            this.currentPageType = pageType;
+        }
+    }
+
+    public void updateRegularTransactions(Account account, Urllib urlopen)
+            throws LoginException, BankException, IOException {
+        // If we're on the entry page it's easy to just find the link to the account and navigate to it,
+        // If we're already on a transaction page we use the account-switching form instead of going
+        // back to the entry page and starting over. This saves us 1 request.
+
+        Matcher matcher;
+        String link = null;
+        List<NameValuePair> postData = new ArrayList<NameValuePair>();
+
+        if(this.currentPageType != PageType.ENTRY && this.currentPageType != PageType.TRANSACTIONS) {
+            goToPage(PageType.ENTRY);
+        }
+        if(currentPageType == PageType.ENTRY) {
+            // Find the link to the transaction page for this account
+            matcher = reAccountLink.matcher(this.lastResponse);
+            while (matcher.find()) {
+                if (Html.fromHtml(matcher.group(4)).toString().trim().equals(account.getId())) {
+                    link = matcher.group(1);
+                    break;
+                }
             }
-            this.currentPageType = PageType.ENTRY;
+            if (link == null) {
+                throw new BankException(res.getText(R.string.unable_to_find).toString()+" transactions link.");
+            }
+        }
+        else if(currentPageType == PageType.TRANSACTIONS) {
+            // Find the account dropdown form
+            matcher = reTransactionFormContents.matcher(this.lastResponse);
+            if (!matcher.find()) {
+                throw new BankException(res.getText(R.string.unable_to_find).toString()+" account form.");
+            }
+            link = matcher.group(1);
+            matcher = reNonTextInputField.matcher(matcher.group(2));
+            if (!matcher.find()) {
+                throw new BankException(res.getText(R.string.unable_to_find).toString()+" input fields.");
+            }
+            matcher.reset();
+            // Input fields
+            while (matcher.find()) {
+                // For some odd reason, it does not like us sending the submit button... So don't.
+                if (!matcher.group(1).equals("submit")) {
+                    postData.add(new BasicNameValuePair(matcher.group(2), matcher.group(3)));
+                }
+            }
+            postData.add(new BasicNameValuePair("transactionPeriod", "0"));
+            // Account id
+            matcher = reAccountSelect.matcher(this.lastResponse);
+            if (!matcher.find()) {
+                throw new BankException(res.getText(R.string.unable_to_find).toString()+" account selection.");
+            }
+            // Find account to switch to in dropdown
+            matcher = reAccountOption.matcher(matcher.group(1));
+            String id = null;
+            while (matcher.find()) {
+                if(matcher.group(2).equals(account.getId())) {
+                    id = matcher.group(1);
+                    break;
+                }
+            }
+            if (id == null) {
+                throw new BankException(res.getText(R.string.unable_to_find).toString()+" account id.");
+            }
+            postData.add(new BasicNameValuePair("transactionaccount", id));
+        }
+        else {
+            throw new BankException("This should never happen. If it does: Grats, you broke it.");
+        }
+
+        // URL established. Either we have a simple URL parsed from ENTRY-page or a base URL +
+        // a populated postData variable. This works with both.
+        this.lastResponse = urlopen.open(BASE_URL + link, postData);
+        this.currentPageType = PageType.TRANSACTIONS;
+
+        // Match up transactions for this account
+        matcher = reTransaction.matcher(this.lastResponse);
+        ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+        while (matcher.find() && transactions.size() < MAX_TRANSACTIONS) {
+            String date = Html.fromHtml(matcher.group(1)).toString().trim();
+            String text = Html.fromHtml(matcher.group(2)).toString().trim();
+            BigDecimal amount = Helpers.parseBalance(matcher.group(3));
+            Transaction transaction = new Transaction(date, text, amount);
+            transactions.add(transaction);
+        }
+        // Add the transactions to this account
+        account.setTransactions(transactions);
+        // Set currency for this account
+        matcher = reCurrency.matcher(this.lastResponse);
+        if (matcher.find()) {
+            account.setCurrency(Html.fromHtml(matcher.group(1)).toString().trim());
+        }
+    }
+
+    public void updateCreditTransactions(Account account, Urllib urlopen)
+            throws LoginException, BankException, IOException {
+        Matcher matcher;
+        String link = null;
+        String currency = "";
+        ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+
+        if (this.currentPageType != PageType.CREDIT_CARDS) {
+            goToPage(PageType.CREDIT_CARDS);
+        }
+
+        // Find the link to the transaction page for this credit card
+        matcher = reCreditCardLink.matcher(this.lastResponse);
+        while (matcher.find()) {
+            if (("c:" + matcher.group(3)).equals(account.getId())) {
+                link = matcher.group(1);
+                break;
+            }
+        }
+        if (link == null) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString() + " transactions link.");
+        }
+
+        this.lastResponse = urlopen.open(BASE_URL + link);
+        this.currentPageType = PageType.CREDIT_CARD_TRANSACTIONS;
+
+        matcher = reCreditCardTransaction.matcher(this.lastResponse);
+        while (matcher.find() && transactions.size() < MAX_TRANSACTIONS) {
+            String date = matcher.group(1);
+            String text = matcher.group(2);
+            currency = matcher.group(3);
+            BigDecimal amount = Helpers.parseBalance(matcher.group(4));
+            Transaction transaction = new Transaction(date, text, amount);
+            transactions.add(transaction);
+        }
+        // Add the transactions to this account
+        account.setTransactions(transactions);
+        // Set currency for this account
+        if (currency.length() > 0) {
+            account.setCurrency(Html.fromHtml(matcher.group(1)).toString().trim());
         }
     }
 	
@@ -394,5 +519,7 @@ public class Nordea extends Bank {
 		public static final int ENTRY = 2;
 		public static final int TRANSACTIONS = 3;
 		public static final int LOANS = 4;
+		public static final int CREDIT_CARDS = 5;
+		public static final int CREDIT_CARD_TRANSACTIONS = 6;
 	}
 }
