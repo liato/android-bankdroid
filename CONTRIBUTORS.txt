@@ -32,6 +32,9 @@ Development
   ScuttleSE                         https://github.com/ScuttleSE
   Andreas Knifh                     https://github.com/knifhen
   NanoRage                          https://github.com/NanoRage
+  Adam Nybäck                       https://github.com/nadam
+  MathiasBois                       https://github.com/MathiasBois
+
 
 
   Stats at:
