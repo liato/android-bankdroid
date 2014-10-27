@@ -75,13 +75,13 @@ public class Chalmrest extends Bank {
 		    int last = 0;
 		    Matcher match = Pattern.compile("_x([0-9A-Fa-f]{4})_").matcher(value);
 		    while (match.find()) {
-		    	sb.append(value.substring(last, Math.max(match.start() - 1, 0)));
+		    	sb.append(value.substring(last, match.start()));
 		    	int i = Integer.parseInt(match.group(1), 16);
 		    	sb.append((char)i);
 		    	last = match.end();
 		    }
 		    sb.append(value.substring(last));
-		    value = sb.toString();
+		    value = sb.toString().replace(',', '.');
 		    
 		    matcher = Pattern.compile("<CardInfo id=\"" + cardNr + "\" Name=\"(.*?)\"").matcher(s1);
 		    if (!matcher.find())
