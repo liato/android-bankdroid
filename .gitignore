@@ -44,4 +44,4 @@ out/
 app/src/main/java/com/liato/bankdroid/db/Crypto.*
 app/src/main/java/com/liato/bankdroid/db/Crypto.java.dev
 dev/
-release.keystore
+app/release.keystore
