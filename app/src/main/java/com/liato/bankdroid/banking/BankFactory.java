@@ -77,7 +77,6 @@ import com.liato.bankdroid.banking.banks.Statoil;
 import com.liato.bankdroid.banking.banks.SupremeCard;
 import com.liato.bankdroid.banking.banks.SveaDirekt;
 import com.liato.bankdroid.banking.banks.SvenskaSpel;
-import com.liato.bankdroid.banking.banks.Swedbank;
 import com.liato.bankdroid.banking.banks.TestBank;
 import com.liato.bankdroid.banking.banks.TicketRikskortet;
 import com.liato.bankdroid.banking.banks.TrustBuddy;
@@ -96,6 +95,8 @@ import com.liato.bankdroid.banking.banks.lansforsakringar.Lansforsakringar;
 import com.liato.bankdroid.banking.banks.nordea.Nordea;
 import com.liato.bankdroid.banking.banks.payson.Payson;
 import com.liato.bankdroid.banking.banks.rikslunchen.Rikslunchen;
+import com.liato.bankdroid.banking.banks.swedbank.Sparbankerna;
+import com.liato.bankdroid.banking.banks.swedbank.Swedbank;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.db.Crypto;
 import com.liato.bankdroid.db.DBAdapter;
@@ -262,6 +263,8 @@ public class BankFactory {
             return new SveaDirekt(context);
         case IBankTypes.SUPREMECARD:
             return new SupremeCard(context);
+        case IBankTypes.SPARBANKERNA:
+            return new Sparbankerna(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -345,6 +348,7 @@ public class BankFactory {
         banks.add(new EurobonusMastercardDk(context));
         banks.add(new SveaDirekt(context));
         banks.add(new SupremeCard(context));
+        banks.add(new Sparbankerna(context));
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 

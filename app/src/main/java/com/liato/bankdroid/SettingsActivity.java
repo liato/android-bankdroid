@@ -30,7 +30,7 @@ import android.widget.Toast;
 import com.liato.bankdroid.appwidget.AutoRefreshService;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.banks.Swedbank;
+import com.liato.bankdroid.banking.banks.swedbank.Swedbank;
 import com.liato.bankdroid.banking.banks.nordea.Nordea;
 import com.liato.bankdroid.lockpattern.ChooseLockPattern;
 import com.liato.bankdroid.lockpattern.ConfirmLockPattern;
