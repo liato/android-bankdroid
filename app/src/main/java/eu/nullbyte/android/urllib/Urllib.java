@@ -46,6 +46,7 @@ import org.apache.http.client.UserTokenHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.ConnectionKeepAliveStrategy;
@@ -81,6 +82,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -154,20 +156,44 @@ public class Urllib {
         return openAsHttpResponse(url, entity, forcePost);
     }
 
+    public HttpResponse openAsHttpResponse(String url, boolean forcePost) throws ClientProtocolException, IOException {
+        return openAsHttpResponse(url, Collections.<NameValuePair>emptyList(),forcePost);
+    }
+
     public HttpResponse openAsHttpResponse(String url, HttpEntity entity, boolean forcePost) throws ClientProtocolException, IOException {
+        if ((entity == null) && !forcePost) {
+           return openAsHttpResponse(url,entity,HttpMethod.GET);
+        }
+        else {
+           return openAsHttpResponse(url,entity,HttpMethod.POST);
+        }
+    }
+
+    public HttpResponse openAsHttpResponse(String url, HttpMethod method) throws ClientProtocolException, IOException {
+        return openAsHttpResponse(url, null, method);
+    }
+
+    public HttpResponse openAsHttpResponse(String url, HttpEntity entity, HttpMethod method) throws ClientProtocolException, IOException {
         this.currentURI = url;
         HttpResponse response;
         String[] headerKeys = (String[]) this.headers.keySet().toArray(new String[headers.size()]);
         String[] headerVals = (String[]) this.headers.values().toArray(new String[headers.size()]);
         ResponseHandler<String> responseHandler = new BasicResponseHandler();
         HttpUriRequest request;
-        if ((entity == null) && !forcePost) {
-            //URL urli = new URL(url);
-            request = new HttpGet(url);
-        }
-        else {
-            request = new HttpPost(url);
-            ((HttpPost)request).setEntity(entity);
+        switch(method) {
+            case GET:
+                request = new HttpGet(url);
+                break;
+            case POST:
+                request = new HttpPost(url);
+                ((HttpPost)request).setEntity(entity);
+                break;
+            case PUT:
+                request = new HttpPut(url);
+                ((HttpPut)request).setEntity(entity);
+                break;
+            default:
+                request = new HttpGet(url);
         }
         if (userAgent != null)
             request.addHeader("User-Agent", userAgent);
