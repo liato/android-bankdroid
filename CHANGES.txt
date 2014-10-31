@@ -1,3 +1,10 @@
+v1.9.7.0: (2014-10-31)
+* Fix for Nordea (thanks to rhoot and wicol)
+* Use Swedbank's API (thanks to goober for the implementation and Swedbank for giving us access to their API)
+* Updated SSL certificate for Skandiabanken
+* Fix for Chalmrest balance (thanks to emilan)
+
+
 v1.9.6.16: (2014-09-18)
 * Updated SSL certificates for American Express, Coop, Eurocard, Forex Bank, Ikano Bank, Marginalen Bank, Meniga, Nordnet, Nordnet Direkt, OKQ8, Payson, Rikslunchen, SevenDay, Trustbuddy and Villabanken
 * Improvements to Villabanken account parsing (thanks to knifhen)

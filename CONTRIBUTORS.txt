@@ -34,7 +34,8 @@ Development
   NanoRage                          https://github.com/NanoRage
   Adam Nybäck                       https://github.com/nadam
   MathiasBois                       https://github.com/MathiasBois
-
+  Johan Sköld                       https://github.com/rhoot
+  Wictor                            https://github.com/wicol
 
 
   Stats at:
