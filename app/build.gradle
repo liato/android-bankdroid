@@ -8,8 +8,8 @@ android {
         applicationId "com.liato.bankdroid"
         minSdkVersion 9
         targetSdkVersion 10
-        versionCode 189
-        versionName "1.9.6.16"
+        versionCode 190
+        versionName "1.9.7.0"
     }
 
     final Console console = System.console();
