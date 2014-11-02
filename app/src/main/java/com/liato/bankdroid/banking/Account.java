@@ -35,6 +35,13 @@ public class Account implements IAccountTypes {
 	private List<Transaction> transactions;
 	private String aliasfor;
 
+    /**
+     * Temporary account id. Used for banks that have new account ids for each session.
+     * This value is not persited.
+     */
+    private String sessionId;
+
+
 	public List<Transaction> getTransactions() {
 		return transactions;
 	}
@@ -154,4 +161,11 @@ public class Account implements IAccountTypes {
         this.aliasfor = aliasfor;
     }	
 
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
 }

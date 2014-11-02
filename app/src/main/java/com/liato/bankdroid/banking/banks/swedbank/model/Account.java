@@ -23,6 +23,9 @@ public class Account {
     @JsonProperty
     private String currency;
 
+    @JsonProperty
+    private String fullyFormattedNumber;
+
     public boolean isSelectedForQuickBalance() {
         return selectedForQuickBalance;
     }
@@ -61,5 +64,13 @@ public class Account {
 
     public void setCurrency(String currency) {
         this.currency = currency;
+    }
+
+    public String getFullyFormattedNumber() {
+        return fullyFormattedNumber;
+    }
+
+    public void setFullyFormattedNumber(String fullyFormattedNumber) {
+        this.fullyFormattedNumber = fullyFormattedNumber;
     }
 }

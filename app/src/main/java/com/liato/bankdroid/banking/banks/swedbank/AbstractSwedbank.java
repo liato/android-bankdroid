@@ -149,9 +149,7 @@ public abstract class AbstractSwedbank extends Bank {
             return;
         }
         try {
-
-            HttpResponse httpResponse = urlopen.openAsHttpResponse(getResourceUri("engagement/transactions/"+account.getId()),false);
-
+            HttpResponse httpResponse = urlopen.openAsHttpResponse(getResourceUri("engagement/transactions/"+account.getSessionId()),false);
             TransactionsResponse response = readJsonValue(httpResponse.getEntity().getContent(), TransactionsResponse.class);
             List<Transaction> transactions = new ArrayList<Transaction>();
             transactions.addAll(transformTransactions(response.getTransactions()));
@@ -230,7 +228,9 @@ public abstract class AbstractSwedbank extends Bank {
 
     private void addAccounts(List<com.liato.bankdroid.banking.banks.swedbank.model.Account> accountList, int accountType) {
         for(com.liato.bankdroid.banking.banks.swedbank.model.Account account : accountList) {
-            Account bankdroidAccount = new Account(account.getName(),account.getBalance(),account.getId(),accountType,account.getCurrency());
+            String internalAccountId = Base64.encodeToString(account.getFullyFormattedNumber().getBytes(),Base64.NO_WRAP);
+            Account bankdroidAccount = new Account(account.getName(),account.getBalance(),internalAccountId,accountType,account.getCurrency());
+            bankdroidAccount.setSessionId(account.getId());
             this.accounts.add(bankdroidAccount);
         }
     }
