@@ -166,15 +166,17 @@ public abstract class AbstractSwedbank extends Bank {
     }
 
     @Override
-    public void updateComplete() {
-        super.updateComplete();
+    public void closeConnection() {
         try {
             HttpResponse response = urlopen.openAsHttpResponse(getResourceUri("identification/logout"), HttpMethod.PUT);
         } catch(ClientProtocolException e) {
             // Ignore logout exceptions
         } catch(IOException e) {
             //Ignore logout exceptions
+        } finally {
+            super.closeConnection();
         }
+
     }
 
     private List<Transaction> transformTransactions(List<com.liato.bankdroid.banking.banks.swedbank.model.Transaction> transactions) {
