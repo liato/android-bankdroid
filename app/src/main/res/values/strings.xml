@@ -23,6 +23,7 @@
     <string name="unable_to_login">Unable to login. Please try again later.</string>
     <string name="account_number">Account number</string>
     <string name="control_code">Control code</string>
+    <string name="server_error_try_again">Server error. Please try again later.</string>
 
     <string name="username">Username</string>
     <string name="password">Password</string>

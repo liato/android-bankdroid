@@ -1,8 +1,11 @@
 package com.liato.bankdroid.banking.banks.swedbank;
 
 import android.content.Context;
+import android.text.Html;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.Base64;
+import android.view.textservice.TextInfo;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,6 +15,8 @@ import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.BankChoice;
 import com.liato.bankdroid.banking.Transaction;
+import com.liato.bankdroid.banking.banks.swedbank.model.ErrorMessage;
+import com.liato.bankdroid.banking.banks.swedbank.model.ErrorResponse;
 import com.liato.bankdroid.banking.banks.swedbank.model.engagement.OverviewResponse;
 import com.liato.bankdroid.banking.banks.swedbank.model.engagement.TransactionsResponse;
 import com.liato.bankdroid.banking.banks.swedbank.model.identification.PersonalCodeRequest;
@@ -19,7 +24,6 @@ import com.liato.bankdroid.banking.banks.swedbank.model.profile.ProfileResponse;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
-import com.liato.bankdroid.provider.IBankTypes;
 import com.liato.bankdroid.utils.Installation;
 
 import org.apache.http.HttpEntity;
@@ -81,10 +85,25 @@ public abstract class AbstractSwedbank extends Bank {
             httpResponse = urlopen.openAsHttpResponse(lp.getLoginTarget(), new StringEntity(objectAsJson(new PersonalCodeRequest(username, password))), true);
             int responseCode = httpResponse.getStatusLine().getStatusCode();
             if( responseCode == 201) {
-             return urlopen;
+                return urlopen;
             } else if(responseCode == 401 || responseCode == 400) {
                 throw new LoginException(res.getText(
                         R.string.invalid_username_password).toString());
+            } else if (responseCode == 503) {
+                String errorMessage = null;
+                try {
+                    ErrorResponse er = readJsonValue(httpResponse.getEntity().getContent(), ErrorResponse.class);
+                    StringBuilder sb = new StringBuilder();
+                    for (List<ErrorMessage> ems : er.getErrorMessages().values()) {
+                        for (ErrorMessage em : ems) {
+                            sb.append(Html.fromHtml(em.getMessage()).toString()).append("\n");
+                        }
+                    }
+                    errorMessage = sb.toString().trim();
+                } catch (BankException e) {
+                    //Ignore json parse errors and show generic server error message
+                }
+                throw new BankException(TextUtils.isEmpty(errorMessage) ? context.getString(R.string.server_error_try_again) : errorMessage);
             } else {
                 throw new BankException("");
             }

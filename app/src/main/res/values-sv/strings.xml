@@ -24,6 +24,7 @@
     <string name="unable_to_login">Kunde ej logga in. Var vänlig försök igen senare.</string>
     <string name="account_number">Kontonummer</string>
     <string name="control_code">Kontrollkod</string>
+    <string name="server_error_try_again">Serverfel. Var god försök igen om en stund.</string>
 
     <string name="username">Användarnamn</string>
     <string name="password">Lösenord</string>
