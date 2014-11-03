@@ -36,7 +36,9 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import eu.nullbyte.android.urllib.CertificateReader;
@@ -50,6 +52,7 @@ public abstract class AbstractSwedbank extends Bank {
     private static final String API_BASE = "https://auth.api.swedbank.se/TDE_DAP_Portal_REST_WEB/api/v1/";
 
     private ObjectMapper mObjectMapper = new ObjectMapper();
+    private Map<String, String> mIdMap = new HashMap<String, String>();
 
     public AbstractSwedbank(Context context) {
         super(context);
@@ -169,7 +172,7 @@ public abstract class AbstractSwedbank extends Bank {
         }
         try {
 
-            HttpResponse httpResponse = urlopen.openAsHttpResponse(getResourceUri("engagement/transactions/"+account.getId()),false);
+            HttpResponse httpResponse = urlopen.openAsHttpResponse(getResourceUri("engagement/transactions/"+mIdMap.get(account.getId())),false);
 
             TransactionsResponse response = readJsonValue(httpResponse.getEntity().getContent(), TransactionsResponse.class);
             List<Transaction> transactions = new ArrayList<Transaction>();
@@ -249,7 +252,8 @@ public abstract class AbstractSwedbank extends Bank {
 
     private void addAccounts(List<com.liato.bankdroid.banking.banks.swedbank.model.Account> accountList, int accountType) {
         for(com.liato.bankdroid.banking.banks.swedbank.model.Account account : accountList) {
-            Account bankdroidAccount = new Account(account.getName(),account.getBalance(),account.getId(),accountType,account.getCurrency());
+            Account bankdroidAccount = new Account(account.getName(), account.getBalance(), account.getFullyFormattedNumber(), accountType,account.getCurrency());
+            mIdMap.put(bankdroidAccount.getId(), account.getId());
             this.accounts.add(bankdroidAccount);
         }
     }
