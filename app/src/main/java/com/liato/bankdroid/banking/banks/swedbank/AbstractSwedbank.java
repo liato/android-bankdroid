@@ -30,6 +30,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.protocol.HTTP;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -85,7 +86,7 @@ public abstract class AbstractSwedbank extends Bank {
         HttpResponse httpResponse = null;
         try {
             LoginPackage lp = preLogin();
-            httpResponse = urlopen.openAsHttpResponse(lp.getLoginTarget(), new StringEntity(objectAsJson(new PersonalCodeRequest(username, password))), true);
+            httpResponse = urlopen.openAsHttpResponse(lp.getLoginTarget(), new StringEntity(objectAsJson(new PersonalCodeRequest(username, password)), HTTP.UTF_8), true);
             int responseCode = httpResponse.getStatusLine().getStatusCode();
             if( responseCode == 201) {
                 return urlopen;
