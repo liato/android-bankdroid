@@ -18,7 +18,7 @@ public class Account {
     private String name;
 
     @JsonProperty
-    private BigDecimal balance = new BigDecimal(0);
+    private BigDecimal balance;
 
     @JsonProperty
     private String currency;
@@ -57,8 +57,7 @@ public class Account {
     }
 
     public BigDecimal getBalance() {
-        if (balance == null) return BigDecimal.ZERO;
-        return balance;
+        return balance != null ? balance : BigDecimal.ZERO;
     }
 
     public void setBalance(BigDecimal balance) {
@@ -66,8 +65,7 @@ public class Account {
     }
 
     public String getCurrency() {
-        if (currency == null) return "-";
-        return currency;
+        return currency != null ? currency : "";
     }
 
     public void setCurrency(String currency) {
