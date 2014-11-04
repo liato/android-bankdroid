@@ -57,6 +57,7 @@ public class Account {
     }
 
     public BigDecimal getBalance() {
+        if (balance == null) return BigDecimal.ZERO;
         return balance;
     }
 
@@ -65,6 +66,7 @@ public class Account {
     }
 
     public String getCurrency() {
+        if (currency == null) return "-";
         return currency;
     }
 
