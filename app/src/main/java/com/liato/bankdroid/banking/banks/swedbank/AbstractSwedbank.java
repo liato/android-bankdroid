@@ -5,7 +5,6 @@ import android.text.Html;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Base64;
-import android.view.textservice.TextInfo;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -88,7 +87,7 @@ public abstract class AbstractSwedbank extends Bank {
             LoginPackage lp = preLogin();
             httpResponse = urlopen.openAsHttpResponse(lp.getLoginTarget(), new StringEntity(objectAsJson(new PersonalCodeRequest(username, password)), HTTP.UTF_8), true);
             int responseCode = httpResponse.getStatusLine().getStatusCode();
-            if( responseCode == 201) {
+            if(responseCode == 201) {
                 return urlopen;
             } else if(responseCode == 401 || responseCode == 400) {
                 throw new LoginException(res.getText(

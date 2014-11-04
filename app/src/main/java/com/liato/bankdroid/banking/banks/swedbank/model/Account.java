@@ -18,7 +18,7 @@ public class Account {
     private String name;
 
     @JsonProperty
-    private BigDecimal balance;
+    private BigDecimal balance = new BigDecimal(0);
 
     @JsonProperty
     private String currency;
