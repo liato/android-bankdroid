@@ -113,7 +113,11 @@ public class Nordea extends Bank {
             "(.*?)" + // Group 2: Link contents - Credit card type (Eg. "Nordea Gold")
             "</a>" +
             ".*?" + // Fast forward
-            "\\*+(\\d+)", // Group 3: Censured credit card number (account identifier)
+            "\\*+(\\d+)"+ // Group 3: Censured credit card number (account identifier)
+            ".*?" + // Fast forward
+            "<td.*?>([^<]*)</td>" + // Group 4: Expire date **/**
+            ".*?" + // Fast forward
+            "<td.*?>([^<]*)</td>", // Group 5: Account balance
             Pattern.DOTALL
     );
     // Credit card transaction entry
@@ -280,7 +284,7 @@ public class Nordea extends Bank {
                         // Account/Credit card name
                         matcher.group(2),
                         // Balance (not available through simple login)
-                        new BigDecimal(0),
+                        Helpers.parseBalance(matcher.group(5)),
                         // Account/Credit card identifier
                         "c:" + matcher.group(3),
                         -1L,
