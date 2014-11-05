@@ -151,6 +151,8 @@ public abstract class AbstractSwedbank extends Bank {
             addAccounts(overviewResponse.getTransactionAccounts(),Account.REGULAR);
             addAccounts(overviewResponse.getLoanAccounts(),Account.LOANS);
             addAccounts(overviewResponse.getSavingAccounts(),Account.REGULAR);
+            addAccounts(overviewResponse.getTransactionDisposalAccounts(),Account.REGULAR);
+            addAccounts(overviewResponse.getSavingDisposalAccounts(),Account.REGULAR);
             addAccounts(overviewResponse.getCardAccounts(),Account.CCARD);
             if (this.accounts.isEmpty()) {
                 throw new BankException(res.getText(R.string.no_accounts_found).toString());
