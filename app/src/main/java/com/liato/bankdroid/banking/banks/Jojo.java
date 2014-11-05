@@ -109,7 +109,7 @@ public class Jojo extends Bank {
         Elements es = d.select(".saldo_ok_wrapper > table > tbody tr");
         if (es != null) {
             for (int i = 0; i < 2; i++) {
-                int index = es.size()-4+i;
+                int index = es.size()-5+i;
                 if (index >= 0) {
                     Element e = es.get(index);
                     Element name = e.select(".first").first();
