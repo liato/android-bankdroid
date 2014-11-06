@@ -76,7 +76,7 @@ public class AccountsAdapter extends BaseAdapter {
     public void setShowHidden(boolean showHidden) {
         this.showHidden = showHidden;
     }
-    
+
 	public View newBankView(Bank bank, ViewGroup parent, View convertView) {
 		if (convertView == null) {
 			convertView = inflater.inflate(R.layout.listitem_accounts_group, parent, false);
@@ -102,7 +102,7 @@ public class AccountsAdapter extends BaseAdapter {
 	}
 
 	public View newAccountView(Account account, ViewGroup parent, View convertView) {
-        if (account.isHidden() && !showHidden) {
+        if ((account.isHidden() && !showHidden) || account.getBank().getHideAccounts()) {
             return convertView == null ? inflater.inflate(R.layout.empty, parent, false) : convertView;
         }
 		if (convertView == null) {
@@ -199,7 +199,8 @@ public class AccountsAdapter extends BaseAdapter {
 			return VIEWTYPE_BANK;
 		}
 		else {
-		    if (((Account)item).isHidden() && !showHidden) {
+		    if ((((Account)item).isHidden() && !showHidden) ||
+                    ((Account) item).getBank().getHideAccounts()) {
 		        return VIEWTYPE_EMPTY;
 		    }
 		}
