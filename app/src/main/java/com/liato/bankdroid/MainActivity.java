@@ -95,11 +95,12 @@ public class MainActivity extends LockableActivity {
 					pmenu.showLikeQuickAction(0, 12);
 					return true;
 				} else if (adapter.getItem(position) instanceof Bank) {
-                    selected_bank = (Bank) adapter.getItem(position);
-                    final PopupMenuBank pmenu = new PopupMenuBank(view, MainActivity.this);
-                    pmenu.showLikeQuickAction(0, 12);
-                    return true;
-                }
+					selected_bank = (Bank) adapter.getItem(position);
+					selected_bank.toggleHideAccounts();
+					selected_bank.save();
+					refreshView();
+					return true;
+				}
 				return false;
 			}
 		});
@@ -107,10 +108,9 @@ public class MainActivity extends LockableActivity {
 			public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
 				if (adapter.getItem(position) instanceof Bank) {
 					selected_bank = (Bank) adapter.getItem(position);
-                    selected_bank.toggleHideAccounts();
-                    selected_bank.save();
-                    refreshView();
-                }
+					final PopupMenuBank pmenu = new PopupMenuBank(view, MainActivity.this);
+					pmenu.showLikeQuickAction(0, 12);
+				}
 				else {
 					final Intent intent = new Intent(MainActivity.this, TransactionsActivity.class);
 					final Account account = (Account) adapter.getItem(position);
