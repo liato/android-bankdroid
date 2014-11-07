@@ -88,7 +88,9 @@ public class Avanza extends Bank {
                     Date now = new Date();
                     ArrayList<Transaction> transactions = new ArrayList<Transaction>();
                     for (PositionAggregation positionAgList : account.getPositionAggregations()) {
-                        if (positionAgList.getPositions().isEmpty()) continue;
+                        if (positionAgList.getPositions().isEmpty()) {
+                            continue;
+                        }
                         List<Position> positions = positionAgList.getPositions();
                         transactions.add(new Transaction(Helpers.formatDate(now),
                                 "\u2014  " + positionAgList.getInstrumentTypeName() +
