@@ -3,6 +3,7 @@ package com.liato.bankdroid.banking.banks.swedbank.model.engagement;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.liato.bankdroid.banking.banks.swedbank.model.Account;
+import com.liato.bankdroid.banking.banks.swedbank.model.CardAccount;
 import com.liato.bankdroid.banking.banks.swedbank.model.CreditCard;
 
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class OverviewResponse {
     private List<Account> savingDisposalAccounts;
 
     @JsonProperty
-    private List<Account> cardAccounts;
+    private List<CardAccount> cardAccounts;
 
     public CreditCard getCreditCard() {
         return creditCard;
@@ -95,14 +96,14 @@ public class OverviewResponse {
         this.savingDisposalAccounts = savingDisposalAccounts;
     }
 
-    public List<Account> getCardAccounts() {
+    public List<CardAccount> getCardAccounts() {
         if(cardAccounts == null) {
-            cardAccounts = new ArrayList<Account>();
+            cardAccounts = new ArrayList<CardAccount>();
         }
         return cardAccounts;
     }
 
-    public void setCardAccounts(List<Account> cardAccounts) {
+    public void setCardAccounts(List<CardAccount> cardAccounts) {
         this.cardAccounts = cardAccounts;
     }
 }

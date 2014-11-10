@@ -14,8 +14,11 @@ import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.BankChoice;
 import com.liato.bankdroid.banking.Transaction;
+import com.liato.bankdroid.banking.banks.swedbank.model.CardAccount;
+import com.liato.bankdroid.banking.banks.swedbank.model.CardTransaction;
 import com.liato.bankdroid.banking.banks.swedbank.model.ErrorMessage;
 import com.liato.bankdroid.banking.banks.swedbank.model.ErrorResponse;
+import com.liato.bankdroid.banking.banks.swedbank.model.engagement.CardAccountResponse;
 import com.liato.bankdroid.banking.banks.swedbank.model.engagement.OverviewResponse;
 import com.liato.bankdroid.banking.banks.swedbank.model.engagement.TransactionsResponse;
 import com.liato.bankdroid.banking.banks.swedbank.model.identification.PersonalCodeRequest;
@@ -153,7 +156,7 @@ public abstract class AbstractSwedbank extends Bank {
             addAccounts(overviewResponse.getSavingAccounts(),Account.REGULAR);
             addAccounts(overviewResponse.getTransactionDisposalAccounts(),Account.REGULAR);
             addAccounts(overviewResponse.getSavingDisposalAccounts(),Account.REGULAR);
-            addAccounts(overviewResponse.getCardAccounts(),Account.CCARD);
+            addCardAccounts(overviewResponse.getCardAccounts());
             if (this.accounts.isEmpty()) {
                 throw new BankException(res.getText(R.string.no_accounts_found).toString());
             }
@@ -169,7 +172,11 @@ public abstract class AbstractSwedbank extends Bank {
     @Override
     public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
         super.updateTransactions(account, urlopen);
-        if(account.getType() != Account.REGULAR) {
+        if(account.getType() == Account.CCARD) {
+            updateCreditCardTransactions(account, urlopen);
+            return;
+        }
+        else if(account.getType() != Account.REGULAR) {
             return;
         }
         try {
@@ -203,6 +210,24 @@ public abstract class AbstractSwedbank extends Bank {
 
     }
 
+    private void updateCreditCardTransactions(Account account, Urllib urlopen) throws BankException {
+        try {
+            HttpResponse httpResponse = urlopen.openAsHttpResponse(getResourceUri("engagement/cardaccount/"+mIdMap.get(account.getId())),false);
+            if(httpResponse.getStatusLine().getStatusCode() != 200) {
+                throw new BankException(httpResponse.getStatusLine().toString());
+            }
+            CardAccountResponse response = readJsonValue(httpResponse.getEntity().getContent(),CardAccountResponse.class);
+            List<Transaction> transactions = new ArrayList<Transaction>();
+            transactions.addAll(transformCardTransactions(response.getTransactions()));
+            transactions.addAll(transformCardTransactions(response.getReservedTransactions()));
+            account.setTransactions(transactions);
+        } catch (ClientProtocolException e) {
+           throw new BankException(e.getMessage());
+        } catch (IOException e) {
+            throw new BankException(e.getMessage());
+        }
+    }
+
     private List<Transaction> transformTransactions(List<com.liato.bankdroid.banking.banks.swedbank.model.Transaction> transactions) {
         List<Transaction> transactionList = new ArrayList<Transaction>();
         for(com.liato.bankdroid.banking.banks.swedbank.model.Transaction transaction : transactions) {
@@ -211,6 +236,16 @@ public abstract class AbstractSwedbank extends Bank {
         return transactionList;
     }
 
+    private List<Transaction> transformCardTransactions(List<CardTransaction> transactions) {
+        List<Transaction> transactionList = new ArrayList<Transaction>();
+        for(CardTransaction transaction : transactions) {
+            transactionList.add(new Transaction(transaction.getDate(),
+                    transaction.getDescription(),
+                    transaction.getLocalAmount().getAmount(),
+                    transaction.getLocalAmount().getCurrencyCode()));
+        }
+        return transactionList;
+    }
 
     private ProfileResponse getAvailableProfiles() throws IOException, ClientProtocolException, BankException {
         HttpResponse httpResponse = urlopen.openAsHttpResponse(getResourceUri("profile/"), false);
@@ -255,6 +290,14 @@ public abstract class AbstractSwedbank extends Bank {
     private void addAccounts(List<com.liato.bankdroid.banking.banks.swedbank.model.Account> accountList, int accountType) {
         for(com.liato.bankdroid.banking.banks.swedbank.model.Account account : accountList) {
             Account bankdroidAccount = new Account(account.getName(), account.getBalance(), account.getFullyFormattedNumber(), accountType,account.getCurrency());
+            mIdMap.put(bankdroidAccount.getId(), account.getId());
+            this.accounts.add(bankdroidAccount);
+        }
+    }
+
+    private void addCardAccounts(List<CardAccount> accountList) {
+        for(CardAccount account : accountList) {
+            Account bankdroidAccount = new Account(account.getName(),account.getAvailableAmount(),account.getCardNumber(), Account.CCARD,account.getCurrency());
             mIdMap.put(bankdroidAccount.getId(), account.getId());
             this.accounts.add(bankdroidAccount);
         }
