@@ -29,6 +29,7 @@ import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.banks.avanza.model.AccountOverview;
 import com.liato.bankdroid.banking.banks.avanza.model.Position;
+import com.liato.bankdroid.banking.banks.avanza.model.PositionAggregation;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
@@ -41,7 +42,6 @@ import org.apache.http.client.ClientProtocolException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -84,13 +84,26 @@ public class Avanza extends Bank {
                 if (!account.getCurrencyAccounts().isEmpty()) {
                     a.setCurrency(account.getCurrencyAccounts().get(0).getCurrency());
                 }
-                if (!account.getPositionAggregations().isEmpty() && !account.getPositionAggregations().get(0).getPositions().isEmpty()) {
-                    List<Position> positions = account.getPositionAggregations().get(0).getPositions();
+                if (!account.getPositionAggregations().isEmpty()) {
                     Date now = new Date();
-                    ArrayList<Transaction> transactions = new ArrayList<Transaction>(positions.size());
-                    for (Position p : positions) {
-                        Transaction t = new Transaction(Helpers.formatDate(now), p.getInstrumentName(), BigDecimal.valueOf(p.getProfit()), a.getCurrency());
-                        transactions.add(t);
+                    ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+                    for (PositionAggregation positionAgList : account.getPositionAggregations()) {
+                        if (positionAgList.getPositions().isEmpty()) {
+                            continue;
+                        }
+                        List<Position> positions = positionAgList.getPositions();
+                        transactions.add(new Transaction(Helpers.formatDate(now),
+                                "\u2014  " + positionAgList.getInstrumentTypeName() +
+                                        "  " + positionAgList.getTotalProfitPercent() + "%  \u2014",
+                                BigDecimal.valueOf(positionAgList.getTotalValue()),
+                                a.getCurrency()));
+                        for (Position p : positions) {
+                            Transaction t = new Transaction(Helpers.formatDate(now),
+                                    p.getInstrumentName(),
+                                    BigDecimal.valueOf(p.getProfit()),
+                                    a.getCurrency());
+                            transactions.add(t);
+                        }
                     }
                     a.setTransactions(transactions);
                 }
