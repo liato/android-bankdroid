@@ -12,7 +12,7 @@ More information can be found at:
 * `Bankdroid on Google Play <https://play.google.com/store/apps/details?id=com.liato.bankdroid>`_
 * `Bankdroid thread at the Swedroid Forum <http://goo.gl/9tJeH>`_ (Swedish)
 
-Contribute or reporting broken banks
+Contribute or report broken banks
 ------------------------------------
 The following information is needed for troubleshooting a broken bank or if you want a new bank to be supported 
 by Bankdroid.
