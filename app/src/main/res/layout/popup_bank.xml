@@ -9,7 +9,12 @@
 	<Button style="@style/Popup_Button"
 		android:id="@+id/btnRefresh"
 		android:drawableTop="@drawable/button_refresh" android:text="@string/popup_refresh"></Button>
-	<ImageView style="@style/Popup_Separator"></ImageView>		
+	<ImageView style="@style/Popup_Separator"></ImageView>
+	<Button style="@style/Popup_Button"
+		android:drawableTop="@drawable/button_hide" android:id="@+id/btnHide" android:text="@string/popup_hide_a"></Button>
+	<Button style="@style/Popup_Button"
+		android:drawableTop="@drawable/button_hide" android:id="@+id/btnUnhide" android:text="@string/popup_unhide_a"></Button>
+	<ImageView style="@style/Popup_Separator"></ImageView>
 	<Button
 		android:id="@+id/btnEdit"
 		android:drawableTop="@drawable/button_edit"

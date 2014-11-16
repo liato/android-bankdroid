@@ -149,6 +149,8 @@
 
     <string name="popup_hide">Hide</string>
     <string name="popup_unhide">Unhide</string>
+    <string name="popup_hide_a">Hide\naccounts</string>
+    <string name="popup_unhide_a">Unhide\naccounts</string>
     <string name="popup_enable_notifications">Enable notifications</string>
     <string name="popup_disable_notifications">Disable notifications</string>
         

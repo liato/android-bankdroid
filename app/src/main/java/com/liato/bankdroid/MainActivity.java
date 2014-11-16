@@ -94,6 +94,12 @@ public class MainActivity extends LockableActivity {
 					final PopupMenuAccount pmenu = new PopupMenuAccount(view, MainActivity.this);
 					pmenu.showLikeQuickAction(0, 12);
 					return true;
+				} else if (adapter.getItem(position) instanceof Bank) {
+					selected_bank = (Bank) adapter.getItem(position);
+					selected_bank.toggleHideAccounts();
+					selected_bank.save();
+					refreshView();
+					return true;
 				}
 				return false;
 			}
@@ -253,6 +259,18 @@ public class MainActivity extends LockableActivity {
 				(LayoutInflater) this.anchor.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 			final ViewGroup root = (ViewGroup) inflater.inflate(R.layout.popup_bank, null);
+            final Button btnHide = (Button) root.findViewById(R.id.btnHide);
+            final Button btnUnhide = (Button)root.findViewById(R.id.btnUnhide);
+            if (selected_bank.getHideAccounts()) {
+                btnHide.setVisibility(View.GONE);
+                btnUnhide.setVisibility(View.VISIBLE);
+                btnUnhide.setOnClickListener(this);
+            }
+            else {
+                btnHide.setVisibility(View.VISIBLE);
+                btnUnhide.setVisibility(View.GONE);
+                btnHide.setOnClickListener(this);
+            }
 			root.findViewById(R.id.btnRefresh).setOnClickListener(this);
 			root.findViewById(R.id.btnWWW).setOnClickListener(this);
 			root.findViewById(R.id.btnEdit).setOnClickListener(this);
@@ -267,6 +285,13 @@ public class MainActivity extends LockableActivity {
 			final Context context = this.anchor.getContext();
 			final int id = v.getId();
 			switch (id) {
+			case R.id.btnHide:
+			case R.id.btnUnhide:
+				this.dismiss();
+				selected_bank.toggleHideAccounts();
+				selected_bank.save();
+				parent.refreshView();
+				return;
 			case R.id.btnWWW:
 				if (selected_bank != null) {
 					//Uri uri = Uri.parse(selected_bank.getURL());

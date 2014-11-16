@@ -146,7 +146,9 @@
     <string name="popup_remove">Radera</string>
 
     <string name="popup_hide">Dölj</string>
-    <string name="popup_unhide">Dölj ej</string>
+    <string name="popup_unhide">Visa</string>
+    <string name="popup_hide_a">Dölj\nkonton</string>
+    <string name="popup_unhide_a">Visa\nkonton</string>
     <string name="popup_enable_notifications">Aktivera notifieringar</string>
     <string name="popup_disable_notifications">Inaktivera notifieringar</string>
 
