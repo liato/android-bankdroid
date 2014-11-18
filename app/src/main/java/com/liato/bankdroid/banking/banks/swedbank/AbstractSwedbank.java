@@ -179,6 +179,9 @@ public abstract class AbstractSwedbank extends Bank {
         else if(account.getType() != Account.REGULAR) {
             return;
         }
+        else if(mIdMap.get(account.getId()) == null) {
+            return;
+        }
         try {
 
             HttpResponse httpResponse = urlopen.openAsHttpResponse(getResourceUri("engagement/transactions/"+mIdMap.get(account.getId())),false);
