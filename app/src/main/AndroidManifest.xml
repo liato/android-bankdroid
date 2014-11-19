@@ -69,7 +69,7 @@
 			android:name=".lockpattern.ConfirmLockPattern">
 		</activity>
 		<activity
-			android:theme="@android:style/Theme.Dialog"
+			android:theme="@style/Theme.AppCompat.Dialog"
 			android:name=".appwidget.WidgetConfigureActivity">
 			<intent-filter>
 				<action

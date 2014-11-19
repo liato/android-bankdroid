@@ -16,18 +16,6 @@
 
 package com.liato.bankdroid.appwidget;
 
-import java.util.ArrayList;
-
-import com.liato.bankdroid.LockableActivity;
-import com.liato.bankdroid.R;
-import com.liato.bankdroid.R.id;
-import com.liato.bankdroid.R.layout;
-import com.liato.bankdroid.R.string;
-import com.liato.bankdroid.adapters.AccountsAdapter;
-import com.liato.bankdroid.banking.Account;
-import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.BankFactory;
-
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
@@ -38,6 +26,15 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CheckBox;
 import android.widget.ListView;
+
+import com.liato.bankdroid.LockableActivity;
+import com.liato.bankdroid.R;
+import com.liato.bankdroid.adapters.AccountsAdapter;
+import com.liato.bankdroid.banking.Account;
+import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.BankFactory;
+
+import java.util.ArrayList;
 
 public class WidgetConfigureActivity extends LockableActivity {
     private static final String WIDGET_PREFIX = "widget_";
@@ -137,4 +134,8 @@ public class WidgetConfigureActivity extends LockableActivity {
 	}
 
 
+    @Override
+    public boolean shouldShowActionBar() {
+        return false;
+    }
 }

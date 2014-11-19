@@ -16,7 +16,6 @@
 
 package com.liato.bankdroid;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -35,16 +34,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 
 import com.liato.bankdroid.lockpattern.ConfirmLockPattern;
 import com.liato.bankdroid.lockpattern.LockPatternUtils;
@@ -82,8 +72,12 @@ public class LockableActivity extends ActionBarActivity {
         super.setContentView(layoutResID);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
-            setSupportActionBar(toolbar);
-            toolbar.setLogo(R.drawable.ic_launcher);
+            if (shouldShowActionBar()) {
+                setSupportActionBar(toolbar);
+                toolbar.setLogo(R.drawable.ic_launcher);
+            } else {
+                toolbar.setVisibility(View.GONE);
+            }
 
         }
 //        getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title);
@@ -331,6 +325,10 @@ public class LockableActivity extends ActionBarActivity {
             }
         }
         return bm;
-    }    
+    }
+
+    public boolean shouldShowActionBar() {
+        return true;
+    }
     
 }
