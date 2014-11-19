@@ -1,3 +1,8 @@
+v1.9.7.2: (2014-11-20)
+* Quickfix for widgets, still work to be done
+* Improved account order for Swedbank (thanks to goober)
+
+
 v1.9.7.1: (2014-11-19)
 * Swedbank and Sparbankerna: Show transactions, fix for widget, credit card transactions, various fixes (thanks to goober, cortex, mikaeler)
 * Updated certificate for American Express, Brummer KF, CSN, EasyCard, FirstCard, ICA, Jojo, Meniga, Nordea DK, PlusGirot, Svenskaspel and Västtrafik (thanks to goober, Niclasl, auno)
