@@ -54,12 +54,13 @@ public class WebViewActivity extends LockableActivity implements OnClickListener
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.webview);
-        this.addTitleButton(R.drawable.title_icon_back, "back", this);
-        this.addTitleButton(R.drawable.title_icon_forward, "forward", this);
-        this.addTitleButton(R.drawable.title_icon_refresh, "refresh", this);
-        this.setTitleButtonEnabled("forward", false);
-        this.setTitleButtonEnabled("back", false);
-        this.setTitleButtonEnabled("refresh", false);
+        //TODO
+//        this.addTitleButton(R.drawable.title_icon_back, "back", this);
+//        this.addTitleButton(R.drawable.title_icon_forward, "forward", this);
+//        this.addTitleButton(R.drawable.title_icon_refresh, "refresh", this);
+//        this.setTitleButtonEnabled("forward", false);
+//        this.setTitleButtonEnabled("back", false);
+//        this.setTitleButtonEnabled("refresh", false);
 
         final CookieSyncManager csm = CookieSyncManager.createInstance(this);
         mWebView = (WebView)findViewById(R.id.wvBank);
@@ -71,12 +72,12 @@ public class WebViewActivity extends LockableActivity implements OnClickListener
         
         mWebView.setWebChromeClient(new WebChromeClient() {
             public void onProgressChanged(WebView view, int progress) {
-                activity.setProgressBar(progress);
+//                activity.setProgressBar(progress);
                 if (progress == 100) {
                     Handler handler = new Handler();
                     Runnable runnable = new Runnable() {
                         public void run() {
-                            activity.hideProgressBar();
+//                            activity.hideProgressBar();
                         }
                     };
                     // Let the progress bar hit 100% before we hide it.
@@ -84,7 +85,7 @@ public class WebViewActivity extends LockableActivity implements OnClickListener
                     
                 }
                 else if (mFirstPageLoaded) {
-                    activity.showProgressBar();
+//                    activity.showProgressBar();
                 }
             }
           });
@@ -165,7 +166,7 @@ public class WebViewActivity extends LockableActivity implements OnClickListener
                 //Remove the generated page from history.
                 mWebView.clearHistory();
                 mFirstPageLoaded = true;
-                activity.setTitleButtonEnabled("refresh", true);
+//                activity.setTitleButtonEnabled("refresh", true);
                 return;
             }
         }
@@ -186,8 +187,8 @@ public class WebViewActivity extends LockableActivity implements OnClickListener
         }
         
         public void handleHistoryChange() {
-            activity.setTitleButtonEnabled("back", mWebView.canGoBack());
-            activity.setTitleButtonEnabled("forward", mWebView.canGoForward());
+//            activity.setTitleButtonEnabled("back", mWebView.canGoBack());
+//            activity.setTitleButtonEnabled("forward", mWebView.canGoForward());
         }
     }	
 

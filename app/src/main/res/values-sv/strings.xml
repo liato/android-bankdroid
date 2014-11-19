@@ -25,6 +25,9 @@
     <string name="account_number">Kontonummer</string>
     <string name="control_code">Kontrollkod</string>
     <string name="server_error_try_again">Serverfel. Var god försök igen om en stund.</string>
+    <string name="settings">Inställningar</string>
+    <string name="refresh">Uppdatera</string>
+    <string name="add_account">Lägg till konto</string>
 
     <string name="username">Användarnamn</string>
     <string name="password">Lösenord</string>

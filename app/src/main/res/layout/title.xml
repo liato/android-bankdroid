@@ -23,7 +23,7 @@
 		<ImageView
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
-			android:src="@drawable/icon"
+			android:src="@drawable/ic_launcher"
 			android:scaleType="fitXY"
 			android:adjustViewBounds="true"
 			android:id="@+id/imgLogoIcon"

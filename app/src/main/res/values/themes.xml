@@ -1,17 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<style
-		name="BankdroidTheme"
-		parent="android:Theme.Black">
-		<item
-			name="android:windowTitleSize">40dp</item>
-		<item
-			name="android:windowTitleBackgroundStyle">@style/WindowTitleBackground</item>
-		<item
-			name="android:windowBackground">@drawable/background_repeat</item>
-		<item
-			name="android:listViewStyle">@style/listViewStyle</item>
-		<item
-			name="android:checkboxStyle">@style/checkBoxStyle</item>
-	</style>
+
+    <!--<style name="BankdroidTheme" parent="android:Theme.Black">-->
+        <!--<item name="android:windowTitleSize">40dp</item>-->
+        <!--<item name="android:windowTitleBackgroundStyle">@style/WindowTitleBackground</item>-->
+    <!--</style>-->
+
+
+        <style name="BankdroidTheme" parent="BaseTheme"/>
+
+        <style name="BaseTheme" parent="Theme.AppCompat">
+            <item name="colorPrimary">@color/colorPrimary</item>
+            <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+            <item name="android:windowNoTitle">true</item>
+            <item name="windowActionBar">false</item>
+            <item name="android:windowBackground">@drawable/background_repeat</item>
+            <item name="android:listViewStyle">@style/listViewStyle</item>
+            <!--<item name="android:checkboxStyle">@style/checkBoxStyle</item>-->
+        </style>
+
 </resources>

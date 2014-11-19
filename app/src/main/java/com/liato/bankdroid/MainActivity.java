@@ -29,10 +29,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -68,20 +66,6 @@ public class MainActivity extends LockableActivity {
 		PairApplicationsActivity.initialSetupApiKey(this);
 		
 		setContentView(R.layout.main);
-		final OnClickListener listener = new View.OnClickListener() {
-			public void onClick(final View v) {
-				final Intent intentAccount = new Intent(MainActivity.this, BankEditActivity.class);
-				startActivity(intentAccount);
-			}
-		};
-		final OnClickListener listener2 = new View.OnClickListener() {
-			public void onClick(final View v) {
-				new DataRetrieverTask(MainActivity.this).execute();
-			}
-		};
-		this.addTitleButton(R.drawable.title_icon_add, "add", listener);
-		this.addTitleButton(R.drawable.title_icon_refresh, "refresh", listener2);
-
 		adapter = new AccountsAdapter(this, showHidden);
 		final ArrayList<Bank> banks = new ArrayList<Bank>();//BankFactory.banksFromDb(this, true);
 		adapter.setGroups(banks);
@@ -158,12 +142,12 @@ public class MainActivity extends LockableActivity {
 		final ArrayList<Bank> banks = BankFactory.banksFromDb(this, true);
 		if (banks.size() > 0) {
 			findViewById(R.id.txtAccountsDesc).setVisibility(View.GONE);
-			showTitleButton("refresh");
+//			showTitleButton("refresh");
 			//findViewById(R.id.btnAccountsRefresh).setClickable(true);
 		}
 		else {
 			findViewById(R.id.txtAccountsDesc).setVisibility(View.VISIBLE);
-			hideTitleButton("refresh");
+//			hideTitleButton("refresh");
 			//findViewById(R.id.btnAccountsRefresh).setClickable(false);
 		}
 
@@ -176,7 +160,7 @@ public class MainActivity extends LockableActivity {
 	public boolean onCreateOptionsMenu(final Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		final MenuInflater inflater = new MenuInflater(this);
-		inflater.inflate(R.menu.menu, menu);
+		inflater.inflate(R.menu.main, menu);
 		return true;
 	}
 
@@ -203,30 +187,28 @@ public class MainActivity extends LockableActivity {
 	public boolean onOptionsItemSelected (final MenuItem item){
 		Intent intent;
 		switch (item.getItemId()) {
-		case R.id.toggle_hidden:
+		case R.id.action_toggle_hidden:
 			showHidden = !showHidden;
-			if (showHidden) {
-				item.setTitle(R.string.menu_hide_hidden);
-			}
-			else {
-				item.setTitle(R.string.menu_show_hidden);
-			}
+            item.setTitle(showHidden ? R.string.menu_hide_hidden : R.string.menu_show_hidden);
 			refreshView();
 			return true;
-		case R.id.settings:
+		case R.id.action_settings:
 			intent = new Intent(this, SettingsActivity.class);
 			this.startActivity(intent);
 			//Helpers.setActivityAnimation(this, R.anim.zoom_enter, R.anim.zoom_exit);
 			return true;
-        case R.id.about:
+        case R.id.action_about:
             intent = new Intent(this, AboutActivity.class);
             startActivity(intent);
             return true;
-        case R.id.donate:
-            intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=KWRCBB4PAA3LC"));
-            startActivity(intent);
+        case R.id.action_refresh:
+            new DataRetrieverTask(MainActivity.this).execute();
             return true;
+        case R.id.action_add:
+            final Intent intentAccount = new Intent(MainActivity.this, BankEditActivity.class);
+            startActivity(intentAccount);
+            return true;
+
         }
 		return false;
 	}

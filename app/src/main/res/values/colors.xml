@@ -17,5 +17,7 @@
 <resources>
     <color name="black">#000</color>
     <color name="red">#F00</color>
+    <color name="colorPrimary">#212121</color>
+    <color name="colorPrimaryDark">#212121</color>
 </resources>
          
