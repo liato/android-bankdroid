@@ -92,7 +92,7 @@ public class Nordea extends Bank {
             ".*?" + // fast forward
             "([*\\d]+)" + // censured account number (account identifier)
             ".*?" + // fast forward
-            "([\\d\\.,]+)", // account balance
+            "<td.*?>(.*?)</td>", // account balance
             Pattern.DOTALL
     );
     private Pattern reTransaction = Pattern.compile("(\\d{4}-\\d{2}-\\d{2})[\n\r <].*?<td.*?>(.*?)</td>.*?<td.*?>.*?</td>.*?<td.*?>([\\s\\d+,.-]*)", Pattern.DOTALL);
@@ -268,7 +268,7 @@ public class Nordea extends Bank {
                         // Account name
 						Html.fromHtml(matcher.group(3)).toString().trim(), 
 						// Balance
-                        Helpers.parseBalance(matcher.group(5)),
+                        Helpers.parseBalance(Html.fromHtml(matcher.group(5)).toString()),
                         // Account identifier - half censured account number: "************1234"
 						Html.fromHtml(matcher.group(4)).toString().trim()
 						));
