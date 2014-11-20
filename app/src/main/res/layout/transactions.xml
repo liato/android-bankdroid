@@ -1,22 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/RelativeLayout01"
-	android:layout_width="wrap_content"
-	android:layout_height="fill_parent"
-	android:background="@drawable/background_repeat">
-	<include android:id="@+id/layBankHeader" layout="@layout/listitem_accounts_group" />
-	<TextView
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:visibility="visible"
-		android:layout_margin="10dp"
-		android:layout_below="@+id/layBankHeader" android:id="@+id/txtTranDesc" android:text="@string/tran_desc"/>
-	<ListView
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-		android:fitsSystemWindows="true"
-		android:background="@drawable/background_repeat"
-		android:cacheColorHint="#00000000" android:layout_below="@+id/layBankHeader" android:layout_alignParentBottom="true" android:id="@+id/lstTransactionsList" android:footerDividersEnabled="true" android:clickable="false" android:scrollbarStyle="outsideInset"/>
-	
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout01"
+    android:layout_width="wrap_content"
+    android:layout_height="fill_parent"
+    android:background="@drawable/background_repeat">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
+
+    <include
+        android:id="@+id/layBankHeader"
+        layout="@layout/listitem_accounts_group"
+        android:layout_width="match_parent"
+        android:layout_height="62dp"
+        android:layout_below="@id/toolbar" />
+
+    <TextView
+        android:id="@+id/txtTranDesc"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layBankHeader"
+        android:layout_margin="10dp"
+        android:text="@string/tran_desc"
+        android:visibility="visible" />
+
+    <ListView
+        android:id="@+id/lstTransactionsList"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/layBankHeader"
+        android:background="@drawable/background_repeat"
+        android:cacheColorHint="#00000000"
+        android:clickable="false"
+        android:fitsSystemWindows="true"
+        android:footerDividersEnabled="true"
+        android:scrollbarStyle="outsideInset" />
+
 </RelativeLayout>

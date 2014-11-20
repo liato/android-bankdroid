@@ -16,8 +16,6 @@
 
 package com.liato.bankdroid;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -32,23 +30,16 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 
 import com.liato.bankdroid.lockpattern.ConfirmLockPattern;
 import com.liato.bankdroid.lockpattern.LockPatternUtils;
 
-public class LockableActivity extends Activity {
+public class LockableActivity extends ActionBarActivity {
     private static int PATTERNLOCK_UNLOCK = 42;
 	private SharedPreferences mPrefs;
 	private Editor mEditor;
@@ -56,21 +47,21 @@ public class LockableActivity extends Activity {
 	private boolean mHasLoaded = false;
 	protected boolean mSkipLockOnce = false;
 	
-	private LinearLayout mTitlebarButtons;
+//	private LinearLayout mTitlebarButtons;
 	private LayoutInflater mInflater;
-	private ProgressBar mProgressBar;
+//	private ProgressBar mProgressBar;
 	
-    private ImageView mHomeButton;
-    private View mHomeButtonCont;
+//    private ImageView mHomeButton;
+//    private View mHomeButtonCont;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-		mLockPatternUtils = new LockPatternUtils(this);		
+		mLockPatternUtils = new LockPatternUtils(this);
         mLockPatternUtils.setVisiblePatternEnabled(mPrefs.getBoolean("patternlock_visible_pattern", true));
         mLockPatternUtils.setTactileFeedbackEnabled(mPrefs.getBoolean("patternlock_tactile_feedback", false));
-        requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+//        requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
         }
@@ -79,96 +70,106 @@ public class LockableActivity extends Activity {
 	@Override
     public void setContentView(int layoutResID) {
         super.setContentView(layoutResID);
-        getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title);
-        View titlebar = findViewById(R.id.layTitle);
-        mTitlebarButtons = (LinearLayout)titlebar.findViewById(R.id.layTitleButtons);
-        mInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        mHomeButton = (ImageView)titlebar.findViewById(R.id.imgTitle);
-        mHomeButtonCont = titlebar.findViewById(R.id.layLogoContainer);
-        mProgressBar = (ProgressBar)titlebar.findViewById(R.id.progressBar);
-        OnClickListener listener = new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(LockableActivity.this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                LockableActivity.this.finish();
-            }
-        };
-        mHomeButton.setOnClickListener(listener);
-        mHomeButtonCont.setOnClickListener(listener);
-        setHomeButtonEnabled(true);
-    }
-
-    protected void addTitleButton(int imageResourceId, String tag, OnClickListener listener) {
-        View child = mInflater.inflate(R.layout.title_item, mTitlebarButtons, false);
-        ImageButton button = (ImageButton)child.findViewById(R.id.imgItemIcon);
-        button.setImageResource(imageResourceId);
-        button.setTag(tag);
-        child.setTag("item_"+tag);
-        button.setOnClickListener(listener);
-        mTitlebarButtons.addView(child);
-	}
-
-    protected void hideTitleButton(String tag) {
-        View v = mTitlebarButtons.findViewWithTag("item_"+tag);
-        if (v != null) {
-            v.setVisibility(View.GONE);
-        }
-    }
-    
-    protected void showTitleButton(String tag) {
-        View v = mTitlebarButtons.findViewWithTag("item_"+tag);
-        if (v != null) {
-            v.setVisibility(View.VISIBLE);
-        }
-    }
-
-    protected void setTitleButtonEnabled(String tag, boolean enabled) {
-        View v = mTitlebarButtons.findViewWithTag("item_"+tag);
-        if (v != null) {
-            ImageButton button = (ImageButton)v.findViewById(R.id.imgItemIcon);
-            if (button != null) {
-                v.setEnabled(enabled);
-                v.setFocusable(enabled);
-                button.setEnabled(enabled);
-                button.setAlpha(enabled ? 255 : 50);
-            }
-        }
-    }
-    
-    protected void setHomeButtonEnabled(boolean enabled) {
-        mHomeButtonCont.setFocusable(enabled);
-        mHomeButtonCont.setClickable(enabled);
-        mHomeButton.setFocusable(enabled);
-        mHomeButton.setClickable(enabled);
-    }    
-    
-    protected void setProgressBar(int progress) {
-        mProgressBar.setProgress(progress);
-    }
-
-    protected void showProgressBar() {
-        mProgressBar.setVisibility(View.VISIBLE);
-    }
-
-    protected void hideProgressBar() {
-        AlphaAnimation animation = new AlphaAnimation(1, 0);
-        animation.setDuration(350);
-        animation.setAnimationListener(new AnimationListener() {
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                mProgressBar.setVisibility(View.GONE);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            if (shouldShowActionBar()) {
+                setSupportActionBar(toolbar);
+                toolbar.setLogo(R.drawable.ic_launcher);
+            } else {
+                toolbar.setVisibility(View.GONE);
             }
 
-            @Override
-            public void onAnimationRepeat(Animation animation) {}
-
-            @Override
-            public void onAnimationStart(Animation animation) {}
-        });
-        mProgressBar.startAnimation(animation);
+        }
+//        getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title);
+//        View titlebar = findViewById(R.id.layTitle);
+//        mTitlebarButtons = (LinearLayout)titlebar.findViewById(R.id.layTitleButtons);
+//        mInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//
+//        mHomeButton = (ImageView)titlebar.findViewById(R.id.imgTitle);
+//        mHomeButtonCont = titlebar.findViewById(R.id.layLogoContainer);
+//        mProgressBar = (ProgressBar)titlebar.findViewById(R.id.progressBar);
+//        OnClickListener listener = new View.OnClickListener() {
+//            public void onClick(View v) {
+//                Intent intent = new Intent(LockableActivity.this, MainActivity.class);
+//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                startActivity(intent);
+//                LockableActivity.this.finish();
+//            }
+//        };
+//        mHomeButton.setOnClickListener(listener);
+//        mHomeButtonCont.setOnClickListener(listener);
+//        setHomeButtonEnabled(true);
     }
+
+//    protected void addTitleButton(int imageResourceId, String tag, OnClickListener listener) {
+//        View child = mInflater.inflate(R.layout.title_item, mTitlebarButtons, false);
+//        ImageButton button = (ImageButton)child.findViewById(R.id.imgItemIcon);
+//        button.setImageResource(imageResourceId);
+//        button.setTag(tag);
+//        child.setTag("item_"+tag);
+//        button.setOnClickListener(listener);
+//        mTitlebarButtons.addView(child);
+//	}
+//
+//    protected void hideTitleButton(String tag) {
+//        View v = mTitlebarButtons.findViewWithTag("item_"+tag);
+//        if (v != null) {
+//            v.setVisibility(View.GONE);
+//        }
+//    }
+//
+//    protected void showTitleButton(String tag) {
+//        View v = mTitlebarButtons.findViewWithTag("item_"+tag);
+//        if (v != null) {
+//            v.setVisibility(View.VISIBLE);
+//        }
+//    }
+//
+//    protected void setTitleButtonEnabled(String tag, boolean enabled) {
+//        View v = mTitlebarButtons.findViewWithTag("item_"+tag);
+//        if (v != null) {
+//            ImageButton button = (ImageButton)v.findViewById(R.id.imgItemIcon);
+//            if (button != null) {
+//                v.setEnabled(enabled);
+//                v.setFocusable(enabled);
+//                button.setEnabled(enabled);
+//                button.setAlpha(enabled ? 255 : 50);
+//            }
+//        }
+//    }
+//
+//    protected void setHomeButtonEnabled(boolean enabled) {
+//        mHomeButtonCont.setFocusable(enabled);
+//        mHomeButtonCont.setClickable(enabled);
+//        mHomeButton.setFocusable(enabled);
+//        mHomeButton.setClickable(enabled);
+//    }
+//
+//    protected void setProgressBar(int progress) {
+//        mProgressBar.setProgress(progress);
+//    }
+//
+//    protected void showProgressBar() {
+//        mProgressBar.setVisibility(View.VISIBLE);
+//    }
+//
+//    protected void hideProgressBar() {
+//        AlphaAnimation animation = new AlphaAnimation(1, 0);
+//        animation.setDuration(350);
+//        animation.setAnimationListener(new AnimationListener() {
+//            @Override
+//            public void onAnimationEnd(Animation animation) {
+//                mProgressBar.setVisibility(View.GONE);
+//            }
+//
+//            @Override
+//            public void onAnimationRepeat(Animation animation) {}
+//
+//            @Override
+//            public void onAnimationStart(Animation animation) {}
+//        });
+//        mProgressBar.startAnimation(animation);
+//    }
     
     @Override
 	protected void onPause() {
@@ -324,6 +325,10 @@ public class LockableActivity extends Activity {
             }
         }
         return bm;
-    }    
+    }
+
+    public boolean shouldShowActionBar() {
+        return true;
+    }
     
 }

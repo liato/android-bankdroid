@@ -41,7 +41,7 @@ public class DBAdapter {
     private SQLiteDatabase mDb;
     
     static final String DATABASE_NAME = "data";
-    static final int DATABASE_VERSION = 10;
+    static final int DATABASE_VERSION = 11;
 
     private final Context mCtx;
 
@@ -114,7 +114,7 @@ public class DBAdapter {
      * @return Cursor over all banks
      */
     public Cursor fetchBanks() {
-        return mDb.query("banks", new String[] {"_id", "balance", "banktype", "username", "password", "disabled", "custname", "updated", "sortorder", "currency", "extras"}, null, null, null, null, "_id asc");
+        return mDb.query("banks", new String[] {"_id", "balance", "banktype", "username", "password", "disabled", "custname", "updated", "sortorder", "currency", "extras", "hideAccounts"}, null, null, null, null, "_id asc");
     }
 
     
@@ -151,6 +151,7 @@ public class DBAdapter {
         initialValues.put("custname", bank.getCustomName());
         initialValues.put("extras", bank.getExtras());
         initialValues.put("updated", sdf.format(cal.getTime()));
+        initialValues.put("hideAccounts", bank.getHideAccounts() ? 1 : 0);
         
         long bankId = bank.getDbId();
         if (bankId == -1) {
@@ -202,7 +203,7 @@ public class DBAdapter {
     }
     
     public Cursor getBank(String bankId) {
-    	Cursor c = mDb.query("banks", new String[] {"_id", "balance", "banktype", "username", "password", "disabled", "custname", "updated", "sortorder", "currency", "extras"}, "_id="+bankId, null, null, null, null);
+    	Cursor c = mDb.query("banks", new String[] {"_id", "balance", "banktype", "username", "password", "disabled", "custname", "updated", "sortorder", "currency", "extras", "hideAccounts"}, "_id="+bankId, null, null, null, null);
     	if (c != null) {
     		c.moveToFirst();
     	}

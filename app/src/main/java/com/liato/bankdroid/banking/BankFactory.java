@@ -381,7 +381,8 @@ public class BankFactory {
 							 c.getLong(c.getColumnIndex("_id")),
 							 c.getString(c.getColumnIndex("currency")),
 							 c.getString(c.getColumnIndex("custname")),
-							 c.getString(c.getColumnIndex("extras")));
+							 c.getString(c.getColumnIndex("extras")),
+                             c.getInt(c.getColumnIndex("hideAccounts")));
 				if (loadAccounts) {
 					bank.setAccounts(accountsFromDb(context, bank.getDbId()));
 				}
@@ -425,7 +426,8 @@ public class BankFactory {
 				             c.getLong(c.getColumnIndex("_id")),
 				             c.getString(c.getColumnIndex("currency")),
 				             c.getString(c.getColumnIndex("custname")),
-                             c.getString(c.getColumnIndex("extras")));
+                             c.getString(c.getColumnIndex("extras")),
+                             c.getInt(c.getColumnIndex("hideAccounts")));
 				if (loadAccounts) {
 					bank.setAccounts(accountsFromDb(context, bank.getDbId()));
 				}

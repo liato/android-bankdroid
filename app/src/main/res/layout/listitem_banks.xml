@@ -16,7 +16,7 @@
 		android:layout_alignParentBottom="true"
 		android:layout_marginRight="2dp"
 
-		android:src="@drawable/icon"
+		android:src="@drawable/ic_launcher"
 		android:maxHeight="32dp"
 		android:maxWidth="32dp" />
 

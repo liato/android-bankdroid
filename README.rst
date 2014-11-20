@@ -12,6 +12,20 @@ More information can be found at:
 * `Bankdroid on Google Play <https://play.google.com/store/apps/details?id=com.liato.bankdroid>`_
 * `Bankdroid thread at the Swedroid Forum <http://goo.gl/9tJeH>`_ (Swedish)
 
+Contribute or report broken banks
+------------------------------------
+The following information is needed for troubleshooting a broken bank or if you want a new bank to be supported 
+by Bankdroid.
+
+1. Address to login page.
+2. Address and html code for the landing page after a successful login.
+3. Address and html code for the page with the accounts overview.
+4. Address and html code for the page with an account's transaction history.
+
+NOTE. Do not forget to replace your personal information in the html code with random 
+information before you send everything to android [at] nullbyte.eu. 
+You can also open an issue here at Github with the required files included as an attachment.
+
 Development environment
 -----------------------
 

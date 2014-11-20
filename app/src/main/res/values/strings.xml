@@ -24,6 +24,9 @@
     <string name="account_number">Account number</string>
     <string name="control_code">Control code</string>
     <string name="server_error_try_again">Server error. Please try again later.</string>
+    <string name="settings">Settings</string>
+    <string name="refresh">Refresh</string>
+    <string name="add_account">Add account</string>
 
     <string name="username">Username</string>
     <string name="password">Password</string>
@@ -149,6 +152,8 @@
 
     <string name="popup_hide">Hide</string>
     <string name="popup_unhide">Unhide</string>
+    <string name="popup_hide_a">Hide\naccounts</string>
+    <string name="popup_unhide_a">Unhide\naccounts</string>
     <string name="popup_enable_notifications">Enable notifications</string>
     <string name="popup_disable_notifications">Disable notifications</string>
         

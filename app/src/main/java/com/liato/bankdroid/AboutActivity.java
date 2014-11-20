@@ -22,17 +22,17 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.TextView;
 
-public class AboutActivity extends LockableActivity implements OnClickListener {
-	final static String TAG = "AboutActivity";
-	
+public class AboutActivity extends LockableActivity {
+
     @Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-	    setContentView(R.layout.about);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.about);
         PackageInfo pInfo;
         String version = "v1.x.x";
         try {
@@ -41,29 +41,29 @@ public class AboutActivity extends LockableActivity implements OnClickListener {
         } catch (final NameNotFoundException e) {
             e.printStackTrace();
         }
-        ((TextView)findViewById(R.id.txtVersion)).setText(getText(R.string.version).toString().replace("$version", version));	    
-        this.addTitleButton(R.drawable.title_icon_donate, "donate", this);
-        this.addTitleButton(R.drawable.title_icon_web, "web", this);
- 
-    }
+        ((TextView) findViewById(R.id.txtVersion)).setText(getText(R.string.version).toString().replace("$version", version));
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-	}
+    }
 
     @Override
-    public void onClick(View v) {
-        String tag = (String)v.getTag();
-        Intent i = new Intent(Intent.ACTION_VIEW);
-        
-        if ("web".equals(tag)) {
-            i.setData(Uri.parse("https://github.com/liato/android-bankdroid"));
-        }
-        else if ("donate".equals(tag)) {
-            i.setData(Uri.parse("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=KWRCBB4PAA3LC"));
-        }
-        startActivity(i);
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        final MenuInflater inflater = new MenuInflater(this);
+        inflater.inflate(R.menu.about, menu);
+        return true;
     }
-	
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_web:
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse("https://github.com/liato/android-bankdroid"));
+                startActivity(i);
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
 }

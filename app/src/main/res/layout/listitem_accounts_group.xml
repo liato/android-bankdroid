@@ -23,7 +23,7 @@
         android:minHeight="48dp"
         android:minWidth="48dp"
         android:padding="0dp"
-        android:src="@drawable/icon" />
+        android:src="@drawable/ic_launcher" />
 
     <TextView
         android:id="@+id/txtListitemAccountsGroupBankname"

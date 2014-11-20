@@ -5,6 +5,7 @@
 	android:layout_height="fill_parent"
 	android:layout_width="fill_parent"
 	android:paddingBottom="20dp">
+    <include layout="@layout/toolbar" />
 	<ScrollView
 		android:fillViewport="true"
 		android:layout_width="fill_parent"

@@ -78,6 +78,11 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     protected boolean disabled = false;
     protected long dbid = -1;
     protected Urllib urlopen = null;
+    protected boolean hideAccounts = false;
+
+    public boolean toggleHideAccounts() { return hideAccounts = !hideAccounts; }
+
+    public boolean getHideAccounts() { return hideAccounts; }
 
     public Urllib getUrlopen() {
         return urlopen;
@@ -203,7 +208,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     }
 
     public void setData(String username, String password, BigDecimal balance,
-            boolean disabled, long dbid, String currency, String customName, String extras) {
+            boolean disabled, long dbid, String currency, String customName, String extras, int hideAccounts) {
         this.username = username;
         this.password = password;
         this.balance = balance;
@@ -212,6 +217,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         this.currency = currency;
         this.customName = customName;
         this.extras = extras;
+        this.hideAccounts = hideAccounts==1 ? true : false;
     }
 
     public String getCurrency() {

@@ -17,7 +17,7 @@
 			android:id="@+id/icon"
 			android:layout_width="25dp"
 			android:layout_height="25dp"
-			android:src="@drawable/icon" android:scaleType="fitXY"/>
+			android:src="@drawable/ic_launcher" android:scaleType="fitXY"/>
 		<TextView
 			android:id="@+id/title"
 			android:layout_width="fill_parent"

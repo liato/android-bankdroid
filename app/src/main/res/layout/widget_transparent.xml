@@ -28,7 +28,7 @@
 			android:id="@+id/imgWidgetIcon"
 			android:layout_gravity="center_vertical"
 			android:baselineAlignBottom="true"
-			android:src="@drawable/icon"
+			android:src="@drawable/ic_launcher"
 			android:scaleType="fitXY"></ImageView>
 	<TextView
 		android:id="@+id/txtWidgetAccountname"

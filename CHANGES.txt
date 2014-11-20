@@ -1,3 +1,17 @@
+v1.9.7.2: (2014-11-20)
+* Quickfix for widgets, still work to be done
+* Improved account order for Swedbank (thanks to goober)
+
+
+v1.9.7.1: (2014-11-19)
+* Swedbank and Sparbankerna: Show transactions, fix for widget, credit card transactions, various fixes (thanks to goober, cortex, mikaeler)
+* Updated certificate for American Express, Brummer KF, CSN, EasyCard, FirstCard, ICA, Jojo, Meniga, Nordea DK, PlusGirot, Svenskaspel and Västtrafik (thanks to goober, Niclasl, auno)
+* Account balance for Nordea credit cards (thanks to sed03)
+* Fix for Jojo (thanks to sed03)
+* Toggle account visibility by long pressing an account (thanks to fredrike)
+* Show all account types for Avanza (thanks to fredrike)
+
+
 v1.9.7.0: (2014-10-31)
 * Fix for Nordea (thanks to rhoot and wicol)
 * Use Swedbank's API (thanks to goober for the implementation and Swedbank for giving us access to their API)

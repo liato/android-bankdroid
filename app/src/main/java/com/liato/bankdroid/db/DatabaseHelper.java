@@ -44,6 +44,7 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
 				+ "sortorder real, "
 				+ "currency text, "
 				+ "disabled integer, "
+                + "hideAccounts integer,"
 				+ "extras text);");
 		db.execSQL("create table accounts (bankid integer not null, "
 				+ "id text not null, "
@@ -68,10 +69,13 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
 		Log.w(DBAdapter.TAG, "Upgrading database from version " + oldVersion
 				+ " to " + newVersion + ", which will destroy all old data");
         // Version <= 1.7.2 
-		if (oldVersion == 9) {
+		if (oldVersion <= 9) {
 		    // Add an "extras" field to the bank and and "alias for" field to the account.
             db.execSQL("ALTER TABLE banks ADD extras text;");
             db.execSQL("ALTER TABLE accounts ADD aliasfor text;");
 		}
+        if (oldVersion <= 10) {
+            db.execSQL("ALTER TABLE banks ADD hideAccounts interger;");
+        }
 	}
 }

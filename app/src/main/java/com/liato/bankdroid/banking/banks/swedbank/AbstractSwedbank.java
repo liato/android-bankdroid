@@ -152,11 +152,11 @@ public abstract class AbstractSwedbank extends Bank {
 
             OverviewResponse overviewResponse = readJsonValue(httpResponse.getEntity().getContent(),OverviewResponse.class);
             addAccounts(overviewResponse.getTransactionAccounts(),Account.REGULAR);
-            addAccounts(overviewResponse.getLoanAccounts(),Account.LOANS);
             addAccounts(overviewResponse.getSavingAccounts(),Account.REGULAR);
             addAccounts(overviewResponse.getTransactionDisposalAccounts(),Account.REGULAR);
             addAccounts(overviewResponse.getSavingDisposalAccounts(),Account.REGULAR);
             addCardAccounts(overviewResponse.getCardAccounts());
+            addAccounts(overviewResponse.getLoanAccounts(),Account.LOANS);
             if (this.accounts.isEmpty()) {
                 throw new BankException(res.getText(R.string.no_accounts_found).toString());
             }
@@ -177,6 +177,9 @@ public abstract class AbstractSwedbank extends Bank {
             return;
         }
         else if(account.getType() != Account.REGULAR) {
+            return;
+        }
+        else if(mIdMap.get(account.getId()) == null) {
             return;
         }
         try {

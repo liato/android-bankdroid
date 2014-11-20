@@ -36,6 +36,11 @@ Development
   MathiasBois                       https://github.com/MathiasBois
   Johan Sköld                       https://github.com/rhoot
   Wictor                            https://github.com/wicol
+  sed03                             https://github.com/sed03
+  Fredrik Erlandsson                https://github.com/fredrike
+  Niclasl                           https://github.com/NiclasI
+  Mikael Eriksson                   https://github.com/mikaeler
+  Mikael Auno                       https://github.com/auno
 
 
   Stats at:
