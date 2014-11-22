@@ -22,9 +22,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.util.EntityUtils;
 
 import android.content.Context;
 import android.text.InputType;
@@ -45,12 +47,12 @@ public class SvenskaSpel extends Bank {
 	private static final String TAG = "SvenskaSpel";
 	private static final String NAME = "Svenska Spel";
 	private static final String NAME_SHORT = "svenskaspel";
-	private static final String URL = "https://m.svenskaspel.se/Customer/Login?returnUrl=/MinaSpel";
+	private static final String URL = "https://api.www.svenskaspel.se/player/sessions";
 	private static final int BANKTYPE_ID = Bank.SVENSKASPEL;
 	private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT;
-	private static final int INPUT_TITLETEXT_USERNAME = R.string.card_number;
+	private static final int INPUT_TITLETEXT_USERNAME = R.string.username;
 
-    private Pattern reBalance = Pattern.compile("Balance\\\":\\\"([^<]+)\\\",", Pattern.CASE_INSENSITIVE);
+	private Pattern reBalance = Pattern.compile("balance\":\"(.*?)\",", Pattern.CASE_INSENSITIVE);
 	private String response = "";
 
 	public SvenskaSpel(Context context) {
@@ -60,7 +62,7 @@ public class SvenskaSpel extends Bank {
 		super.NAME_SHORT = NAME_SHORT;
 		super.BANKTYPE_ID = BANKTYPE_ID;
 		super.URL = URL;
-		super.INPUT_TYPE_USERNAME= INPUT_TYPE_USERNAME;
+		super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
 		super.INPUT_TITLETEXT_USERNAME = INPUT_TITLETEXT_USERNAME;
 	}
 
@@ -71,58 +73,59 @@ public class SvenskaSpel extends Bank {
 
 	@Override
 	protected LoginPackage preLogin() throws BankException, ClientProtocolException, IOException {
-        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_svenskaspel));
+		urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_svenskaspel));
 
 		List<NameValuePair> postData = new ArrayList<NameValuePair>();
-		postData.add(new BasicNameValuePair("username", username));
-	    postData.add(new BasicNameValuePair("password", password));
-	    postData.add(new BasicNameValuePair("loginbutton", "Logga in"));
-
-		return new LoginPackage(urlopen, postData, response, "https://m.svenskaspel.se/Customer/Login?returnUrl=/MinaSpel");
+		return new LoginPackage(urlopen, postData, response, URL);
 	}
 
 	@Override
 	public Urllib login() throws LoginException, BankException {
-        try {
-        	 LoginPackage lp = preLogin();
-             response = urlopen.open(lp.getLoginTarget(), lp.getPostData());    
-             if (response.contains("Felaktigt anv")) {
-                 throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-             }
-         }
-         catch (ClientProtocolException e) {
-             throw new BankException(e.getMessage());
-         }
-         catch (IOException e) {
-             throw new BankException(e.getMessage());
-         }
-         return urlopen;
+		try {
+			LoginPackage lp = preLogin();
+
+			StringEntity postdata = new StringEntity(
+					"{\"userName\":\"" + username + "\",\"password\":\"" + password + "\"}");
+			HttpResponse httpResponse = urlopen.openAsHttpResponse(lp.getLoginTarget(), postdata, true);
+
+			if (httpResponse.getStatusLine().getStatusCode() != 200) {
+				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+			}
+			response = EntityUtils.toString(httpResponse.getEntity());
+		}
+		catch (ClientProtocolException e) {
+			throw new BankException(e.getMessage());
+		}
+		catch (IOException e) {
+			throw new BankException(e.getMessage());
+		}
+		return urlopen;
 	}
 
 	@Override
 	public void update() throws BankException, LoginException, BankChoiceException {
 		super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
-            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-        }
-        urlopen = login();
-      
-        Matcher matcher = reBalance.matcher(response);
-		if (matcher.find()) {
-            /*
-             * Capture groups:
-             * GROUP                    EXAMPLE DATA
-             * 1: balance               845
-             * 
-             */    		    
-		   Account account = new Account("Saldo", Helpers.parseBalance(matcher.group(1)), "1");
-           balance = Helpers.parseBalance(matcher.group(1));
-           balance = balance.add(Helpers.parseBalance(matcher.group(1)));
-           accounts.add(account);
+			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
-        if (accounts.isEmpty()) {
-            throw new BankException(res.getText(R.string.no_accounts_found).toString());
-        }
-        super.updateComplete();
+		urlopen = login();
+
+		Matcher matcher = reBalance.matcher(response);
+		if (matcher.find()) {
+			/*
+			 * Capture groups:
+			 * GROUP                    EXAMPLE DATA
+			 * 1: balance               845
+			 *
+			 */
+			Account account = new Account("Saldo", Helpers.parseBalance(matcher.group(1)), "1");
+			balance = Helpers.parseBalance(matcher.group(1));
+			balance = balance.add(Helpers.parseBalance(matcher.group(1)));
+			accounts.add(account);
+		}
+		if (accounts.isEmpty()) {
+			throw new BankException(res.getText(R.string.no_accounts_found).toString());
+		}
+		super.updateComplete();
 	}
 }
