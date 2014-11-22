@@ -300,7 +300,8 @@ public abstract class AbstractSwedbank extends Bank {
 
     private void addCardAccounts(List<CardAccount> accountList) {
         for(CardAccount account : accountList) {
-            Account bankdroidAccount = new Account(account.getName(),account.getAvailableAmount(),account.getCardNumber(), Account.CCARD,account.getCurrency());
+            String currency = account.getCurrency() == null ? "SEK" : account.getCurrency();
+            Account bankdroidAccount = new Account(account.getName(),account.getAvailableAmount(),account.getCardNumber(), Account.CCARD,currency);
             mIdMap.put(bankdroidAccount.getId(), account.getId());
             this.accounts.add(bankdroidAccount);
         }
