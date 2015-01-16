@@ -98,4 +98,5 @@ public interface IBankTypes {
     public final static int SVEADIREKT  = 74;
     public final static int SUPREMECARD  = 75;
     public final static int SPARBANKERNA = 76;
+    public final static int BLEKINGETRAFIKEN = 77;
 }

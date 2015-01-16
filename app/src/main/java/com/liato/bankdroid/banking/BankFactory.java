@@ -97,6 +97,7 @@ import com.liato.bankdroid.banking.banks.payson.Payson;
 import com.liato.bankdroid.banking.banks.rikslunchen.Rikslunchen;
 import com.liato.bankdroid.banking.banks.swedbank.Sparbankerna;
 import com.liato.bankdroid.banking.banks.swedbank.Swedbank;
+import com.liato.bankdroid.banking.banks.BlekingeTrafiken;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.db.Crypto;
 import com.liato.bankdroid.db.DBAdapter;
@@ -265,6 +266,8 @@ public class BankFactory {
             return new SupremeCard(context);
         case IBankTypes.SPARBANKERNA:
             return new Sparbankerna(context);
+        case IBankTypes.BLEKINGETRAFIKEN:
+            return new BlekingeTrafiken(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
@@ -349,6 +352,7 @@ public class BankFactory {
         banks.add(new SveaDirekt(context));
         banks.add(new SupremeCard(context));
         banks.add(new Sparbankerna(context));
+        banks.add(new BlekingeTrafiken(context));
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) { 
