@@ -51,7 +51,7 @@ public class BlekingeTrafiken extends Bank {
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;
         super.URL = URL;
-        super.INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_NUMBER;
+        super.INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
         super.INPUT_HINT_USERNAME = "XXXXXXXXXX";
         super.INPUT_TITLETEXT_USERNAME = R.string.card_number;
         super.INPUT_HIDDEN_PASSWORD = true;
