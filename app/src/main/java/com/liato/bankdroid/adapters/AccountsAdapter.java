@@ -55,7 +55,7 @@ public class AccountsAdapter extends BaseAdapter {
 	public void addGroup(Bank bank) {
 		banks.add(bank);
 	}
-	
+
 	public void setGroups(ArrayList<Bank> banks) {
 		this.banks = banks;
 		/*for (Bank b : this.banks) {
@@ -120,11 +120,11 @@ public class AccountsAdapter extends BaseAdapter {
                         account.getBank().getDecimalFormatter()));
 		if (account.isHidden()) {
             txtAccountName.setTextColor(Color.argb(255, 191, 191, 191));
-            txtBalance.setTextColor(Color.argb(255, 191, 191, 191));		    
+            txtBalance.setTextColor(Color.argb(255, 191, 191, 191));
 		}
 		else {
             txtAccountName.setTextColor(Color.WHITE);
-            txtBalance.setTextColor(Color.WHITE);            
+            txtBalance.setTextColor(Color.WHITE);
 		}
 		return convertView;
 	}
@@ -133,7 +133,10 @@ public class AccountsAdapter extends BaseAdapter {
 	public int getCount() {
 		int c = 0;
 		for(Bank g : banks) {
-			c += g.getAccounts().size()+1;
+			if (g.getHideAccounts())
+				c++;
+ 			else
+				c += g.getAccounts().size()+1;
 		}
 		return c;
 	}
@@ -151,6 +154,10 @@ public class AccountsAdapter extends BaseAdapter {
 		for (Bank g : banks) {
 			if (position == i) {
 				return g;
+			}
+			else if (g.getHideAccounts()) {
+				i++;
+				continue;
 			}
 			else if (position <= (g.getAccounts().size()+i)) {
 				return g.getAccounts().get(position-i-1);
@@ -185,7 +192,7 @@ public class AccountsAdapter extends BaseAdapter {
 	    if (getItemViewType(position) == VIEWTYPE_EMPTY) return false;
 	    return true;
 	}
-        
+
 
 	@Override
 	public int getViewTypeCount () {
@@ -205,7 +212,7 @@ public class AccountsAdapter extends BaseAdapter {
 		    }
 		}
 		return VIEWTYPE_ACCOUNT;
-	}	
+	}
 }
 
 
