@@ -228,6 +228,11 @@ public class Coop extends Bank {
         login();
 
         try {
+            response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/Mina-poang/");
+            Account poang = new Account("Poäng",
+                    Helpers.parseBalance(Jsoup.parse(response).select(".Grid-cell--1 p").text()),
+                    "poang", Account.OTHER, "");
+            accounts.add(poang);
             for (AccountType at : AccountType.values()) {
                 response = urlopen.open(at.getUrl());
                 Document d = Jsoup.parse(response);
