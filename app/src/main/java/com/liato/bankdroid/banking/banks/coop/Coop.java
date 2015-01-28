@@ -81,6 +81,7 @@ public class Coop extends Bank {
 
     enum AccountType {
         MEDMERA_KONTO("konto_", "https://www.coop.se/Mina-sidor/Oversikt/MedMera-Konto/"),
+        MEDMERA_EFTER("efter_", "https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Efter/"),
         MEDMERA_MER("mer_", "https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Mer/"),
         MEDMERA_VISA("visa_", "https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Visa/");
 
