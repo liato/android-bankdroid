@@ -40,7 +40,7 @@ public class BlekingeTrafiken extends Bank {
     private static final String TAG = "Blekingetrafiken";
     private static final String NAME = "Blekingetrafiken";
     private static final String NAME_SHORT = "blekingetrafiken";
-    private static final String URL = "http://www.blekingetrafiken.se/webshop/FService/FBalanceService.svc/card/balance/";
+    private static final String URL = "https://www.blekingetrafiken.se/webshop/card/balance/";
     private static final int BANKTYPE_ID = IBankTypes.BLEKINGETRAFIKEN;
     private String response = null;
 
@@ -77,7 +77,7 @@ public class BlekingeTrafiken extends Bank {
         try {
             LoginPackage lp = preLogin();
             HttpResponse httpResponse = urlopen.openAsHttpResponse(URL,
-                    new StringEntity("{\"cardnr\":" + username + "}"), true);
+                    new StringEntity("{\"cardnr\":\"" + username + "\"}"), true);
             if(httpResponse.getStatusLine().getStatusCode() != 200) {
                 throw new LoginException(res.getText(R.string.invalid_card_number).toString());
             }
