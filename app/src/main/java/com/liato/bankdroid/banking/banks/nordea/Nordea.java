@@ -128,11 +128,15 @@ public class Nordea extends Bank {
             "\\s*([^<]*)\\s*</td>" + // Group 2: (trimmed) Transaction name
             "[^<]*<td[^>]*>" + // Start recipient name col (same as transaction name?)
             "[^<]*</td>" + // Transaction name
-            "[^<]*<td[^>]*>" + // Start currency col
-            "\\s*([^<]*)\\s*</td>" + // Group 3: (trimmed) Currency (Empty when SEK?)
+            "[^<]*<td[^>]*>" + // Start transaction native amount/currency col
+            "\\s*([^<]*)\\s*</td>" + // Group 3: Transaction native amount/currency (Empty when SEK)
             "[^<]*<td[^>]*>" + // Start amount col
             "\\s*([\\d,.-]+)", // Group 4: Transaction amount
             Pattern.DOTALL
+    );
+    // Credit card currency
+    private Pattern reCreditCardCurrency = Pattern.compile(
+      "<th[^>]*>Belopp\\s([^<]+)</th>"
     );
 
     // The link to go to the loans overview page
@@ -478,7 +482,6 @@ public class Nordea extends Bank {
             throws LoginException, BankException, IOException {
         Matcher matcher;
         String link = null;
-        String currency = "";
         ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 
         if (this.currentPageType != PageType.CREDIT_CARDS) {
@@ -504,7 +507,6 @@ public class Nordea extends Bank {
         while (matcher.find() && transactions.size() < MAX_TRANSACTIONS) {
             String date = matcher.group(1);
             String text = matcher.group(2);
-            currency = matcher.group(3);
             BigDecimal amount = Helpers.parseBalance(matcher.group(4));
             Transaction transaction = new Transaction(date, text, amount);
             transactions.add(transaction);
@@ -512,7 +514,8 @@ public class Nordea extends Bank {
         // Add the transactions to this account
         account.setTransactions(transactions);
         // Set currency for this account
-        if (currency.length() > 0) {
+        matcher = reCreditCardCurrency.matcher(this.lastResponse);
+        if (matcher.find()) {
             account.setCurrency(Html.fromHtml(matcher.group(1)).toString().trim());
         }
     }
