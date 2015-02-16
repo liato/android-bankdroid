@@ -81,6 +81,7 @@ public class Coop extends Bank {
 
     enum AccountType {
         MEDMERA_KONTO("konto_", "https://www.coop.se/Mina-sidor/Oversikt/MedMera-Konto/"),
+        MEDMERA_EFTER("efter_", "https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Efter/"),
         MEDMERA_MER("mer_", "https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Mer/"),
         MEDMERA_VISA("visa_", "https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Visa/");
 
@@ -228,6 +229,30 @@ public class Coop extends Bank {
         login();
 
         try {
+            response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/Mina-poang/");
+            Document dResponse = Jsoup.parse(response);
+            Account poang = new Account("Poäng",
+                    Helpers.parseBalance(dResponse.select(".Grid-cell--1 p").text()),
+                    "poang", Account.OTHER, "");
+            List<Transaction> transactions = new ArrayList<Transaction>();
+            poang.setTransactions(transactions);
+            for (Element e : dResponse.select(".Timeline-item")) {
+                try {
+                    if (e.parent().hasClass("Timeline-group--emphasized")) {
+                        transactions.add(new Transaction(
+                                formatDate(e.ownText()),
+                                e.select(".Timeline-label").text(),
+                                Helpers.parseBalance(e.select(".Timeline-title").first().text()), ""));
+
+                    } else {
+                        transactions.add(new Transaction(
+                                formatDate(e.select(".Timeline-header .u-nbfcAlt span").text()),
+                                e.select(".u-block").text(),
+                                Helpers.parseBalance(e.select(".Timeline-header .Timeline-title").first().ownText()), ""));
+                    }
+                } finally { continue; }
+            }
+            accounts.add(poang);
             for (AccountType at : AccountType.values()) {
                 response = urlopen.open(at.getUrl());
                 Document d = Jsoup.parse(response);
@@ -371,6 +396,8 @@ public class Coop extends Bank {
 
     private String formatDate(String date) {
         String[] parts = date.split(" ");
+        if( parts.length < 3)
+            return "";
         return String.format("%s-%s-%02d", parts[2], MONTHS.containsKey(parts[1].toLowerCase()) ? MONTHS.get(parts[1].toLowerCase()) : "01", Integer.parseInt(parts[0]));
     }
 
