@@ -62,6 +62,12 @@ public class TransactionsActivity extends LockableActivity {
             ListView viewTransactionsList = (ListView) findViewById(R.id.lstTransactionsList);
             viewTransactionsList.setAdapter(adapter);
         }
+        findViewById(R.id.layBankHeader).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     @Override
