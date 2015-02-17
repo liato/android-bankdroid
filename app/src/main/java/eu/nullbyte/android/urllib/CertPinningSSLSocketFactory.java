@@ -176,7 +176,7 @@ public class CertPinningSSLSocketFactory extends SSLSocketFactory {
         // Fix for supporting old servers.
         // See https://code.google.com/p/android-developer-preview/issues/detail?id=1200#c23
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-            List<String> ciphers = new ArrayList<>(Arrays.asList(vSocket.getEnabledCipherSuites()));
+            List<String> ciphers = new ArrayList<String>(Arrays.asList(vSocket.getEnabledCipherSuites()));
             ciphers.remove("TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA");
             ciphers.remove("TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA");
             vSocket.setEnabledCipherSuites(ciphers.toArray(new String[ciphers.size()]));
