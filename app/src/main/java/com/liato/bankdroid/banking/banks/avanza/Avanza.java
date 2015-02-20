@@ -58,6 +58,7 @@ public class Avanza extends Bank {
         NAME_SHORT = "avanza";
         URL = "https://www.avanza.se/";
         BANKTYPE_ID = IBankTypes.AVANZA;
+//        STATIC_BALANCE = true;
     }
 
     public Avanza(String username, String password, Context context)
@@ -70,6 +71,7 @@ public class Avanza extends Bank {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_avanza));
         urlopen.addHeader("ctag", "1122334455");
         urlopen.addHeader("Authorization", "Basic " + Base64.encodeToString(new String(username + ":" + password).getBytes(), Base64.NO_WRAP));
+        balance = new BigDecimal(0);
 
         try {
             HttpResponse httpResponse = urlopen.openAsHttpResponse(API_URL + "account/overview/all", new ArrayList<NameValuePair>(), false);
@@ -87,6 +89,12 @@ public class Avanza extends Bank {
                 if (!account.getPositionAggregations().isEmpty()) {
                     Date now = new Date();
                     ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+                    for (com.liato.bankdroid.banking.banks.avanza.model.CurrencyAccount currencyAccount :  account.getCurrencyAccounts()) {
+                        transactions.add(new Transaction(Helpers.formatDate(now),
+                                "\u2014  " + currencyAccount.getCurrency() + "  \u2014",
+                                BigDecimal.valueOf(currencyAccount.getBalance()),
+                                currencyAccount.getCurrency()));
+                    }
                     for (PositionAggregation positionAgList : account.getPositionAggregations()) {
                         if (positionAgList.getPositions().isEmpty()) {
                             continue;
@@ -107,7 +115,40 @@ public class Avanza extends Bank {
                     }
                     a.setTransactions(transactions);
                 }
+                balance = balance.add(a.getBalance());
                 accounts.add(a);
+                // Add subtypes for account as own account.
+                if (!account.getPositionAggregations().isEmpty()) {
+                    Date now = new Date();
+                    for (com.liato.bankdroid.banking.banks.avanza.model.CurrencyAccount currencyAccount :  account.getCurrencyAccounts()) {
+                        accounts.add(new Account("\u2014  " + account.getAccountId() + ",  " +
+                                currencyAccount.getCurrency(),
+                                new BigDecimal(currencyAccount.getBalance()),
+                                account.getAccountId() + currencyAccount.getCurrency(),
+                                Account.OTHER,
+                                currencyAccount.getCurrency()));
+                    }
+                    for (PositionAggregation positionAgList : account.getPositionAggregations()) {
+                        if (positionAgList.getPositions().isEmpty()) {
+                            continue;
+                        }
+                        Account b = new Account("\u2014  " + account.getAccountId() + ",  " +
+                                    positionAgList.getInstrumentTypeName() +
+                                    "  " + positionAgList.getTotalProfitPercent() + "% ",
+                                new BigDecimal(positionAgList.getTotalValue()),
+                                account.getAccountId() + positionAgList.getInstrumentTypeName(),
+                                Account.OTHER, a.getCurrency());
+                        ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+                        for (Position p : positionAgList.getPositions()) {
+                            transactions.add(new Transaction(Helpers.formatDate(now),
+                                    p.getInstrumentName(),
+                                    BigDecimal.valueOf(p.getProfit()),
+                                    a.getCurrency()));
+                        }
+                        b.setTransactions(transactions);
+                        accounts.add(b);
+                    }
+                }
             }
         } catch (JsonParseException e) {
             e.printStackTrace();
