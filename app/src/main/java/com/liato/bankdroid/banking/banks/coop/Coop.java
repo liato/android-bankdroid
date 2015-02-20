@@ -82,6 +82,8 @@ public class Coop extends Bank {
     enum AccountType {
         MEDMERA_KONTO("konto_", "https://www.coop.se/Mina-sidor/Oversikt/MedMera-Konto/"),
         MEDMERA_EFTER("efter_", "https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Efter/"),
+        MEDMERA_EFTER1("efter1_", "https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Efter1/"),
+        MEDMERA_FORE("fore_", "https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Fore/"),
         MEDMERA_MER("mer_", "https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Mer/"),
         MEDMERA_VISA("visa_", "https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Visa/");
 
@@ -231,7 +233,7 @@ public class Coop extends Bank {
         try {
             response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/Mina-poang/");
             Document dResponse = Jsoup.parse(response);
-            Account poang = new Account("Poäng",
+            Account poang = new Account("\u2014  Poäng",
                     Helpers.parseBalance(dResponse.select(".Grid-cell--1 p").text()),
                     "poang", Account.OTHER, "");
             List<Transaction> transactions = new ArrayList<Transaction>();
