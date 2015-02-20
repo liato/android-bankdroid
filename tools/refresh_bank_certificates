@@ -1,0 +1,111 @@
+#!/usr/bin/python
+
+# This script can be used to update bankdroid's bank certificates to
+# match the certificates used by the servers.
+#
+# For this script to understand which server it should contact to
+# refresh a certificate, the server's hostname and port need to be
+# added on the last line of the certificate (after the certificate's
+# pem data).
+#
+# Note: The downloaded certificates are not validated, so you should
+# verify that each updated certificate is really from a trusted
+# server.
+
+import glob
+import os
+import re
+import select
+import socket
+import time
+import OpenSSL.crypto as crypto
+import OpenSSL.SSL as ssl
+
+
+def read_host_information(cert_file):
+    for line in reversed(open(cert_file).readlines()):
+        line = line.strip()
+        if len(line) == 0:
+            continue
+
+        m = re.match("([-.0-9a-z]+):([0-9]{2,5})", line, re.IGNORECASE)
+        if not m:
+            break
+
+        return (m.group(1), int(m.group(2)))
+
+    return None
+
+
+def get_pem_certificate(host):
+    CONNECTION_TIMEOUT = 10.0  # seconds
+
+    for ssl_method in [ssl.TLSv1_METHOD, ssl.SSLv23_METHOD]:
+        s = None
+        ssl_connection = None
+
+        try:
+            s = socket.socket()
+            s.settimeout(CONNECTION_TIMEOUT)
+            s.connect(host)
+            ssl_connection = ssl.Connection(ssl.Context(ssl_method), s)
+            ssl_connection.set_connect_state()
+            # Some servers require "Server Name Indication" to be set
+            # in the client's TLS hello
+            ssl_connection.set_tlsext_host_name(host[0])
+
+            handshake_start_time = time.time()
+            while time.time() - handshake_start_time < CONNECTION_TIMEOUT:
+                try:
+                    ssl_connection.do_handshake()
+                    break
+                except ssl.WantReadError:
+                    select.select([ssl_connection], [], [], 1)
+                except ssl.WantWriteError:
+                    select.select([], [ssl_connection], [], 1)
+            else:
+                continue
+
+            return crypto.dump_certificate(
+                crypto.FILETYPE_PEM, ssl_connection.get_peer_certificate())
+        except (socket.error, ssl.Error):
+            continue
+        finally:
+            if ssl_connection:
+                ssl_connection.close()
+            if s:
+                s.close()
+
+    return None
+
+
+def write_certificate(cert_file, host, cert):
+    f = open(cert_file, "w")
+    f.write(cert)
+    f.write("%s:%d\n" % host)
+    f.close()
+
+
+if __name__ == "__main__":
+    certificate_files_pattern = os.path.normpath(os.path.dirname(
+        os.path.realpath(__file__)) + "/../app/src/main/res/raw/*.pem")
+    for cert_file in glob.glob(certificate_files_pattern):
+        host = read_host_information(cert_file)
+        if host is None:
+            print "Could not find host information in %s." % cert_file
+            print "This script needs to know hostname and port of the server"
+            print "from where the certificate can be retrieved. Please add"
+            print "this information in the last line of the certificate file"
+            print "(after the certificate data). Write the hostname"
+            print "information in the form 'hostname:port'."
+            print
+            continue
+
+        cert = get_pem_certificate(host)
+        if cert is None:
+            print "Failed to get certificate for %s (from %s:%d)" % (
+                cert_file, host[0], host[1])
+            print
+            continue
+
+        write_certificate(cert_file, host, cert)
