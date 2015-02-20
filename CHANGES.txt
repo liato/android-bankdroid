@@ -1,8 +1,8 @@
-v1.9.7.4: (2015-02-18)
-* Updated certificates for ICA Banken, Västtrafik, Brummer KF, Diners Club, Ikano Bank, Marginalen, Trustbuddy, Zidisha
-* Adds support for Coop's MedMera MasterCard (thanks to fredrike)
+v1.9.7.4: (2015-02-20)
+* Updated certificates for ICA Banken, Västtrafik, Brummer KF, Diners Club, Ikano Bank, Marginalen, Trustbuddy, Zidisha, AmericanExpress, TicketRikskortet
+* Adds support for Coop's MedMera-Före and MedMera-Efter (thanks to fredrike)
 * Adds support for Blekingetrafiken (thanks to fredrike)
-* Adds suport for Östgötatrafiken (thanks to robho)
+* Adds support for Östgötatrafiken (thanks to robho)
 * Adds support for point account and transactions for Coop (thanks to fredrike)
 * Adds support for Coop's MedMera Efter credit card (thanks to fredrike)
 * Adds possibility to go back to the account view from the transaction view by clicking on the logotype (thanks to fredrike)
@@ -11,6 +11,7 @@ v1.9.7.4: (2015-02-18)
 * Fix Handshake failed errors for FirstCard and PostGirot
 * Fix for credit card currency error for Nordea (thanks to Ree)
 * Fix for Västtrafik (thanks to jonasgroth) 
+* Fix balance for Avanza (thanks to fredrike)
 
 v1.9.7.3: (2014-11-21)
 * Fix for Nordea balance (thanks to sed)
