@@ -1,4 +1,4 @@
-v1.9.7.4: (2015-02-20)
+v1.9.7.4: (2015-02-21)
 * Updated certificates for ICA Banken, Västtrafik, Brummer KF, Diners Club, Ikano Bank, Marginalen, Trustbuddy, Zidisha, AmericanExpress, TicketRikskortet
 * Adds support for Coop's MedMera-Före and MedMera-Efter (thanks to fredrike)
 * Adds support for Blekingetrafiken (thanks to fredrike)
