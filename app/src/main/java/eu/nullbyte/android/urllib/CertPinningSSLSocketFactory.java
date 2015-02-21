@@ -19,6 +19,8 @@ package eu.nullbyte.android.urllib;
  * under the License.
  */
 
+import android.os.Build;
+
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.params.HttpConnectionParams;
@@ -35,6 +37,9 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -132,7 +137,7 @@ public class CertPinningSSLSocketFactory extends SSLSocketFactory {
     @Override
     public Socket createSocket() throws IOException {
         //Log.v(TAG, "createSocket()");
-        return getSSLContext().getSocketFactory().createSocket();
+        return secureSocket(getSSLContext().getSocketFactory().createSocket());
     }
 
 
@@ -145,7 +150,7 @@ public class CertPinningSSLSocketFactory extends SSLSocketFactory {
             throws IOException, UnknownHostException {
         //Log.v(TAG, "createSocket(socket: " + socket + ", host: " + host + ", port: " + port + ", autoClose: " + autoClose);
         lastHost = host;
-        return getSSLContext().getSocketFactory().createSocket(socket, host, port, autoClose);
+        return secureSocket(getSSLContext().getSocketFactory().createSocket(socket, host, port, autoClose));
     }
 
     public void setHost(String host) {
@@ -153,5 +158,29 @@ public class CertPinningSSLSocketFactory extends SSLSocketFactory {
         if (mTrustManager != null) {
             mTrustManager.setHost(host);
         }
+    }
+
+    private Socket secureSocket(Socket socket) {
+        if(!(socket instanceof SSLSocket)) {
+            return socket;
+        }
+        
+        SSLSocket vSocket = (SSLSocket) socket;
+
+        // Remove SSLv3 support.
+        // See https://code.google.com/p/android/issues/detail?id=78187
+        List<String> supportedProtocols = new ArrayList<String>(Arrays.asList(vSocket.getSupportedProtocols()));
+        supportedProtocols.remove("SSLv3");
+        vSocket.setEnabledProtocols(supportedProtocols.toArray(new String[supportedProtocols.size()]));
+
+        // Fix for supporting old servers.
+        // See https://code.google.com/p/android-developer-preview/issues/detail?id=1200#c23
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            List<String> ciphers = new ArrayList<String>(Arrays.asList(vSocket.getEnabledCipherSuites()));
+            ciphers.remove("TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA");
+            ciphers.remove("TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA");
+            vSocket.setEnabledCipherSuites(ciphers.toArray(new String[ciphers.size()]));
+        }
+        return vSocket;
     }
 }
