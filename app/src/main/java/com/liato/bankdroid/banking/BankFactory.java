@@ -29,6 +29,7 @@ import com.liato.bankdroid.banking.banks.Audi;
 import com.liato.bankdroid.banking.banks.AvanzaMini;
 import com.liato.bankdroid.banking.banks.BetterGlobe;
 import com.liato.bankdroid.banking.banks.Bioklubben;
+import com.liato.bankdroid.banking.banks.Bredband2VoIp;
 import com.liato.bankdroid.banking.banks.BrummerKF;
 import com.liato.bankdroid.banking.banks.CSN;
 import com.liato.bankdroid.banking.banks.Chalmrest;
@@ -166,13 +167,13 @@ public class BankFactory {
         case IBankTypes.SASEUROBONUSMASTERCARD_DK:
             return new EurobonusMastercardDk(context);
         case IBankTypes.RIKSLUNCHEN:
-            return new Rikslunchen(context);            
+            return new Rikslunchen(context);
         case IBankTypes.HEMKOP:
-            return new Hemkop(context);            
+            return new Hemkop(context);
         case IBankTypes.SEB:
-            return new SEB(context);            
+            return new SEB(context);
         case IBankTypes.NORDNET:
-            return new Nordnet(context);            
+            return new Nordnet(context);
         case IBankTypes.SEVENDAY:
             return new SevenDay(context);
         case IBankTypes.OSUUSPANKKI:
@@ -271,11 +272,13 @@ public class BankFactory {
             return new BlekingeTrafiken(context);
         case IBankTypes.OSTGOTATRAFIKEN:
             return new Ostgotatrafiken(context);
+         case IBankTypes.BREDBAND2VOIP:
+            return new Bredband2VoIp(context);
 		default:
 			throw new BankException("BankType id not found.");
 		}
 	}
-	
+
 
 	public static ArrayList<Bank> listBanks(Context context) {
 		ArrayList<Bank> banks = new ArrayList<Bank>();
@@ -357,9 +360,10 @@ public class BankFactory {
         banks.add(new Sparbankerna(context));
         banks.add(new BlekingeTrafiken(context));
         banks.add(new Ostgotatrafiken(context));
+        banks.add(new Bredband2VoIp(context));
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        if (prefs.getBoolean("debug_mode", false)) { 
+        if (prefs.getBoolean("debug_mode", false)) {
             banks.add(new TestBank(context));
         }
 		return banks;
@@ -381,7 +385,7 @@ public class BankFactory {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 				bank.setData(c.getString(c.getColumnIndex("username")),
 							 password,
 							 new BigDecimal(c.getString(c.getColumnIndex("balance"))),
@@ -419,7 +423,7 @@ public class BankFactory {
 			c.moveToNext();
 			try {
 				Bank bank = fromBanktypeId(c.getInt(c.getColumnIndex("banktype")), context);
-				
+
 	            String password = "";
                 try {
                     password = SimpleCrypto.decrypt(Crypto.getKey(), c.getString(c.getColumnIndex("password")));
@@ -448,12 +452,12 @@ public class BankFactory {
 		db.close();
 		return banks;
 	}
-	
+
 	public static Account accountFromDb(Context context, String accountId, boolean loadTransactions) {
 		DBAdapter db = new DBAdapter(context);
 		db.open();
 		Cursor c = db.getAccount(accountId);
-       
+
 		if (c == null || c.isClosed() || (c.isBeforeFirst() && c.isAfterLast())) {
 			db.close();
 			return null;
@@ -488,11 +492,11 @@ public class BankFactory {
 			}
 			account.setTransactions(transactions);
 		}
-		
+
 		db.close();
 		return account;
 	}
-	
+
 	public static ArrayList<Account> accountsFromDb(Context context, long bankId) {
 		ArrayList<Account> accounts = new ArrayList<Account>();
 		DBAdapter db = new DBAdapter(context);
@@ -511,7 +515,7 @@ public class BankFactory {
                                               c.getLong(c.getColumnIndex("bankid")),
                                               c.getInt(c.getColumnIndex("acctype")));
     	        account.setHidden(c.getInt(c.getColumnIndex("hidden")) == 1 ? true : false);
-    	        account.setNotify(c.getInt(c.getColumnIndex("notify")) == 1 ? true : false);			
+    	        account.setNotify(c.getInt(c.getColumnIndex("notify")) == 1 ? true : false);
                 account.setCurrency(c.getString(c.getColumnIndex("currency")));
                 account.setAliasfor(c.getString(c.getColumnIndex("aliasfor")));
     			accounts.add(account);
@@ -524,5 +528,5 @@ public class BankFactory {
 		db.close();
 		return accounts;
 	}
-	
+
 }
