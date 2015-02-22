@@ -36,7 +36,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.liato.bankdroid.Helpers;
-import com.liato.bankdroid.R;
+import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;

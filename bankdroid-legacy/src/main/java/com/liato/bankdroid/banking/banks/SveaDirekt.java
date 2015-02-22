@@ -4,7 +4,7 @@ import android.content.Context;
 import android.text.InputType;
 import android.util.Log;
 
-import com.liato.bankdroid.R;
+import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.Bank;

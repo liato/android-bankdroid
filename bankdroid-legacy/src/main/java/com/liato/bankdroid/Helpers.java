@@ -36,6 +36,8 @@ import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
+import com.liato.bankdroid.legacy.R;
+
 public class Helpers {
 	private static String USER_AGENT;
     private final static String[] currencies = {"AED", "AFN", "ALL", "AMD", "ANG", "AOA", "ARS", "AUD",

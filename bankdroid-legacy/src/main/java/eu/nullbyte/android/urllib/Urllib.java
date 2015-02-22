@@ -24,8 +24,7 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.preference.PreferenceManager;
 
-import com.liato.bankdroid.BuildConfig;
-import com.liato.bankdroid.R;
+import com.liato.bankdroid.legacy.R;
 
 import org.apache.http.ConnectionReuseStrategy;
 import org.apache.http.HttpEntity;

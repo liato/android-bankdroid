@@ -36,13 +36,13 @@ import android.text.Html;
 import android.util.Log;
 
 import com.liato.bankdroid.Helpers;
-import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.provider.IBankTypes;
 
 import eu.nullbyte.android.urllib.CertificateReader;
