@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">bankdroid-legacy</string>
+    <string name="app_name">bankdroid</string>
 
     <string name="username">Username</string>
     <string name="password">Password</string>
