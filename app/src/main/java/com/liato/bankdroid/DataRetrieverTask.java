@@ -34,6 +34,7 @@ import com.liato.bankdroid.banking.BankFactory;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.db.DBAdapter;
 
 public class DataRetrieverTask extends AsyncTask<String, String, Void> {
     private final static String TAG = "DataRetrieverTask";
@@ -87,7 +88,7 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
 				bank.update();
 				bank.updateAllTransactions();
 				bank.closeConnection();
-				bank.save();
+				DBAdapter.save(bank, parent);
 				i++;
 			} catch (final BankException e) {
 				this.errors.add(bank.getName() + " (" + bank.getUsername()
@@ -95,7 +96,7 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
 			} catch (final LoginException e) {
 				this.errors.add(bank.getName() + " (" + bank.getUsername()
 						+ ")");
-				bank.disable();
+				DBAdapter.disable(bank, parent);
 			}
             catch (BankChoiceException e) {
                 this.errors.add(bank.getName() + " (" + bank.getUsername()

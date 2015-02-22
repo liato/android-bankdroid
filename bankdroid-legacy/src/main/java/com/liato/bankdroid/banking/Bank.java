@@ -38,7 +38,6 @@ import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
-import com.liato.bankdroid.db.DBAdapter;
 import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.provider.IBankTypes;
 
@@ -236,12 +235,6 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         return disabled;
     }
 
-    public void disable() {
-        DBAdapter db = new DBAdapter(context);
-        db.open();
-        db.disableBank(dbid);
-        db.close();
-    }
 
     public void setDisabled(boolean disabled) {
         this.disabled = disabled;
@@ -254,13 +247,6 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public void save() {
-        DBAdapter db = new DBAdapter(context);
-        db.open();
-        dbid = db.updateBank(this); // Update ID on insert as well.
-        db.close();
     }
 
     public String getURL() {
