@@ -166,13 +166,13 @@ public class BankFactory {
         case IBankTypes.SASEUROBONUSMASTERCARD_DK:
             return new EurobonusMastercardDk(context);
         case IBankTypes.RIKSLUNCHEN:
-            return new Rikslunchen(context);            
+            return new Rikslunchen(context);
         case IBankTypes.HEMKOP:
-            return new Hemkop(context);            
+            return new Hemkop(context);
         case IBankTypes.SEB:
-            return new SEB(context);            
+            return new SEB(context);
         case IBankTypes.NORDNET:
-            return new Nordnet(context);            
+            return new Nordnet(context);
         case IBankTypes.SEVENDAY:
             return new SevenDay(context);
         case IBankTypes.OSUUSPANKKI:
@@ -275,7 +275,7 @@ public class BankFactory {
 			throw new BankException("BankType id not found.");
 		}
 	}
-	
+
 
 	public static ArrayList<Bank> listBanks(Context context) {
 		ArrayList<Bank> banks = new ArrayList<Bank>();
@@ -381,7 +381,7 @@ public class BankFactory {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 				bank.setData(c.getString(c.getColumnIndex("username")),
 							 password,
 							 new BigDecimal(c.getString(c.getColumnIndex("balance"))),
@@ -419,7 +419,7 @@ public class BankFactory {
 			c.moveToNext();
 			try {
 				Bank bank = fromBanktypeId(c.getInt(c.getColumnIndex("banktype")), context);
-				
+
 	            String password = "";
                 try {
                     password = SimpleCrypto.decrypt(Crypto.getKey(), c.getString(c.getColumnIndex("password")));
@@ -448,12 +448,12 @@ public class BankFactory {
 		db.close();
 		return banks;
 	}
-	
+
 	public static Account accountFromDb(Context context, String accountId, boolean loadTransactions) {
 		DBAdapter db = new DBAdapter(context);
 		db.open();
 		Cursor c = db.getAccount(accountId);
-       
+
 		if (c == null || c.isClosed() || (c.isBeforeFirst() && c.isAfterLast())) {
 			db.close();
 			return null;
@@ -488,11 +488,11 @@ public class BankFactory {
 			}
 			account.setTransactions(transactions);
 		}
-		
+
 		db.close();
 		return account;
 	}
-	
+
 	public static ArrayList<Account> accountsFromDb(Context context, long bankId) {
 		ArrayList<Account> accounts = new ArrayList<Account>();
 		DBAdapter db = new DBAdapter(context);
@@ -511,7 +511,7 @@ public class BankFactory {
                                               c.getLong(c.getColumnIndex("bankid")),
                                               c.getInt(c.getColumnIndex("acctype")));
     	        account.setHidden(c.getInt(c.getColumnIndex("hidden")) == 1 ? true : false);
-    	        account.setNotify(c.getInt(c.getColumnIndex("notify")) == 1 ? true : false);			
+    	        account.setNotify(c.getInt(c.getColumnIndex("notify")) == 1 ? true : false);
                 account.setCurrency(c.getString(c.getColumnIndex("currency")));
                 account.setAliasfor(c.getString(c.getColumnIndex("aliasfor")));
     			accounts.add(account);
@@ -524,5 +524,5 @@ public class BankFactory {
 		db.close();
 		return accounts;
 	}
-	
+
 }
