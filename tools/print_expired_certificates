@@ -1,8 +1,0 @@
-#!/bin/sh
-
-for cert in `dirname $0`/../app/src/main/res/raw/*.pem; do
-  EXPIRE_DATE=`openssl x509 -in "$cert" -noout -enddate | sed -e 's/notAfter=\(.*\)/\1/g'`
-  if [ `date --date="$EXPIRE_DATE" "+%s"` -lt `date "+%s"` ]; then
-    echo `basename $cert`: $EXPIRE_DATE
-  fi
-done

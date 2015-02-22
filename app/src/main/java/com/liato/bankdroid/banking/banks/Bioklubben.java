@@ -40,7 +40,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Bioklubben extends Bank {
@@ -73,7 +72,7 @@ public class Bioklubben extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
-        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_bioklubben));
+        urlopen = new Urllib(context);
         urlopen.setAllowCircularRedirects(true);
         response = urlopen.open("http://bioklubben.sf.se/Start.aspx");
 
