@@ -35,11 +35,11 @@ import android.text.InputType;
 import android.util.Log;
 
 import com.liato.bankdroid.Helpers;
-import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.db.DBAdapter;
+import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.provider.IBankTypes;
 
 import eu.nullbyte.android.urllib.Urllib;

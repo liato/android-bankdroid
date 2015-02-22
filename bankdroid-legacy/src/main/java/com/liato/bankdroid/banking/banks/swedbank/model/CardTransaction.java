@@ -1,25 +1,23 @@
 package com.liato.bankdroid.banking.banks.swedbank.model;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Transaction {
+public class CardTransaction {
 
     @JsonProperty
     private String date;
 
     @JsonProperty
-    private BigDecimal amount;
-
-    @JsonProperty
     private String description;
 
     @JsonProperty
-    private String currency;
+    private Amount foreignAmount;
+
+    @JsonProperty
+    private Amount localAmount;
 
     public String getDate() {
         return date;
@@ -27,14 +25,6 @@ public class Transaction {
 
     public void setDate(String date) {
         this.date = date;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
     }
 
     public String getDescription() {
@@ -45,11 +35,19 @@ public class Transaction {
         this.description = description;
     }
 
-    public String getCurrency() {
-        return currency;
+    public Amount getForeignAmount() {
+        return foreignAmount;
     }
 
-    public void setCurrency(String currency) {
-        this.currency = currency;
+    public void setForeignAmount(Amount foreignAmount) {
+        this.foreignAmount = foreignAmount;
+    }
+
+    public Amount getLocalAmount() {
+        return localAmount;
+    }
+
+    public void setLocalAmount(Amount localAmount) {
+        this.localAmount = localAmount;
     }
 }

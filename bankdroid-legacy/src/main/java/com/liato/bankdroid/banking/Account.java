@@ -17,7 +17,6 @@
 package com.liato.bankdroid.banking;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.liato.bankdroid.provider.IAccountTypes;
