@@ -121,12 +121,14 @@ public class Avanza extends Bank {
                 if (!account.getPositionAggregations().isEmpty()) {
                     Date now = new Date();
                     for (com.liato.bankdroid.banking.banks.avanza.model.CurrencyAccount currencyAccount :  account.getCurrencyAccounts()) {
-                        accounts.add(new Account("\u2014  " + account.getAccountId() + ",  " +
+                        Account b = new Account("\u2014  " + account.getAccountId() + ",  " +
                                 currencyAccount.getCurrency(),
                                 new BigDecimal(currencyAccount.getBalance()),
                                 account.getAccountId() + currencyAccount.getCurrency(),
                                 Account.OTHER,
-                                currencyAccount.getCurrency()));
+                                currencyAccount.getCurrency());
+                        b.setHidden(true);
+                        accounts.add(b);
                     }
                     for (PositionAggregation positionAgList : account.getPositionAggregations()) {
                         if (positionAgList.getPositions().isEmpty()) {
@@ -138,6 +140,7 @@ public class Avanza extends Bank {
                                 new BigDecimal(positionAgList.getTotalValue()),
                                 account.getAccountId() + positionAgList.getInstrumentTypeName(),
                                 Account.OTHER, a.getCurrency());
+                        b.setHidden(true);
                         ArrayList<Transaction> transactions = new ArrayList<Transaction>();
                         for (Position p : positionAgList.getPositions()) {
                             transactions.add(new Transaction(Helpers.formatDate(now),
@@ -158,6 +161,8 @@ public class Avanza extends Bank {
             throw new BankException(e.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
+            throw new BankException(e.getMessage());
+        } catch (Exception e) {
             throw new BankException(e.getMessage());
         }
         return urlopen;
