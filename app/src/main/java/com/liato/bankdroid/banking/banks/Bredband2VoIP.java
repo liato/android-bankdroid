@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
-public class Bredband2VoIp extends Bank {
+public class Bredband2VoIP extends Bank {
     private static final String API_URL = "https://portal.bredband2.com/";
 
     private Pattern reSaldoUrl = Pattern.compile("<a href=\"/voip/digisipbalance/iPhoneProviderID/(\\d+)/\" class=\"digisipBalance\" target=\"_blank\">Saldo</a>", Pattern.CASE_INSENSITIVE);
@@ -53,17 +53,17 @@ public class Bredband2VoIp extends Bank {
     private Pattern reTransactions = Pattern.compile("^\\s+([\\d-]+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)", Pattern.MULTILINE);
     private String response = null;
 
-    public Bredband2VoIp(Context context) {
+    public Bredband2VoIP(Context context) {
         super(context);
-        TAG = "Bredband2VoIp";
-        NAME = "Bredband2 VoIp";
+        TAG = "Bredband2VoIP";
+        NAME = "Bredband2 VoIP";
         NAME_SHORT = "bredband2voip";
         BANKTYPE_ID = IBankTypes.BREDBAND2VOIP;
         super.INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
         super.INPUT_HINT_USERNAME = "19XXXXXX-XXXX";
     }
 
-    public Bredband2VoIp(String username, String password, Context context)
+    public Bredband2VoIP(String username, String password, Context context)
             throws BankException, LoginException, BankChoiceException {
         this(context);
         this.update(username, password);
@@ -71,25 +71,27 @@ public class Bredband2VoIp extends Bank {
 
     @Override
     protected LoginPackage preLogin() throws BankException,
-        ClientProtocolException, IOException {
+            ClientProtocolException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_bredband2));
-        urlopen.setAllowCircularRedirects(true);
-        urlopen.setContentCharset(HTTP.ISO_8859_1);
-        List<NameValuePair> postData = new ArrayList <NameValuePair>();
+        List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("cUsername", username));
         postData.add(new BasicNameValuePair("cPassword", password));
         postData.add(new BasicNameValuePair("bIsCompany", "0"));
         postData.add(new BasicNameValuePair("submit", "Logga in"));
-        return new LoginPackage(urlopen, postData, response, API_URL + "index/");
+        response = urlopen.open(API_URL + "index/", postData, true);
+        if (!response.contains("Logga ut")) {
+            throw new BankException(res.getText(R.string.invalid_username_password).toString());
+        }
+        LoginPackage lp = new LoginPackage(urlopen, postData, response, API_URL + "index/");
+        lp.setIsLoggedIn(true);
+        return lp;
     }
 
     @Override
     public Urllib login() throws LoginException, BankException {
         try {
             LoginPackage lp = preLogin();
-            response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-
-            if (!response.contains("Logga ut")) {
+            if (!lp.isLoggedIn()) {
                 throw new LoginException(res.getText(R.string.invalid_username_password).toString());
             }
         } catch (ClientProtocolException e) {
@@ -114,7 +116,7 @@ public class Bredband2VoIp extends Bank {
                 String account = mSaldoUrl.group(1);
                 String r = urlopen.open(API_URL + "voip/digisipbalance/iPhoneProviderID/" + account + "/");
                 Matcher mSaldo = reSaldo.matcher(r);
-                if(mSaldo.find()) {
+                if (mSaldo.find()) {
                     accounts.add(new Account(account,
                             Helpers.parseBalance(mSaldo.group(1)),
                             account));
@@ -140,13 +142,12 @@ public class Bredband2VoIp extends Bank {
                     String url = mInvoiceUrl.group(1);
                     String sInvoice = urlopen.open(API_URL + url);
                     Matcher mTransaction = reTransactions.matcher(sInvoice);
-                    while(mTransaction.find()) {
+                    while (mTransaction.find()) {
                         transactions.add(new Transaction(mTransaction.group(2),
                                 mTransaction.group(1) + "  —  " + mTransaction.group(4),
                                 Helpers.parseBalance(mTransaction.group(5)).negate()));
                     }
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     Log.w(TAG, "Unable to parse: " + mInvoiceUrl.group(1));
                 }
             }
