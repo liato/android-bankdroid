@@ -81,7 +81,7 @@ public class MainActivity extends LockableActivity {
 				} else if (adapter.getItem(position) instanceof Bank) {
 					selected_bank = (Bank) adapter.getItem(position);
 					selected_bank.toggleHideAccounts();
-					selected_bank.save();
+					DBAdapter.save(selected_bank, MainActivity.this);
 					refreshView();
 					return true;
 				}
@@ -271,7 +271,7 @@ public class MainActivity extends LockableActivity {
 			case R.id.btnUnhide:
 				this.dismiss();
 				selected_bank.toggleHideAccounts();
-				selected_bank.save();
+				DBAdapter.save(selected_bank, context);
 				parent.refreshView();
 				return;
 			case R.id.btnWWW:
@@ -379,25 +379,25 @@ public class MainActivity extends LockableActivity {
 			case R.id.btnHide:
 				this.dismiss();
 				selected_account.setHidden(true);
-				selected_account.getBank().save();
+				DBAdapter.save(selected_account.getBank(), parent);
 				parent.refreshView();
 				return;
 			case R.id.btnUnhide:
 				this.dismiss();
 				selected_account.setHidden(false);
-				selected_account.getBank().save();
+				DBAdapter.save(selected_account.getBank(), parent);
 				parent.refreshView();
 				return;
 			case R.id.btnEnableNotifications:
 				this.dismiss();
 				selected_account.setNotify(true);
-				selected_account.getBank().save();
+				DBAdapter.save(selected_account.getBank(), parent);
 				parent.refreshView();
 				return;
 			case R.id.btnDisableNotifications:
 				this.dismiss();
 				selected_account.setNotify(false);
-				selected_account.getBank().save();
+				DBAdapter.save(selected_account.getBank(), parent);
 				parent.refreshView();
 				return;
 
