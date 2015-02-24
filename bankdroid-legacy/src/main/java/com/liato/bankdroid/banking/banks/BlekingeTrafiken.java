@@ -40,7 +40,7 @@ public class BlekingeTrafiken extends Bank {
     private static final String TAG = "Blekingetrafiken";
     private static final String NAME = "Blekingetrafiken";
     private static final String NAME_SHORT = "blekingetrafiken";
-    private static final String URL = "https://www.blekingetrafiken.se/webshop/card/balance/";
+    private static final String URL = "https://www.blekingetrafiken.se";
     private static final int BANKTYPE_ID = IBankTypes.BLEKINGETRAFIKEN;
     private String response = null;
 
@@ -68,15 +68,17 @@ public class BlekingeTrafiken extends Bank {
     protected LoginPackage preLogin() throws BankException,
             IOException {
         urlopen = new Urllib(context);
-        urlopen.addHeader("Content-Type","application/json;charset=UTF-8");
-        urlopen.addHeader("Accept","application/json");
-        return new LoginPackage(urlopen, null , null, URL);
+        LoginPackage lp = new LoginPackage(urlopen, null, null, URL);
+        lp.setIsLoggedIn(true); //Well we don't support logging in ATM.
+        return lp;
     }
 
     public Urllib login() throws LoginException, BankException {
         try {
             LoginPackage lp = preLogin();
-            HttpResponse httpResponse = urlopen.openAsHttpResponse(URL,
+            urlopen.addHeader("Content-Type","application/json;charset=UTF-8");
+            urlopen.addHeader("Accept","application/json");
+            HttpResponse httpResponse = urlopen.openAsHttpResponse(URL + "/webshop/card/balance/",
                     new StringEntity("{\"cardnr\":\"" + username + "\"}"), true);
             if(httpResponse.getStatusLine().getStatusCode() != 200) {
                 throw new LoginException(res.getText(R.string.invalid_card_number).toString());
