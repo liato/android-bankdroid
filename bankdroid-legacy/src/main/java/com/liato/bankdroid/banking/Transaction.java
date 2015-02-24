@@ -71,6 +71,6 @@ public class Transaction implements Comparable<Transaction> {
 	public int compareTo(Transaction another) {
 		Integer thisdate = Integer.parseInt(date.replaceAll("-", ""));
 		Integer thatdate = Integer.parseInt((another).getDate().replaceAll("-", ""));
-		return thisdate - thatdate;
+		return thatdate - thisdate;
 	}
 }

@@ -32,6 +32,7 @@ import com.liato.bankdroid.banking.BankFactory;
 import com.liato.bankdroid.banking.Transaction;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class TransactionsActivity extends LockableActivity {
@@ -56,7 +57,8 @@ public class TransactionsActivity extends LockableActivity {
         icon.setImageResource(bank.getImageResource());
         List<Transaction> transactions = account.getTransactions();
 
-        if (transactions.size() > 0) {
+        if (!transactions.isEmpty()) {
+            Collections.sort(transactions);
             findViewById(R.id.txtTranDesc).setVisibility(View.GONE);
             TransactionsAdapter adapter = new TransactionsAdapter(transactions);
             ListView viewTransactionsList = (ListView) findViewById(R.id.lstTransactionsList);
