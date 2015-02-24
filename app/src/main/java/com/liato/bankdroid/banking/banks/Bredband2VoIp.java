@@ -140,14 +140,11 @@ public class Bredband2VoIp extends Bank {
                     String url = mInvoiceUrl.group(1);
                     String sInvoice = urlopen.open(API_URL + url);
                     Matcher mTransaction = reTransactions.matcher(sInvoice);
-                    ArrayList<Transaction> tr = new ArrayList<Transaction>();
                     while(mTransaction.find()) {
-                        tr.add(0, new Transaction(mTransaction.group(2),
+                        transactions.add(new Transaction(mTransaction.group(2),
                                 mTransaction.group(1) + "  —  " + mTransaction.group(4),
                                 Helpers.parseBalance(mTransaction.group(5)).negate()));
                     }
-                    //Needed as the list is in reverse order.
-                    transactions.addAll(tr);
                 }
                 catch (Exception e) {
                     Log.w(TAG, "Unable to parse: " + mInvoiceUrl.group(1));
