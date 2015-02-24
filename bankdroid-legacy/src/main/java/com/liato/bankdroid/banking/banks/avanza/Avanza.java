@@ -38,6 +38,9 @@ import com.liato.bankdroid.provider.IBankTypes;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -56,15 +59,36 @@ public class Avanza extends Bank {
         TAG = "Avanza";
         NAME = "Avanza";
         NAME_SHORT = "avanza";
-        URL = "https://www.avanza.se/";
+        URL = "https://iphone.avanza.se";
         BANKTYPE_ID = IBankTypes.AVANZA;
-//        STATIC_BALANCE = true;
     }
 
     public Avanza(String username, String password, Context context)
             throws BankException, LoginException, BankChoiceException {
         this(context);
         this.update(username, password);
+    }
+
+    @Override
+    protected LoginPackage preLogin() throws BankException,
+            ClientProtocolException, IOException {
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_avanza));
+        urlopen.addHeader("Referer", URL + "/start");
+        List<NameValuePair> postData = new ArrayList<NameValuePair>();
+        postData.add(new BasicNameValuePair("j_username", username));
+        postData.add(new BasicNameValuePair("j_password", password));
+        postData.add(new BasicNameValuePair("url", URL + "/start"));
+        String response = urlopen.open(URL + "/ab/handlelogin", postData);
+        String homeUrl = "";
+        try {
+            JSONObject jsonResponse = new JSONObject(response);
+            homeUrl = jsonResponse.getString("redirectUrl");
+        } catch (JSONException e) {
+            throw new BankException(res.getString(R.string.invalid_username_password));
+        }
+        LoginPackage lp = new LoginPackage(urlopen, postData, "", URL + homeUrl);
+        lp.setIsLoggedIn(true);
+        return lp;
     }
 
     public Urllib login() throws LoginException, BankException {
@@ -89,7 +113,7 @@ public class Avanza extends Bank {
                 if (!account.getPositionAggregations().isEmpty()) {
                     Date now = new Date();
                     ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-                    for (com.liato.bankdroid.banking.banks.avanza.model.CurrencyAccount currencyAccount :  account.getCurrencyAccounts()) {
+                    for (com.liato.bankdroid.banking.banks.avanza.model.CurrencyAccount currencyAccount : account.getCurrencyAccounts()) {
                         transactions.add(new Transaction(Helpers.formatDate(now),
                                 "\u2014  " + currencyAccount.getCurrency() + "  \u2014",
                                 BigDecimal.valueOf(currencyAccount.getBalance()),
@@ -120,24 +144,27 @@ public class Avanza extends Bank {
                 // Add subtypes for account as own account.
                 if (!account.getPositionAggregations().isEmpty()) {
                     Date now = new Date();
-                    for (com.liato.bankdroid.banking.banks.avanza.model.CurrencyAccount currencyAccount :  account.getCurrencyAccounts()) {
-                        accounts.add(new Account("\u2014  " + account.getAccountId() + ",  " +
+                    for (com.liato.bankdroid.banking.banks.avanza.model.CurrencyAccount currencyAccount : account.getCurrencyAccounts()) {
+                        Account b = new Account("\u2014  " + account.getAccountId() + ",  " +
                                 currencyAccount.getCurrency(),
                                 new BigDecimal(currencyAccount.getBalance()),
                                 account.getAccountId() + currencyAccount.getCurrency(),
                                 Account.OTHER,
-                                currencyAccount.getCurrency()));
+                                currencyAccount.getCurrency());
+                        b.setHidden(true);
+                        accounts.add(b);
                     }
                     for (PositionAggregation positionAgList : account.getPositionAggregations()) {
                         if (positionAgList.getPositions().isEmpty()) {
                             continue;
                         }
                         Account b = new Account("\u2014  " + account.getAccountId() + ",  " +
-                                    positionAgList.getInstrumentTypeName() +
-                                    "  " + positionAgList.getTotalProfitPercent() + "% ",
+                                positionAgList.getInstrumentTypeName() +
+                                "  " + positionAgList.getTotalProfitPercent() + "% ",
                                 new BigDecimal(positionAgList.getTotalValue()),
                                 account.getAccountId() + positionAgList.getInstrumentTypeName(),
                                 Account.OTHER, a.getCurrency());
+                        b.setHidden(true);
                         ArrayList<Transaction> transactions = new ArrayList<Transaction>();
                         for (Position p : positionAgList.getPositions()) {
                             transactions.add(new Transaction(Helpers.formatDate(now),
@@ -158,6 +185,8 @@ public class Avanza extends Bank {
             throw new BankException(e.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
+            throw new BankException(e.getMessage());
+        } catch (Exception e) {
             throw new BankException(e.getMessage());
         }
         return urlopen;
