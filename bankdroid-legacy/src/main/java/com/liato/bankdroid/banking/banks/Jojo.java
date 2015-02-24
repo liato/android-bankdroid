@@ -17,7 +17,6 @@
 package com.liato.bankdroid.banking.banks;
 
 import android.content.Context;
-import android.text.InputType;
 
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.legacy.R;
@@ -37,6 +36,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,8 +47,10 @@ public class Jojo extends Bank {
     private static final String TAG = "Jojo";
     private static final String NAME = "Jojo Reskassa";
     private static final String NAME_SHORT = "jojo";
-    private static final String URL = "https://www.skanetrafiken.se/templates/MSRootPage.aspx?id=2935&epslanguage=SV";
+    private static final String URL = "https://www.shop.skanetrafiken.se";
     private static final int BANKTYPE_ID = IBankTypes.JOJO;
+
+    private static final String NAME_NOT_SET = "KortnamnSaknas";
 
     private String response = null;
 
@@ -59,9 +61,7 @@ public class Jojo extends Bank {
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;
         super.URL = URL;
-        super.INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
-        super.INPUT_TITLETEXT_USERNAME = R.string.card_number;
-        super.INPUT_TITLETEXT_PASSWORD = R.string.cvc;
+        super.INPUT_TITLETEXT_USERNAME = R.string.email;
     }
 
     public Jojo(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
@@ -69,24 +69,25 @@ public class Jojo extends Bank {
         this.update(username, password);
     }
 
-
     @Override
     protected LoginPackage preLogin() throws BankException,
             IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_jojo));
+
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("cardno", username));
-        postData.add(new BasicNameValuePair("backno", password));
-        postData.add(new BasicNameValuePair("ST_CHECK_SALDO", "Se saldo"));
-        return new LoginPackage(urlopen, postData, response, "https://www.shop.skanetrafiken.se/kollasaldo.html");
+        postData.add(new BasicNameValuePair("GOTO", "/mobile/minakort.html"));
+        postData.add(new BasicNameValuePair("login", username));
+        postData.add(new BasicNameValuePair("password", password));
+        postData.add(new BasicNameValuePair("CUSTOMER_LOGIN", "LOGGA IN"));
+        return new LoginPackage(urlopen, postData, response, URL + "/mobile/customer.html");
     }
 
     public Urllib login() throws LoginException, BankException {
         try {
             LoginPackage lp = preLogin();
             response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-            if (response.contains("Kortnumret finns inte.")) {
-                throw new LoginException(res.getText(R.string.invalid_card_number).toString());
+            if (!response.contains("[Logga ut]")) {
+                throw new LoginException(res.getText(R.string.invalid_username_password).toString());
             }
         } catch (ClientProtocolException e) {
             throw new BankException(e.getMessage());
@@ -103,23 +104,17 @@ public class Jojo extends Bank {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();
+
         Document d = Jsoup.parse(response);
-
-        Elements es = d.select(".saldo_ok_wrapper > table > tbody tr");
-        if (es != null) {
-            for (int i = 0; i < 2; i++) {
-
-                int index = 0+i;
-                if (es.size()>=index) {
-                    Element e = es.get(index);
-                    Element name = e.select(".first").first();
-                    Element amount = e.select(".right").first();
-                    if (name != null && amount != null) {
-                        Account a = new Account(name.text().replaceAll(":", "").trim(), Helpers.parseBalance(amount.text()), Integer.toString(i));
-                        accounts.add(a);
-                        balance = balance.add(a.getBalance());
-                    }
-                }
+        Elements cards = d.select(".my_cards_allinfo table tbody");
+        if (!cards.isEmpty()) {
+            for(Element card : cards) {
+                String cardNumber = card.select("tr:first-child td").text().trim();
+                BigDecimal saldo = getSaldo(cardNumber);
+                String name = card.select("tr:nth-child(2) td").text().trim();
+                String displayName = NAME_NOT_SET.equals(name) ? cardNumber : name;
+                accounts.add(new Account(displayName, saldo, cardNumber));
+                balance = balance.add(saldo);
             }
         }
 
@@ -127,5 +122,24 @@ public class Jojo extends Bank {
             throw new BankException(res.getText(R.string.no_accounts_found).toString());
         }
         super.updateComplete();
+    }
+
+
+    private BigDecimal getSaldo(String cardNumber) {
+        List<NameValuePair> postData = new ArrayList<NameValuePair>();
+        postData.add(new BasicNameValuePair("cardno", cardNumber));
+        postData.add(new BasicNameValuePair("fromlist","1"));
+        postData.add(new BasicNameValuePair("ST_CHECK_SALDO", "1"));
+        try {
+            String saldoData = urlopen.open(URL + "/saldodata.html",postData,true);
+            Document saldoDocument = Jsoup.parse(saldoData);
+            Elements saldo = saldoDocument.select("td.greenrow.right h3");
+            if(!saldo.isEmpty()) {
+                return Helpers.parseBalance(saldo.first().text().trim());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return BigDecimal.ZERO;
     }
 }
