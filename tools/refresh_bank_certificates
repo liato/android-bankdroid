@@ -88,7 +88,7 @@ def write_certificate(cert_file, host, cert):
 
 if __name__ == "__main__":
     certificate_files_pattern = os.path.normpath(os.path.dirname(
-        os.path.realpath(__file__)) + "/../app/src/main/res/raw/*.pem")
+        os.path.realpath(__file__)) + "/../bankdroid-legacy/src/main/res/raw/*.pem")
     for cert_file in glob.glob(certificate_files_pattern):
         host = read_host_information(cert_file)
         if host is None:
