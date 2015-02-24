@@ -53,6 +53,7 @@ import com.liato.bankdroid.banking.BankFactory;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.db.DBAdapter;
 
 public class BankEditActivity extends LockableActivity implements OnClickListener, OnItemSelectedListener {
 	private final static String TAG = "BankEditActivity";
@@ -233,7 +234,7 @@ public class BankEditActivity extends LockableActivity implements OnClickListene
 				bank.update();
 				bank.updateAllTransactions();
 				bank.closeConnection();
-				bank.save();
+				DBAdapter.save(bank, context);
 
 				// Transactions updated.
 				final SharedPreferences prefs = PreferenceManager

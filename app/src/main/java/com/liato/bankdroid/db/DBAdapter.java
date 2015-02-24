@@ -221,6 +221,28 @@ public class DBAdapter {
     	}
 		return c;
     }
-    
+
+    /**
+    * @deprecated Only used during refactoring. Should be removed before next major version (2.0)
+    */
+    @Deprecated
+    public static void save(Bank bank, Context context) {
+        DBAdapter db = new DBAdapter(context);
+        db.open();
+        long id = db.updateBank(bank);
+        db.close();
+        bank.setDbid(id);
+    }
+
+    /**
+    * @deprecated Only used during refactoring. Should be removed before next major version (2.0)
+    */
+    @Deprecated
+    public static void disable(Bank bank, Context context) {
+                    DBAdapter db = new DBAdapter(context);
+                    db.open();
+                    db.disableBank(bank.getDbId());
+                    db.close();
+               }
 
 }

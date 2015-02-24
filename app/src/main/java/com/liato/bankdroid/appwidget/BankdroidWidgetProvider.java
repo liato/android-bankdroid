@@ -43,6 +43,7 @@ import com.liato.bankdroid.banking.BankFactory;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.db.DBAdapter;
 
 public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 	private final static String TAG = "BankdroidWidgetProvider";
@@ -363,7 +364,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 						    bank.updateAllTransactions();
 						}
 						bank.closeConnection();
-						bank.save();
+						DBAdapter.save(bank, context);
 					}
 
 				} 
@@ -371,7 +372,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
     				Log.e(TAG, "Error while updating bank '"+bank.getDbId()+"'; "+e.getMessage());
 				} catch (LoginException e) {
 					Log.e("", "Disabling bank: "+bank.getDbId());
-					bank.disable();
+					DBAdapter.disable(bank,context);
 				}
                 catch (BankChoiceException e) {
                     Log.e(TAG, "Error while updating bank '"+bank.getDbId()+"'; "+e.getMessage());
