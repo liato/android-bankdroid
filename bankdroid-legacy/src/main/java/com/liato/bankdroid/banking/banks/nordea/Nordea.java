@@ -164,7 +164,7 @@ public class Nordea extends Bank {
     );
     
     private Pattern reAccountSelect = Pattern.compile("<select[^>]+name=\"transactionaccount\"[^>]*>(.*?)</select>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-    private Pattern reAccountOption = Pattern.compile("<option[^>]+value=\"([\\d]+)\"[^>]*>.*?([*\\d]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private Pattern reAccountOption = Pattern.compile("<option[^>]+value=\"([\\d]+)\"[^>]*>.*?(\\*{12}\\d{4})", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     
     // Nordea generates unique urls on each page load and serves content from session info,
     // so we need to find new links in lastResponse after each page load.
