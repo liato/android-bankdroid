@@ -1,3 +1,13 @@
+v1.9.8.0 (2015-02-25)
+* Adds support for Bredband2's VoIP service (thanks to fredrike)
+* Adds support for multiple travel cards for JoJo Reskassa
+* Sets subaccounts for Avanza to hidden by default (thanks to fredrike)
+* Order transactions by descending date
+* Fixes www login for Blekingetrafiken (thanks to fredrike)
+* Fixes www login for Avanza (thanks to fredrike)
+* Updated certificate for Östgötatrafiken
+* Removes support for Handelsbanken, SEB, Chevrolet, Djurgarden, EurobonusMastercard, EurobonusMastercardDk, EurobonusMastercardNo, Eurocard, Opel, Quintessentially, SJPrio, Saab, Statoil, Wallet because they now requires BankId.
+
 v1.9.7.4: (2015-02-21)
 * Updated certificates for ICA Banken, Västtrafik, Brummer KF, Diners Club, Ikano Bank, Marginalen, Trustbuddy, Zidisha, AmericanExpress, TicketRikskortet
 * Adds support for Coop's MedMera-Före and MedMera-Efter (thanks to fredrike)
