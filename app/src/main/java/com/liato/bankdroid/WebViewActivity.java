@@ -121,6 +121,7 @@ public class WebViewActivity extends LockableActivity implements OnClickListener
                         public void run() {
                             if ((cookieStore != null) && !cookieStore.getCookies().isEmpty()) {
                                 CookieManager cookieManager = CookieManager.getInstance();
+                                CookieManager.getInstance().removeSessionCookie();
                                 String cookieString;
                                 for (Cookie cookie : cookieStore.getCookies()) {
                                     cookieString = String.format("%s=%s;%spath=%s; domain=%s;",
