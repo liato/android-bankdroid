@@ -61,7 +61,7 @@ public class Volvofinans extends Bank {
 	private static final int BANKTYPE_ID = IBankTypes.VOLVOFINANS;
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅÅÅMMDDXXXX";
-    private static SimpleDateFormat DATE_PARSER = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
+    private static SimpleDateFormat DATE_PARSER = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy", Locale.UK);
     private static SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd", new Locale("sv_SE"));
     private HashMap<String, String> mAccountUrlMappings = new HashMap<String, String>();
     
