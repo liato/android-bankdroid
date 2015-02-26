@@ -12,28 +12,33 @@ android {
         versionName "1.9.8.0-RC2"
     }
 
-    final Console console = System.console();
-    if (console != null) {
+    signingConfigs {
+        release {
+            storeFile file("release.keystore")
+            storePassword ""
+            keyAlias "andmrkt"
+            keyPassword ""
+        }
+    }
 
-        // Building from console
-        signingConfigs {
-            release {
-                storeFile file("release.keystore")
-                storePassword console.readLine("\nEnter keystore password: ")
-                keyAlias "andmrkt"
-                keyPassword console.readLine("Enter key password: ")
+    // Get signing keys for release
+    gradle.taskGraph.whenReady { taskGraph ->
+        if(taskGraph.hasTask(':app:assembleRelease')) {
+            if(System.console() != null) { 
+                def keystorePassword = System.console().readPassword("\nEnter keystore password: ")
+                keystorePassword = new String(keystorePassword)
+                if(keystorePassword.isEmpty()) {
+                    throw new InvalidUserDataException("You must enter a keystore password to proceed.")
+                }
+                def password = System.console().readPassword("Enter key password: ")
+                password = new String(password)
+                if(password.isEmpty()) {
+                    throw new InvalidUserDataException("You must enter a password to proceed.")
+                }
+                android.signingConfigs.release.storePassword keystorePassword
+                android.signingConfigs.release.keyPassword password
             }
         }
-
-    } else {
-
-        // Building from IDE
-        signingConfigs {
-            release {
-
-            }
-        }
-
     }
         
     buildTypes {
