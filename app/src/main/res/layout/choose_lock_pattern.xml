@@ -28,14 +28,14 @@
         android:textSize="18sp"/>
 
     <View
-         android:background="@*android:drawable/code_lock_top"
+         android:background="@drawable/code_lock_top"
          android:layout_width="fill_parent"
          android:layout_height="2dip" />
     <com.liato.bankdroid.lockpattern.LockPatternView android:id="@+id/lockPattern"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content" />
     <View
-         android:background="@*android:drawable/code_lock_bottom"
+         android:background="@drawable/code_lock_bottom"
          android:layout_width="fill_parent"
          android:layout_height="8dip" />
 
