@@ -128,7 +128,7 @@ public class LiveViewService extends Service {
         Log.d(PluginConstants.LOG_TAG, "Enter LiveViewService.onCreate.");
 
         // Load menu icon
-        int iconId = PluginUtils.getDynamicResourceId(this, "icon", "drawable");
+        int iconId = PluginUtils.getDynamicResourceId(this, "ic_launcher", "drawable");
         mMenuIcon = PluginUtils.storeIconToFile(this, getResources(), iconId, MENU_ICON_FILENAME);
     }
 
