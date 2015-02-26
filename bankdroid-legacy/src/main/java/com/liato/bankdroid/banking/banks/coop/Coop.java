@@ -19,30 +19,21 @@ package com.liato.bankdroid.banking.banks.coop;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
-import com.liato.bankdroid.banking.banks.coop.model.AuthenticateRequest;
-import com.liato.bankdroid.banking.banks.coop.model.AuthenticateResponse;
-import com.liato.bankdroid.banking.banks.coop.model.RefundSummaryRequest;
-import com.liato.bankdroid.banking.banks.coop.model.RefundSummaryResponse;
 import com.liato.bankdroid.banking.banks.coop.model.web.Result;
-import com.liato.bankdroid.banking.banks.coop.model.web.WebAuthenticateRequest;
 import com.liato.bankdroid.banking.banks.coop.model.web.WebTransactionHistoryResponse;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.entity.StringEntity;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -50,8 +41,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -70,8 +59,7 @@ public class Coop extends Bank {
     private static final String NAME_SHORT = "coop";
     private static final String URL = "https://www.coop.se/mina-sidor/oversikt/";
     private static final int BANKTYPE_ID = IBankTypes.COOP;
-    private static final String APPLICATION_ID = "17B2F3F1-841B-40B5-B91C-A5F33DE73C18";
-    private static final Map<String, String> MONTHS = new HashMap<String, String>();
+    private static final Map<String, String> MONTHS = new HashMap<>();
     static {
         String[] ms = new String[] {"januari", "februari", "mars", "april", "maj", "juni", "juli", "augusti", "september", "oktober", "november", "december"};
         for (int i = 0; i < ms.length; i++) {
@@ -87,8 +75,8 @@ public class Coop extends Bank {
         MEDMERA_MER("mer_", "https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Mer/"),
         MEDMERA_VISA("visa_", "https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Visa/");
 
-        String prefix;
-        String url;
+        final String prefix;
+        final String url;
         private AccountType(String prefix, String url) {
             this.prefix = prefix;
             this.url = url;
@@ -137,16 +125,10 @@ public class Coop extends Bank {
         }
     }
 
-    private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
- //   private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+value=\"([^\"]+)\"");
-    private Pattern reBalance = Pattern.compile("saldo\">([^<]+)<", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-    private Pattern reTransactions = Pattern.compile("<td>\\s*(\\d{4}-\\d{2}-\\d{2})\\s*</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]*)</td>\\s*<td>([^<]*)</td>\\s*<td[^>]*>(?:\\s*<a[^>]+>)?([^<]+)(?:</a>\\s*)?</td>", Pattern.CASE_INSENSITIVE);
-    private Pattern rePageGuid = Pattern.compile("pageGuid\"\\s*:\\s*\"([^\"]+)", Pattern.CASE_INSENSITIVE);
+    private final Pattern rePageGuid = Pattern.compile("pageGuid\"\\s*:\\s*\"([^\"]+)", Pattern.CASE_INSENSITIVE);
     private ObjectMapper mObjectMapper;
     private String response;
-    private String mToken;
-    private String mUserId;
-    private Map<AccountType, TransactionParams> mTransactionParams = new HashMap<AccountType, TransactionParams>();
+    private final Map<AccountType, TransactionParams> mTransactionParams = new HashMap<>();
 
     public Coop(Context context) {
         super(context);
@@ -165,22 +147,16 @@ public class Coop extends Bank {
 
     @Override
     protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
-        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_coop, R.raw.cert_coop2));
-        urlopen.addHeader("Origin", "https://www.coop.se");
-        urlopen.addHeader("Referer", "https://www.coop.se/Mina-sidor/Logga-in-puffsida/?li=True");
-        response = urlopen.open("https://www.coop.se/");
-        Document d = Jsoup.parse(response);
-        String pageGuid = d.select("input[name=pageGuid]").first().val();
-        WebAuthenticateRequest webAuthReq = new WebAuthenticateRequest(pageGuid, username, password);
-        urlopen.addHeader("Content-Type", "application/json");
-        HttpEntity e = new StringEntity(getObjectmapper().writeValueAsString(webAuthReq));
-
-        HttpResponse httpResponse = urlopen.openAsHttpResponse("https://www.coop.se/Services/PlainService.svc/JsonExecute", e, true);
+            IOException {
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_coop));
+        urlopen.addHeader("X-Requested-With", "XMLHttpRequest");
+        HttpResponse httpResponse = urlopen.openAsHttpResponse("https://www.coop.se/Personliga-Baren/Logga-in/?method=Login",
+                new StringEntity("{\"isBar\":\"true\",\"username\":\"" + username + "\",\"password\":\"" + password + "\"}"),
+                true);
         if (httpResponse.getStatusLine().getStatusCode() != 200) {
             throw new BankException(res.getString(R.string.invalid_username_password));
         }
-
+        urlopen.removeHeader("X-Requested-With");
         LoginPackage lp = new LoginPackage(urlopen, null, response, "https://www.coop.se/Mina-sidor/Oversikt/");
         lp.setIsLoggedIn(true);
         return lp;
@@ -190,35 +166,14 @@ public class Coop extends Bank {
     @Override
     public Urllib login() throws LoginException, BankException {
         try {
-            //Coop MedMera Kort/Visa information and transactions are not available from the json api
-            //so we'll have to login once to the web site and once to the api.
             LoginPackage lp = preLogin();
             if (!lp.isLoggedIn()) {
                 throw new BankException(res.getString(R.string.invalid_username_password));
             }
-
-            AuthenticateRequest authReq = new AuthenticateRequest(username, password, APPLICATION_ID);
-            HttpEntity e = new StringEntity(getObjectmapper().writeValueAsString(authReq));
-//            urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_coop));
-            urlopen.addHeader("Content-Type", "application/json");
-            InputStream is = urlopen.openStream("https://www.coop.se/ExternalServices/UserService.svc/Authenticate", e, true);
-            AuthenticateResponse authResponse = readJsonValue(is, AuthenticateResponse.class);
-            if (authResponse == null) {
-                throw new BankException(res.getString(R.string.unable_to_login));
-            }
-            if (authResponse.getAuthenticateResult() == null || authResponse.getErrorid() != null || authResponse.getAuthenticateResult() == null) {
-                throw new LoginException(res.getString(R.string.invalid_username_password));
-            }
-            mToken = authResponse.getAuthenticateResult().getToken();
-            mUserId = Integer.toString(authResponse.getAuthenticateResult().getUserID());
-        }
-        catch (ClientProtocolException e) {
+            return urlopen;
+        } catch (IOException e) {
             throw new BankException(e.getMessage());
         }
-        catch (IOException e) {
-            throw new BankException(e.getMessage());
-        }
-        return urlopen;
     }
 
     @Override
@@ -236,7 +191,7 @@ public class Coop extends Bank {
             Account poang = new Account("\u2014  Poäng",
                     Helpers.parseBalance(dResponse.select(".Grid-cell--1 p").text()),
                     "poang", Account.OTHER, "");
-            List<Transaction> transactions = new ArrayList<Transaction>();
+            List<Transaction> transactions = new ArrayList<>();
             poang.setTransactions(transactions);
             for (Element e : dResponse.select(".Timeline-item")) {
                 try {
@@ -275,8 +230,8 @@ public class Coop extends Bank {
                 }
                 Elements es = d.select(".List:contains(Saldo)");
                 if (es != null && !es.isEmpty()) {
-                    List<String> names = new ArrayList<String>();
-                    List<String> values = new ArrayList<String>();
+                    List<String> names = new ArrayList<>();
+                    List<String> values = new ArrayList<>();
                     for (Element e : es.first().select("dt")) {
                         names.add(e.text().replaceAll(":", "").trim());
                     }
@@ -301,9 +256,6 @@ public class Coop extends Bank {
                     }
                 }
             }
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-            throw new BankException(e.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
             throw new BankException(e.getMessage());
@@ -311,28 +263,13 @@ public class Coop extends Bank {
 
 
         try {
-            RefundSummaryRequest refsumReq = new RefundSummaryRequest(mUserId, mToken, APPLICATION_ID);
-            HttpEntity e = new StringEntity(getObjectmapper().writeValueAsString(refsumReq));
-            InputStream is = urlopen.openStream("https://www.coop.se/ExternalServices/RefundService.svc/RefundSummary", e, true);
-            RefundSummaryResponse refsumResp = readJsonValue(is, RefundSummaryResponse.class);
-            if (refsumResp != null && refsumResp.getRefundSummaryResult() != null) {
-                Account a = new Account("Återbäring på ditt kort", BigDecimal.valueOf(refsumResp.getRefundSummaryResult().getAccountBalance()), "refsummary");
-                a.setCurrency("SEK");
-                if (accounts.isEmpty()) {
-                    balance = a.getBalance();
-                    setCurrency(a.getCurrency());
-                }
-                accounts.add(a);
-                a = new Account(String.format("Återbäring för %s", refsumResp.getRefundSummaryResult().getMonthName()), BigDecimal.valueOf(refsumResp.getRefundSummaryResult().getTotalRefund()), "refsummary_month");
-                accounts.add(a);
-            }
-        } catch (JsonParseException e) {
-            e.printStackTrace();
-            throw new BankException(e.getMessage());
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-            throw new BankException(e.getMessage());
-        } catch (IOException e) {
+            response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/Information-om-aterbaringen/");
+            Document dResponse = Jsoup.parse(response);
+            Account a = new Account("Återbäring",
+                    Helpers.parseBalance(dResponse.select(".Heading--coopNew").text()),
+                    "refound", Account.OTHER, "SEK");
+            accounts.add(a);
+        } catch (Exception e) {
             e.printStackTrace();
             throw new BankException(e.getMessage());
         }
@@ -352,15 +289,6 @@ public class Coop extends Bank {
         return mObjectMapper;
     }
 
-    private <T> T readJsonValue(InputStream is, Class<T> valueType) throws BankException {
-        try {
-            return getObjectmapper().readValue(is, valueType);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     @Override
     public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
         AccountType at = getAccuntType(account.getId());
@@ -371,7 +299,7 @@ public class Coop extends Bank {
             String url = String.format("https://www.coop.se/Services/PlainService.svc/JsonExecuteGet?pageGuid=%s&method=GetTransactions&data=%s&_=%s", tp.getPageGuid(), data, System.currentTimeMillis());
             WebTransactionHistoryResponse transactionsResponse = getObjectmapper().readValue(urlopen.openStream(url), WebTransactionHistoryResponse.class);
             if (transactionsResponse != null && transactionsResponse.getModel() != null) {
-                List<Transaction> transactions = new ArrayList<Transaction>();
+                List<Transaction> transactions = new ArrayList<>();
                 account.setTransactions(transactions);
                 for (Result r : transactionsResponse.getModel().getResults()) {
                     StringBuilder title = new StringBuilder(!TextUtils.isEmpty(r.getLocation()) ? r.getLocation() : r.getTitle());
@@ -383,15 +311,7 @@ public class Coop extends Bank {
                     }
                 }
             }
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (JsonMappingException e) {
-            e.printStackTrace();
-        } catch (JsonParseException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
