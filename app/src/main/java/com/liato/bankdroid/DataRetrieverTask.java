@@ -129,9 +129,7 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
 	protected void onPostExecute(final Void unused) {
 		parent.refreshView();
 		AutoRefreshService.sendWidgetRefresh(parent);
-		if (this.dialog.isShowing()) {
-			this.dialog.dismiss();
-		}
+		ActivityHelper.dismissDialog(this.dialog);
 
 		if ((this.errors != null) && !this.errors.isEmpty()) {
 			final StringBuilder errormsg = new StringBuilder();

@@ -260,9 +260,7 @@ public class BankEditActivity extends LockableActivity implements OnClickListene
 
 		protected void onPostExecute(final Void unused) {
 			AutoRefreshService.sendWidgetRefresh(context);
-			if (this.dialog.isShowing()) {
-				this.dialog.dismiss();
-			}
+            ActivityHelper.dismissDialog(this.dialog);
 			if (this.exc != null) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(context);
 				if (this.exc instanceof BankChoiceException) {
