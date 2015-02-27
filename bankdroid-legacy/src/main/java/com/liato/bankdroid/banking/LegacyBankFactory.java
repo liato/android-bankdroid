@@ -20,6 +20,7 @@ import com.liato.bankdroid.banking.banks.Chalmrest;
 import com.liato.bankdroid.banking.banks.DanskeBank;
 import com.liato.bankdroid.banking.banks.DinersClub;
 import com.liato.bankdroid.banking.banks.EasyCard;
+import com.liato.bankdroid.banking.banks.EspressoHouse;
 import com.liato.bankdroid.banking.banks.Everydaycard;
 import com.liato.bankdroid.banking.banks.FirstCard;
 import com.liato.bankdroid.banking.banks.ForexBank;
@@ -238,6 +239,8 @@ public class LegacyBankFactory {
                 return new Ostgotatrafiken(context);
             case IBankTypes.BREDBAND2VOIP:
                 return new Bredband2VoIP(context);
+            case IBankTypes.ESPRESSOHOUSE:
+                return new EspressoHouse(context);
             default:
                 throw new BankException("BankType id not found.");
         }
@@ -324,6 +327,7 @@ public class LegacyBankFactory {
         banks.add(new BlekingeTrafiken(context));
         banks.add(new Ostgotatrafiken(context));
         banks.add(new Bredband2VoIP(context));
+        banks.add(new EspressoHouse(context));
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) {
