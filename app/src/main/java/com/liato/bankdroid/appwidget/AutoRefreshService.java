@@ -39,6 +39,7 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.MainActivity;
 import com.liato.bankdroid.R;
@@ -313,6 +314,8 @@ public class AutoRefreshService extends Service {
 					// Refresh widgets if an update fails
 					Log.e(TAG, "Error while updating bank '" + bank.getDbId()
 							+ "'; BankException: " + e.getMessage());
+
+                    Crashlytics.logException(e);
 				} catch (final LoginException e) {
 					Log.e(TAG, "Error while updating bank '" + bank.getDbId()
 							+ "'; LoginException: " + e.getMessage());

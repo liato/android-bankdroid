@@ -27,6 +27,7 @@ import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.liato.bankdroid.appwidget.AutoRefreshService;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
@@ -93,6 +94,8 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
 			} catch (final BankException e) {
 				this.errors.add(bank.getName() + " (" + bank.getUsername()
 						+ ")");
+
+                Crashlytics.logException(e);
 			} catch (final LoginException e) {
 				this.errors.add(bank.getName() + " (" + bank.getUsername()
 						+ ")");
