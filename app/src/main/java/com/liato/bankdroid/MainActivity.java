@@ -243,6 +243,7 @@ public class MainActivity extends LockableActivity {
 			final ViewGroup root = (ViewGroup) inflater.inflate(R.layout.popup_bank, null);
             final Button btnHide = (Button) root.findViewById(R.id.btnHide);
             final Button btnUnhide = (Button)root.findViewById(R.id.btnUnhide);
+            final Button btnWWW = (Button) root.findViewById(R.id.btnWWW);
             if (selected_bank.getHideAccounts()) {
                 btnHide.setVisibility(View.GONE);
                 btnUnhide.setVisibility(View.VISIBLE);
@@ -253,8 +254,12 @@ public class MainActivity extends LockableActivity {
                 btnUnhide.setVisibility(View.GONE);
                 btnHide.setOnClickListener(this);
             }
+            if(selected_bank.isWebViewEnabled()) {
+                btnWWW.setOnClickListener(this);
+            } else {
+                btnWWW.setVisibility(View.GONE);
+            }
 			root.findViewById(R.id.btnRefresh).setOnClickListener(this);
-			root.findViewById(R.id.btnWWW).setOnClickListener(this);
 			root.findViewById(R.id.btnEdit).setOnClickListener(this);
 			root.findViewById(R.id.btnRemove).setOnClickListener(this);
 
@@ -275,7 +280,7 @@ public class MainActivity extends LockableActivity {
 				parent.refreshView();
 				return;
 			case R.id.btnWWW:
-				if (selected_bank != null) {
+				if (selected_bank != null && selected_bank.isWebViewEnabled()) {
 					//Uri uri = Uri.parse(selected_bank.getURL());
 					//Intent intent = new Intent(Intent.ACTION_VIEW, uri);
 					final Intent intent = new Intent(context, WebViewActivity.class);

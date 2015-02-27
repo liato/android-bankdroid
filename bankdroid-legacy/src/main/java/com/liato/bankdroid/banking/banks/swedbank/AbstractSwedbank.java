@@ -51,6 +51,7 @@ import eu.nullbyte.android.urllib.Urllib;
 public abstract class AbstractSwedbank extends Bank {
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
     private static final String INPUT_HINT_USERNAME = "ÅÅÅÅMMDDXXXX";
+    private static final boolean WEB_VIEW_ENABLED = false;
 
     private static final String API_BASE = "https://auth.api.swedbank.se/TDE_DAP_Portal_REST_WEB/api/v1/";
 
@@ -65,7 +66,7 @@ public abstract class AbstractSwedbank extends Bank {
 
         super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
         super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
-
+        super.WEB_VIEW_ENABLED = WEB_VIEW_ENABLED;
     }
 
     public AbstractSwedbank(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
