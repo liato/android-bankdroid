@@ -17,6 +17,7 @@
 package com.liato.bankdroid.banking.banks;
 
 import android.content.Context;
+import android.text.InputType;
 
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.legacy.R;
@@ -49,6 +50,7 @@ public class Jojo extends Bank {
     private static final String NAME_SHORT = "jojo";
     private static final String URL = "https://www.shop.skanetrafiken.se";
     private static final int BANKTYPE_ID = IBankTypes.JOJO;
+    private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT | + InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
 
     private static final String NAME_NOT_SET = "KortnamnSaknas";
 
@@ -62,6 +64,7 @@ public class Jojo extends Bank {
         super.BANKTYPE_ID = BANKTYPE_ID;
         super.URL = URL;
         super.INPUT_TITLETEXT_USERNAME = R.string.email;
+        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
     }
 
     public Jojo(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
