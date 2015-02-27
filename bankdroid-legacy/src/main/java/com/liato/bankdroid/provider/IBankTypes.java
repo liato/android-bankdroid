@@ -101,4 +101,5 @@ public interface IBankTypes {
     public final static int BLEKINGETRAFIKEN = 77;
     public final static int OSTGOTATRAFIKEN = 78;
     public final static int BREDBAND2VOIP = 79;
+    public final static int ESPRESSOHOUSE = 80;
 }
