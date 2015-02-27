@@ -45,6 +45,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.liato.bankdroid.appwidget.AutoRefreshService;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
@@ -249,6 +250,7 @@ public class BankEditActivity extends LockableActivity implements OnClickListene
 				}
 			} catch (BankException e) {
 				this.exc = e;
+                Crashlytics.logException(e);
 			} catch (LoginException e) {
 				this.exc = e;
 			}

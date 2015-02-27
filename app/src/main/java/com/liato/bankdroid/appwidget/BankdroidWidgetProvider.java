@@ -34,6 +34,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
+import com.crashlytics.android.Crashlytics;
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.MainActivity;
 import com.liato.bankdroid.R;
@@ -370,6 +371,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 				} 
 				catch (BankException e) {
     				Log.e(TAG, "Error while updating bank '"+bank.getDbId()+"'; "+e.getMessage());
+                    Crashlytics.logException(e);
 				} catch (LoginException e) {
 					Log.e("", "Disabling bank: "+bank.getDbId());
 					DBAdapter.disable(bank,context);
