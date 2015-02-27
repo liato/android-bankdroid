@@ -17,6 +17,7 @@
 package com.liato.bankdroid.banking.banks;
 
 import android.content.Context;
+import android.text.InputType;
 
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.banking.Account;
@@ -50,6 +51,8 @@ public class EspressoHouse extends Bank {
         NAME = "Espresso House";
         NAME_SHORT = "espressohouse";
         BANKTYPE_ID = IBankTypes.ESPRESSOHOUSE;
+        INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT | + InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
+        INPUT_TITLETEXT_USERNAME = R.string.email;
     }
 
     public EspressoHouse(String username, String password, Context context)
