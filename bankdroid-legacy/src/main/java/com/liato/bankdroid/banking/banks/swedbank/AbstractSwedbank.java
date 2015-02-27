@@ -5,6 +5,7 @@ import android.text.Html;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.util.Log;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,6 +40,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -218,7 +220,9 @@ public abstract class AbstractSwedbank extends Bank {
         try {
             HttpResponse httpResponse = urlopen.openAsHttpResponse(getResourceUri("engagement/cardaccount/"+mIdMap.get(account.getId())),false);
             if(httpResponse.getStatusLine().getStatusCode() != 200) {
-                throw new BankException(httpResponse.getStatusLine().toString());
+                Log.i(TAG, "Couldn't find transactions for creditcard");
+                account.setTransactions(Collections.<Transaction>emptyList());
+                return;
             }
             CardAccountResponse response = readJsonValue(httpResponse.getEntity().getContent(),CardAccountResponse.class);
             List<Transaction> transactions = new ArrayList<Transaction>();
