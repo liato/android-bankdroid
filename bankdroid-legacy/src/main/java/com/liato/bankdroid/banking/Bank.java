@@ -62,7 +62,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     protected boolean STATIC_BALANCE = false;
     protected boolean BROKEN = false;
     protected boolean DISPLAY_DECIMALS = true;
-
+    protected boolean WEB_VIEW_ENABLED = true;
     protected Context context;
     protected Resources res;
 
@@ -293,6 +293,9 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         return INPUT_TITLETEXT_EXTRAS;
     }
 
+    public boolean isWebViewEnabled() {
+        return WEB_VIEW_ENABLED;
+    }
 
     // Returns true if the current implementation of this bank is broken.
     public boolean isBroken() {
