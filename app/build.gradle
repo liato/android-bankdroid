@@ -8,7 +8,10 @@ buildscript {
     }
 }
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
+
+if(new File('app/crashlytics.properties').exists()) {
+    apply plugin: 'io.fabric'
+}
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
