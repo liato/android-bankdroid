@@ -13,9 +13,10 @@ v1.9.8.0 (2015-02-27)
 * Fixes Swedbank and Sparbankerna if you have corporate credit card
 * Fixes www login for Coop
 * Fixes application crash if SonyEricsson's LiveView integration is enabled 
+* Fixes application crash if screen is rotated during a bank update
 * Improved error handling
 * Disabled www-button for Swedbank and Sparbankerna
-* Updated certificate for Östgötatrafiken
+* Updated certificate for Östgötatrafiken, AmericanExpress, Brummer KF
 * Removes support for Handelsbanken, SEB, Chevrolet, Djurgarden, EurobonusMastercard, EurobonusMastercardDk, EurobonusMastercardNo, Eurocard, Opel, Quintessentially, SJPrio, Saab, Statoil, Wallet because they now requires BankId.
 
 v1.9.7.4: (2015-02-21)
