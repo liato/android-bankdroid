@@ -137,11 +137,9 @@ public class ForexBank extends Bank {
             }
         }
         catch (ClientProtocolException e) {
-            Log.e(TAG, "ClientProtocolException: " + e.getMessage());
             throw new BankException(e.getMessage(), e);
         }
         catch (IOException e) {
-            Log.e(TAG, "IOException: "+e.getMessage());
             throw new BankException(e.getMessage(), e);
         }
         return urlopen;

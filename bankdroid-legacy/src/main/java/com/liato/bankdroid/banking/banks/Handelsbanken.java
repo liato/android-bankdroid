@@ -109,11 +109,9 @@ public class Handelsbanken extends Bank {
 			}
 		}
 		catch (ClientProtocolException e) {
-			Log.w(TAG, "ClientProtocolException: "+e.getMessage());
 			throw new BankException(e.getMessage(), e);
 		}
 		catch (IOException e) {
-			Log.w(TAG, "IOException: "+e.getMessage());
 			throw new BankException(e.getMessage(), e);
 		}
 		return urlopen;
