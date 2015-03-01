@@ -56,8 +56,6 @@ public class ForexBank extends Bank {
 
     private Pattern reTransactions = Pattern.compile("item\\stransaction.+?(\\d{4}-\\d{2}-\\d{2}?).+?(-?\\d+,\\d{2}).*?left\">\\s+(.+?)\\s+</div>", Pattern.MULTILINE | Pattern.DOTALL);
 
-    private HashMap<String, String> mIdMappings = new HashMap<String, String>();
-
     public ForexBank(Context context) {
         super(context);
         super.TAG = TAG;
@@ -177,15 +175,11 @@ public class ForexBank extends Bank {
             Matcher mDisposables = reDisposable.matcher(result);
 
             while(mAccountIds.find() && mAccountNumbers.find() && mAccountNames.find() && mAccountBalances.find())  {
-                mIdMappings.put(Integer.toString(1), mAccountIds.group(1));
                 if(!mAccountIds.group(1).startsWith("-") && mDisposables.find()) {
-                    accounts.add(new Account(Html.fromHtml(mAccountNames.group(1)).toString().trim() + " (Disponibelt)", Helpers.parseBalance(mDisposables.group(1).trim()), Integer.toString(1)));
-                    Account account = new Account(Html.fromHtml(mAccountNames.group(1)).toString().trim() + " (Saldo)", Helpers.parseBalance(mAccountBalances.group(1).trim()), "a:" + 1);
-                    account.setAliasfor(Integer.toString(1));
-                    accounts.add(account);
+                    accounts.add(new Account(Html.fromHtml(mAccountNames.group(1)).toString().trim(), Helpers.parseBalance(mDisposables.group(1).trim()), mAccountIds.group(1))); //Disponibelt
                 }
                 else {
-                    accounts.add(new Account(Html.fromHtml(mAccountNames.group(1)).toString().trim(), Helpers.parseBalance(mAccountBalances.group(1).trim()), Integer.toString(1)));
+                    accounts.add(new Account(Html.fromHtml(mAccountNames.group(1)).toString().trim(), Helpers.parseBalance(mAccountBalances.group(1).trim()), mAccountIds.group(1)));
                 }
 
                 balance = balance.add(Helpers.parseBalance(mAccountBalances.group(1)));
@@ -206,8 +200,7 @@ public class ForexBank extends Bank {
     @Override
     public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
         super.updateTransactions(account, urlopen);
-        if (account.getId().startsWith("a:") || !mIdMappings.containsKey(account.getId())) return; // No transactions for "saldo"-accounts
-        String accountId = mIdMappings.get(account.getId());
+        String accountId = account.getId(); 
         String response = null;
         Matcher matcher;
         try {
