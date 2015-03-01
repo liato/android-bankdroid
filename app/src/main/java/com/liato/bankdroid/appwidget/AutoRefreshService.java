@@ -83,7 +83,8 @@ public class AutoRefreshService extends Service {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
         if (ni != null &&
-                ni.isConnected()) {
+                ni.isConnected() &&
+                roamingDisable(ni)) {
             if (InsideUpdatePeriod()){
                 new DataRetrieverTask().execute();
             }
@@ -92,6 +93,15 @@ public class AutoRefreshService extends Service {
                 stopSelf();
             }
         }
+    }
+
+    private boolean roamingDisable(NetworkInfo ni) {
+        final SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(this);
+        if (prefs.getBoolean("disable_during_roaming", false) && ni.isRoaming()) {
+            return false;
+        }
+        return true;
     }
 
     private boolean InsideUpdatePeriod() {

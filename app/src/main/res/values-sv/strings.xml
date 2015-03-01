@@ -46,7 +46,9 @@
 	<string name="automatic_updates_title">Automatiska Uppdateringar</string>
 	<string name="autoupdates_enabled_title">Aktivera</string>
 	<string name="autoupdates_enabled_summary">Aktivera automatiska uppdateringar</string>
-	<string name="update_frequency_title">Uppdateringsfrekvens</string>
+    <string name="roaming">Roaming</string>
+    <string name="disable_during_roaming">Avaktivera automatiska uppdateringar vid roaming</string>
+    <string name="update_frequency_title">Uppdateringsfrekvens</string>
 	<string name="update_start_title">Starttid uppdatering</string>
 	<string name="update_stop_title">Sluttid uppdatering</string>
 	<string name="update_transaction_history_title">Uppdatera kontoutdrag</string>
