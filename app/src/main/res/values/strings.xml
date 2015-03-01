@@ -48,6 +48,8 @@
 	<string name="automatic_updates_title">Automatic Updates</string>
 	<string name="autoupdates_enabled_title">Enable</string>
 	<string name="autoupdates_enabled_summary">Enable automatic updates</string>
+    <string name="roaming">Roaming</string>
+    <string name="disable_during_roaming">Disable automatic updates if roaming</string>
 	<string name="update_frequency_title">Update frequency</string>
 	<string name="update_start_title">Update start time</string>
 	<string name="update_stop_title">Update end time</string>

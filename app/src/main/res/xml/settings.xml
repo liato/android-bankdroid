@@ -69,6 +69,11 @@
 			android:defaultValue="true"
 			android:title="@string/autoupdates_enabled_title"
 			android:summary="@string/autoupdates_enabled_summary" />
+        <CheckBoxPreference
+            android:key="disable_during_roaming"
+            android:defaultValue="false"
+            android:title="@string/roaming"
+            android:summary="@string/disable_during_roaming" />
 		<ListPreference
 			android:title="@string/update_frequency_title"
 			android:key="refresh_rate"
