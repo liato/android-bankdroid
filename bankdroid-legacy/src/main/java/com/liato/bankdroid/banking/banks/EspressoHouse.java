@@ -44,6 +44,7 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class EspressoHouse extends Bank {
     private static final String API_URL = "http://www.espressohouse.com/coffee-card/min-sida/";
+    private Document dResponse = null;
 
     public EspressoHouse(Context context) {
         super(context);
@@ -51,7 +52,7 @@ public class EspressoHouse extends Bank {
         NAME = "Espresso House";
         NAME_SHORT = "espressohouse";
         BANKTYPE_ID = IBankTypes.ESPRESSOHOUSE;
-        INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT | + InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
+        INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT | +InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
         INPUT_TITLETEXT_USERNAME = R.string.email;
     }
 
@@ -100,33 +101,37 @@ public class EspressoHouse extends Bank {
         if (username == null || password == null || username.length() == 0 || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
-        urlopen = login();
         try {
+            urlopen = login();
             String response = urlopen.open(API_URL);
-            Document dResponse = Jsoup.parse(response);
+            dResponse = Jsoup.parse(response);
             String card = dResponse.select(".transactionCardNumber").first().text().trim();
             String cardNo = card.split(":")[1].trim();
             String balance = dResponse.select(".balanceAmount").first().text();
             balance = balance.substring(0, balance.length() - 2);
-            Account a = new Account(card,
+            accounts.add(new Account(card,
                     Helpers.parseBalance(balance),
-                    cardNo, Account.REGULAR, "SEK");
-
-            List<Element> eBalance = dResponse.select(".lineTotalAmount");
-            List<Element> eTransaction = dResponse.select(".lineTime");
-            List<Transaction> transactions = new ArrayList<>();
-            for (int i = 0; i < eTransaction.size(); i++) {
-                String s = eTransaction.get(i).text();
-                balance = eBalance.get(i).text();
-                balance = balance.substring(2, balance.length() - 2);
-                transactions.add(new Transaction(s.substring(s.length() - 16, s.length() - 6),
-                        s.substring(0, s.length() - 16), Helpers.parseBalance(balance)));
-            }
-            a.setTransactions(transactions);
-            accounts.add(a);
-        } catch (Exception e) {
+                    cardNo, Account.REGULAR, "SEK"));
+        } catch (IOException e) {
             throw new BankException(e.getMessage(), e);
         }
         super.updateComplete();
+    }
+
+    @Override
+    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+        List<Element> eBalance = dResponse.select(".lineTotalAmount");
+        List<Element> eTransaction = dResponse.select(".lineTime");
+        List<Transaction> transactions = new ArrayList<>();
+        for (int i = 0; i < eTransaction.size() && i < eBalance.size(); i++) {
+            String s = eTransaction.get(i).text();
+            String balance = eBalance.get(i).text();
+            if (balance.length() >= 4 && s.length() >= 16) {
+                transactions.add(new Transaction(s.substring(s.length() - 16, s.length() - 6),
+                        s.substring(0, s.length() - 16),
+                        Helpers.parseBalance(balance.substring(2, balance.length() - 2))));
+            }
+        }
+        account.setTransactions(transactions);
     }
 }
