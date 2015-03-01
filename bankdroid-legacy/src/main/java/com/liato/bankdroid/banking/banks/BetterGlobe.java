@@ -97,12 +97,10 @@ public class BetterGlobe extends Bank {
 			String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
 		}
 		catch (ClientProtocolException e) {
-			Log.e(TAG, "ClientProtocolException: "+e.getMessage());
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		}
 		catch (IOException e) {
-			Log.e(TAG, "IOException: "+e.getMessage());
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		}
 		return urlopen;
 	}	
@@ -158,10 +156,10 @@ public class BetterGlobe extends Bank {
 			}
 		}
 		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		}
 		catch (IOException e) {
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		}
 	}
 

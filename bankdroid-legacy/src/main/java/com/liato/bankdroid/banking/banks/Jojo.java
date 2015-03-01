@@ -93,9 +93,9 @@ public class Jojo extends Bank {
                 throw new LoginException(res.getText(R.string.invalid_username_password).toString());
             }
         } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         } catch (IOException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
         return urlopen;
     }
@@ -141,7 +141,7 @@ public class Jojo extends Bank {
                 return Helpers.parseBalance(saldo.first().text().trim());
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            // Ignore and defaults to zero
         }
         return BigDecimal.ZERO;
     }

@@ -96,10 +96,10 @@ public class CSN extends Bank {
             response = urlopen.open("https://www.csn.se/bas/javascript", postData);
         }
         catch (ClientProtocolException e) {
-            throw new BankException("pl:CPE:"+e.getMessage());
+            throw new BankException("pl:CPE:"+e.getMessage(), e);
         }
         catch (IOException e) {
-            throw new BankException("pl:IOE:"+e.getMessage());
+            throw new BankException("pl:IOE:"+e.getMessage(), e);
         }        
         postData.clear();
         
@@ -123,11 +123,10 @@ public class CSN extends Bank {
 			}
 		}
 		catch (ClientProtocolException e) {
-			throw new BankException("login:CPE:"+e.getCause().getMessage());
+			throw new BankException("login:CPE:"+e.getCause().getMessage(), e);
 		}
 		catch (IOException e) {
-            e.printStackTrace();
-			throw new BankException("login:IOE:"+e.getMessage());
+			throw new BankException("login:IOE:"+e.getMessage(), e);
 		}
 		return urlopen;
 	}
@@ -172,12 +171,10 @@ public class CSN extends Bank {
 			}
 		}
         catch (ClientProtocolException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+           throw new BankException(e.getMessage(), e);
         }
         catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+           throw new BankException(e.getMessage(), e);
         }		
         finally {
             super.updateComplete();
@@ -244,11 +241,9 @@ public class CSN extends Bank {
             Collections.sort(transactions, Collections.reverseOrder());
             account.setTransactions(transactions);
         } catch (ClientProtocolException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new BankException(e.getMessage(), e);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new BankException(e.getMessage(), e);
         }
     }	
 }

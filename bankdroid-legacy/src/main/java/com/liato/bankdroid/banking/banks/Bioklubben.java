@@ -110,10 +110,9 @@ public class Bioklubben extends Bank {
                 throw new LoginException(res.getText(R.string.invalid_username_password).toString());
             }
         } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
         return urlopen;
     }
@@ -147,9 +146,7 @@ public class Bioklubben extends Bank {
             a.setTransactions(transactions);
 
         } catch (IOException e) {
-            if (e == null) {
-                throw new BankException(e.getMessage());
-            }
+                throw new BankException(e.getMessage(), e);
         }
         if (accounts.isEmpty()) {
             throw new BankException(res.getText(R.string.no_accounts_found).toString());

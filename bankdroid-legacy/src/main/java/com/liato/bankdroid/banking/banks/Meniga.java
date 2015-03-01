@@ -81,20 +81,20 @@ public class Meniga extends Bank{
             }
         }
         catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
         catch (IOException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
 
         try{
             response = urlopen.open("https://www.meniga.is/mobile/language/?lang=is-IS");
         }
         catch (ClientProtocolException e){
-            //Do nothing
+           throw new BankException(e.getMessage(), e);
         }
         catch (IOException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
 
         return urlopen;
@@ -135,10 +135,10 @@ public class Meniga extends Bank{
             }
         }
         catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
         catch (IOException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
         finally {
             super.updateComplete();
@@ -175,9 +175,9 @@ public class Meniga extends Bank{
             }
             account.setTransactions(transactions);
         } catch (ClientProtocolException e) {
-            e.printStackTrace();
+            throw new BankException(e.getMessage(), e);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new BankException(e.getMessage(), e);
         }
     }
 }

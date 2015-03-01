@@ -178,16 +178,13 @@ public class Avanza extends Bank {
                 }
             }
         } catch (JsonParseException e) {
-            e.printStackTrace();
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         } catch (ClientProtocolException e) {
-            e.printStackTrace();
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         } catch (Exception e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
         return urlopen;
     }
@@ -202,8 +199,7 @@ public class Avanza extends Bank {
         }
         login();
         if (accounts.isEmpty()) {
-            throw new BankException(res.getText(R.string.no_accounts_found)
-                    .toString());
+            throw new BankException(res.getText(R.string.no_accounts_found).toString());
         }
         super.updateComplete();
     }

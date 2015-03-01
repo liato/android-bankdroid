@@ -138,10 +138,9 @@ public abstract class SEBKortBase extends Bank {
                 throw new LoginException(!TextUtils.isEmpty(r.getMessage()) ? Html.fromHtml(r.getMessage()).toString() : res.getText(R.string.invalid_username_password).toString());
             }
         } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
         return urlopen;
     }
@@ -181,9 +180,9 @@ public abstract class SEBKortBase extends Bank {
                 throw new BankException(res.getText(R.string.no_accounts_found).toString());
             }
         } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         } catch (IOException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         } finally {
             super.updateComplete();
         }
@@ -207,12 +206,9 @@ public abstract class SEBKortBase extends Bank {
                     }
                 }
             }
-            //TODO: Sort?
-            //Collections.sort(transactions, Collections.reverseOrder());
             account.setTransactions(transactions);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new BankException(e.getMessage(), e);
         }
     }
 }

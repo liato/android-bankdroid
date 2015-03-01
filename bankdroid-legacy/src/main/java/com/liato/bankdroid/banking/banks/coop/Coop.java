@@ -172,7 +172,7 @@ public class Coop extends Bank {
             }
             return urlopen;
         } catch (IOException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
     }
 
@@ -257,8 +257,7 @@ public class Coop extends Bank {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
 
 
@@ -270,8 +269,7 @@ public class Coop extends Bank {
                     "refound", Account.OTHER, "SEK");
             accounts.add(a);
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
 
         if (accounts.isEmpty()) {

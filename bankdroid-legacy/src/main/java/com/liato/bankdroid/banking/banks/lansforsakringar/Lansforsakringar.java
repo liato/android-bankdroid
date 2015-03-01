@@ -155,8 +155,7 @@ public class Lansforsakringar extends Bank {
         try {
 			return mObjectMapper.readValue(is, valueType);
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		}
     }
 
@@ -165,7 +164,7 @@ public class Lansforsakringar extends Bank {
 			return readJsonValue(urlopen.openStream(url, postData, false), valueType);
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		}
     }
     

@@ -94,8 +94,7 @@ public class Payson extends Bank {
             response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
             userInfo = new JSONObject(urlopen.open("https://www.payson.se/myaccount/user/getuserinfo"));
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         } catch (JSONException e) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
@@ -115,8 +114,7 @@ public class Payson extends Bank {
                     Helpers.parseBalance(userInfo.getString("balance")), "1");
             accounts.add(account);
         } catch (JSONException e) {
-            e.printStackTrace();
-            throw new BankException(res.getText(R.string.no_accounts_found).toString());
+            throw new BankException(res.getText(R.string.no_accounts_found).toString(), e);
         }
         super.updateComplete();
     }

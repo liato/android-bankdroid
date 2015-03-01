@@ -118,10 +118,10 @@ public abstract class AbstractSwedbank extends Bank {
             }
         }
         catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
         catch (IOException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         } finally {
             if(httpResponse != null) {
                 HttpEntity httpEntity = httpResponse.getEntity();
@@ -129,7 +129,7 @@ public abstract class AbstractSwedbank extends Bank {
                     try {
                         httpEntity.consumeContent();
                     } catch (IOException e) {
-                        throw new BankException("");
+                        throw new BankException(e.getMessage(), e);
                     }
                 }
             }
@@ -150,7 +150,7 @@ public abstract class AbstractSwedbank extends Bank {
 
             HttpResponse httpResponse = urlopen.openAsHttpResponse(getResourceUri("engagement/overview"), false);
             if(httpResponse.getStatusLine().getStatusCode() != 200) {
-                throw new BankException("");
+                throw new BankException(httpResponse.getStatusLine().toString());
             }
 
             OverviewResponse overviewResponse = readJsonValue(httpResponse.getEntity().getContent(),OverviewResponse.class);
@@ -164,9 +164,9 @@ public abstract class AbstractSwedbank extends Bank {
                 throw new BankException(res.getText(R.string.no_accounts_found).toString());
             }
         } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         } catch (IOException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         } finally {
             updateComplete();
         }
@@ -196,9 +196,9 @@ public abstract class AbstractSwedbank extends Bank {
             account.setTransactions(transactions);
 
         } catch(ClientProtocolException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         } catch(IOException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
     }
 
@@ -230,9 +230,9 @@ public abstract class AbstractSwedbank extends Bank {
             transactions.addAll(transformCardTransactions(response.getReservedTransactions()));
             account.setTransactions(transactions);
         } catch (ClientProtocolException e) {
-           throw new BankException(e.getMessage());
+           throw new BankException(e.getMessage(), e);
         } catch (IOException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
     }
 
@@ -320,7 +320,7 @@ public abstract class AbstractSwedbank extends Bank {
                     .toString().getBytes("UTF-8");
             return Base64.encodeToString(data,Base64.NO_WRAP);
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            // Ignore
         }
         return null;
     }
@@ -335,8 +335,7 @@ public abstract class AbstractSwedbank extends Bank {
         try {
             return mObjectMapper.readValue(is, valueType);
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         } finally {
             try {
                 is.close();
@@ -347,13 +346,12 @@ public abstract class AbstractSwedbank extends Bank {
 
     }
 
-    public String objectAsJson(Object value) {
+    public String objectAsJson(Object value) throws BankException {
         try {
             return mObjectMapper.writeValueAsString(value);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            throw new BankException(e.getMessage(), e);
         }
-        return null;
     }
 
     protected abstract String getAppId();

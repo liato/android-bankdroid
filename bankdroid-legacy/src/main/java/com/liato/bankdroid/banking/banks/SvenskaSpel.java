@@ -94,10 +94,10 @@ public class SvenskaSpel extends Bank {
 			response = EntityUtils.toString(httpResponse.getEntity());
 		}
 		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		}
 		catch (IOException e) {
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		}
 		return urlopen;
 	}

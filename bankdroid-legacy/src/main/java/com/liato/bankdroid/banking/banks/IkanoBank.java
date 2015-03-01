@@ -130,10 +130,10 @@ public class IkanoBank extends Bank {
             }
         }
         catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
         catch (IOException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
         return urlopen;
     }
@@ -212,9 +212,9 @@ public class IkanoBank extends Bank {
             account.setTransactions(transactions);
 
         } catch (ClientProtocolException e) {
-            Log.e(TAG, "CPE: " + e.getMessage());
+            throw new BankException(e.getMessage(), e);
         } catch (IOException e) {
-            Log.e(TAG, "IOE: "+ e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
     }
 }

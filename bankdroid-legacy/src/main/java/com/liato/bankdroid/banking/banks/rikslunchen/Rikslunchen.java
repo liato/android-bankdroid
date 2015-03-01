@@ -94,27 +94,24 @@ public class Rikslunchen extends Bank {
             try {
                 resp = serializer.read(Envelope.class, is, false);
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new BankException(e.getMessage(), e);
             }
 
             if (resp != null && resp.body != null && resp.body.fault != null && !TextUtils.isEmpty(resp.body.fault.faultstring)) {
-                throw new BankException(context.getString(R.string.invalid_card_number));
+                throw new LoginException(context.getString(R.string.invalid_card_number));
                 //faultString isn't always very descriptive
                 //throw new BankException(resp.body.fault.faultstring);
             } else if (resp == null || resp.body == null || resp.body.getBalanceResponse == null || resp.body.getBalanceResponse.responseReturn == null || resp.body.getBalanceResponse.responseReturn.amount == null) {
-                throw new BankException(context.getString(R.string.invalid_card_number));
+                throw new LoginException(context.getString(R.string.invalid_card_number));
             }
             BigDecimal balance = Helpers.parseBalance(resp.body.getBalanceResponse.responseReturn.amount);
             accounts.add(new Account("Rikslunchen", balance, "1"));
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         } catch (ClientProtocolException e) {
-            e.printStackTrace();
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
         if (accounts.isEmpty()) {
             throw new BankException(res.getText(R.string.no_accounts_found)

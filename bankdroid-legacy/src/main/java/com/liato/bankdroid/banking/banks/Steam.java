@@ -93,17 +93,17 @@ public class Steam extends Bank {
 		    LoginPackage lp = preLogin();
 			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
             if (response.contains("Enter the characters above")) {
-                throw new BankException("You have entered the wrong username/password too many times and Steam now requires you to enter a CAPTCHA.\nPlease wait 10 minutes before logging in again.");
+                throw new LoginException("You have entered the wrong username/password too many times and Steam now requires you to enter a CAPTCHA.\nPlease wait 10 minutes before logging in again.");
             }
 			if (response.contains("Incorrect login.")) {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}
 		}
 		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		}
 		catch (IOException e) {
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		}
 		return urlopen;
 	}

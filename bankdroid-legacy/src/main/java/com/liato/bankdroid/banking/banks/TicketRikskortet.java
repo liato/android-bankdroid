@@ -109,10 +109,10 @@ public class TicketRikskortet extends Bank {
             }
         }
         catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
         catch (IOException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
         return urlopen;
     }
@@ -129,10 +129,10 @@ public class TicketRikskortet extends Bank {
                 response = urlopen.open("https://www.edenred.se/sv/Apps/Employee/Start/");
             }
             catch (ClientProtocolException e) {
-                throw new BankException(e.getMessage());
+                throw new BankException(e.getMessage(), e);
             }
             catch (IOException e) {
-                throw new BankException(e.getMessage());
+                throw new BankException(e.getMessage(), e);
             }
         }
 
@@ -179,11 +179,9 @@ public class TicketRikskortet extends Bank {
             }
             account.setTransactions(transactions);
         } catch (ClientProtocolException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new BankException(e.getMessage(), e);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new BankException(e.getMessage(), e);
         }
     }
 }

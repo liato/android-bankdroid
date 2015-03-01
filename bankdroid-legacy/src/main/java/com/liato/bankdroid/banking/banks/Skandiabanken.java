@@ -101,17 +101,17 @@ public class Skandiabanken extends Bank {
 			urlopen.addHeader("x-smartrefill-customer", "" + customerId);
 		} catch (HttpResponseException e) {
 			if (e.getStatusCode() == 401)
-				throw new BankException(
+				throw new LoginException(
 						"Inloggning misslyckad fel användarnamn eller lösenord");
 			else
 				throw new BankException("Http fel (" + e.getStatusCode() + ") "
-						+ e.getMessage());
+						+ e.getMessage(), e);
 		} catch (ClientProtocolException e) {
-			throw new BankException("ClientProtocolException " + e.getMessage());
+			throw new BankException("ClientProtocolException " + e.getMessage(), e);
 		} catch (IOException e) {
-			throw new BankException("IOException " + e.getMessage());
+			throw new BankException("IOException " + e.getMessage(), e);
 		} catch (JSONException e) {
-			throw new BankException("Oväntat svarsformat " + e.getMessage());
+			throw new BankException("Oväntat svarsformat " + e.getMessage(), e);
 		}
 
 		return urlopen;
@@ -167,9 +167,9 @@ public class Skandiabanken extends Bank {
 				accounts.add(account);
 			}
 		} catch (IOException e) {
-			throw new BankException("IOException " + e.getMessage());
+			throw new BankException("IOException " + e.getMessage(), e);
 		} catch (JSONException e) {
-			throw new BankException("Oväntat svarsformat " + e.getMessage());
+			throw new BankException("Oväntat svarsformat " + e.getMessage(), e);
 		}
 	}
 
@@ -211,9 +211,9 @@ public class Skandiabanken extends Bank {
 			}
 			
 		} catch (IOException e) {
-			throw new BankException("IOException " + e.getMessage());
+			throw new BankException("IOException " + e.getMessage(), e);
 		} catch (JSONException e) {
-			throw new BankException("Oväntat svarsformat " + e.getMessage());
+			throw new BankException("Oväntat svarsformat " + e.getMessage(), e);
 		}
 	}
 

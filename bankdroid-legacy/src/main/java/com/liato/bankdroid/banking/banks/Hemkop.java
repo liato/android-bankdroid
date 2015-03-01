@@ -121,10 +121,10 @@ public class Hemkop extends Bank {
             response = urlopen.open("https://www.hemkop.se/Mina-sidor/Bonussaldo/");
         }
         catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
         catch (IOException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
         return urlopen;
     }
@@ -184,11 +184,9 @@ public class Hemkop extends Bank {
             }
             
         } catch (ClientProtocolException e) {
-        	e.printStackTrace();
-            Log.e(TAG, e.getMessage() != null ? e.getMessage() : "");
+            throw new BankException(e.getMessage(), e);
         } catch (IOException e) {
-        	e.printStackTrace();
-            Log.e(TAG,  e.getMessage() != null ? e.getMessage() : "");
+            throw new BankException(e.getMessage(), e);
         }        
         
         super.updateComplete();
