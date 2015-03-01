@@ -255,14 +255,14 @@ public abstract class AbstractSwedbank extends Bank {
         return transactionList;
     }
 
-    private ProfileResponse getAvailableProfiles() throws IOException, ClientProtocolException, BankException {
+    private ProfileResponse getAvailableProfiles() throws IOException, BankException, LoginException {
         HttpResponse httpResponse = urlopen.openAsHttpResponse(getResourceUri("profile/"), false);
         if (httpResponse.getStatusLine().getStatusCode() == 200) {
             ProfileResponse response = readJsonValue(httpResponse.getEntity().getContent(), ProfileResponse.class);
             if(response.getBanks().isEmpty()) {
                 String provider = response.isSwedbankProfile() ? "Swedbank" : response.isSavingbankProfile() ? "Sparbankerna" : null;
                 if(provider != null) {
-                    throw new BankException("You are trying to connect an account from " + provider + " to the " + NAME + " bank. Please use the " + provider + " bank instead.");
+                    throw new LoginException("You are trying to connect an account from " + provider + " to the " + NAME + " bank. Please use the " + provider + " bank instead.");
                 } else {
                     throw new BankException("No profiles available.");
                 }
@@ -272,7 +272,7 @@ public abstract class AbstractSwedbank extends Bank {
         throw new BankException("Could not fetch available profiles.");
     }
 
-    private void setDefaultProfile(String bankId) throws ClientProtocolException, IOException, BankException {
+    private void setDefaultProfile(String bankId) throws IOException, BankException {
         HttpResponse httpResponse = urlopen.openAsHttpResponse(getResourceUri("profile/private/" + bankId), true);
         httpResponse.getEntity().consumeContent();
         if (httpResponse.getStatusLine().getStatusCode() != 201) {
