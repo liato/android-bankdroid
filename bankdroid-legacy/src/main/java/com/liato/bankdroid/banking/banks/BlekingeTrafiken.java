@@ -85,9 +85,9 @@ public class BlekingeTrafiken extends Bank {
             }
             response = EntityUtils.toString(httpResponse.getEntity());
         } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         } catch (IOException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
         return urlopen;
     }
@@ -119,7 +119,7 @@ public class BlekingeTrafiken extends Bank {
             }
 
         } catch (JSONException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
         if (accounts.isEmpty()) {
             throw new BankException(res.getText(R.string.no_accounts_found).toString());

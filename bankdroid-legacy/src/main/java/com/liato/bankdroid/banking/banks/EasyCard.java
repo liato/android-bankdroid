@@ -101,9 +101,9 @@ public class EasyCard extends Bank {
                 throw new BankException(res.getText(R.string.unable_to_login).toString());
             }
         } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         } catch (IOException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
 
         return urlopen;

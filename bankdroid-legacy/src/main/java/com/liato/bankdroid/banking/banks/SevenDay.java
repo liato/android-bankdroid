@@ -105,10 +105,10 @@ public class SevenDay extends Bank {
 			}
 		}
 		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		}
 		catch (IOException e) {
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		}
 		return urlopen;
 	}

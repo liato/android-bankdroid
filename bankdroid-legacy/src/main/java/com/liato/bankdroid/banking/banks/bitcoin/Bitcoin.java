@@ -92,11 +92,9 @@ public class Bitcoin extends Bank {
 			throw new BankException(res.getText(
 					R.string.invalid_bitcoin_address).toString());
 		}catch (ClientProtocolException e) {
-			e.printStackTrace();
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		} catch (IOException e) {
-			e.printStackTrace();
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		}
 		return urlopen;
 	}
@@ -111,8 +109,7 @@ public class Bitcoin extends Bank {
 		}
 		login();
 		if (accounts.isEmpty()) {
-			throw new BankException(res.getText(R.string.no_accounts_found)
-					.toString());
+			throw new BankException(res.getText(R.string.no_accounts_found).toString());
 		}
 		super.updateComplete();
 	}

@@ -95,9 +95,9 @@ public class Bredband2VoIP extends Bank {
                 throw new LoginException(res.getText(R.string.invalid_username_password).toString());
             }
         } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         } catch (IOException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
         return urlopen;
     }
@@ -123,7 +123,7 @@ public class Bredband2VoIP extends Bank {
                 }
             }
         } catch (Exception e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
         super.updateComplete();
     }
@@ -153,7 +153,7 @@ public class Bredband2VoIP extends Bank {
             }
             account.setTransactions(transactions);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new BankException(e.getMessage(), e);
         }
     }
 }

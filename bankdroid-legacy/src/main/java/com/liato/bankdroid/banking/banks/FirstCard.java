@@ -95,9 +95,9 @@ public class FirstCard extends Bank {
 			}
 			
 		} catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		} catch (IOException e) {
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		}
 		return urlopen;
 	}
@@ -129,11 +129,9 @@ public class FirstCard extends Bank {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
 			}			
 		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new BankException(e.getMessage(), e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new BankException(e.getMessage(), e);
 		}
         finally {
             super.updateComplete();
@@ -165,11 +163,9 @@ public class FirstCard extends Bank {
 			}
 			account.setTransactions(transactions);
 		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            throw new BankException(e.getMessage(), e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            throw new BankException(e.getMessage(), e);
 		}
 	}
 	

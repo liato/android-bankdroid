@@ -94,10 +94,9 @@ public class Osuuspankki extends Bank {
 				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 			}
 		} catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		} catch (IOException e) {
-            e.printStackTrace();
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		}
 		return urlopen;
 	}
@@ -170,11 +169,9 @@ public class Osuuspankki extends Bank {
 			}
 			account.setTransactions(transactions);
 		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            throw new BankException(e.getMessage(), e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            throw new BankException(e.getMessage(), e);
 		}
 	}	
 }

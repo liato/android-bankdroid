@@ -155,14 +155,11 @@ public class ICA extends Bank {
             httpResponse = urlopen.openAsHttpResponse(API_URL + "logout", new ArrayList<NameValuePair>(), false);
             httpResponse.getStatusLine();
         } catch (JsonParseException e) {
-            e.printStackTrace();
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         } catch (ClientProtocolException e) {
-            e.printStackTrace();
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
         return urlopen;
     }
@@ -183,7 +180,6 @@ public class ICA extends Bank {
         try {
             return readJsonValue(response.getEntity().getContent(), valueType);
         } catch (IOException e) {
-            e.printStackTrace();
             return null;
         }
     }
@@ -192,7 +188,6 @@ public class ICA extends Bank {
         try {
             return mObjectMapper.readValue(is, valueType);
         } catch (Exception e) {
-            e.printStackTrace();
             return null;
         }
     }

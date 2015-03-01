@@ -78,12 +78,8 @@ public class DinersClub extends Bank {
     protected LoginPackage preLogin() throws BankException,
             ClientProtocolException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_dinersclub));
-        try {
-            response = urlopen.open("https://secure.dinersclub.se/dcs/login.aspx");
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw e;
-        }
+        response = urlopen.open("https://secure.dinersclub.se/dcs/login.aspx");
+
         Matcher matcher = reViewState.matcher(response);
         if (!matcher.find()) {
             throw new BankException(res.getText(R.string.unable_to_find).toString()+" ViewState.");
@@ -117,10 +113,10 @@ public class DinersClub extends Bank {
 			}
 		}
 		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		}
 		catch (IOException e) {
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		}
 		return urlopen;
 	}
@@ -137,10 +133,10 @@ public class DinersClub extends Bank {
                 response = urlopen.open("https://secure.dinersclub.se/dcs/eSaldo/Default.aspx");
             }
             catch (ClientProtocolException e) {
-                throw new BankException(e.getMessage());
+                throw new BankException(e.getMessage(), e);
             }
             catch (IOException e) {
-                throw new BankException(e.getMessage());
+                throw new BankException(e.getMessage(), e);
             }
 		}
 
@@ -198,11 +194,9 @@ public class DinersClub extends Bank {
 			}
 			account.setTransactions(transactions);
 		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            throw new BankException(e.getMessage(), e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            throw new BankException(e.getMessage(), e);
 		}
 	}
 }

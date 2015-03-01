@@ -123,11 +123,9 @@ public class NordeaDK extends Bank {
 			}
 			this.updatePrefix();
 		} catch (ClientProtocolException e) {
-			Log.e(TAG, "ClientProtocolException: " + e.getMessage());
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		} catch (IOException e) {
-			Log.e(TAG, "IOException: " + e.getMessage());
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		}
 		return urlopen;
 	}
@@ -242,11 +240,9 @@ public class NordeaDK extends Bank {
 			}
 			
 		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            throw new BankException(e.getMessage(), e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            throw new BankException(e.getMessage(), e);
 		}
 		return transactions;
 

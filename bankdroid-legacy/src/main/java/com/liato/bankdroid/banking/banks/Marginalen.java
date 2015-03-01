@@ -119,10 +119,10 @@ public class Marginalen extends Bank {
     		accountUrl = BASE_URL + matcher.group(1).replaceAll("&amp;", "&");
     	}
     	catch (ClientProtocolException e) {
-    		throw new BankException("ClientProtolException:" + e.getMessage());
+    		throw new BankException("ClientProtolException:" + e.getMessage(), e);
     	}
     	catch (IOException e) {
-    		throw new BankException("IOException:" + e.getMessage());
+    		throw new BankException("IOException:" + e.getMessage(), e);
     	}
     	return urlopen;
     }
@@ -158,10 +158,10 @@ public class Marginalen extends Bank {
 			}
 		}
 		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		}
 		catch (IOException e) {
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		}
 		finally {
 	      super.updateComplete();
@@ -190,9 +190,9 @@ public class Marginalen extends Bank {
             }
 			account.setTransactions(transactions);
 		} catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		} catch (IOException e) {
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		}
 	}
 }

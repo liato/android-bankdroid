@@ -244,11 +244,11 @@ public class Nordea extends Bank {
 			}
 			
 		} catch (HttpResponseException e) {
-			throw new BankException(String.valueOf(e.getStatusCode()));
+			throw new BankException(String.valueOf(e.getStatusCode()), e);
 		} catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		} catch (IOException e) {
-			throw new BankException(e.getMessage());
+			throw new BankException(e.getMessage(), e);
 		}
 		return urlopen;
 	}
@@ -315,10 +315,10 @@ public class Nordea extends Bank {
 			}
 		}
         catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
         catch (IOException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
 		finally {
 		    super.updateComplete();
@@ -348,11 +348,9 @@ public class Nordea extends Bank {
                     break;
             }
         } catch (ClientProtocolException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new BankException(e.getMessage(), e);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new BankException(e.getMessage(), e);
         }
 	}
 

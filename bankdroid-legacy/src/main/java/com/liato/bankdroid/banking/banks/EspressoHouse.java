@@ -89,7 +89,7 @@ public class EspressoHouse extends Bank {
                 throw new LoginException(res.getText(R.string.invalid_username_password).toString());
             }
         } catch (IOException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
         return urlopen;
     }
@@ -125,7 +125,7 @@ public class EspressoHouse extends Bank {
             a.setTransactions(transactions);
             accounts.add(a);
         } catch (Exception e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
         super.updateComplete();
     }

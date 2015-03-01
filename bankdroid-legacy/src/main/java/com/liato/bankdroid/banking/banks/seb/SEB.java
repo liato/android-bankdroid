@@ -118,10 +118,9 @@ public class SEB extends Bank {
             }
             urlopen.setFollowRedirects(true);
         } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new BankException(e.getMessage());
+            throw new BankException(e.getMessage(), e);
         }
         return urlopen;
     }
@@ -299,8 +298,7 @@ public class SEB extends Bank {
         try {
             return getObjectmapper().readValue(is, valueType);
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            throw new BankException(e.getMessage(), e);
         }
     }
 }
