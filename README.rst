@@ -1,5 +1,9 @@
+.. image:: https://travis-ci.org/liato/android-bankdroid.svg?branch=master
+    :target: https://travis-ci.org/liato/android-bankdroid
+
 Bankdroid
 =========
+
 
 Bankdroid is an Android app for Swedish banks, payment cards and similar services. Key features include:
 
