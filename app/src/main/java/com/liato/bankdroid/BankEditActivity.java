@@ -292,7 +292,9 @@ public class BankEditActivity extends LockableActivity implements OnClickListene
     				});
 				}
 				AlertDialog alert = builder.create();
-				alert.show();
+                if(!context.isFinishing()) {
+                    alert.show();
+                }
 			}
 			else {
 				context.finish();
