@@ -42,7 +42,6 @@ public class BankFactory {
 	public static Bank bankFromDb(long id, Context context, boolean loadAccounts) {
 		Bank bank = null;
 		DBAdapter db = new DBAdapter(context);
-		db.open();
 		Cursor c = db.getBank(id);
 
 		if (c != null) {
@@ -76,17 +75,14 @@ public class BankFactory {
 				c.close();
 			}
 		}
-		db.close();
 		return bank;
 	}
 
 	public static ArrayList<Bank> banksFromDb(Context context, boolean loadAccounts) {
 		ArrayList<Bank> banks = new ArrayList<Bank>();
 		DBAdapter db = new DBAdapter(context);
-		db.open();
 		Cursor c = db.fetchBanks();
 		if (c == null) {
-			db.close();
 			return banks;
 		}
 		while (!c.isLast() && !c.isAfterLast()) {
@@ -119,17 +115,14 @@ public class BankFactory {
 			}
 		}
 		c.close();
-		db.close();
 		return banks;
 	}
 
 	public static Account accountFromDb(Context context, String accountId, boolean loadTransactions) {
 		DBAdapter db = new DBAdapter(context);
-		db.open();
 		Cursor c = db.getAccount(accountId);
 
 		if (c == null || c.isClosed() || (c.isBeforeFirst() && c.isAfterLast())) {
-			db.close();
 			return null;
 		}
 
@@ -162,18 +155,14 @@ public class BankFactory {
 			}
 			account.setTransactions(transactions);
 		}
-
-		db.close();
 		return account;
 	}
 
 	public static ArrayList<Account> accountsFromDb(Context context, long bankId) {
 		ArrayList<Account> accounts = new ArrayList<Account>();
 		DBAdapter db = new DBAdapter(context);
-		db.open();
 		Cursor c = db.fetchAccounts(bankId);
 		if (c == null) {
-			db.close();
 			return accounts;
 		}
 		while (!c.isLast() && !c.isAfterLast()) {
@@ -195,7 +184,6 @@ public class BankFactory {
 			}
 		}
 		c.close();
-		db.close();
 		return accounts;
 	}
 

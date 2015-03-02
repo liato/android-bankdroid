@@ -224,7 +224,6 @@ public class AutoRefreshService extends Service {
 				return null;
 			}
 			final DBAdapter db = new DBAdapter(AutoRefreshService.this);
-			db.open();
 			BigDecimal currentBalance;
 			BigDecimal diff;
 			BigDecimal minDelta = new BigDecimal(prefs.getString("notify_min_delta", "0"));
@@ -335,8 +334,6 @@ public class AutoRefreshService extends Service {
 				sendBroadcast(updateIntent);
 				sendWidgetRefresh(AutoRefreshService.this);
 			}
-			db.close();
-
 			return null;
 		}
 

@@ -27,7 +27,16 @@ import android.util.Log;
  */
 final public class DatabaseHelper extends SQLiteOpenHelper {
 
-	public DatabaseHelper(final Context context) {
+    private static DatabaseHelper instance;
+
+    public static synchronized DatabaseHelper getHelper(Context context) {
+        if(instance == null) {
+            instance = new DatabaseHelper(context);
+        }
+        return instance;
+    }
+
+	private DatabaseHelper(final Context context) {
 		super(context, DBAdapter.DATABASE_NAME, null,
 				DBAdapter.DATABASE_VERSION);
 	}

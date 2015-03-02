@@ -43,8 +43,6 @@ public class DBAdapter {
     static final String DATABASE_NAME = "data";
     static final int DATABASE_VERSION = 11;
 
-    private final Context mCtx;
-
     /**
      * Constructor - takes the context to allow the database to be
      * opened/created
@@ -52,29 +50,9 @@ public class DBAdapter {
      * @param ctx the Context within which to work
      */
     public DBAdapter(Context ctx) {
-        this.mCtx = ctx;
-    }
-
-    /**
-     * Open the notes database. If it cannot be opened, try to create a new
-     * instance of the database. If it cannot be created, throw an exception to
-     * signal the failure
-     * 
-     * @return this (self reference, allowing this to be chained in an
-     *         initialization call)
-     * @throws SQLException if the database could be neither opened or created
-     */
-    public DBAdapter open() throws SQLException {
-        mDbHelper = new DatabaseHelper(mCtx);
+        mDbHelper = DatabaseHelper.getHelper(ctx);
         mDb = mDbHelper.getWritableDatabase();
-        return this;
     }
-    
-    public void close() {
-        mDbHelper.close();
-        mDb.close();
-    }
-
 
     public long createBank(Bank bank) {
     	return updateBank(bank);
@@ -228,9 +206,8 @@ public class DBAdapter {
     @Deprecated
     public static void save(Bank bank, Context context) {
         DBAdapter db = new DBAdapter(context);
-        db.open();
         long id = db.updateBank(bank);
-        db.close();
+
         bank.setDbid(id);
     }
 
@@ -239,10 +216,7 @@ public class DBAdapter {
     */
     @Deprecated
     public static void disable(Bank bank, Context context) {
-                    DBAdapter db = new DBAdapter(context);
-                    db.open();
-                    db.disableBank(bank.getDbId());
-                    db.close();
-               }
-
+        DBAdapter db = new DBAdapter(context);
+        db.disableBank(bank.getDbId());
+    }
 }

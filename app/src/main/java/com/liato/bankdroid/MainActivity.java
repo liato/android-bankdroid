@@ -308,9 +308,7 @@ public class MainActivity extends LockableActivity {
 				.setPositiveButton(context.getText(R.string.yes), new DialogInterface.OnClickListener() {
 					public void onClick(final DialogInterface dialog, final int id) {
 						final DBAdapter db = new DBAdapter(context);
-						db.open();
 						db.deleteBank(selected_bank.getDbId());
-						db.close();
 						dialog.cancel();
 						parent.refreshView();
 					}
