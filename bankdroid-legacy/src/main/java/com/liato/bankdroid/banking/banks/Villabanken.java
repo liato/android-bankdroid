@@ -165,35 +165,34 @@ public class Villabanken extends Bank {
 		Matcher matcher;
 
         matcher = reDisposableAmount.matcher(accountResponse);
-        matcher.find();
-        Account account = new Account("Disponibelt belopp", Helpers.parseBalance(matcher.group(2)), "0");
-        account.setType(Account.CCARD);
-        account.setCurrency(currency);
-        accounts.add(account);
-        balance = balance.add(account.getBalance());
-
+        if(matcher.find()) {
+            Account account = new Account("Disponibelt belopp", Helpers.parseBalance(matcher.group(2)), "0");
+            account.setType(Account.CCARD);
+            account.setCurrency(currency);
+            accounts.add(account);
+            balance = balance.add(account.getBalance());
+        }
         matcher = reBalance.matcher(accountResponse);
-        matcher.find();
-        account = new Account("Saldo", Helpers.parseBalance(matcher.group(2)), "1");
-        account.setType(Account.OTHER);
-        account.setAliasfor("Saldo alias");
-        account.setCurrency(currency);
-        accounts.add(account);
-
+        if(matcher.find()) {
+            Account account = new Account("Saldo", Helpers.parseBalance(matcher.group(2)), "1");
+            account.setType(Account.OTHER);
+            account.setAliasfor("Saldo alias");
+            account.setCurrency(currency);
+            accounts.add(account);
+        }
         matcher = reCreditLimit.matcher(accountResponse);
-        matcher.find();
-        account = new Account("Köpgräns", Helpers.parseBalance(matcher.group(2)), "2");
-        account.setType(Account.OTHER);
-        account.setAliasfor("Köpgräns alias");
-        account.setCurrency(currency);
-        accounts.add(account);
-
+        if(matcher.find()) {
+            Account account = new Account("Köpgräns", Helpers.parseBalance(matcher.group(2)), "2");
+            account.setType(Account.OTHER);
+            account.setAliasfor("Köpgräns alias");
+            account.setCurrency(currency);
+            accounts.add(account);
+        }
         if (accounts.isEmpty()) {
             throw new BankException(res.getText(R.string.no_accounts_found).toString());
         }
 
         super.updateComplete();
-
 	}
 
     @Override
