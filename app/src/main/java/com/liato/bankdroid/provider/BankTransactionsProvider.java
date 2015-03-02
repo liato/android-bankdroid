@@ -140,7 +140,7 @@ public class BankTransactionsProvider extends ContentProvider implements
 	 */
 	@Override
 	public boolean onCreate() {
-		dbHelper = new DatabaseHelper(getContext());
+		dbHelper = DatabaseHelper.getHelper(getContext());
 		return true;
 	}
 
