@@ -32,6 +32,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.IBinder;
@@ -80,7 +81,9 @@ public class AutoRefreshService extends Service {
     
     private void handleStart(Intent intent, int startId) {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        if (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnectedOrConnecting()) {
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+        if (ni != null &&
+                ni.isConnected()) {
             if (InsideUpdatePeriod()){
                 new DataRetrieverTask().execute();
             }
