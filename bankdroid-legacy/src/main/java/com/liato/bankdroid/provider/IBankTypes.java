@@ -102,4 +102,5 @@ public interface IBankTypes {
     public final static int OSTGOTATRAFIKEN = 78;
     public final static int BREDBAND2VOIP = 79;
     public final static int ESPRESSOHOUSE = 80;
+    public final static int MINPENSION = 81;
 }

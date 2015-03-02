@@ -31,6 +31,7 @@ import com.liato.bankdroid.banking.banks.Jojo;
 import com.liato.bankdroid.banking.banks.Marginalen;
 import com.liato.bankdroid.banking.banks.McDonalds;
 import com.liato.bankdroid.banking.banks.Meniga;
+import com.liato.bankdroid.banking.banks.MinPension;
 import com.liato.bankdroid.banking.banks.NordeaDK;
 import com.liato.bankdroid.banking.banks.Nordnet;
 import com.liato.bankdroid.banking.banks.Nordnetdirekt;
@@ -241,6 +242,8 @@ public class LegacyBankFactory {
                 return new Bredband2VoIP(context);
             case IBankTypes.ESPRESSOHOUSE:
                 return new EspressoHouse(context);
+            case IBankTypes.MINPENSION:
+                return new MinPension(context);
             default:
                 throw new BankException("BankType id not found.");
         }
@@ -328,6 +331,7 @@ public class LegacyBankFactory {
         banks.add(new Ostgotatrafiken(context));
         banks.add(new Bredband2VoIP(context));
         banks.add(new EspressoHouse(context));
+        banks.add(new MinPension(context));
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) {

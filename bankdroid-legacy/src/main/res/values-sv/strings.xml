@@ -8,11 +8,15 @@
     <string name="points">poäng</string>
     <string name="card_id">Kort ID</string>
     <string name="balance">Saldo</string>
+    <string name="pno">ÅÅÅÅMMDDNNNN</string>
 
     <string name="nordnetdirekt_extras_title">Nyckel</string>
 
     <string name="bitcoin_address">Bitcoin-adress</string>
     <string name="invalid_bitcoin_address">Ogiltig bitcoin-adress.</string>
+    <string name="public_pension">Allmän pension</string>
+    <string name="occupational_pension">Tjänstepension</string>
+    <string name="private_pension">Privat pension</string>
 
     <string name="unable_to_find">Kunde ej hitta</string>
     <string name="unable_to_login">Kunde ej logga in. Var vänlig försök igen senare.</string>
