@@ -147,7 +147,11 @@ public class Urllib {
         return open(url, postData, false);
     }
     public String open(String url, List<NameValuePair> postData, boolean forcePost) throws ClientProtocolException, IOException {
-        return EntityUtils.toString(openAsHttpResponse(url, postData, forcePost).getEntity());
+        HttpEntity entity = openAsHttpResponse(url, postData, forcePost).getEntity();
+        if(entity == null) {
+            return "";
+        }
+        return EntityUtils.toString(entity);
     }
 
     public HttpResponse openAsHttpResponse(String url, List<NameValuePair> postData, boolean forcePost) throws ClientProtocolException, IOException {
