@@ -42,6 +42,8 @@ import java.io.IOException;
 
 import eu.nullbyte.android.urllib.Urllib;
 
+import static android.graphics.Color.WHITE;
+
 public class WebViewActivity extends LockableActivity implements OnClickListener {
     private final static String TAG = "WebViewActivity";
     private static WebView mWebView;
@@ -78,6 +80,7 @@ public class WebViewActivity extends LockableActivity implements OnClickListener
                     Runnable runnable = new Runnable() {
                         public void run() {
 //                            activity.hideProgressBar();
+                            if (mFirstPageLoaded) mWebView.setBackgroundColor(WHITE);
                         }
                     };
                     // Let the progress bar hit 100% before we hide it.
