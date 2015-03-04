@@ -247,4 +247,8 @@
     <!-- Color Picker -->
     <string name="dialog_color_picker">Färgväljare</string>
     <string name="press_color_to_apply">Tryck på färgen för att välja</string>
+
+    <!-- Error messages -->
+    <string name="error_bank_not_found">Den valda banken kunde inte hittas.</string>
+    <string name="error_account_not_found">Det valda kontot kunde inte hittas.</string>
 </resources>
