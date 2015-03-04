@@ -44,7 +44,7 @@ public class BankFactory {
 		DBAdapter db = new DBAdapter(context);
 		Cursor c = db.getBank(id);
 
-		if (c != null) {
+		if (c != null && c.getCount() > 0) {
 			try {
 				bank = fromBanktypeId(c.getInt(c.getColumnIndex("banktype")), context);
 				String password = "";
@@ -82,7 +82,7 @@ public class BankFactory {
 		ArrayList<Bank> banks = new ArrayList<Bank>();
 		DBAdapter db = new DBAdapter(context);
 		Cursor c = db.fetchBanks();
-		if (c == null) {
+		if (c == null || c.getCount() == 0) {
 			return banks;
 		}
 		while (!c.isLast() && !c.isAfterLast()) {
@@ -162,7 +162,7 @@ public class BankFactory {
 		ArrayList<Account> accounts = new ArrayList<Account>();
 		DBAdapter db = new DBAdapter(context);
 		Cursor c = db.fetchAccounts(bankId);
-		if (c == null) {
+		if (c == null || c.getCount() == 0) {
 			return accounts;
 		}
 		while (!c.isLast() && !c.isAfterLast()) {
