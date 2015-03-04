@@ -1,6 +1,7 @@
 package com.liato.bankdroid;
 
 import android.app.Application;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.liato.bankdroid.banking.Bank;
@@ -15,6 +16,8 @@ public class BankdroidApplication extends Application {
 
     public static final String LOG_KEY_LOCALE = "locale";
     public static final String LOG_KEY_BANKS = "banks";
+
+    private String message = "";
 
     @Override
     public void onCreate() {
@@ -33,6 +36,18 @@ public class BankdroidApplication extends Application {
                         .append(",");
             }
             Crashlytics.setString(LOG_KEY_BANKS, bankStringBuilder.substring(0, bankStringBuilder.length() - 1));
+        }
+    }
+
+    public void setApplicationMessage(String messageText) {
+        message = messageText == null ? "" : messageText;
+    }
+
+    public void showAndDeleteApplicationMessage() {
+        if (!message.isEmpty()) {
+            Toast toast = Toast.makeText(this, message, Toast.LENGTH_LONG);
+            message = "";
+            toast.show();
         }
     }
 }
