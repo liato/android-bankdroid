@@ -302,4 +302,8 @@
     <!-- Color Picker -->
     <string name="dialog_color_picker">Color Picker</string>
     <string name="press_color_to_apply">Press on Color to apply</string>    
+
+    <!-- Error messages -->
+    <string name="error_bank_not_found">The chosen bank could not be found.</string>
+    <string name="error_account_not_found">The chosen account could not be found.</string>
 </resources>
