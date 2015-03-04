@@ -12,11 +12,15 @@
     <string name="points">points</string>
     <string name="card_id">Card ID</string>
     <string name="balance">Balance</string>
+    <string name="pno">YYYYMMDDNNNN</string>
 
     <string name="nordnetdirekt_extras_title">Key</string>
 
     <string name="bitcoin_address">Bitcoin address</string>
     <string name="invalid_bitcoin_address">Invalid bitcoin address.</string>
+    <string name="public_pension">Public pension</string>
+    <string name="occupational_pension">Occupational pension</string>
+    <string name="private_pension">Private pension</string>
 
     <string name="unable_to_find">Unable to find</string>
     <string name="unable_to_login">Unable to login. Please try again later.</string>
