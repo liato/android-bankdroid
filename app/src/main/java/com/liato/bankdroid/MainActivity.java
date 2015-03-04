@@ -118,7 +118,7 @@ public class MainActivity extends LockableActivity {
     			startActivity(intent);
 		    }
 		}
-        ((BankdroidApplication) getApplication()).showAndDeleteApplicationMessage(this);
+        ((BankdroidApplication) getApplication()).showAndDeleteApplicationMessage();
 	}
 
 	
