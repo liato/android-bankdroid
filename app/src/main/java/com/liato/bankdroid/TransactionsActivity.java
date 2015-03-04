@@ -17,6 +17,7 @@
 package com.liato.bankdroid;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,7 +46,15 @@ public class TransactionsActivity extends LockableActivity {
         setContentView(R.layout.transactions);
         Bundle extras = getIntent().getExtras();
         Bank bank = BankFactory.bankFromDb(extras.getLong("bank"), this, false);
+        if(bank == null) {
+            redirectToMain(getString(R.string.error_bank_not_found));
+            return;
+        }
         Account account = BankFactory.accountFromDb(this, extras.getLong("bank") + "_" + extras.getString("account"), true);
+        if(account == null) {
+            redirectToMain(getString(R.string.error_account_not_found));
+            return;
+        }
         TextView viewBankName = (TextView) findViewById(R.id.txtListitemAccountsGroupAccountname);
         TextView viewAccountName = (TextView) findViewById(R.id.txtListitemAccountsGroupBankname);
         TextView viewAccountBalance = (TextView) findViewById(R.id.txtListitemAccountsGroupTotal);
@@ -172,6 +181,12 @@ public class TransactionsActivity extends LockableActivity {
             return 1;
         }
 
+    }
+
+    private void redirectToMain(String errorMessage) {
+        final Intent intent = new Intent(this, MainActivity.class);
+        ((BankdroidApplication) getApplicationContext()).setApplicationMessage(getString(R.string.error_bank_not_found));
+        startActivity(intent);
     }
 
 }
