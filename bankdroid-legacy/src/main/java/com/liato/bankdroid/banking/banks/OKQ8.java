@@ -72,15 +72,15 @@ public class OKQ8 extends Bank {
 		super.STATIC_BALANCE = STATIC_BALANCE;
 	}
 
-	public OKQ8(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+	public OKQ8(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
 
     
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_okq8));
         Date d = new Date();
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
@@ -95,10 +95,10 @@ public class OKQ8 extends Bank {
         return new LoginPackage(urlopen, postData, response, "https://nettbank.edb.com/Logon/logon/step1");
     }
 
-	public Urllib login() throws LoginException, BankException {
+	public Urllib login() throws LoginException, BankException, IOException {
         Matcher matcher;
         String value = null;
-		try {
+
 			LoginPackage lp = preLogin();
 			List <NameValuePair> postData = lp.getPostData();
 			response = urlopen.open(lp.getLoginTarget(), postData);
@@ -150,18 +150,11 @@ public class OKQ8 extends Bank {
 			{
 				throw new LoginException("Login failed.");
 			}
-		}
-		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		}
-		catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
-		}
 		return urlopen;
 	}
 
 	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
+	public void update() throws BankException, LoginException, BankChoiceException, IOException {
 		super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -222,12 +215,7 @@ public class OKQ8 extends Bank {
 				transactions.add(new Transaction(matcher.group(1).trim(), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)).negate()));
 			}
 			accounts.get(0).setTransactions(transactions);
-		} catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-		} catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
-		}		
-        finally {
+		} finally {
             super.updateComplete();
         }
 	}

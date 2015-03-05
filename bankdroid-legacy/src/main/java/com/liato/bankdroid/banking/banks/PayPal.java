@@ -70,15 +70,15 @@ public class PayPal extends Bank {
         super.STATIC_BALANCE = STATIC_BALANCE;
     }
 
-    public PayPal(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+    public PayPal(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
     }
 
     
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_paypal));
         urlopen.setUserAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1468.0 Safari/537.36");
         //Get cookies and url to post to
@@ -112,26 +112,20 @@ public class PayPal extends Bank {
     }
 
     @Override
-    public Urllib login() throws LoginException, BankException {
-        try {
-            LoginPackage lp = preLogin();
-            response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-            if (response.contains("If you still can't log in") || response.contains("both your email address and password")) {
-                throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-            }
-            if (response.contains("your last action could not be completed")) {
-                throw new BankException("Error: PPL92");
-            }
-        } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+    public Urllib login() throws LoginException, BankException, IOException {
+        LoginPackage lp = preLogin();
+        response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+        if (response.contains("If you still can't log in") || response.contains("both your email address and password")) {
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+        }
+        if (response.contains("your last action could not be completed")) {
+            throw new BankException("Error: PPL92");
         }
         return urlopen;
     }
 
     @Override
-    public void update() throws BankException, LoginException, BankChoiceException {
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
         if (username == null || password == null || username.length() == 0 || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -176,16 +170,8 @@ public class PayPal extends Bank {
             if (accounts.isEmpty()) {
                 throw new BankException(res.getText(R.string.no_accounts_found).toString());
             }
-        }
-        catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        }
-        catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
-        }
-        finally {
+        } finally {
             super.updateComplete();
         }
     }
-
 }

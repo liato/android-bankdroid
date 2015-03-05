@@ -75,15 +75,15 @@ public class BrummerKF extends Bank {
         super.STATIC_BALANCE = STATIC_BALANCE;
 	}
 
-	public BrummerKF(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+	public BrummerKF(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
 
     
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_brummer));
         urlopen.setAllowCircularRedirects(true);
         response = urlopen.open("https://www.brummer.se/sv/online/privat/Login/");
@@ -111,33 +111,25 @@ public class BrummerKF extends Bank {
         return new LoginPackage(urlopen, postData, response, "https://www.brummer.se/sv/online/privat/Login/");
     }
     
-	public Urllib login() throws LoginException, BankException {
-		try {
-			LoginPackage lp = preLogin();
-			String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+	public Urllib login() throws LoginException, BankException, IOException {
+		LoginPackage lp = preLogin();
+		String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
 
-			Matcher matcher = reError.matcher(response);
-			if (matcher.find()) {
-			    String errormsg = Html.fromHtml(matcher.group(1).trim()).toString();
-			    if (errormsg.contains("Personnummer")) {
-			        throw new LoginException(errormsg);    
-			    }
-			    else {
-	                 throw new BankException(errormsg);    
-			    }
-			}
-		}
-		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		}
-		catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
+		Matcher matcher = reError.matcher(response);
+		if (matcher.find()) {
+		    String errormsg = Html.fromHtml(matcher.group(1).trim()).toString();
+		    if (errormsg.contains("Personnummer")) {
+		        throw new LoginException(errormsg);
+		    }
+		    else {
+                 throw new BankException(errormsg);
+		    }
 		}
 		return urlopen;
 	}	
 	
 	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
+	public void update() throws BankException, LoginException, BankChoiceException, IOException {
 		super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -145,34 +137,26 @@ public class BrummerKF extends Bank {
 
 		urlopen = login();
 		Matcher matcher;
-		try {
-			response = urlopen.open("https://www.brummer.se/sv/online/privat/");
-			matcher = reAccounts.matcher(response);
+
+        response = urlopen.open("https://www.brummer.se/sv/online/privat/");
+		matcher = reAccounts.matcher(response);
 			
-			while (matcher.find()) {
-                /*
-                 * 1: Kontonamn
-                 * 2: Kontonummer
-                 * 3: Avkastning under året
-                 * 4: Genomsnittlig årlig avkastning sedan start
-                 * 5: Avkastning sedan start
-                 * 6: Marknadsvärde (kronor)
-                 */
-				
-				accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim(), Helpers.parseBalance(matcher.group(6).trim()), matcher.group(2)));
-	            
-				balance = balance.add(Helpers.parseBalance(matcher.group(6)));
-			}
-						if (accounts.isEmpty()) {
-				throw new BankException(res.getText(R.string.no_accounts_found).toString());
-			}
+		while (matcher.find()) {
+            /*
+             * 1: Kontonamn
+             * 2: Kontonummer
+             * 3: Avkastning under året
+             * 4: Genomsnittlig årlig avkastning sedan start
+             * 5: Avkastning sedan start
+             * 6: Marknadsvärde (kronor)
+             */
+
+			accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim(), Helpers.parseBalance(matcher.group(6).trim()), matcher.group(2)));
+
+			balance = balance.add(Helpers.parseBalance(matcher.group(6)));
 		}
-		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		}
-		catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
+		if (accounts.isEmpty()) {
+			throw new BankException(res.getText(R.string.no_accounts_found).toString());
 		}
 	}
-
 }

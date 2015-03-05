@@ -59,7 +59,7 @@ public class BlekingeTrafiken extends Bank {
     }
 
     public BlekingeTrafiken(String username, String password, Context context)
-            throws BankException, LoginException, BankChoiceException {
+            throws BankException, LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
     }
@@ -73,27 +73,21 @@ public class BlekingeTrafiken extends Bank {
         return lp;
     }
 
-    public Urllib login() throws LoginException, BankException {
-        try {
-            LoginPackage lp = preLogin();
-            urlopen.addHeader("Content-Type","application/json;charset=UTF-8");
-            urlopen.addHeader("Accept","application/json");
-            HttpResponse httpResponse = urlopen.openAsHttpResponse(URL + "/webshop/card/balance/",
-                    new StringEntity("{\"cardnr\":\"" + username + "\"}"), true);
-            if(httpResponse.getStatusLine().getStatusCode() != 200) {
-                throw new LoginException(res.getText(R.string.invalid_card_number).toString());
-            }
-            response = EntityUtils.toString(httpResponse.getEntity());
-        } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+    public Urllib login() throws LoginException, BankException, IOException {
+        LoginPackage lp = preLogin();
+        urlopen.addHeader("Content-Type","application/json;charset=UTF-8");
+        urlopen.addHeader("Accept","application/json");
+        HttpResponse httpResponse = urlopen.openAsHttpResponse(URL + "/webshop/card/balance/",
+                new StringEntity("{\"cardnr\":\"" + username + "\"}"), true);
+        if(httpResponse.getStatusLine().getStatusCode() != 200) {
+            throw new LoginException(res.getText(R.string.invalid_card_number).toString());
         }
+        response = EntityUtils.toString(httpResponse.getEntity());
         return urlopen;
     }
 
     @Override
-    public void update() throws BankException, LoginException, BankChoiceException {
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
         if (username == null || username.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());

@@ -68,15 +68,15 @@ public class DinersClub extends Bank {
 		super.URL = URL;
 	}
 
-	public DinersClub(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+	public DinersClub(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
 
     
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_dinersclub));
         response = urlopen.open("https://secure.dinersclub.se/dcs/login.aspx");
 
@@ -104,25 +104,17 @@ public class DinersClub extends Bank {
         return new LoginPackage(urlopen, postData, response, "https://secure.dinersclub.se/dcs/login.aspx");
     }
 
-	public Urllib login() throws LoginException, BankException {
-		try {
-		    LoginPackage lp = preLogin();
-            response = urlopen.open(lp.getLoginTarget(), lp.getPostData());		    
-			if (response.contains("Har du glömt ditt lösenord")) {
-				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-			}
-		}
-		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		}
-		catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
+	public Urllib login() throws LoginException, BankException, IOException {
+		LoginPackage lp = preLogin();
+        response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+		if (response.contains("Har du glömt ditt lösenord")) {
+			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		return urlopen;
 	}
 
 	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
+	public void update() throws BankException, LoginException, BankChoiceException, IOException {
 		super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -170,33 +162,29 @@ public class DinersClub extends Bank {
 	}
 
 	@Override
-	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+	public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
+            BankException, IOException {
 		super.updateTransactions(account, urlopen);
 		String response = null;
 		Matcher matcher;
-		try {
-			/* We're going to look at all the pages until we find one that has transactions on it */
-			response = urlopen.open(String.format("https://secure.dinersclub.se/dcs/eSaldo/%s", invoiceUrl));
-			matcher = reTransactions.matcher(response);
-			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 
-			while (matcher.find()) {
-				/*
-				 * Capture groups:
-				 * GROUP				EXAMPLE DATA
-				 * 1: Trans. date		2010-10-06
-				 * 2: Specifications	Skyways Express Ab
-				 * 3: Foreign amount	30,30 EUR
-				 * 4: Amount			2.462,00 kr
-				 */
+		/* We're going to look at all the pages until we find one that has transactions on it */
+		response = urlopen.open(String.format("https://secure.dinersclub.se/dcs/eSaldo/%s", invoiceUrl));
+		matcher = reTransactions.matcher(response);
+		ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 
-				transactions.add(new Transaction(matcher.group(1), matcher.group(2), Helpers.parseBalance(matcher.group(4))));
-			}
-			account.setTransactions(transactions);
-		} catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-		} catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+		while (matcher.find()) {
+			/*
+			 * Capture groups:
+			 * GROUP				EXAMPLE DATA
+			 * 1: Trans. date		2010-10-06
+			 * 2: Specifications	Skyways Express Ab
+			 * 3: Foreign amount	30,30 EUR
+			 * 4: Amount			2.462,00 kr
+			 */
+
+			transactions.add(new Transaction(matcher.group(1), matcher.group(2), Helpers.parseBalance(matcher.group(4))));
 		}
+		account.setTransactions(transactions);
 	}
 }

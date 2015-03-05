@@ -22,6 +22,8 @@ import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
+import java.io.IOException;
+
 
 public class SparbankenOresund extends MobilbankenBase {
 	private static final String TAG = "SparbankenOresund";
@@ -41,10 +43,9 @@ public class SparbankenOresund extends MobilbankenBase {
         this.targetId = "0003";
     }
 
-    public SparbankenOresund(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+    public SparbankenOresund(String username, String password, Context context)
+            throws BankException, LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
     }
-
-
 }

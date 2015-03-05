@@ -23,6 +23,8 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import java.io.IOException;
+
 
 public class Statoil extends SEBKortBase {
 	private static final String TAG = "Statoil";
@@ -38,7 +40,8 @@ public class Statoil extends SEBKortBase {
 		super.BANKTYPE_ID = BANKTYPE_ID;
 	}
 	
-	public Statoil(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+	public Statoil(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
 		super(username, password, context, "stse", "0122");
 	}
 

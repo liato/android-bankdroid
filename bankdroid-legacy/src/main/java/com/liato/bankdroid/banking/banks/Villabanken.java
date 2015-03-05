@@ -68,13 +68,14 @@ public class Villabanken extends Bank {
 		super.URL = URL;
 	}
 
-	public Villabanken(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+	public Villabanken(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
 
 	@Override
-	protected LoginPackage preLogin() throws BankException, ClientProtocolException, IOException {
+	protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_villabanken));
 		String preLoginResponse = urlopen.open(URL);
 		Matcher matcher = reRequestDigest.matcher(preLoginResponse);
@@ -137,25 +138,19 @@ public class Villabanken extends Bank {
 	}
 
 	@Override
-	public Urllib login() throws LoginException, BankException {
-		try {
-			LoginPackage lp = preLogin();
-			String loginResponse = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-			if (loginResponse.contains("misslyckades")) {
-				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-			}
-            this.accountResponse = urlopen.open(accountUrl);
-
-		} catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		} catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
+	public Urllib login() throws LoginException, BankException, IOException {
+		LoginPackage lp = preLogin();
+		String loginResponse = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+		if (loginResponse.contains("misslyckades")) {
+			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
+        this.accountResponse = urlopen.open(accountUrl);
+
 		return urlopen;
 	}
 
 	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
+	public void update() throws BankException, LoginException, BankChoiceException, IOException {
 		super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -196,7 +191,8 @@ public class Villabanken extends Bank {
 	}
 
     @Override
-    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+    public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
+            BankException, IOException {
         super.updateTransactions(account, urlopen);
         if (account.getType() != Account.CCARD) return;
 
@@ -206,6 +202,5 @@ public class Villabanken extends Bank {
             transactions.add(new Transaction(matcher.group(1), matcher.group(2), Helpers.parseBalance(matcher.group(3)).negate(), account.getCurrency()));
         }
         account.setTransactions(transactions);
-
     }
 }

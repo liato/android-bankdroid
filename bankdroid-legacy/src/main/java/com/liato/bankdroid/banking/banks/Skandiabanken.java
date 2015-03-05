@@ -69,13 +69,13 @@ public class Skandiabanken extends Bank {
 	}
 
 	public Skandiabanken(String username, String password, Context context)
-			throws BankException, LoginException, BankChoiceException {
+			throws BankException, LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
 
 	@Override
-	public Urllib login() throws LoginException, BankException {
+	public Urllib login() throws LoginException, BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_skandiabanken));
 
 		HashMap<String, String> headers = urlopen.getHeaders();
@@ -106,10 +106,6 @@ public class Skandiabanken extends Bank {
 			else
 				throw new BankException("Http fel (" + e.getStatusCode() + ") "
 						+ e.getMessage(), e);
-		} catch (ClientProtocolException e) {
-			throw new BankException("ClientProtocolException " + e.getMessage(), e);
-		} catch (IOException e) {
-			throw new BankException("IOException " + e.getMessage(), e);
 		} catch (JSONException e) {
 			throw new BankException("Oväntat svarsformat " + e.getMessage(), e);
 		}
@@ -133,7 +129,7 @@ public class Skandiabanken extends Bank {
 
 	@Override
 	public void update() throws BankException, LoginException,
-			BankChoiceException {
+			BankChoiceException, IOException {
 		super.update();
 
 		if (username == null || password == null || username.length() == 0
@@ -166,8 +162,6 @@ public class Skandiabanken extends Bank {
 				Account account = new Account(name, Helpers.parseBalance(balanceString), id, type);
 				accounts.add(account);
 			}
-		} catch (IOException e) {
-			throw new BankException("IOException " + e.getMessage(), e);
 		} catch (JSONException e) {
 			throw new BankException("Oväntat svarsformat " + e.getMessage(), e);
 		}
@@ -175,7 +169,7 @@ public class Skandiabanken extends Bank {
 
 	@Override
 	public void updateTransactions(Account account, Urllib urlopen)
-			throws LoginException, BankException {
+			throws LoginException, BankException, IOException {
 		super.updateTransactions(account, urlopen);
 
 		if (customerId == 0)
@@ -183,10 +177,10 @@ public class Skandiabanken extends Bank {
 		
 		try {
 	        ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-	        
+
 			String accountTransactionsUrl = getBaseUrlWithCustomerOwner()
 					+ "/customer/" + customerId + "/account/" + account.getId();
-			
+
 			String accountJsonString = urlopen.open(accountTransactionsUrl);
 			JSONObject accountJSONObj = new JSONObject(accountJsonString);
 			JSONArray transactionsJSONArray = accountJSONObj.optJSONArray("transactions");
@@ -199,19 +193,17 @@ public class Skandiabanken extends Bank {
     				Transaction transaction = new Transaction(date, description, Helpers.parseBalance(ammountString));
     				transactions.add(transaction);
     			}
-	            
+
 			    // Sort transactions by date
     			Collections.sort(transactions, new Comparator<Transaction>() {
     	            public int compare(Transaction t1, Transaction t2) {
     	                return t2.compareTo(t1);
     	            }
     	        });
-    			
+
     			account.setTransactions(transactions);
 			}
-			
-		} catch (IOException e) {
-			throw new BankException("IOException " + e.getMessage(), e);
+
 		} catch (JSONException e) {
 			throw new BankException("Oväntat svarsformat " + e.getMessage(), e);
 		}

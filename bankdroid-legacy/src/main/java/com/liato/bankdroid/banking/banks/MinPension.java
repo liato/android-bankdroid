@@ -57,7 +57,7 @@ public class MinPension extends Bank {
     }
 
     public MinPension(String username, String password, Context context)
-            throws BankException, LoginException, BankChoiceException {
+            throws BankException, LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
     }
@@ -79,54 +79,46 @@ public class MinPension extends Bank {
     }
 
     @Override
-    public Urllib login() throws LoginException, BankException {
-        try {
-            LoginPackage lp = preLogin();
+    public Urllib login() throws LoginException, BankException, IOException {
+        LoginPackage lp = preLogin();
 
-            String response = urlopen.open(lp.getLoginTarget(), lp.getPostData(), true);
-            if (!response.contains("LoggaUt.aspx")) {
-                throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-            }
-            response = urlopen.open("https://www.minpension.se/mina-sidor/redirect?path=MinPension%2FDefault.aspx&bodyMargin=0");
-            Document document = Jsoup.parse(response);
-            Element e = document.select("#authenticationResult").first();
-            if (e == null) {
-                throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-            }
-            List<NameValuePair> postData = new ArrayList<>();
-            postData.add(new BasicNameValuePair("authenticationResult", e.val()));
-            urlopen.open("https://minasidor.minpension.se/MinPension/Default.aspx", postData, true);
-
-            return urlopen;
-
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+        String response = urlopen.open(lp.getLoginTarget(), lp.getPostData(), true);
+        if (!response.contains("LoggaUt.aspx")) {
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
+        response = urlopen.open("https://www.minpension.se/mina-sidor/redirect?path=MinPension%2FDefault.aspx&bodyMargin=0");
+        Document document = Jsoup.parse(response);
+        Element e = document.select("#authenticationResult").first();
+        if (e == null) {
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+        }
+        List<NameValuePair> postData = new ArrayList<>();
+        postData.add(new BasicNameValuePair("authenticationResult", e.val()));
+        urlopen.open("https://minasidor.minpension.se/MinPension/Default.aspx", postData, true);
+
+        return urlopen;
     }
 
     @Override
-    public void update() throws BankException, LoginException, BankChoiceException {
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
         if (username == null || password == null || username.length() == 0 || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();
-        try {
 //Allmän pension
-            accounts.add(updateAccount("https://minasidor.minpension.se/MinPension/AllmanPension.aspx",
-                    "#AllmänPensionTable tr",
-                    res.getText(R.string.public_pension).toString()));
+        accounts.add(updateAccount("https://minasidor.minpension.se/MinPension/AllmanPension.aspx",
+                "#AllmänPensionTable tr",
+                res.getText(R.string.public_pension).toString()));
 //Tjänstepension
-            accounts.add(updateAccount("https://minasidor.minpension.se/MinPension/Tjanstepension.aspx",
-                    "#TjänstepensionTable tr",
-                    res.getText(R.string.occupational_pension).toString()));
+        accounts.add(updateAccount("https://minasidor.minpension.se/MinPension/Tjanstepension.aspx",
+                "#TjänstepensionTable tr",
+                res.getText(R.string.occupational_pension).toString()));
 //Privat pension
-            accounts.add(updateAccount("https://minasidor.minpension.se/MinPension/PrivatPension.aspx",
-                    "#PrivatPensionTable tr",
-                    res.getText(R.string.private_pension).toString()));
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
-        }
+        accounts.add(updateAccount("https://minasidor.minpension.se/MinPension/PrivatPension.aspx",
+                "#PrivatPensionTable tr",
+                res.getText(R.string.private_pension).toString()));
+
         super.updateComplete();
     }
 

@@ -63,14 +63,14 @@ public class Osuuspankki extends Bank {
 		super.URL = URL;
 	}
 
-	public Osuuspankki(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+	public Osuuspankki(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
 
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_osuuspankki, R.raw.cert_osuuspankki_mobile));
         response = urlopen.open("https://www.op.fi/op?kielikoodi=sv");
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
@@ -85,24 +85,18 @@ public class Osuuspankki extends Bank {
     }
 
 	@Override
-	public Urllib login() throws LoginException, BankException {
-		try {
-		    LoginPackage lp = preLogin();
-			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-			
-			if (response.contains("du nya koder genom att bes")) {
-				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-			}
-		} catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		} catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
+	public Urllib login() throws LoginException, BankException, IOException {
+		LoginPackage lp = preLogin();
+		response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+
+		if (response.contains("du nya koder genom att bes")) {
+			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
-		return urlopen;
+        return urlopen;
 	}
 	
 	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
+	public void update() throws BankException, LoginException, BankChoiceException, IOException {
 		super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -141,37 +135,33 @@ public class Osuuspankki extends Bank {
 	}
 
 	@Override
-	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+	public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
+            BankException, IOException {
 		super.updateTransactions(account, urlopen);
 
 		Matcher matcher;
-		try {
-			response = urlopen.open(String.format("https://www.op.fi/?id=%s&tilinro=%s&ecb=1&srcpl=4", (account.getType() == Account.OTHER ? "12701" : "12401"),account.getId()));
-			matcher = reTransactions.matcher(response);
-			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-			while (matcher.find()) {
-                /*
-                 * Capture groups:
-                 * GROUP                    EXAMPLE DATA
-                 * 1: Book. date            21.01
-                 * 2: Trans. date           20.01
-                 * 3: Description           ITUNES-EURO LUXEMBOURG
-                 * 4: Transaction type      BANKKORTSBET.
-                 * 5: Amount in EUR         -3,99 
-                 * 
-                 */
-			    String[] date = Html.fromHtml(matcher.group(2)).toString().trim().split(".");
-			    Transaction transaction = new Transaction(Helpers.getTransactionDate(date[1], date[0]),
-                        Html.fromHtml(matcher.group(3)).toString().trim(),
-                        Helpers.parseBalance(matcher.group(5)));
-			    transaction.setCurrency(account.getCurrency());
-				transactions.add(transaction);
-			}
-			account.setTransactions(transactions);
-		} catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-		} catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+
+        response = urlopen.open(String.format("https://www.op.fi/?id=%s&tilinro=%s&ecb=1&srcpl=4", (account.getType() == Account.OTHER ? "12701" : "12401"),account.getId()));
+		matcher = reTransactions.matcher(response);
+		ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+		while (matcher.find()) {
+            /*
+             * Capture groups:
+             * GROUP                    EXAMPLE DATA
+             * 1: Book. date            21.01
+             * 2: Trans. date           20.01
+             * 3: Description           ITUNES-EURO LUXEMBOURG
+             * 4: Transaction type      BANKKORTSBET.
+             * 5: Amount in EUR         -3,99
+             *
+             */
+		    String[] date = Html.fromHtml(matcher.group(2)).toString().trim().split(".");
+		    Transaction transaction = new Transaction(Helpers.getTransactionDate(date[1], date[0]),
+                    Html.fromHtml(matcher.group(3)).toString().trim(),
+                    Helpers.parseBalance(matcher.group(5)));
+		    transaction.setCurrency(account.getCurrency());
+			transactions.add(transaction);
 		}
-	}	
+		account.setTransactions(transactions);
+	}
 }

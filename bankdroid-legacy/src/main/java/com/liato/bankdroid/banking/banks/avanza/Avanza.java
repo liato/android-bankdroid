@@ -64,14 +64,13 @@ public class Avanza extends Bank {
     }
 
     public Avanza(String username, String password, Context context)
-            throws BankException, LoginException, BankChoiceException {
+            throws BankException, LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
     }
 
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_avanza));
         urlopen.addHeader("Referer", URL + "/start");
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
@@ -179,10 +178,6 @@ public class Avanza extends Bank {
             }
         } catch (JsonParseException e) {
             throw new BankException(e.getMessage(), e);
-        } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
         } catch (Exception e) {
             throw new BankException(e.getMessage(), e);
         }
@@ -191,7 +186,7 @@ public class Avanza extends Bank {
 
     @Override
     public void update() throws BankException, LoginException,
-            BankChoiceException {
+            BankChoiceException, IOException {
         super.update();
         if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
             throw new LoginException(res.getText(

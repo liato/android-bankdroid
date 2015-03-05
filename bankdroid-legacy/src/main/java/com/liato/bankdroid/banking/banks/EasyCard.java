@@ -58,13 +58,14 @@ public class EasyCard extends Bank {
         super.INPUT_TYPE_PASSWORD   = INPUT_TYPE_PASSWORD;
     }
 
-    public EasyCard(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+    public EasyCard(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
     }
 
     @Override
-    protected LoginPackage preLogin() throws BankException, ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
 
         urlopen                         = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_easycard));
         response                        = urlopen.open(EasyCard.URL);
@@ -88,29 +89,21 @@ public class EasyCard extends Bank {
     }
 
     @Override
-    public Urllib login() throws LoginException, BankException {
-        
-        try {
-            LoginPackage lp = preLogin();
-            response        = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+    public Urllib login() throws LoginException, BankException, IOException {
+        LoginPackage lp = preLogin();
+        response        = urlopen.open(lp.getLoginTarget(), lp.getPostData());
 
-            // The string "Valuta" is always present on successful login.
-            if(response.contains("Inloggningen misslyckades")) {
-                throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-            } else if (response.contains("sedan du") || !response.contains("Valuta")) {
-                throw new BankException(res.getText(R.string.unable_to_login).toString());
-            }
-        } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+        // The string "Valuta" is always present on successful login.
+        if(response.contains("Inloggningen misslyckades")) {
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+        } else if (response.contains("sedan du") || !response.contains("Valuta")) {
+            throw new BankException(res.getText(R.string.unable_to_login).toString());
         }
-
         return urlopen;
     }
 
     @Override
-    public void update() throws BankException, LoginException, BankChoiceException {
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
     
         super.update();
 
@@ -152,7 +145,8 @@ public class EasyCard extends Bank {
     }
     
     @Override
-    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException 
+    public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
+            BankException, IOException
     {
         super.updateTransactions(account, urlopen);
         
@@ -177,4 +171,3 @@ public class EasyCard extends Bank {
         response = null;
     }
 }
-    

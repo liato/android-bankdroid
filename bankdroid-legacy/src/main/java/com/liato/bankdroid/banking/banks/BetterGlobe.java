@@ -71,15 +71,15 @@ public class BetterGlobe extends Bank {
 		super.currency = "EUR";
 	}
 
-	public BetterGlobe(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+	public BetterGlobe(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
 
     
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context);
         urlopen.setAllowCircularRedirects(true);
 		HashMap<String, String> headers = urlopen.getHeaders();
@@ -91,22 +91,15 @@ public class BetterGlobe extends Bank {
         return new LoginPackage(urlopen, postData, "", "http://betterglobe.com/Login.aspx?rememberMe=False");
     }
     
-	public Urllib login() throws LoginException, BankException {
-		try {
-			LoginPackage lp = preLogin();
-			String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-		}
-		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		}
-		catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
-		}
+	public Urllib login() throws LoginException, BankException, IOException {
+		LoginPackage lp = preLogin();
+		String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+
 		return urlopen;
 	}	
 	
 	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
+	public void update() throws BankException, LoginException, BankChoiceException, IOException {
 		super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -114,53 +107,43 @@ public class BetterGlobe extends Bank {
 
 		urlopen = login();
 		Matcher matcher;
-		String response;
-		try {
-			response = urlopen.open("http://betterglobe.com/bgaccount.aspx/report");
-			matcher = reBalance.matcher(response);
-			
-			while (matcher.find()) {
-				Account tillgangligt = new Account("Tillgängligt", Helpers.parseBalance(matcher.group(1)), "tillgangligt");
-				tillgangligt.setCurrency("EUR");
-				accounts.add(tillgangligt);
-				balance = balance.add(Helpers.parseBalance(matcher.group(1)));
-			}
-			
-			response = urlopen.open("http://betterglobe.com/mytrees.aspx/Valueforecast");
-			matcher = reForecast.matcher(response);
+		String response = urlopen.open("http://betterglobe.com/bgaccount.aspx/report");
+		matcher = reBalance.matcher(response);
 
-			while (matcher.find()) {
-				Account inkop  = new Account("Inköp",              Helpers.parseBalance(matcher.group(2)), "inkop");
-				Account netto  = new Account("Beräknad vinst",     Helpers.parseBalance(matcher.group(3)), "netto");
-				Account brutto = new Account("Beräknat slutvärde", Helpers.parseBalance(matcher.group(1)), "brutto");
-				inkop.setCurrency("EUR");
-				brutto.setCurrency("EUR");
-				netto.setCurrency("EUR");
-				accounts.add(inkop);
-				accounts.add(brutto);
-				accounts.add(netto);
-				balance = balance.add(Helpers.parseBalance(matcher.group(2)));;
-			}
-
-			response = urlopen.open("http://betterglobe.com/mytrees.aspx");
-			matcher = reTrees.matcher(response);
-
-			while (matcher.find()) {
-				Account trees = new Account("Innehav", Helpers.parseBalance(matcher.group(1)), "trees");
-				trees.setCurrency("träd");
-				accounts.add(trees);
-			}
-				
-			if (accounts.isEmpty()) {
-				throw new BankException(res.getText(R.string.no_accounts_found).toString());
-			}
+		while (matcher.find()) {
+			Account tillgangligt = new Account("Tillgängligt", Helpers.parseBalance(matcher.group(1)), "tillgangligt");
+			tillgangligt.setCurrency("EUR");
+			accounts.add(tillgangligt);
+			balance = balance.add(Helpers.parseBalance(matcher.group(1)));
 		}
-		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
+
+		response = urlopen.open("http://betterglobe.com/mytrees.aspx/Valueforecast");
+		matcher = reForecast.matcher(response);
+
+		while (matcher.find()) {
+			Account inkop  = new Account("Inköp",              Helpers.parseBalance(matcher.group(2)), "inkop");
+			Account netto  = new Account("Beräknad vinst",     Helpers.parseBalance(matcher.group(3)), "netto");
+			Account brutto = new Account("Beräknat slutvärde", Helpers.parseBalance(matcher.group(1)), "brutto");
+			inkop.setCurrency("EUR");
+			brutto.setCurrency("EUR");
+			netto.setCurrency("EUR");
+			accounts.add(inkop);
+			accounts.add(brutto);
+			accounts.add(netto);
+			balance = balance.add(Helpers.parseBalance(matcher.group(2)));;
 		}
-		catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
+
+		response = urlopen.open("http://betterglobe.com/mytrees.aspx");
+		matcher = reTrees.matcher(response);
+
+		while (matcher.find()) {
+			Account trees = new Account("Innehav", Helpers.parseBalance(matcher.group(1)), "trees");
+			trees.setCurrency("träd");
+			accounts.add(trees);
+		}
+
+	    if (accounts.isEmpty()) {
+			throw new BankException(res.getText(R.string.no_accounts_found).toString());
 		}
 	}
-
 }

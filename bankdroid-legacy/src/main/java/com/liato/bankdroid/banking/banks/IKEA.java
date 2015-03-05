@@ -22,6 +22,8 @@ import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
+import java.io.IOException;
+
 
 public class IKEA extends AbsIkanoPartner {
     private static final String TAG = "IKEA";
@@ -40,7 +42,8 @@ public class IKEA extends AbsIkanoPartner {
         this.structId = "1420";
     }
 
-    public IKEA(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+    public IKEA(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
     }

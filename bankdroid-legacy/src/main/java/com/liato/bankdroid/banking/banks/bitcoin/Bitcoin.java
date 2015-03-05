@@ -66,12 +66,12 @@ public class Bitcoin extends Bank {
 	}
 
 	public Bitcoin(String username, String password, Context context)
-			throws BankException, LoginException, BankChoiceException {
+			throws BankException, LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
 
-	public Urllib login() throws LoginException, BankException {
+	public Urllib login() throws LoginException, BankException, IOException {
 		urlopen = new Urllib(context);
 
 		try {
@@ -91,17 +91,14 @@ public class Bitcoin extends Bank {
 		} catch (JsonParseException e) {
 			throw new BankException(res.getText(
 					R.string.invalid_bitcoin_address).toString());
-		}catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		} catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
 		}
+
 		return urlopen;
 	}
 
 	@Override
 	public void update() throws BankException, LoginException,
-			BankChoiceException {
+			BankChoiceException, IOException {
 		super.update();
 		if (TextUtils.isEmpty(username)) {
 			throw new LoginException(res.getText(

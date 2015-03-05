@@ -183,14 +183,14 @@ public class Nordea extends Bank {
         super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
 	}
 
-	public Nordea(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+	public Nordea(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
 
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
 		urlopen = new Urllib(context);
 		Matcher matcher;
 		// Find "simple login" link
@@ -234,27 +234,18 @@ public class Nordea extends Bank {
     }
 
 	@Override
-	public Urllib login() throws LoginException, BankException {
-		try {
-		    LoginPackage lp = preLogin();
-		    this.lastResponse = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-		    this.currentPageType = PageType.ENTRY;
-			if (this.lastResponse.contains("fel uppgifter")) {
-				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-			}
-			
-		} catch (HttpResponseException e) {
-			throw new BankException(String.valueOf(e.getStatusCode()), e);
-		} catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		} catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
+	public Urllib login() throws LoginException, BankException, IOException {
+		LoginPackage lp = preLogin();
+		this.lastResponse = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+		this.currentPageType = PageType.ENTRY;
+		if (this.lastResponse.contains("fel uppgifter")) {
+			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		return urlopen;
 	}
 	
 	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
+	public void update() throws BankException, LoginException, BankChoiceException, IOException {
 		super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -313,14 +304,7 @@ public class Nordea extends Bank {
 			if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
 			}
-		}
-        catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        }
-        catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
-        }
-		finally {
+		} finally {
 		    super.updateComplete();
 		}
 		
@@ -331,30 +315,24 @@ public class Nordea extends Bank {
 	}
 
 	@Override
-	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+	public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
+            BankException, IOException {
 		super.updateTransactions(account, urlopen);
 
         int accType = account.getType();
-
-        try {
-            switch (accType) {
-                case Account.REGULAR:
-                    updateRegularTransactions(account, urlopen);
-                    break;
-                case Account.CCARD:
-                    updateCreditTransactions(account, urlopen);
-                    break;
-                default:
-                    break;
-            }
-        } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+        switch (accType) {
+            case Account.REGULAR:
+                updateRegularTransactions(account, urlopen);
+                break;
+            case Account.CCARD:
+                updateCreditTransactions(account, urlopen);
+                break;
+            default:
+                break;
         }
 	}
 
-    private void goToPage(int pageType) throws ClientProtocolException, IOException {
+    private void goToPage(int pageType) throws IOException {
         // Convenience method for going to an overview page
         Matcher matcher;
         String link;

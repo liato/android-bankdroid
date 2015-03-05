@@ -53,7 +53,8 @@ public class Meniga extends Bank{
         super.setCurrency("ISK");
     }
 
-    public Meniga(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+    public Meniga(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
     }
@@ -70,38 +71,20 @@ public class Meniga extends Bank{
     }
 
     @Override
-    public Urllib login() throws LoginException, BankException {
+    public Urllib login() throws LoginException, BankException, IOException {
+        LoginPackage lp = preLogin();
+        response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
 
-        try {
-            LoginPackage lp = preLogin();
-            response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-
-            if (response.contains("<div class=\"login\">")) {
-                throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-            }
-        }
-        catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        }
-        catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+        if (response.contains("<div class=\"login\">")) {
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 
-        try{
-            response = urlopen.open("https://www.meniga.is/mobile/language/?lang=is-IS");
-        }
-        catch (ClientProtocolException e){
-           throw new BankException(e.getMessage(), e);
-        }
-        catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
-        }
-
+        response = urlopen.open("https://www.meniga.is/mobile/language/?lang=is-IS");
         return urlopen;
     }
 
     @Override
-    public void update() throws BankException, LoginException, BankChoiceException {
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
         if (username == null || password == null || username.length() == 0 || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -134,50 +117,40 @@ public class Meniga extends Bank{
                 throw new BankException(res.getText(R.string.no_accounts_found).toString());
             }
         }
-        catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        }
-        catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
-        }
         finally {
             super.updateComplete();
         }
     }
 
     @Override
-    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+    public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
+            BankException, IOException {
         super.updateTransactions(account, urlopen);
         if (account.getType() == Account.OTHER) return;
 
         String response;
         Matcher matcher;
-        try {
-            ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-            response = urlopen.open("https://www.meniga.is/Transactions?account="+account.getId());
-            matcher = reTransactions.matcher(response);
-            while (matcher.find()) {
-                /*
-                 * Capture groups:
-                 * GROUP                    EXAMPLE DATA
-                 * 1: Id                    1231213
-                 * 2: Specification         Pressbyran
-                 * 3: Date in millisec      2142411351235
-                 * 4: Amount                -20
-                 *
-                 *
-                 */
-             Long date = Long.valueOf(matcher.group(3));
-             SimpleDateFormat ft = new SimpleDateFormat ("yy-MM-dd");
-             Transaction transaction = new Transaction(ft.format(date), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(4)));
-             transaction.setCurrency("ISK");
-             transactions.add(transaction);
-            }
-            account.setTransactions(transactions);
-        } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+
+        ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+        response = urlopen.open("https://www.meniga.is/Transactions?account="+account.getId());
+        matcher = reTransactions.matcher(response);
+        while (matcher.find()) {
+            /*
+             * Capture groups:
+             * GROUP                    EXAMPLE DATA
+             * 1: Id                    1231213
+             * 2: Specification         Pressbyran
+             * 3: Date in millisec      2142411351235
+             * 4: Amount                -20
+             *
+             *
+             */
+            Long date = Long.valueOf(matcher.group(3));
+            SimpleDateFormat ft = new SimpleDateFormat ("yy-MM-dd");
+            Transaction transaction = new Transaction(ft.format(date), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(4)));
+            transaction.setCurrency("ISK");
+            transactions.add(transaction);
         }
+        account.setTransactions(transactions);
     }
 }

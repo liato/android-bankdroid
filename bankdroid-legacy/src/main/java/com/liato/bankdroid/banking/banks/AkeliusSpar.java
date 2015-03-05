@@ -78,15 +78,15 @@ public class AkeliusSpar extends Bank {
         super.STATIC_BALANCE = STATIC_BALANCE;
 	}
 
-	public AkeliusSpar(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+	public AkeliusSpar(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
 
     
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_akeliusspar));
         String response = urlopen.open("https://www.online.akeliusspar.se/login.mws");
         Matcher matcher = reLogintoken.matcher(response);
@@ -107,32 +107,25 @@ public class AkeliusSpar extends Bank {
         return new LoginPackage(urlopen, postData, response, "https://www.online.akeliusspar.se/login.mws");
     }
     
-	public Urllib login() throws LoginException, BankException {
-		try {
-			LoginPackage lp = preLogin();
-			String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-			Matcher matcher = reError.matcher(response);
-			if (matcher.find()) {
-			    String errormsg = Html.fromHtml(matcher.group(1).trim()).toString();
-			    if (errormsg.contains("ord eller personnummer") || errormsg.contains("et alternativ") || errormsg.contains("fyra siffror")) {
-			        throw new LoginException(errormsg);    
-			    }
-			    else {
-	                 throw new BankException(errormsg);    
-			    }
-			}
-		}
-		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		}
-		catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
+	public Urllib login() throws LoginException, BankException, IOException {
+
+		LoginPackage lp = preLogin();
+		String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+		Matcher matcher = reError.matcher(response);
+		if (matcher.find()) {
+		    String errormsg = Html.fromHtml(matcher.group(1).trim()).toString();
+		    if (errormsg.contains("ord eller personnummer") || errormsg.contains("et alternativ") || errormsg.contains("fyra siffror")) {
+		        throw new LoginException(errormsg);
+		    }
+		    else {
+	             throw new BankException(errormsg);
+		    }
 		}
 		return urlopen;
 	}	
 	
 	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
+	public void update() throws BankException, LoginException, BankChoiceException, IOException {
 		super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -173,43 +166,33 @@ public class AkeliusSpar extends Bank {
 						if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
 			}
-		}
-		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		}
-		catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
 		} finally {
             super.updateComplete();
         }
 	}
 
 	@Override
-	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+	public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
+            BankException, IOException {
 		super.updateTransactions(account, urlopen);
         if (account.getId().startsWith("a:") || !mIdMappings.containsKey(account.getId())) return; // No transactions for "saldo"-accounts
         String accountId = mIdMappings.get(account.getId());
 		String response = null;
 		Matcher matcher;
-		try {
-			response = urlopen.open("https://www.online.akeliusspar.se/AccountStatement.mws?selectedaccount="+accountId);
-			matcher = reTransactions.matcher(response);
-			/* 				ICA-banken	Akelius Invest
-			 * Beskrivning	1			2
-			 * Datum		2			1
-			 * Belopp		3			3
-			 */
+
+		response = urlopen.open("https://www.online.akeliusspar.se/AccountStatement.mws?selectedaccount="+accountId);
+		matcher = reTransactions.matcher(response);
+		/* 				ICA-banken	Akelius Invest
+		 * Beskrivning	1			2
+		 * Datum		2			1
+		 * Belopp		3			3
+		 */
 			
-			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-			while (matcher.find()) {
-				transactions.add(new Transaction(matcher.group(1).trim(), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3))));
-			}
-			
-			account.setTransactions(transactions);
-		} catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-		} catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+		ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+		while (matcher.find()) {
+			transactions.add(new Transaction(matcher.group(1).trim(), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3))));
 		}
+
+		account.setTransactions(transactions);
 	}		
 }

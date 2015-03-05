@@ -57,14 +57,14 @@ public class Marginalen extends Bank {
         super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
     }
     
-    public Marginalen(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+    public Marginalen(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
     
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_marginalen, R.raw.cert_marginalen2));
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         Matcher matcher;
@@ -103,32 +103,25 @@ public class Marginalen extends Bank {
     }
 
     @Override
-    public Urllib login() throws LoginException, BankException {
-    	try {
-    		LoginPackage lp = preLogin();
-    		response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-    		
-    		if (response.contains("Felmeddelande")) {
-    			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-    		}
-    		
-    		Matcher matcher;
-    		matcher = reAccountLink.matcher(response);
-    		if (!matcher.find())
-            	throw new BankException(res.getText(R.string.unable_to_find).toString() + " accounts link.");
-    		accountUrl = BASE_URL + matcher.group(1).replaceAll("&amp;", "&");
-    	}
-    	catch (ClientProtocolException e) {
-    		throw new BankException("ClientProtolException:" + e.getMessage(), e);
-    	}
-    	catch (IOException e) {
-    		throw new BankException("IOException:" + e.getMessage(), e);
-    	}
-    	return urlopen;
+    public Urllib login() throws LoginException, BankException, IOException {
+    	LoginPackage lp = preLogin();
+    	response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+
+		if (response.contains("Felmeddelande")) {
+			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+		}
+
+		Matcher matcher;
+		matcher = reAccountLink.matcher(response);
+		if (!matcher.find())
+        	throw new BankException(res.getText(R.string.unable_to_find).toString() + " accounts link.");
+		accountUrl = BASE_URL + matcher.group(1).replaceAll("&amp;", "&");
+
+	    return urlopen;
     }
     
     @Override
-    public void update() throws BankException, LoginException, BankChoiceException {
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
     	super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -156,43 +149,31 @@ public class Marginalen extends Bank {
 			if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
 			}
-		}
-		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		}
-		catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
-		}
-		finally {
+		} finally {
 	      super.updateComplete();
 		}
 		
     }
     
-    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+    public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
+            BankException, IOException {
 		super.updateTransactions(account, urlopen);
 		Matcher matcher;
-		try {
-            ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-            response = urlopen.open(BASE_URL + account.getId().replaceAll("&amp;", "&"));
+		ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+        response = urlopen.open(BASE_URL + account.getId().replaceAll("&amp;", "&"));
 
-            matcher = reTransactions.matcher(response);
-            while (matcher.find()) {
-            	/*
-            	 * Capture groups:
-            	 * GROUP                    EXAMPLE DATA
-            	 * 1: Date                  2011-04-06
-            	 * 2: Specification         Pressbyran
-            	 * 3: Amount                -20
-            	 * 
-            	 */	                
-            	transactions.add(new Transaction(matcher.group(1).trim(), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3))));
-            }
-			account.setTransactions(transactions);
-		} catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		} catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
-		}
+        matcher = reTransactions.matcher(response);
+        while (matcher.find()) {
+        	/*
+        	 * Capture groups:
+        	 * GROUP                    EXAMPLE DATA
+        	 * 1: Date                  2011-04-06
+        	 * 2: Specification         Pressbyran
+        	 * 3: Amount                -20
+        	 *
+        	 */
+        	transactions.add(new Transaction(matcher.group(1).trim(), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3))));
+        }
+		account.setTransactions(transactions);
 	}
 }

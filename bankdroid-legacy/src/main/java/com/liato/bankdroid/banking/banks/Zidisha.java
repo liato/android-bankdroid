@@ -72,15 +72,15 @@ public class Zidisha extends Bank {
         super.currency = "USD";
 	}
 
-	public Zidisha(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+	public Zidisha(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
 
     
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_zidisha));
         urlopen.setAllowCircularRedirects(true);
         response = urlopen.open("https://www.zidisha.org/");
@@ -99,22 +99,14 @@ public class Zidisha extends Bank {
         return new LoginPackage(urlopen, postData, response, "https://www.zidisha.org/process.php");
     }
     
-	public Urllib login() throws LoginException, BankException {
-		try {
-			LoginPackage lp = preLogin();
-			String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-		}
-		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		}
-		catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
-		}
+	public Urllib login() throws LoginException, BankException, IOException {
+		LoginPackage lp = preLogin();
+		String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
 		return urlopen;
 	}	
 	
 	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
+	public void update() throws BankException, LoginException, BankChoiceException, IOException {
 		super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -122,44 +114,35 @@ public class Zidisha extends Bank {
 
 		urlopen = login();
 		Matcher matcher;
-		try {
-			response = urlopen.open("https://www.zidisha.org/index.php?p=19");
-			matcher = reAccounts.matcher(response);
-			
-			while (matcher.find()) {
-				/*
-				 * 1: Funds uploaded
-				 * 2: Available for withdrawal
-				 * 3: Lent by me
-				 * 4: Total Impact
-				 */
-				Account insattningar = new Account("Insättningar", Helpers.parseBalance(matcher.group(1)), "insattningar");
-				Account tillgangligt = new Account("Tillgängligt", Helpers.parseBalance(matcher.group(2)), "tillgangligt");
-				Account utlanat      = new Account("Utlånat",      Helpers.parseBalance(matcher.group(3)), "utlanat");
-				Account balans       = new Account("Påverkan",     Helpers.parseBalance(matcher.group(4)), "impact");
+		response = urlopen.open("https://www.zidisha.org/index.php?p=19");
+		matcher = reAccounts.matcher(response);
 
-				insattningar.setCurrency("USD");
-				tillgangligt.setCurrency("USD");
-				utlanat.setCurrency("USD");
-				balans.setCurrency("USD");
+		while (matcher.find()) {
+			/*
+			 * 1: Funds uploaded
+			 * 2: Available for withdrawal
+			 * 3: Lent by me
+			 * 4: Total Impact
+			 */
+			Account insattningar = new Account("Insättningar", Helpers.parseBalance(matcher.group(1)), "insattningar");
+			Account tillgangligt = new Account("Tillgängligt", Helpers.parseBalance(matcher.group(2)), "tillgangligt");
+			Account utlanat      = new Account("Utlånat",      Helpers.parseBalance(matcher.group(3)), "utlanat");
+			Account balans       = new Account("Påverkan",     Helpers.parseBalance(matcher.group(4)), "impact");
 
-				accounts.add(insattningar);
-				accounts.add(tillgangligt);
-				accounts.add(utlanat);
-				accounts.add(balans);
-	            
-				balance = balance.add(Helpers.parseBalance(matcher.group(4)));
-			}
-			if (accounts.isEmpty()) {
-				throw new BankException(res.getText(R.string.no_accounts_found).toString());
-			}
+			insattningar.setCurrency("USD");
+			tillgangligt.setCurrency("USD");
+			utlanat.setCurrency("USD");
+			balans.setCurrency("USD");
+
+			accounts.add(insattningar);
+			accounts.add(tillgangligt);
+			accounts.add(utlanat);
+			accounts.add(balans);
+
+			balance = balance.add(Helpers.parseBalance(matcher.group(4)));
 		}
-		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		}
-		catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
+		if (accounts.isEmpty()) {
+			throw new BankException(res.getText(R.string.no_accounts_found).toString());
 		}
 	}
-
 }

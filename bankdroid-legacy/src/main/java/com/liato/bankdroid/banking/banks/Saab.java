@@ -23,6 +23,8 @@ import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
+import java.io.IOException;
+
 
 public class Saab extends SEBKortBase {
 	private static final String TAG = "SAAB";
@@ -38,7 +40,8 @@ public class Saab extends SEBKortBase {
 		super.BANKTYPE_ID = BANKTYPE_ID;
 	}
 	
-	public Saab(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+	public Saab(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
 		super(username, password, context, "sbse", "0106");
 	}
 

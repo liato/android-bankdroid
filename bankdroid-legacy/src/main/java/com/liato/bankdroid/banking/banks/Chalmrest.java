@@ -1,5 +1,6 @@
 package com.liato.bankdroid.banking.banks;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,13 +42,14 @@ public class Chalmrest extends Bank {
 		super.INPUT_HIDDEN_PASSWORD = true;
 	}
 
-	public Chalmrest(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+	public Chalmrest(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
 
 	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
+	public void update() throws BankException, LoginException, BankChoiceException, IOException {
 		super.update();
 		if (username == null || username.length() == 0) 
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());

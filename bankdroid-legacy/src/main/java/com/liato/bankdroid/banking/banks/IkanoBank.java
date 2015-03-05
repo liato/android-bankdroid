@@ -73,7 +73,8 @@ public class IkanoBank extends Bank {
         super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
     }
 
-    public IkanoBank(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+    public IkanoBank(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
     }
@@ -81,8 +82,7 @@ public class IkanoBank extends Bank {
 
     
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_ikanobank));
         response = urlopen.open("https://secure.ikanobank.se/login");
         Matcher matcher;
@@ -114,32 +114,24 @@ public class IkanoBank extends Bank {
         return new LoginPackage(urlopen, postData, response, "https://secure.ikanobank.se/engines/page.aspx?structid=1895");
     }
 
-    public Urllib login() throws LoginException, BankException {
-        try {
-            LoginPackage lp = preLogin();
-            response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-            if (response.contains("Ogiltigt personnummer") || response.contains("felaktigt personnummer")) {
-                Matcher matcher = reErrorMessage.matcher(response);
-                if (matcher.find()) {
-                    throw new LoginException(Helpers.removeHtml(matcher.group(1).replace("<BR>", "\n")));
-                }
-                else {
-                    throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-                }
-                
+    public Urllib login() throws LoginException, BankException, IOException {
+        LoginPackage lp = preLogin();
+        response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+        if (response.contains("Ogiltigt personnummer") || response.contains("felaktigt personnummer")) {
+            Matcher matcher = reErrorMessage.matcher(response);
+            if (matcher.find()) {
+                throw new LoginException(Helpers.removeHtml(matcher.group(1).replace("<BR>", "\n")));
             }
-        }
-        catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        }
-        catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+            else {
+                throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+            }
+
         }
         return urlopen;
     }
 
     @Override
-    public void update() throws BankException, LoginException, BankChoiceException {
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
         if (username == null || password == null || username.length() == 0 || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -168,7 +160,8 @@ public class IkanoBank extends Bank {
     }
 
     @Override
-    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+    public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
+            BankException, IOException {
         super.updateTransactions(account, urlopen);
 
         // Find viewstate and eventvalidation from last page.
@@ -186,35 +179,28 @@ public class IkanoBank extends Bank {
         }
         String strEventValidation = matcher.group(1);       
 
-        try {
-            List <NameValuePair> postData = new ArrayList <NameValuePair>();
-            postData.add(new BasicNameValuePair("__EVENTTARGET", account.getId().replace("_", "$")));
-            postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));            
-            postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));            
-            postData.add(new BasicNameValuePair("__EVENTVALIDATION", strEventValidation));            
-            response = urlopen.open("https://secure.ikanobank.se/engines/page.aspx?structid=1787", postData);
+        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+        postData.add(new BasicNameValuePair("__EVENTTARGET", account.getId().replace("_", "$")));
+        postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
+        postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
+        postData.add(new BasicNameValuePair("__EVENTVALIDATION", strEventValidation));
+        response = urlopen.open("https://secure.ikanobank.se/engines/page.aspx?structid=1787", postData);
 
-            matcher = reTransactions.matcher(response);
-            ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-            while (matcher.find()) {
-                /*
-                 * Capture groups:
-                 * GROUP                EXAMPLE DATA
-                 * 1: Date              2010-10-27
-                 * 2: Specification     ÍVERFÍRING
-                 * 3: Amount            50
-                 *   
-                 */                    
-                transactions.add(new Transaction(matcher.group(1).trim(),
-                        Html.fromHtml(matcher.group(2)).toString().trim(),
-                        Helpers.parseBalance(matcher.group(3))));
-            }
-            account.setTransactions(transactions);
-
-        } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+        matcher = reTransactions.matcher(response);
+        ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+        while (matcher.find()) {
+            /*
+             * Capture groups:
+             * GROUP                EXAMPLE DATA
+             * 1: Date              2010-10-27
+             * 2: Specification     ÍVERFÍRING
+             * 3: Amount            50
+             *
+             */
+            transactions.add(new Transaction(matcher.group(1).trim(),
+                    Html.fromHtml(matcher.group(2)).toString().trim(),
+                    Helpers.parseBalance(matcher.group(3))));
         }
+        account.setTransactions(transactions);
     }
 }

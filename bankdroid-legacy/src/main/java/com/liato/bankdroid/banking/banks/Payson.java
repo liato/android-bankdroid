@@ -64,7 +64,8 @@ public class Payson extends Bank {
         super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
     }
 
-    public Payson(String username, String password, Context context) throws BankChoiceException, BankException, LoginException {
+    public Payson(String username, String password, Context context) throws BankChoiceException,
+            BankException, LoginException, IOException {
         this(context);
         this.update(username, password);
     }
@@ -88,13 +89,11 @@ public class Payson extends Bank {
     }
 
     @Override
-    public Urllib login() throws LoginException, BankException {
+    public Urllib login() throws LoginException, BankException, IOException {
         try {
             LoginPackage lp = preLogin();
             response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
             userInfo = new JSONObject(urlopen.open("https://www.payson.se/myaccount/user/getuserinfo"));
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
         } catch (JSONException e) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
@@ -102,7 +101,7 @@ public class Payson extends Bank {
     }
 
     @Override
-    public void update() throws BankChoiceException, BankException, LoginException {
+    public void update() throws BankChoiceException, BankException, LoginException, IOException {
         super.update();
         if (username == null || password == null || username.length() == 0 || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());

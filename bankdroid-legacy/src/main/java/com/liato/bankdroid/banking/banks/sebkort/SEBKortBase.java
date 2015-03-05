@@ -89,19 +89,20 @@ public abstract class SEBKortBase extends Bank {
         mParamsErrorTarget = new BasicNameValuePair("errorTarget", URL);
     }
 
-    public SEBKortBase(String username, String password, Context context, String url, String prodgroup) throws BankException, LoginException, BankChoiceException {
+    public SEBKortBase(String username, String password, Context context, String url, String prodgroup)
+            throws BankException, LoginException, BankChoiceException, IOException {
         this(context, url, prodgroup);
         this.update(username, password);
     }
 
-    public SEBKortBase(String username, String password, Context context, String url, String prodgroup, String apiBase, int[] certificates) throws BankException, LoginException, BankChoiceException {
+    public SEBKortBase(String username, String password, Context context, String url, String prodgroup, String apiBase, int[] certificates)
+            throws BankException, LoginException, BankChoiceException, IOException {
         this(context, url, prodgroup, apiBase, certificates);
         this.update(username, password);
     }
 
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, mCertificates));
         //Get required cookies
         response = urlopen.open(String.format("https://%s/nis/m/%s/external/t/login/index", mApiBase, mProviderPart));
@@ -120,33 +121,27 @@ public abstract class SEBKortBase extends Bank {
     }
 
     @Override
-    public Urllib login() throws LoginException, BankException {
-        try {
-            LoginPackage lp = preLogin();
-            urlopen.addHeader("Origin", String.format("https://%s", mApiBase));
-            urlopen.addHeader("Referer", String.format("https://%s/nis/m/%s/external/t/login/index", mApiBase, mProviderPart));
-            urlopen.addHeader("X-Requested-With", "XMLHttpRequest");
-            List<NameValuePair> postData = lp.getPostData();
-            postData.remove(mParamsTarget);
-            postData.remove(mParamsErrorTarget);
-            postData.add(new BasicNameValuePair("target", String.format("/nis/m/%s/login/loginSuccess", mProviderPart)));
-            postData.add(new BasicNameValuePair("errorTarget", String.format("/nis/m/%s/external/login/loginError", mProviderPart)));
+    public Urllib login() throws LoginException, BankException, IOException {
+        LoginPackage lp = preLogin();
+        urlopen.addHeader("Origin", String.format("https://%s", mApiBase));
+        urlopen.addHeader("Referer", String.format("https://%s/nis/m/%s/external/t/login/index", mApiBase, mProviderPart));
+        urlopen.addHeader("X-Requested-With", "XMLHttpRequest");
+        List<NameValuePair> postData = lp.getPostData();
+        postData.remove(mParamsTarget);
+        postData.remove(mParamsErrorTarget);
+        postData.add(new BasicNameValuePair("target", String.format("/nis/m/%s/login/loginSuccess", mProviderPart)));
+        postData.add(new BasicNameValuePair("errorTarget", String.format("/nis/m/%s/external/login/loginError", mProviderPart)));
 
-            LoginResponse r = mObjectMapper.readValue(urlopen.openStream(lp.getLoginTarget(), postData, true),
-                    LoginResponse.class);
-            if ("Failure".equalsIgnoreCase(r.getReturnCode())) {
-                throw new LoginException(!TextUtils.isEmpty(r.getMessage()) ? Html.fromHtml(r.getMessage()).toString() : res.getText(R.string.invalid_username_password).toString());
-            }
-        } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+        LoginResponse r = mObjectMapper.readValue(urlopen.openStream(lp.getLoginTarget(), postData, true),
+                LoginResponse.class);
+        if ("Failure".equalsIgnoreCase(r.getReturnCode())) {
+            throw new LoginException(!TextUtils.isEmpty(r.getMessage()) ? Html.fromHtml(r.getMessage()).toString() : res.getText(R.string.invalid_username_password).toString());
         }
         return urlopen;
     }
 
     @Override
-    public void update() throws BankException, LoginException, BankChoiceException {
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
         if (username == null || password == null || username.length() == 0 || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -179,10 +174,6 @@ public abstract class SEBKortBase extends Bank {
             if (accounts.isEmpty()) {
                 throw new BankException(res.getText(R.string.no_accounts_found).toString());
             }
-        } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
         } finally {
             super.updateComplete();
         }
@@ -193,22 +184,20 @@ public abstract class SEBKortBase extends Bank {
     }
 
     @Override
-    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+    public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
+            BankException, IOException {
         super.updateTransactions(account, urlopen);
         if (account.getType() != Account.CCARD) return;
-        try {
-            PendingTransactionsResponse r = mObjectMapper.readValue(urlopen.openStream(String.format("https://%s/nis/m/%s/a/pendingTransactions/%s", mApiBase, mProviderPart, mBillingUnitIds.get(account))), PendingTransactionsResponse.class);
-            ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-            for (CardGroup cg : r.getBody().getCardGroups()) {
-                for (TransactionGroup tg : cg.getTransactionGroups()) {
-                    for (com.liato.bankdroid.banking.banks.sebkort.model.Transaction t : tg.getTransactions()) {
-                        transactions.add(new Transaction(Helpers.formatDate(new Date(t.getOriginalAmountDateDate())), t.getDescription(), BigDecimal.valueOf(t.getAmountNumber()).negate(), account.getCurrency()));
-                    }
+
+        PendingTransactionsResponse r = mObjectMapper.readValue(urlopen.openStream(String.format("https://%s/nis/m/%s/a/pendingTransactions/%s", mApiBase, mProviderPart, mBillingUnitIds.get(account))), PendingTransactionsResponse.class);
+        ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+        for (CardGroup cg : r.getBody().getCardGroups()) {
+            for (TransactionGroup tg : cg.getTransactionGroups()) {
+                for (com.liato.bankdroid.banking.banks.sebkort.model.Transaction t : tg.getTransactions()) {
+                    transactions.add(new Transaction(Helpers.formatDate(new Date(t.getOriginalAmountDateDate())), t.getDescription(), BigDecimal.valueOf(t.getAmountNumber()).negate(), account.getCurrency()));
                 }
             }
-            account.setTransactions(transactions);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
         }
+        account.setTransactions(transactions);
     }
 }

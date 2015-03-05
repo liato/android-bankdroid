@@ -64,7 +64,8 @@ public class TestBank extends Bank {
         super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
 	}
 
-	public TestBank(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+	public TestBank(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
@@ -76,7 +77,7 @@ public class TestBank extends Bank {
 	}
 	
 	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
+	public void update() throws BankException, LoginException, BankChoiceException, IOException {
 		super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -111,41 +112,28 @@ public class TestBank extends Bank {
 			if (accounts.isEmpty()) {
 				throw new BankException(res.getText(R.string.no_accounts_found).toString());
 			}
-		}
-		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		}
-		catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
-		}
-		finally {
+		} finally {
 		    super.updateComplete();
 		}
 	}
 
 	@Override
-	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+	public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
+            BankException, IOException {
 		super.updateTransactions(account, urlopen);
 
 		//No transaction history for loans, funds and credit cards.
 		int accType = account.getType();
 		if (accType == Account.LOANS || accType == Account.FUNDS || accType == Account.CCARD) return;
 
-		String response = null;
 		Matcher matcher;
-		try {
-			response = urlopen.open("http://www.nullbyte.eu/bankdroid/tests/testbank/transactions_"+account.getId()+".htm");
-			matcher = reTransactions.matcher(response);
-			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-			while (matcher.find()) {
-				transactions.add(new Transaction(Html.fromHtml(matcher.group(1)).toString().trim(), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3))));
-			}
-			account.setTransactions(transactions);
-		} catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-		} catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+        String response = urlopen.open("http://www.nullbyte.eu/bankdroid/tests/testbank/transactions_"+account.getId()+".htm");
+		matcher = reTransactions.matcher(response);
+		ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+		while (matcher.find()) {
+			transactions.add(new Transaction(Html.fromHtml(matcher.group(1)).toString().trim(), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3))));
 		}
+		account.setTransactions(transactions);
 	}
 
     @Override

@@ -100,13 +100,14 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         this.res = this.context.getResources();
     }
 
-    public void update(String username, String password) throws BankException, LoginException, BankChoiceException {
+    public void update(String username, String password) throws BankException, LoginException,
+            BankChoiceException, IOException {
         this.username = username;
         this.password = password;
         this.update();
     }
 
-    public void update() throws BankException, LoginException, BankChoiceException {
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
         balance = new BigDecimal(0);
         oldAccounts = new HashMap<String, Account>();
         for(Account account: accounts) {
@@ -115,10 +116,11 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         accounts = new ArrayList<Account>();
     }
 
-    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+    public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
+            BankException, IOException {
     }
 
-    public void updateAllTransactions() throws LoginException, BankException {
+    public void updateAllTransactions() throws LoginException, BankException, IOException {
         if (urlopen == null) {
             urlopen = login();
         }
@@ -127,7 +129,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         }
     }
 
-    public Urllib login() throws LoginException, BankException {
+    public Urllib login() throws LoginException, BankException, IOException {
         return null;
     }
 

@@ -25,6 +25,8 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import java.io.IOException;
+
 public class Eurocard extends SEBKortBase {
 	private static final String TAG = "Eurocard";
 	private static final String NAME = "Eurocard";
@@ -39,7 +41,8 @@ public class Eurocard extends SEBKortBase {
         super.BANKTYPE_ID = BANKTYPE_ID;
     }
 
-    public Eurocard(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+    public Eurocard(String username, String password, Context context)
+            throws BankException, LoginException, BankChoiceException, IOException {
         super(username, password, context, "ecse", "0005", "secure.eurocard.se", new int[] {R.raw.cert_eurocard});
     }
 	

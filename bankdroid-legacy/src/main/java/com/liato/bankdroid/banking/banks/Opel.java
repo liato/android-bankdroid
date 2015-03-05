@@ -23,6 +23,8 @@ import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
+import java.io.IOException;
+
 
 public class Opel extends SEBKortBase {
 	private static final String TAG = "Opel";
@@ -38,7 +40,8 @@ public class Opel extends SEBKortBase {
 		super.BANKTYPE_ID = BANKTYPE_ID;
 	}
 	
-	public Opel(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+	public Opel(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
 		super(username, password, context, "opse", "0107");
 	}
 

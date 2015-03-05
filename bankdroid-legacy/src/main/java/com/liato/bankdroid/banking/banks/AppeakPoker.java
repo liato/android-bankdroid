@@ -63,42 +63,35 @@ public class AppeakPoker extends Bank {
         currency = "chips";
 	}
 
-	public AppeakPoker(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+	public AppeakPoker(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
 
 	@Override
-	protected LoginPackage preLogin() throws BankException, ClientProtocolException, IOException {
+	protected LoginPackage preLogin() throws BankException, IOException {
 		urlopen = new Urllib(context);
 		List<NameValuePair> postData = new ArrayList<NameValuePair>();
 		return new LoginPackage(urlopen, postData, "", String.format("http://poker.appeak.se/playerInfo/?username=%s", username));
 	}
 
 	@Override
-	public Urllib login() throws LoginException, BankException {
-        try {
-            LoginPackage lp = preLogin();
-            String response = urlopen.open(lp.getLoginTarget());
-            Document d = Jsoup.parse(response);
-            Element e = d.select("#content > table tr:eq(2) td:eq(1)").first();
-            if (e == null) {
-                throw new LoginException(res.getText(R.string.invalid_username).toString());
-            } else {
-            	mChips = e.html();
-            }
-        }
-        catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        }
-        catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+	public Urllib login() throws LoginException, BankException, IOException {
+        LoginPackage lp = preLogin();
+        String response = urlopen.open(lp.getLoginTarget());
+        Document d = Jsoup.parse(response);
+        Element e = d.select("#content > table tr:eq(2) td:eq(1)").first();
+        if (e == null) {
+            throw new LoginException(res.getText(R.string.invalid_username).toString());
+        } else {
+        	mChips = e.html();
         }
         return urlopen;		
 	}
 
 	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
+	public void update() throws BankException, LoginException, BankChoiceException, IOException {
 		super.update();
 		if (username == null) {
 			throw new LoginException(res.getText(R.string.invalid_card_number).toString());
