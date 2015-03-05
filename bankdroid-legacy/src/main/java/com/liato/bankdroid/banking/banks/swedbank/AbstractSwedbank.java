@@ -138,28 +138,25 @@ public abstract class AbstractSwedbank extends Bank {
         }
         urlopen = login();
 
-        try {
-            ProfileResponse profileResponse = getAvailableProfiles();
-            setDefaultProfile(getBankId(profileResponse.getBanks()));
+        ProfileResponse profileResponse = getAvailableProfiles();
+        setDefaultProfile(getBankId(profileResponse.getBanks()));
 
-            HttpResponse httpResponse = urlopen.openAsHttpResponse(getResourceUri("engagement/overview"), false);
-            if(httpResponse.getStatusLine().getStatusCode() != 200) {
-                throw new BankException(httpResponse.getStatusLine().toString());
-            }
-
-            OverviewResponse overviewResponse = readJsonValue(httpResponse.getEntity().getContent(),OverviewResponse.class);
-            addAccounts(overviewResponse.getTransactionAccounts(),Account.REGULAR);
-            addAccounts(overviewResponse.getSavingAccounts(),Account.REGULAR);
-            addAccounts(overviewResponse.getTransactionDisposalAccounts(),Account.REGULAR);
-            addAccounts(overviewResponse.getSavingDisposalAccounts(),Account.REGULAR);
-            addCardAccounts(overviewResponse.getCardAccounts());
-            addAccounts(overviewResponse.getLoanAccounts(),Account.LOANS);
-            if (this.accounts.isEmpty()) {
-                throw new BankException(res.getText(R.string.no_accounts_found).toString());
-            }
-        } finally {
-            updateComplete();
+        HttpResponse httpResponse = urlopen.openAsHttpResponse(getResourceUri("engagement/overview"), false);
+        if(httpResponse.getStatusLine().getStatusCode() != 200) {
+            throw new BankException(httpResponse.getStatusLine().toString());
         }
+
+        OverviewResponse overviewResponse = readJsonValue(httpResponse.getEntity().getContent(),OverviewResponse.class);
+        addAccounts(overviewResponse.getTransactionAccounts(),Account.REGULAR);
+        addAccounts(overviewResponse.getSavingAccounts(),Account.REGULAR);
+        addAccounts(overviewResponse.getTransactionDisposalAccounts(),Account.REGULAR);
+        addAccounts(overviewResponse.getSavingDisposalAccounts(),Account.REGULAR);
+        addCardAccounts(overviewResponse.getCardAccounts());
+        addAccounts(overviewResponse.getLoanAccounts(),Account.LOANS);
+        if (this.accounts.isEmpty()) {
+            throw new BankException(res.getText(R.string.no_accounts_found).toString());
+        }
+        updateComplete();
     }
 
     @Override

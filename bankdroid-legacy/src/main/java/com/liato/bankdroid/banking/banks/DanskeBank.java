@@ -150,38 +150,35 @@ public class DanskeBank extends Bank {
         else {
             throw new BankException(res.getText(R.string.unable_to_find).toString() + " personnummer.");
         }
-		
-		try {
-			response = urlopen.open(String.format("https://mobil.danskebank.se/XI?WP=XAS&WO=Konto&WA=KTList&WSES=%s&WAFT=%s", mSessionId, mPersonnr));
-			matcher = reAccounts.matcher(response);
-			while (matcher.find()) {
-                /*
-                 * Capture groups:
-                 * GROUP                    EXAMPLE DATA
-                 * 1: Internal acc number?  0123456789
-                 * 2: Account name          Danske Direkt Bas
-                 * 3: Account number        01234567890
-                 * 4: Balance               1.124,56
-                 * 5: Balance (disp.)       1.124,56
-                 * 
-                 */   		
-			    String name = Html.fromHtml(matcher.group(2)).toString().trim();
-			    Account account = new Account(name, Helpers.parseBalance(matcher.group(5)), matcher.group(1).trim());
-			    if (name.contains("lån") || name.contains("Lån")) {
-			        account.setType(Account.LOANS);
-			    }
-			    else {
-		             balance = balance.add(Helpers.parseBalance(matcher.group(5)));
-			    }
-				accounts.add(account);
-			}
-			
-			if (accounts.isEmpty()) {
-				throw new BankException(res.getText(R.string.no_accounts_found).toString());
-			}
-		} finally {
-		    super.updateComplete();
+
+		response = urlopen.open(String.format("https://mobil.danskebank.se/XI?WP=XAS&WO=Konto&WA=KTList&WSES=%s&WAFT=%s", mSessionId, mPersonnr));
+		matcher = reAccounts.matcher(response);
+		while (matcher.find()) {
+            /*
+             * Capture groups:
+             * GROUP                    EXAMPLE DATA
+             * 1: Internal acc number?  0123456789
+             * 2: Account name          Danske Direkt Bas
+             * 3: Account number        01234567890
+             * 4: Balance               1.124,56
+             * 5: Balance (disp.)       1.124,56
+             *
+             */
+		    String name = Html.fromHtml(matcher.group(2)).toString().trim();
+		    Account account = new Account(name, Helpers.parseBalance(matcher.group(5)), matcher.group(1).trim());
+		    if (name.contains("lån") || name.contains("Lån")) {
+		        account.setType(Account.LOANS);
+		    }
+		    else {
+	             balance = balance.add(Helpers.parseBalance(matcher.group(5)));
+		    }
+			accounts.add(account);
 		}
+
+		if (accounts.isEmpty()) {
+			throw new BankException(res.getText(R.string.no_accounts_found).toString());
+		}
+		super.updateComplete();
 	}
 
 	@Override

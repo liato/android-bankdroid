@@ -254,59 +254,56 @@ public class Nordea extends Bank {
 		// This puts us at PageType.ENTRY
         urlopen = login();
         String loanName;
-		Matcher matcher;
-		try {
-			// Add regular accounts
-            matcher = reAccountLink.matcher(this.lastResponse);
-			while (matcher.find()) {
-				accounts.add(new Account(
-                        // Account name
-						Html.fromHtml(matcher.group(3)).toString().trim(), 
-						// Balance
-                        Helpers.parseBalance(Html.fromHtml(matcher.group(5)).toString()),
-                        // Account identifier - half censured account number: "************1234"
-						Html.fromHtml(matcher.group(4)).toString().trim()
-						));
-			}
 
-            // TODO: Code for funds
-
-            goToPage(PageType.CREDIT_CARDS);
-            matcher = reCreditCardLink.matcher(this.lastResponse);
-            // Add credit cards
-            while (matcher.find()) {
-                accounts.add(new Account(
-                        // Account/Credit card name
-                        matcher.group(2),
-                        // Balance (not available through simple login)
-                        Helpers.parseBalance(matcher.group(5)),
-                        // Account/Credit card identifier
-                        "c:" + matcher.group(3),
-                        -1L,
-                        Account.CCARD
-                        ));
-            }
-
-            goToPage(PageType.LOANS);
-            matcher = reLoanLink.matcher(this.lastResponse);
-            // Add loans
-            while (matcher.find()) {
-                loanName = matcher.group(2) + ' ' + matcher.group(3);
-                accounts.add(new Account(
-                        loanName,
-                        Helpers.parseBalance(matcher.group(5)),
-                        "l:" + matcher.group(3).trim(),
-                        -1L,
-                        Account.LOANS
-                ));
-            }
-
-			if (accounts.isEmpty()) {
-				throw new BankException(res.getText(R.string.no_accounts_found).toString());
-			}
-		} finally {
-		    super.updateComplete();
+		// Add regular accounts
+        Matcher matcher = reAccountLink.matcher(this.lastResponse);
+		while (matcher.find()) {
+			accounts.add(new Account(
+                    // Account name
+					Html.fromHtml(matcher.group(3)).toString().trim(),
+					// Balance
+                    Helpers.parseBalance(Html.fromHtml(matcher.group(5)).toString()),
+                    // Account identifier - half censured account number: "************1234"
+					Html.fromHtml(matcher.group(4)).toString().trim()
+					));
 		}
+
+        // TODO: Code for funds
+
+        goToPage(PageType.CREDIT_CARDS);
+        matcher = reCreditCardLink.matcher(this.lastResponse);
+        // Add credit cards
+        while (matcher.find()) {
+            accounts.add(new Account(
+                    // Account/Credit card name
+                    matcher.group(2),
+                    // Balance (not available through simple login)
+                    Helpers.parseBalance(matcher.group(5)),
+                    // Account/Credit card identifier
+                    "c:" + matcher.group(3),
+                    -1L,
+                    Account.CCARD
+                    ));
+        }
+
+        goToPage(PageType.LOANS);
+        matcher = reLoanLink.matcher(this.lastResponse);
+        // Add loans
+        while (matcher.find()) {
+            loanName = matcher.group(2) + ' ' + matcher.group(3);
+            accounts.add(new Account(
+                    loanName,
+                    Helpers.parseBalance(matcher.group(5)),
+                    "l:" + matcher.group(3).trim(),
+                    -1L,
+                    Account.LOANS
+            ));
+        }
+
+		if (accounts.isEmpty()) {
+			throw new BankException(res.getText(R.string.no_accounts_found).toString());
+		}
+        super.updateComplete();
 		
         // Demo account to use with screenshots
         //accounts.add(new Account("Personkonto", Helpers.parseBalance("7953.37"), "1"));

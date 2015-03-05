@@ -127,32 +127,26 @@ public class Marginalen extends Bank {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		urlopen = login();
-		Matcher matcher;
-		
-		try {
-	        response = urlopen.open(accountUrl);
-			matcher = reAccounts.matcher(response);
-			while (matcher.find()) {
-                /*
-                 * Capture groups:
-                 * GROUP                EXAMPLE DATA
-                 * 1: Name              Högräntekonto
-                 * 2: URL               engine?usecase=account&amp;command=transactions&amp;guid=mCmupGvnAAJuC76MGuuRnwCC&amp;commandorigin=0.account_private_viewhandler&amp;account_table=0&amp;hash=Be2HxFargpk2m0BI2tShAACC
-                 * 3: ID                92351124972
-                 * 4: Amount            100.000,00
-                 *  
-                 */
-				Account account = new Account(Html.fromHtml(matcher.group(1)).toString(), Helpers.parseBalance(matcher.group(4)), matcher.group(2), Long.parseLong(matcher.group(3)));
-				balance = balance.add(Helpers.parseBalance(matcher.group(4)));
-				accounts.add(account);
-			}
-			if (accounts.isEmpty()) {
-				throw new BankException(res.getText(R.string.no_accounts_found).toString());
-			}
-		} finally {
-	      super.updateComplete();
+	    response = urlopen.open(accountUrl);
+        Matcher matcher = reAccounts.matcher(response);
+		while (matcher.find()) {
+            /*
+             * Capture groups:
+             * GROUP                EXAMPLE DATA
+             * 1: Name              Högräntekonto
+             * 2: URL               engine?usecase=account&amp;command=transactions&amp;guid=mCmupGvnAAJuC76MGuuRnwCC&amp;commandorigin=0.account_private_viewhandler&amp;account_table=0&amp;hash=Be2HxFargpk2m0BI2tShAACC
+             * 3: ID                92351124972
+             * 4: Amount            100.000,00
+             *
+             */
+			Account account = new Account(Html.fromHtml(matcher.group(1)).toString(), Helpers.parseBalance(matcher.group(4)), matcher.group(2), Long.parseLong(matcher.group(3)));
+			balance = balance.add(Helpers.parseBalance(matcher.group(4)));
+			accounts.add(account);
 		}
-		
+		if (accounts.isEmpty()) {
+			throw new BankException(res.getText(R.string.no_accounts_found).toString());
+		}
+	    super.updateComplete();
     }
     
     public void updateTransactions(Account account, Urllib urlopen) throws LoginException,

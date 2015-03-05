@@ -109,33 +109,31 @@ public class SveaDirekt extends Bank {
         }
 
         urlopen = login();
-        try {
-            List<NameValuePair> postData = new ArrayList<NameValuePair>();
-            postData.add(new BasicNameValuePair("homeForm:balance","Saldo"));
-            postData.add(new BasicNameValuePair("homeForm","homeForm"));
-            response = urlopen.open(ACCOUNTS_URL,postData);
-            Document doc = Jsoup.parse(response);
-            ArrayList<Account> accounts = parseAccounts(doc);
 
-            if (!accounts.isEmpty()) {
-                Account firstAccount = accounts.get(0);
-                // Get account details for first account
-                addAccountDetails(firstAccount, doc);
-                firstAccount.setTransactions(parseTransactions(response));
+        List<NameValuePair> postData = new ArrayList<NameValuePair>();
+        postData.add(new BasicNameValuePair("homeForm:balance","Saldo"));
+        postData.add(new BasicNameValuePair("homeForm","homeForm"));
+        response = urlopen.open(ACCOUNTS_URL,postData);
+        Document doc = Jsoup.parse(response);
+        ArrayList<Account> accounts = parseAccounts(doc);
 
-            }
+        if (!accounts.isEmpty()) {
+            Account firstAccount = accounts.get(0);
+            // Get account details for first account
+            addAccountDetails(firstAccount, doc);
+            firstAccount.setTransactions(parseTransactions(response));
 
-            // Fetch additional accounts transaction pages to get their balance.
-            for (int i = 1; i < accounts.size(); i++) {
-                Account account = accounts.get(i);
-                response = urlopen.open(TRANSACTIONS_URL, createTransactionParams(account));
-                addAccountDetails(account, Jsoup.parse(response));
-                account.setTransactions(parseTransactions(response));
-            }
-            this.setAccounts(accounts);
-        } finally {
-          super.updateComplete();
         }
+
+        // Fetch additional accounts transaction pages to get their balance.
+        for (int i = 1; i < accounts.size(); i++) {
+            Account account = accounts.get(i);
+            response = urlopen.open(TRANSACTIONS_URL, createTransactionParams(account));
+            addAccountDetails(account, Jsoup.parse(response));
+            account.setTransactions(parseTransactions(response));
+        }
+        this.setAccounts(accounts);
+        super.updateComplete();
     }
 
     private ArrayList<Account> parseAccounts(Document pDocument) {

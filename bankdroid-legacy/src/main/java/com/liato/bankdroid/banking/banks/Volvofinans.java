@@ -116,33 +116,29 @@ public class Volvofinans extends Bank {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		urlopen = login();
-		String response = null;
+		String response = urlopen.open("https://inloggad.volvofinans.se/privat/kund/kortkonto/oversikt/kortkonton.html");
 		try {
-			response = urlopen.open("https://inloggad.volvofinans.se/privat/kund/kortkonto/oversikt/kortkonton.html");
-			try {
-				JSONObject object = (JSONObject) new JSONTokener(response).nextValue();
-				JSONArray data = object.getJSONArray("data");
+			JSONObject object = (JSONObject) new JSONTokener(response).nextValue();
+			JSONArray data = object.getJSONArray("data");
 
-				int length = data.length();
-				for (int index = 0; index < length; index++) {
-					JSONObject account = data.getJSONObject(index);
-					Document d = Jsoup.parse(account.getString("namnUrl"));
-					Element e = d.getElementsByTag("a").first();
-					if (e != null && e.attr("href") != null) {
-    					mAccountUrlMappings.put(account.getString("kontonummer"), e.attr("href").replace("/info.html", "/info/kontoutdrag.html"));
-					}
-					accounts.add(new Account(String.format("%s (%s)", account.getString("namn"), account.getString("kontonummer")), Helpers.parseBalance(account.getString("disponibeltBelopp")).subtract(Helpers.parseBalance(account.getString("limit"))), account.getString("kontonummer")));
+			int length = data.length();
+			for (int index = 0; index < length; index++) {
+				JSONObject account = data.getJSONObject(index);
+				Document d = Jsoup.parse(account.getString("namnUrl"));
+				Element e = d.getElementsByTag("a").first();
+				if (e != null && e.attr("href") != null) {
+    				mAccountUrlMappings.put(account.getString("kontonummer"), e.attr("href").replace("/info.html", "/info/kontoutdrag.html"));
 				}
+				accounts.add(new Account(String.format("%s (%s)", account.getString("namn"), account.getString("kontonummer")), Helpers.parseBalance(account.getString("disponibeltBelopp")).subtract(Helpers.parseBalance(account.getString("limit"))), account.getString("kontonummer")));
 			}
-			catch (JSONException e) {
-				throw new BankException(e.getMessage(), e);
-			}
-			if (accounts.isEmpty()) {
-				throw new BankException(res.getText(R.string.no_accounts_found).toString());
-			}
-		} finally {
-	      super.updateComplete();
 		}
+		catch (JSONException e) {
+			throw new BankException(e.getMessage(), e);
+		}
+		if (accounts.isEmpty()) {
+			throw new BankException(res.getText(R.string.no_accounts_found).toString());
+		}
+        super.updateComplete();
 	}
 	
     @Override

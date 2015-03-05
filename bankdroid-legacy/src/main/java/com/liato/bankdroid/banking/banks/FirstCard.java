@@ -102,28 +102,27 @@ public class FirstCard extends Bank {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		urlopen = login();
-		try {
-			response = urlopen.open("https://www.firstcard.se/mkol/index.jsp");
-			Matcher matcher = reAccounts.matcher(response);
-			while (matcher.find()) {
-				/*
-				 * Capture groups:
-				 * GROUP				EXAMPLE DATA
-				 * 1: id				kdKPq4ghlcy9wpXymSzzS46wWQcS_0OT
-				 * 2: account number	1111 3333 7777 9999
-				 * 3: amount 			9 824,08
-				 * 
-				 */				
-				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), matcher.group(1).trim()));
-				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
-			}
 
-			if (accounts.isEmpty()) {
-				throw new BankException(res.getText(R.string.no_accounts_found).toString());
-			}			
-		} finally {
-            super.updateComplete();
-        }
+		response = urlopen.open("https://www.firstcard.se/mkol/index.jsp");
+		Matcher matcher = reAccounts.matcher(response);
+		while (matcher.find()) {
+			/*
+			 * Capture groups:
+			 * GROUP				EXAMPLE DATA
+			 * 1: id				kdKPq4ghlcy9wpXymSzzS46wWQcS_0OT
+			 * 2: account number	1111 3333 7777 9999
+			 * 3: amount 			9 824,08
+			 *
+			 */
+			accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), matcher.group(1).trim()));
+			balance = balance.add(Helpers.parseBalance(matcher.group(3)));
+		}
+
+		if (accounts.isEmpty()) {
+			throw new BankException(res.getText(R.string.no_accounts_found).toString());
+		}
+
+        super.updateComplete();
 	}
 
 	@Override

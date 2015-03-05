@@ -124,41 +124,38 @@ public class CSN extends Bank {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		urlopen = login();
-		try {
-		    response = urlopen.open("https://www.csn.se/aterbetalning/hurStorArMinSkuld/aktuellStudieskuld.do?javascript=off");
-			Matcher matcher;
-			matcher = reBalance.matcher(response);
-			int i = 0;
-			while (matcher.find()) {
-                /*
-                 * Capture groups:
-                 * GROUP                EXAMPLE DATA
-                 * 1: ID                0
-                 * 2: Name              Lån efter 30 juni 2001 (annuitetslån)
-                 * 3: Amount            123,456
-                 *  
-                 */
-			    BigDecimal amount = Helpers.parseBalance(matcher.group(3).replace(",", "")).negate();
-			    Account account = new Account(
-                        Html.fromHtml(matcher.group(2)).toString().trim(),
-                        amount,
-                        matcher.group(1).trim(),
-                        Account.LOANS);
-			    if (i > 0) {
-			        account.setAliasfor("0");
-			    }
-				accounts.add(account);
-				balance = balance.add(amount);
-				i++;
-			}
-			
-			if (accounts.isEmpty()) {
-				throw new BankException(res.getText(R.string.no_accounts_found).toString());
-			}
+
+		response = urlopen.open("https://www.csn.se/aterbetalning/hurStorArMinSkuld/aktuellStudieskuld.do?javascript=off");
+		Matcher matcher;
+		matcher = reBalance.matcher(response);
+		int i = 0;
+		while (matcher.find()) {
+            /*
+             * Capture groups:
+             * GROUP                EXAMPLE DATA
+             * 1: ID                0
+             * 2: Name              Lån efter 30 juni 2001 (annuitetslån)
+             * 3: Amount            123,456
+             *
+             */
+		    BigDecimal amount = Helpers.parseBalance(matcher.group(3).replace(",", "")).negate();
+		    Account account = new Account(
+                    Html.fromHtml(matcher.group(2)).toString().trim(),
+                    amount,
+                    matcher.group(1).trim(),
+                    Account.LOANS);
+		    if (i > 0) {
+		        account.setAliasfor("0");
+		    }
+			accounts.add(account);
+			balance = balance.add(amount);
+			i++;
 		}
-        finally {
-            super.updateComplete();
-        }
+			
+		if (accounts.isEmpty()) {
+			throw new BankException(res.getText(R.string.no_accounts_found).toString());
+	    }
+        super.updateComplete();
 	}
 	
     @Override

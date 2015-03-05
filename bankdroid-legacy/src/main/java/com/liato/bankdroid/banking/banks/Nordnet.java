@@ -117,38 +117,33 @@ public class Nordnet extends Bank {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();
-        try {
-            Matcher matcher;
-            matcher = reBalance.matcher(response);
-            while (matcher.find()) {
-                /*
-                 * Capture groups:
-                 * GROUP                EXAMPLE DATA
-                 * 1: Name              Efternamnet Förnamnet | Sparkonto
-                 * 2: Account name      Aktie- och fonddepå   | Sparkonto
-                 * 3: Account number    1234567               | 1234 567890 1
-                 * 4: Amount            31 337                | 123
-                 *  
-                 */
-                Account account = new Account(Html.fromHtml(matcher.group(2)).toString().trim() + " "
-                        + Html.fromHtml(matcher.group(3)).toString().trim(),
-                        Helpers.parseBalance(matcher.group(4)),
-                        Html.fromHtml(matcher.group(3)).toString().trim().replaceAll(" ", ""));
+        Matcher matcher = reBalance.matcher(response);
+        while (matcher.find()) {
+            /*
+             * Capture groups:
+             * GROUP                EXAMPLE DATA
+             * 1: Name              Efternamnet Förnamnet | Sparkonto
+             * 2: Account name      Aktie- och fonddepå   | Sparkonto
+             * 3: Account number    1234567               | 1234 567890 1
+             * 4: Amount            31 337                | 123
+             *
+             */
+            Account account = new Account(Html.fromHtml(matcher.group(2)).toString().trim() + " "
+                    + Html.fromHtml(matcher.group(3)).toString().trim(),
+                    Helpers.parseBalance(matcher.group(4)),
+                    Html.fromHtml(matcher.group(3)).toString().trim().replaceAll(" ", ""));
 
-                // Saving accounts contain white space characters in the account number
-                if (!matcher.group(3).trim().contains(" ")) {
-                    account.setType(Account.FUNDS);
-                }
-                accounts.add(account);
-                balance = balance.add(Helpers.parseBalance(matcher.group(4)));
+            // Saving accounts contain white space characters in the account number
+            if (!matcher.group(3).trim().contains(" ")) {
+                account.setType(Account.FUNDS);
             }
+            accounts.add(account);
+            balance = balance.add(Helpers.parseBalance(matcher.group(4)));
+        }
 
-            if (accounts.isEmpty()) {
-                throw new BankException(res.getText(R.string.no_accounts_found).toString());
-            }
+        if (accounts.isEmpty()) {
+            throw new BankException(res.getText(R.string.no_accounts_found).toString());
         }
-        finally {
-            super.updateComplete();
-        }
+        super.updateComplete();
     }
 }

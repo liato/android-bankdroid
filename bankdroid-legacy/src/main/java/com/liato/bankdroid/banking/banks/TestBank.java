@@ -83,38 +83,32 @@ public class TestBank extends Bank {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		urlopen = login();
-		String response = null;
-		Matcher matcher;
-		try {
-		    
-            response = urlopen.open("http://www.nullbyte.eu/bankdroid/tests/testbank/accounts.htm");
-            matcher = reAccounts.matcher(response);
-            while (matcher.find()) {
-                /*
-                 * Capture groups:
-                 * GROUP                EXAMPLE DATA
-                 * 1: Name              Sparkonto
-                 * 2: Amount            83553,70
-                 * 3: ID                1
-                 * 4: Type              trans|fund
-                 *  
-                 */
-                Account acc = new Account(Html.fromHtml(matcher.group(1)).toString().trim(), Helpers.parseBalance(matcher.group(2)), ("fund".equals(matcher.group(4)) ? "f:" : "")+matcher.group(3).trim());
-                if ("fund".equals(matcher.group(4))) {
-                    acc.setType(Account.FUNDS);
-                }
-                else {
-                    balance = balance.add(Helpers.parseBalance(matcher.group(3)));    
-                }
-                accounts.add(acc);
-            }		        
+		String response = urlopen.open("http://www.nullbyte.eu/bankdroid/tests/testbank/accounts.htm");
+        Matcher matcher = reAccounts.matcher(response);
+        while (matcher.find()) {
+            /*
+             * Capture groups:
+             * GROUP                EXAMPLE DATA
+             * 1: Name              Sparkonto
+             * 2: Amount            83553,70
+             * 3: ID                1
+             * 4: Type              trans|fund
+             *
+             */
+            Account acc = new Account(Html.fromHtml(matcher.group(1)).toString().trim(), Helpers.parseBalance(matcher.group(2)), ("fund".equals(matcher.group(4)) ? "f:" : "")+matcher.group(3).trim());
+            if ("fund".equals(matcher.group(4))) {
+                acc.setType(Account.FUNDS);
+            }
+            else {
+                balance = balance.add(Helpers.parseBalance(matcher.group(3)));
+            }
+            accounts.add(acc);
+        }
 
-			if (accounts.isEmpty()) {
-				throw new BankException(res.getText(R.string.no_accounts_found).toString());
-			}
-		} finally {
-		    super.updateComplete();
+		if (accounts.isEmpty()) {
+			throw new BankException(res.getText(R.string.no_accounts_found).toString());
 		}
+		super.updateComplete();
 	}
 
 	@Override

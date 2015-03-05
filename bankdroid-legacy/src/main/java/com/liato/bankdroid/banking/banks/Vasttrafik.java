@@ -106,45 +106,42 @@ public class Vasttrafik extends Bank {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();
-        try {
-            response = urlopen.open("https://www.vasttrafik.se/mina-sidor-inloggad/mina-kort/");
-            Matcher matcher;
-            Matcher matcher_b;
+        response = urlopen.open("https://www.vasttrafik.se/mina-sidor-inloggad/mina-kort/");
+        Matcher matcher;
+        Matcher matcher_b;
 
-            matcher = reAccounts.matcher(response);
-            while (matcher.find()) {
+        matcher = reAccounts.matcher(response);
+        while (matcher.find()) {
+            /*
+             * Capture groups:
+             * GROUP                EXAMPLE DATA
+             * 1: Name              Nytt
+             * 2: Balance information
+             */
+
+			if ("".equals(matcher.group(1))) {
+				continue;
+			}
+
+            matcher_b = reBalance.matcher(matcher.group(2));
+            if (matcher_b.find()) {
                 /*
                  * Capture groups:
                  * GROUP                EXAMPLE DATA
-                 * 1: Name              Nytt
-                 * 2: Balance information
+                 * 1: Type              Kontoladdning
+                 * 2: Amount            592,80 kr
                  */
 
-				if ("".equals(matcher.group(1))) {
-					continue;
-				}
+				String balanceString = matcher_b.group(2).replaceAll("\\<a[^>]*>","").replaceAll("\\<[^>]*>","").trim();
 
-                matcher_b = reBalance.matcher(matcher.group(2));
-                if (matcher_b.find()) {
-                    /*
-                     * Capture groups:
-                     * GROUP                EXAMPLE DATA
-                     * 1: Type              Kontoladdning
-                     * 2: Amount            592,80 kr
-                     */
-
-					String balanceString = matcher_b.group(2).replaceAll("\\<a[^>]*>","").replaceAll("\\<[^>]*>","").trim();
-
-					accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim() , Helpers.parseBalance(balanceString), matcher.group(1)));
-					balance = balance.add(Helpers.parseBalance(balanceString));
-                }
+				accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim() , Helpers.parseBalance(balanceString), matcher.group(1)));
+				balance = balance.add(Helpers.parseBalance(balanceString));
             }
-
-            if (accounts.isEmpty()) {
-                throw new BankException(res.getText(R.string.no_accounts_found).toString());
-            }
-        } finally {
-            super.updateComplete();
         }
+
+        if (accounts.isEmpty()) {
+            throw new BankException(res.getText(R.string.no_accounts_found).toString());
+        }
+        super.updateComplete();
     }
 }

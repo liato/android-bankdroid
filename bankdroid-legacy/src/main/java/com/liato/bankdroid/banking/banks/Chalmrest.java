@@ -96,8 +96,6 @@ public class Chalmrest extends Bank {
 		{
 			throw new BankException(e.getMessage(), e);
 		}
-		finally {
-			super.updateComplete();
-		}
+		super.updateComplete();
 	}
 }

@@ -112,31 +112,27 @@ public class SevenDay extends Bank {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		urlopen = login();
-		try {
-			Matcher matcher;
-			matcher = reAccounts.matcher(response);
-			while (matcher.find()) {
-                /*
-                 * Capture groups:
-                 * GROUP                EXAMPLE DATA
-                 * 1: Account id        JigBFAUETrrqVKY+V4Dm3tcoY1n6Usa21IuHxa1BV7MnJT3T6rrGChDcDK0RSuM731uAeB/f9rvPRXRFYCCBcQ
-                 * 2: Account name      Sparkonto: XXX
-                 * 3: Interest          2,55
-                 * 4: Amount            10&nbsp;kr
-                 *  
-                 */			    
-				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(),
-				        Helpers.parseBalance(matcher.group(4)),
-				        Html.fromHtml(matcher.group(1)).toString().trim()));
-				balance = balance.add(Helpers.parseBalance(matcher.group(4)));
-			}
-			
-			if (accounts.isEmpty()) {
-				throw new BankException(res.getText(R.string.no_accounts_found).toString());
-			}
-		}		
-        finally {
-            super.updateComplete();
-        }
+
+		Matcher matcher = reAccounts.matcher(response);
+		while (matcher.find()) {
+            /*
+             * Capture groups:
+             * GROUP                EXAMPLE DATA
+             * 1: Account id        JigBFAUETrrqVKY+V4Dm3tcoY1n6Usa21IuHxa1BV7MnJT3T6rrGChDcDK0RSuM731uAeB/f9rvPRXRFYCCBcQ
+             * 2: Account name      Sparkonto: XXX
+             * 3: Interest          2,55
+             * 4: Amount            10&nbsp;kr
+             *
+             */
+			accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(),
+			        Helpers.parseBalance(matcher.group(4)),
+			        Html.fromHtml(matcher.group(1)).toString().trim()));
+			balance = balance.add(Helpers.parseBalance(matcher.group(4)));
+		}
+
+		if (accounts.isEmpty()) {
+			throw new BankException(res.getText(R.string.no_accounts_found).toString());
+		}
+	    super.updateComplete();
 	}
 }

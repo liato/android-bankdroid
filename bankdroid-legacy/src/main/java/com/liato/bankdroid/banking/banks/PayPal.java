@@ -131,47 +131,46 @@ public class PayPal extends Bank {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();
-        try {
-            response = urlopen.open("https://www.paypal.com/en/cgi-bin/webscr?cmd=_login-done&login_access="+((int)(System.currentTimeMillis() / 1000L)));
-            Matcher matcher = reAccounts.matcher(response);
-            int accId = 1;
-            while (matcher.find()) {
-                /*
-                 * Capture groups:
-                 * GROUP                EXAMPLE DATA
-                 * 1: name              SEK (Primary)
-                 * 2: amount            554.70
-                 * 3: currency          SEK
-                 * 
-                 */
-                Account account = new Account(Html.fromHtml(matcher.group(1)).toString().trim(), Helpers.parseBalance(matcher.group(2)), ""+accId);
-                account.setCurrency(matcher.group(3).trim());
-                accounts.add(account);
-                accId++;
-            }
-            matcher = reBalance.matcher(response);
-            if (matcher.find()) {
-                /*
-                 * Capture groups:
-                 * GROUP                EXAMPLE DATA
-                 * 1: balance           554.70
-                 * 2: currency          SEK
-                 * 
-                 */
-                balance = Helpers.parseBalance(matcher.group(1));
-                currency = matcher.group(2).trim();
-                if (accounts.isEmpty()) {
-                    // Probably a premier account.
-                    Account account = new Account(currency, balance, "1");
-                    account.setCurrency(currency);
-                    accounts.add(account);                }
-            }
 
-            if (accounts.isEmpty()) {
-                throw new BankException(res.getText(R.string.no_accounts_found).toString());
-            }
-        } finally {
-            super.updateComplete();
+        response = urlopen.open("https://www.paypal.com/en/cgi-bin/webscr?cmd=_login-done&login_access="+((int)(System.currentTimeMillis() / 1000L)));
+        Matcher matcher = reAccounts.matcher(response);
+        int accId = 1;
+        while (matcher.find()) {
+            /*
+             * Capture groups:
+             * GROUP                EXAMPLE DATA
+             * 1: name              SEK (Primary)
+             * 2: amount            554.70
+             * 3: currency          SEK
+             *
+             */
+            Account account = new Account(Html.fromHtml(matcher.group(1)).toString().trim(), Helpers.parseBalance(matcher.group(2)), ""+accId);
+            account.setCurrency(matcher.group(3).trim());
+            accounts.add(account);
+            accId++;
         }
+        matcher = reBalance.matcher(response);
+        if (matcher.find()) {
+            /*
+             * Capture groups:
+             * GROUP                EXAMPLE DATA
+             * 1: balance           554.70
+             * 2: currency          SEK
+             *
+             */
+            balance = Helpers.parseBalance(matcher.group(1));
+            currency = matcher.group(2).trim();
+            if (accounts.isEmpty()) {
+                // Probably a premier account.
+                Account account = new Account(currency, balance, "1");
+                account.setCurrency(currency);
+                accounts.add(account);
+            }
+        }
+
+        if (accounts.isEmpty()) {
+            throw new BankException(res.getText(R.string.no_accounts_found).toString());
+        }
+        super.updateComplete();
     }
 }

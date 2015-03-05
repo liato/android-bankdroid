@@ -134,41 +134,37 @@ public class NordeaDK extends Bank {
 		}
 
 		urlopen = login();
-		Matcher matcher;
-		try {
-			matcher = reAccounts.matcher(response);
+		Matcher matcher = reAccounts.matcher(response);
 
-			if (!matcher.find()) {
-				throw new BankException(res.getText(R.string.unable_to_find)
-						.toString() + " accounts url.");
-			}
-			matcher.reset();
-			while (matcher.find()) {
-				/*
-				 * Capture groups: 
-				 * GROUP 		EXAMPLE DATA 
-				 * 1: Link		https://www.netbank.nordea.dk/mnetbank/servlet/AccountTransactions
-				 * 2: ID 		0 
-				 * 3: Name 		Check-in-konto 
-				 * 4: Amount	1.234,56
-				 */
-				String name = Html.fromHtml(matcher.group(3)).toString().trim();
-				String id = matcher.group(2).toString().trim();
-				BigDecimal amount = Helpers.parseBalance(matcher.group(4));
-
-				accounts.add(new Account(name, amount, id, Account.REGULAR,
-						this.currency));
-				balance = balance.add(amount);
-
-			}
-			if (accounts.isEmpty()) {
-				throw new BankException(res.getText(R.string.no_accounts_found)
-						.toString());
-			}
-			this.updatePrefix();
-		} finally {
-			super.updateComplete();
+		if (!matcher.find()) {
+			throw new BankException(res.getText(R.string.unable_to_find)
+					.toString() + " accounts url.");
 		}
+		matcher.reset();
+		while (matcher.find()) {
+			/*
+			 * Capture groups:
+			 * GROUP 		EXAMPLE DATA
+			 * 1: Link		https://www.netbank.nordea.dk/mnetbank/servlet/AccountTransactions
+			 * 2: ID 		0
+			 * 3: Name 		Check-in-konto
+			 * 4: Amount	1.234,56
+			 */
+			String name = Html.fromHtml(matcher.group(3)).toString().trim();
+			String id = matcher.group(2).toString().trim();
+			BigDecimal amount = Helpers.parseBalance(matcher.group(4));
+
+			accounts.add(new Account(name, amount, id, Account.REGULAR,
+					this.currency));
+			balance = balance.add(amount);
+
+		}
+		if (accounts.isEmpty()) {
+			throw new BankException(res.getText(R.string.no_accounts_found)
+					.toString());
+		}
+		this.updatePrefix();
+		super.updateComplete();
 	}
 
 	@Override

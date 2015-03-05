@@ -91,35 +91,30 @@ public class Meniga extends Bank{
         }
         urlopen = login();
 
-        Matcher matcher;
-        try {
-            response = urlopen.open("https://www.meniga.is/Mobile/Accounts");
-            matcher = reAccounts.matcher(response);
-            while (matcher.find()) {
-                /*
-                 * Capture groups:
-                 * GROUP                EXAMPLE DATA
-                 * 1: Type              id
-                 * 2: Name              accont
-                 * 3: ----              plus or minus
-                 * 4: Balance            5 678
-                 *
-                 */
-                String balanceString ;
-                balanceString = matcher.group(4) + ".00";
-                Account account = new Account(Html.fromHtml(matcher.group(2)).toString(), Helpers.parseBalance(balanceString), matcher.group(1).trim());
-                account.setCurrency("ISK");
-                balance = balance.add(Helpers.parseBalance(matcher.group(4)));
-                accounts.add(account);
-            }
+        response = urlopen.open("https://www.meniga.is/Mobile/Accounts");
+        Matcher matcher = reAccounts.matcher(response);
+        while (matcher.find()) {
+            /*
+             * Capture groups:
+             * GROUP                EXAMPLE DATA
+             * 1: Type              id
+             * 2: Name              accont
+             * 3: ----              plus or minus
+             * 4: Balance            5 678
+             *
+             */
+            String balanceString ;
+            balanceString = matcher.group(4) + ".00";
+            Account account = new Account(Html.fromHtml(matcher.group(2)).toString(), Helpers.parseBalance(balanceString), matcher.group(1).trim());
+            account.setCurrency("ISK");
+            balance = balance.add(Helpers.parseBalance(matcher.group(4)));
+            accounts.add(account);
+        }
 
-            if (accounts.isEmpty()) {
-                throw new BankException(res.getText(R.string.no_accounts_found).toString());
-            }
+        if (accounts.isEmpty()) {
+            throw new BankException(res.getText(R.string.no_accounts_found).toString());
         }
-        finally {
-            super.updateComplete();
-        }
+        super.updateComplete();
     }
 
     @Override

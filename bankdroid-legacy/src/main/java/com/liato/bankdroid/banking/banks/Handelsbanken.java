@@ -117,28 +117,25 @@ public class Handelsbanken extends Bank {
 		}
 
 		urlopen = login();
-		Matcher matcher;
-		try {
-			matcher = reAccountsUrl.matcher(response);
-			if (!matcher.find()) {
-				throw new BankException(res.getText(R.string.unable_to_find).toString()+" accounts url.");
-			}
-			String strAccountsUrl = "https://m.handelsbanken.se/primary/_-"+matcher.group(1);			
-			response = urlopen.open(strAccountsUrl);
-			matcher = reBalance.matcher(response);
-			Integer accountId = 0;
-			while (matcher.find()) {
-				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), accountId.toString()));
-				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
-				accountIds.add(matcher.group(1));
-				accountId += 1;
-			}
-			if (accounts.isEmpty()) {
-				throw new BankException(res.getText(R.string.no_accounts_found).toString());
-			}
-		} finally {
-            super.updateComplete();
-        }
+
+        Matcher matcher = reAccountsUrl.matcher(response);
+		if (!matcher.find()) {
+			throw new BankException(res.getText(R.string.unable_to_find).toString()+" accounts url.");
+		}
+		String strAccountsUrl = "https://m.handelsbanken.se/primary/_-"+matcher.group(1);
+		response = urlopen.open(strAccountsUrl);
+		matcher = reBalance.matcher(response);
+		Integer accountId = 0;
+		while (matcher.find()) {
+			accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), accountId.toString()));
+			balance = balance.add(Helpers.parseBalance(matcher.group(3)));
+			accountIds.add(matcher.group(1));
+			accountId += 1;
+		}
+		if (accounts.isEmpty()) {
+			throw new BankException(res.getText(R.string.no_accounts_found).toString());
+		}
+        super.updateComplete();
 	}
 	
 

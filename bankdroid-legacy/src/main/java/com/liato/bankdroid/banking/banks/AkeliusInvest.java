@@ -130,44 +130,39 @@ public class AkeliusInvest extends Bank {
 		}
 
 		urlopen = login();
-		String response = null;
-		Matcher matcher;
-		try {
-			response = urlopen.open("https://online.akeliusinvest.com/AccountPortfolio.mws");
-			matcher = reAccounts.matcher(response);
-            int accId = 0;
-			while (matcher.find()) {
-                /*
-                 * Capture groups:
-                 * GROUP                ICA					AKELIUSINVEST
-                 * 1: ID                0000000000			Kontonamn
-                 * 2: Name              ICA KONTO			KontoID
-                 * 3: Disponibelt       00.000,00			Kontonummer
-                 * 4: Saldo             1.655,71			Valuta
-                 * 5: 										Tillgängligt belopp
-                 * 6: 										Saldo
-                 */			    
-//				Försök att lösa problemet med för långa, icke radbrytande kontonamn:
-//					if (matcher.group(1).length() > 24)  {
-//						matcher.group(1).replaceFirst("(", "(\n");
-//					}
-               
-                mIdMappings.put(Integer.toString(accId), matcher.group(2).trim());           
-				accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim() + " (Tillgängligt belopp)", Helpers.parseBalance(matcher.group(5).trim()), Integer.toString(accId)));
-                Account account = new Account(Html.fromHtml(matcher.group(1)).toString().trim() + " (Saldo)", Helpers.parseBalance(matcher.group(6).trim()), "a:" + accId);
-                account.setAliasfor(matcher.group(1).trim());
-                
-                accounts.add(account);      
-	                
-                balance = balance.add(Helpers.parseBalance(matcher.group(5)));
-                accId++;
-			}
-						if (accounts.isEmpty()) {
-				throw new BankException(res.getText(R.string.no_accounts_found).toString());
-			}
-		} finally {
-		    super.updateComplete();
+
+        String response = urlopen.open("https://online.akeliusinvest.com/AccountPortfolio.mws");
+        Matcher	matcher = reAccounts.matcher(response);
+        int accId = 0;
+		while (matcher.find()) {
+            /*
+             * Capture groups:
+             * GROUP                ICA					AKELIUSINVEST
+             * 1: ID                0000000000			Kontonamn
+             * 2: Name              ICA KONTO			KontoID
+             * 3: Disponibelt       00.000,00			Kontonummer
+             * 4: Saldo             1.655,71			Valuta
+             * 5: 										Tillgängligt belopp
+             * 6: 										Saldo
+             */
+//			Försök att lösa problemet med för långa, icke radbrytande kontonamn:
+//				if (matcher.group(1).length() > 24)  {
+//					matcher.group(1).replaceFirst("(", "(\n");
+//				}
+
+            mIdMappings.put(Integer.toString(accId), matcher.group(2).trim());
+			accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim() + " (Tillgängligt belopp)", Helpers.parseBalance(matcher.group(5).trim()), Integer.toString(accId)));
+            Account account = new Account(Html.fromHtml(matcher.group(1)).toString().trim() + " (Saldo)", Helpers.parseBalance(matcher.group(6).trim()), "a:" + accId);
+            account.setAliasfor(matcher.group(1).trim());
+            accounts.add(account);
+
+            balance = balance.add(Helpers.parseBalance(matcher.group(5)));
+            accId++;
 		}
+		if (accounts.isEmpty()) {
+			throw new BankException(res.getText(R.string.no_accounts_found).toString());
+		}
+        super.updateComplete();
 	}
 
 	@Override

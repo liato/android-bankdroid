@@ -109,36 +109,30 @@ public class Nordnetdirekt extends Bank {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		urlopen = login();
-		try {
-			Matcher matcher;
-			matcher = reBalance.matcher(response);
-			if (matcher.find()) {
-                /*
-                 * Capture groups:
-                 * GROUP                EXAMPLE DATA
-                 * 1: Currency          Dep&aring;v&auml;rde - SEK
-                 * 2: Kontantsaldo      13 264,53
-                 * 3: Värdepapper       111 909,05
-                 *  
-                 */
-                accounts.add(new Account(
-                        "Kontosaldo",
-                        Helpers.parseBalance(matcher.group(2)),
-                        "1"));
-                accounts.add(new Account(
-                        "Värdepapper",
-                        Helpers.parseBalance(matcher.group(3)),
-                        "2"));
-				balance = balance.add(Helpers.parseBalance(matcher.group(2)));				
-				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
-			}
-			
-			if (accounts.isEmpty()) {
-				throw new BankException(res.getText(R.string.no_accounts_found).toString());
-			}
-		}		
-        finally {
-            super.updateComplete();
-        }
+		Matcher matcher = reBalance.matcher(response);
+		if (matcher.find()) {
+            /*
+             * Capture groups:
+             * GROUP                EXAMPLE DATA
+             * 1: Currency          Dep&aring;v&auml;rde - SEK
+             * 2: Kontantsaldo      13 264,53
+             * 3: Värdepapper       111 909,05
+             *
+             */
+            accounts.add(new Account(
+                    "Kontosaldo",
+                    Helpers.parseBalance(matcher.group(2)),
+                    "1"));
+            accounts.add(new Account(
+                    "Värdepapper",
+                    Helpers.parseBalance(matcher.group(3)),
+                    "2"));
+			balance = balance.add(Helpers.parseBalance(matcher.group(2)));
+			balance = balance.add(Helpers.parseBalance(matcher.group(3)));
+		}
+		if (accounts.isEmpty()) {
+			throw new BankException(res.getText(R.string.no_accounts_found).toString());
+		}
+        super.updateComplete();
 	}
 }
