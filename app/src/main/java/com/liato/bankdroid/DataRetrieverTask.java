@@ -16,6 +16,7 @@
 
 package com.liato.bankdroid;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import android.app.AlertDialog;
@@ -36,6 +37,7 @@ import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.db.DBAdapter;
+import com.liato.bankdroid.utils.NetworkUtils;
 
 public class DataRetrieverTask extends AsyncTask<String, String, Void> {
     private final static String TAG = "DataRetrieverTask";
@@ -100,11 +102,16 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
 				this.errors.add(bank.getName() + " (" + bank.getUsername()
 						+ ")");
 				DBAdapter.disable(bank, parent);
-			}
-            catch (BankChoiceException e) {
+			} catch (BankChoiceException e) {
                 this.errors.add(bank.getName() + " (" + bank.getUsername()
                         + ")");
                 Log.e(TAG, "BankChoiceError: " + e.getMessage());
+            } catch(IOException e) {
+                this.errors.add(bank.getName() + " (" + bank.getUsername()
+                        + ")");
+                if(NetworkUtils.isInternetAvailable()) {
+                    Crashlytics.logException(e);
+                }
             }
 
 			final SharedPreferences prefs = PreferenceManager

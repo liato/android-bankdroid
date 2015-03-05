@@ -45,6 +45,9 @@ import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.db.DBAdapter;
+import com.liato.bankdroid.utils.NetworkUtils;
+
+import java.io.IOException;
 
 public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 	private final static String TAG = "BankdroidWidgetProvider";
@@ -379,7 +382,12 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
                 catch (BankChoiceException e) {
                     Log.e(TAG, "Error while updating bank '"+bank.getDbId()+"'; "+e.getMessage());
                 }
-
+                catch(IOException e) {
+                    Log.e(TAG, "Error while updating bank '"+bank.getDbId()+"'; "+e.getMessage());
+                    if(NetworkUtils.isInternetAvailable()) {
+                        Crashlytics.logException(e);
+                    }
+                }
 				BankdroidWidgetProvider.updateAppWidget(context, appWidgetManager, appWidgetId);
 				return null;
 			}
