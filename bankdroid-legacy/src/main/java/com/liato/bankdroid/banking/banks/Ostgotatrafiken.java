@@ -63,14 +63,14 @@ public class Ostgotatrafiken extends Bank {
 		super.URL = URL;
 	}
 
-	public Ostgotatrafiken(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+	public Ostgotatrafiken(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
 
 	@Override
-	protected LoginPackage preLogin() throws BankException,
-	ClientProtocolException, IOException {
+	protected LoginPackage preLogin() throws BankException, IOException {
 		urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_ostgotatrafiken_login, R.raw.cert_ostgotatrafiken_overview));
 
 		List <NameValuePair> postData = new ArrayList <NameValuePair>();
@@ -82,98 +82,79 @@ public class Ostgotatrafiken extends Bank {
 	}
 
 	@Override
-	public Urllib login() throws LoginException, BankException {
-		try {
-			LoginPackage lp = preLogin();
-			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-			if (!response.contains("Logga ut")) {
-				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-			}
+	public Urllib login() throws LoginException, BankException, IOException {
+		LoginPackage lp = preLogin();
+		response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+		if (!response.contains("Logga ut")) {
+			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
-		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		}
-		catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
-		}
-		return urlopen;
+        return urlopen;
 	}
 
 	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
+	public void update() throws BankException, LoginException, BankChoiceException, IOException {
 		super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		urlopen = login();
+		String cardOverviewUrl = "https://webtick.ostgotatrafiken.se/webtick/user/pages/CardOverview.iface";
+		response = urlopen.open(cardOverviewUrl);
+		parseTravelCardBalanceFromServerResponse(response);
 
-		try {
-			String cardOverviewUrl = "https://webtick.ostgotatrafiken.se/webtick/user/pages/CardOverview.iface";
-			response = urlopen.open(cardOverviewUrl);
+		Matcher viewStateMatcher = reViewState.matcher(response);
+		if (!viewStateMatcher.find()) {
+			throw new BankException(res.getText(R.string.unable_to_find).toString() + " ViewState");
+		}
+		Matcher moreCardsMatcher = reMoreCards.matcher(response);
+		while (moreCardsMatcher.find()) {
+			List <NameValuePair> postData = new ArrayList <NameValuePair>();
+			postData.add(new BasicNameValuePair("form1cardOverviewTabs:j_idcl", moreCardsMatcher.group(1)));
+			postData.add(new BasicNameValuePair("ice.focus", moreCardsMatcher.group(1)));
+			postData.add(new BasicNameValuePair(moreCardsMatcher.group(1), moreCardsMatcher.group(1)));
+			postData.add(new BasicNameValuePair("form1cardOverviewTabs", "form1cardOverviewTabs"));
+			postData.add(new BasicNameValuePair("ice.event.captured", moreCardsMatcher.group(1)));
+			postData.add(new BasicNameValuePair("javax.faces.source", moreCardsMatcher.group(1)));
+			postData.add(new BasicNameValuePair("javax.faces.ViewState", viewStateMatcher.group(1)));
+
+			postData.add(new BasicNameValuePair("icefacesCssUpdates", ""));
+			postData.add(new BasicNameValuePair("javax.faces.partial.event", "click"));
+			postData.add(new BasicNameValuePair("javax.faces.partial.execute", "@all"));
+			postData.add(new BasicNameValuePair("javax.faces.partial.render", "@all"));
+			postData.add(new BasicNameValuePair("ice.event.type", "onclick"));
+			postData.add(new BasicNameValuePair("ice.event.alt", "false"));
+			postData.add(new BasicNameValuePair("ice.event.ctrl", "false"));
+			postData.add(new BasicNameValuePair("ice.event.shift", "false"));
+			postData.add(new BasicNameValuePair("ice.event.meta", "false"));
+			postData.add(new BasicNameValuePair("ice.event.x", "606"));
+			postData.add(new BasicNameValuePair("ice.event.y", "362"));
+			postData.add(new BasicNameValuePair("ice.event.left", "true"));
+			postData.add(new BasicNameValuePair("ice.event.right", "false"));
+			postData.add(new BasicNameValuePair("ice.submit.type", "ice.s"));
+			postData.add(new BasicNameValuePair("ice.submit.serialization", "form"));
+			postData.add(new BasicNameValuePair("javax.faces.partial.ajax", "true"));
+
+			// ice.event.target is sent by browser, but not needed by
+			// server so don't bother parsing response for its correct value
+			//postData.add(new BasicNameValuePair("ice.event.target", "form1cardOverviewTabs:j_idt240:1:j_idt243"));
+
+			// ice.window and ice.view are sent by browser, but by not sending
+			// these to server we get an HTML response which can be parsed
+			// just like the initial response. If including ice.window and
+			// ice.view in POST the server will give us XML data back which
+			// would need separate parsing.
+			//postData.add(new BasicNameValuePair("ice.window", "p7htbwx9t8"));
+			//postData.add(new BasicNameValuePair("ice.view", "vcuag6esom"));
+
+			urlopen.addHeader("Faces-Request", "partial/ajax");
+			response = urlopen.open(cardOverviewUrl, postData);
 			parseTravelCardBalanceFromServerResponse(response);
-
-			Matcher viewStateMatcher = reViewState.matcher(response);
-			if (!viewStateMatcher.find()) {
-				throw new BankException(res.getText(R.string.unable_to_find).toString() + " ViewState");
-			}
-			Matcher moreCardsMatcher = reMoreCards.matcher(response);
-			while (moreCardsMatcher.find()) {
-				List <NameValuePair> postData = new ArrayList <NameValuePair>();
-				postData.add(new BasicNameValuePair("form1cardOverviewTabs:j_idcl", moreCardsMatcher.group(1)));
-				postData.add(new BasicNameValuePair("ice.focus", moreCardsMatcher.group(1)));
-				postData.add(new BasicNameValuePair(moreCardsMatcher.group(1), moreCardsMatcher.group(1)));
-				postData.add(new BasicNameValuePair("form1cardOverviewTabs", "form1cardOverviewTabs"));
-				postData.add(new BasicNameValuePair("ice.event.captured", moreCardsMatcher.group(1)));
-				postData.add(new BasicNameValuePair("javax.faces.source", moreCardsMatcher.group(1)));
-				postData.add(new BasicNameValuePair("javax.faces.ViewState", viewStateMatcher.group(1)));
-
-				postData.add(new BasicNameValuePair("icefacesCssUpdates", ""));
-				postData.add(new BasicNameValuePair("javax.faces.partial.event", "click"));
-				postData.add(new BasicNameValuePair("javax.faces.partial.execute", "@all"));
-				postData.add(new BasicNameValuePair("javax.faces.partial.render", "@all"));
-				postData.add(new BasicNameValuePair("ice.event.type", "onclick"));
-				postData.add(new BasicNameValuePair("ice.event.alt", "false"));
-				postData.add(new BasicNameValuePair("ice.event.ctrl", "false"));
-				postData.add(new BasicNameValuePair("ice.event.shift", "false"));
-				postData.add(new BasicNameValuePair("ice.event.meta", "false"));
-				postData.add(new BasicNameValuePair("ice.event.x", "606"));
-				postData.add(new BasicNameValuePair("ice.event.y", "362"));
-				postData.add(new BasicNameValuePair("ice.event.left", "true"));
-				postData.add(new BasicNameValuePair("ice.event.right", "false"));
-				postData.add(new BasicNameValuePair("ice.submit.type", "ice.s"));
-				postData.add(new BasicNameValuePair("ice.submit.serialization", "form"));
-				postData.add(new BasicNameValuePair("javax.faces.partial.ajax", "true"));
-
-				// ice.event.target is sent by browser, but not needed by
-				// server so don't bother parsing response for its correct value
-				//postData.add(new BasicNameValuePair("ice.event.target", "form1cardOverviewTabs:j_idt240:1:j_idt243"));
-
-				// ice.window and ice.view are sent by browser, but by not sending
-				// these to server we get an HTML response which can be parsed
-				// just like the initial response. If including ice.window and
-				// ice.view in POST the server will give us XML data back which
-				// would need separate parsing.
-				//postData.add(new BasicNameValuePair("ice.window", "p7htbwx9t8"));
-				//postData.add(new BasicNameValuePair("ice.view", "vcuag6esom"));
-
-				urlopen.addHeader("Faces-Request", "partial/ajax");
-				response = urlopen.open(cardOverviewUrl, postData);
-				parseTravelCardBalanceFromServerResponse(response);
-			}
-
-			if (accounts.isEmpty()) {
-				throw new BankException(res.getText(R.string.no_accounts_found).toString());
-			}
 		}
-		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
+
+		if (accounts.isEmpty()) {
+			throw new BankException(res.getText(R.string.no_accounts_found).toString());
 		}
-		catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
-		}
-		finally {
-			super.updateComplete();
-		}
+		super.updateComplete();
 	}
 
 	private void parseTravelCardBalanceFromServerResponse(String response) {

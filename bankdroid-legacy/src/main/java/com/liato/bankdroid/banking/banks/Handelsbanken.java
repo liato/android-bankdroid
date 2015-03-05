@@ -75,7 +75,8 @@ public class Handelsbanken extends Bank {
 		super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
 	}
 
-	public Handelsbanken(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+	public Handelsbanken(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
@@ -83,8 +84,7 @@ public class Handelsbanken extends Bank {
 	
     
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_handelsbanken));
         response = urlopen.open("https://m.handelsbanken.se/primary/");
         Matcher matcher = reLoginUrl.matcher(response);
@@ -100,87 +100,63 @@ public class Handelsbanken extends Bank {
     }
 
 	@Override
-	public Urllib login() throws LoginException, BankException {
-		try {
-			LoginPackage lp = preLogin();
-			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-			if (response.contains("ontrollera dina uppgifter")) {
-				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-			}
-		}
-		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		}
-		catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
+	public Urllib login() throws LoginException, BankException, IOException {
+		LoginPackage lp = preLogin();
+		response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+		if (response.contains("ontrollera dina uppgifter")) {
+			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		return urlopen;
 	}
 	
 	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
+	public void update() throws BankException, LoginException, BankChoiceException, IOException {
 		super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 
 		urlopen = login();
-		Matcher matcher;
-		try {
-			matcher = reAccountsUrl.matcher(response);
-			if (!matcher.find()) {
-				throw new BankException(res.getText(R.string.unable_to_find).toString()+" accounts url.");
-			}
-			String strAccountsUrl = "https://m.handelsbanken.se/primary/_-"+matcher.group(1);			
-			response = urlopen.open(strAccountsUrl);
-			matcher = reBalance.matcher(response);
-			Integer accountId = 0;
-			while (matcher.find()) {
-				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), accountId.toString()));
-				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
-				accountIds.add(matcher.group(1));
-				accountId += 1;
-			}
-			if (accounts.isEmpty()) {
-				throw new BankException(res.getText(R.string.no_accounts_found).toString());
-			}
+
+        Matcher matcher = reAccountsUrl.matcher(response);
+		if (!matcher.find()) {
+			throw new BankException(res.getText(R.string.unable_to_find).toString()+" accounts url.");
 		}
-		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
+		String strAccountsUrl = "https://m.handelsbanken.se/primary/_-"+matcher.group(1);
+		response = urlopen.open(strAccountsUrl);
+		matcher = reBalance.matcher(response);
+		Integer accountId = 0;
+		while (matcher.find()) {
+			accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3).trim()), accountId.toString()));
+			balance = balance.add(Helpers.parseBalance(matcher.group(3)));
+			accountIds.add(matcher.group(1));
+			accountId += 1;
 		}
-		catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
+		if (accounts.isEmpty()) {
+			throw new BankException(res.getText(R.string.no_accounts_found).toString());
 		}
-        finally {
-            super.updateComplete();
-        }
+        super.updateComplete();
 	}
 	
 
-	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+	public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
+            BankException, IOException {
 		super.updateTransactions(account, urlopen);
 		Matcher matcher;
-		try {
-			String accountWebId = accountIds.get(Integer.parseInt(account.getId()));
-			response = urlopen.open("https://m.handelsbanken.se/primary/_-"+accountWebId);
-			matcher = reTransactions.matcher(response);
-			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-			while (matcher.find()) {
-				transactions.add(new Transaction(matcher.group(1).trim(), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3))));
-			}
-			
-			// Sort transactions by date
-			Collections.sort(transactions, new Comparator<Transaction>() {
-                public int compare(Transaction t1, Transaction t2) {
-                    return t2.compareTo(t1);
-                }
-            });
-			
-			account.setTransactions(transactions);
-		} catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-		} catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+		String accountWebId = accountIds.get(Integer.parseInt(account.getId()));
+		response = urlopen.open("https://m.handelsbanken.se/primary/_-"+accountWebId);
+		matcher = reTransactions.matcher(response);
+		ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+		while (matcher.find()) {
+			transactions.add(new Transaction(matcher.group(1).trim(), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3))));
 		}
+
+		// Sort transactions by date
+		Collections.sort(transactions, new Comparator<Transaction>() {
+                public int compare(Transaction t1, Transaction t2) {
+                   return t2.compareTo(t1);
+                }
+        });
+        account.setTransactions(transactions);
 	}
 }

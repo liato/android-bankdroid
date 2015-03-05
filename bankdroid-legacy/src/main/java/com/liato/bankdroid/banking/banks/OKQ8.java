@@ -72,15 +72,15 @@ public class OKQ8 extends Bank {
 		super.STATIC_BALANCE = STATIC_BALANCE;
 	}
 
-	public OKQ8(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+	public OKQ8(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
 
     
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_okq8));
         Date d = new Date();
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
@@ -95,10 +95,10 @@ public class OKQ8 extends Bank {
         return new LoginPackage(urlopen, postData, response, "https://nettbank.edb.com/Logon/logon/step1");
     }
 
-	public Urllib login() throws LoginException, BankException {
+	public Urllib login() throws LoginException, BankException, IOException {
         Matcher matcher;
         String value = null;
-		try {
+
 			LoginPackage lp = preLogin();
 			List <NameValuePair> postData = lp.getPostData();
 			response = urlopen.open(lp.getLoginTarget(), postData);
@@ -150,18 +150,11 @@ public class OKQ8 extends Bank {
 			{
 				throw new LoginException("Login failed.");
 			}
-		}
-		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		}
-		catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
-		}
 		return urlopen;
 	}
 
 	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
+	public void update() throws BankException, LoginException, BankChoiceException, IOException {
 		super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -169,66 +162,51 @@ public class OKQ8 extends Bank {
 		if (response == null) {
 			urlopen = login();
 		}
-		try {
+		/*
+		 * The start page contains the balance of the account ("Kvar att utnytta") so read it.
+		 * The balance is the first value (of three) that are matched by reBalance expression.
+		 */
+		Matcher matcher = reBalance.matcher(response);
+		if(matcher.find())
+		{
+		    accounts.add(new Account("Kvar att utnyttja" , Helpers.parseBalance(matcher.group(1)), "1"));
+		    balance = balance.add(Helpers.parseBalance(matcher.group(1)));
+		}
+		/*
+		 * Find the next value that is "Saldo". Add a new account but don't add to the balance.
+		 */
+		if(matcher.find())
+		{
+		    accounts.add(new Account("Saldo" , Helpers.parseBalance(matcher.group(1)), "2"));
+		    accounts.add(new Account("Saldo" , Helpers.parseBalance(matcher.group(1)).negate(), "4"));
+		}
+		/*
+		 * Find the next value that is "Köpgräns". Add a new account but don't add to the balance.
+		 */
+		if(matcher.find())
+		{
+		    accounts.add(new Account("Köpgräns" , Helpers.parseBalance(matcher.group(1)), "3"));
+		}
+
+		if (accounts.isEmpty()) {
+			throw new BankException(res.getText(R.string.no_accounts_found).toString());
+		}
+
+
+		response = urlopen.open("https://nettbank.edb.com/cardpayment/transigo/card/overview/lastTransactionsAccount");
+
+		matcher = reTransactions.matcher(response);
+		ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+		while (matcher.find()) {
 			/*
-			 * The start page contains the balance of the account ("Kvar att utnytta") so read it.
-			 * The balance is the first value (of three) that are matched by reBalance expression.
+			 * Capture group 1 = date
+			 * Capture group 2 = text
+			 * Capture group 3 = amount
+			 * Negate the amount since buys are reported as positive.
 			 */
-			Matcher matcher;
-			matcher = reBalance.matcher(response);
-			
-			/*
-			 * The start page contains the balance of the account ("Kvar att utnytta") so read it.
-			 * The balance is the first value (of three) that are matched by reBalance expression.
-			 */
-			matcher = reBalance.matcher(response);
-			if(matcher.find())
-			{
-			    accounts.add(new Account("Kvar att utnyttja" , Helpers.parseBalance(matcher.group(1)), "1"));
-			    balance = balance.add(Helpers.parseBalance(matcher.group(1)));
-			}
-			/*
-			 * Find the next value that is "Saldo". Add a new account but don't add to the balance.
-			 */
-			if(matcher.find())
-			{
-			    accounts.add(new Account("Saldo" , Helpers.parseBalance(matcher.group(1)), "2"));
-			    accounts.add(new Account("Saldo" , Helpers.parseBalance(matcher.group(1)).negate(), "4"));
-			}
-			/*
-			 * Find the next value that is "Köpgräns". Add a new account but don't add to the balance.
-			 */
-			if(matcher.find())
-			{
-			    accounts.add(new Account("Köpgräns" , Helpers.parseBalance(matcher.group(1)), "3"));
-			}			
-			
-			if (accounts.isEmpty()) {
-				throw new BankException(res.getText(R.string.no_accounts_found).toString());
-			}
-	
-	
-			response = urlopen.open("https://nettbank.edb.com/cardpayment/transigo/card/overview/lastTransactionsAccount");
-	
-			matcher = reTransactions.matcher(response);
-			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-			while (matcher.find()) {
-				/*
-				 * Capture group 1 = date
-				 * Capture group 2 = text
-				 * Capture group 3 = amount
-				 * Negate the amount since buys are reported as positive.
-				 */
-				transactions.add(new Transaction(matcher.group(1).trim(), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)).negate()));
-			}
-			accounts.get(0).setTransactions(transactions);
-		} catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-		} catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
-		}		
-        finally {
-            super.updateComplete();
-        }
+			transactions.add(new Transaction(matcher.group(1).trim(), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)).negate()));
+		}
+		accounts.get(0).setTransactions(transactions);
+        super.updateComplete();
 	}
 }

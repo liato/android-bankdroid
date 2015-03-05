@@ -66,15 +66,15 @@ public class FirstCard extends Bank {
 		super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
 	}
 
-	public FirstCard(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+	public FirstCard(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
 
     
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_firstcard));
         response = urlopen.open("https://www.firstcard.se/login.jsp");
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
@@ -86,87 +86,68 @@ public class FirstCard extends Bank {
     }
 
 	@Override
-	public Urllib login() throws LoginException, BankException {
-		try {
-			LoginPackage lp = preLogin();
-			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-			if (response.contains("Logga in med din kod")) {
-				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-			}
-			
-		} catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		} catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
+	public Urllib login() throws LoginException, BankException, IOException {
+		LoginPackage lp = preLogin();
+		response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+		if (response.contains("Logga in med din kod")) {
+			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		return urlopen;
 	}
 	
 	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
+	public void update() throws BankException, LoginException, BankChoiceException, IOException {
 		super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		urlopen = login();
-		try {
-			response = urlopen.open("https://www.firstcard.se/mkol/index.jsp");
-			Matcher matcher = reAccounts.matcher(response);
-			while (matcher.find()) {
-				/*
-				 * Capture groups:
-				 * GROUP				EXAMPLE DATA
-				 * 1: id				kdKPq4ghlcy9wpXymSzzS46wWQcS_0OT
-				 * 2: account number	1111 3333 7777 9999
-				 * 3: amount 			9 824,08
-				 * 
-				 */				
-				accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), matcher.group(1).trim()));
-				balance = balance.add(Helpers.parseBalance(matcher.group(3)));
-			}
 
-			if (accounts.isEmpty()) {
-				throw new BankException(res.getText(R.string.no_accounts_found).toString());
-			}			
-		} catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		} catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
+		response = urlopen.open("https://www.firstcard.se/mkol/index.jsp");
+		Matcher matcher = reAccounts.matcher(response);
+		while (matcher.find()) {
+			/*
+			 * Capture groups:
+			 * GROUP				EXAMPLE DATA
+			 * 1: id				kdKPq4ghlcy9wpXymSzzS46wWQcS_0OT
+			 * 2: account number	1111 3333 7777 9999
+			 * 3: amount 			9 824,08
+			 *
+			 */
+			accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(3)), matcher.group(1).trim()));
+			balance = balance.add(Helpers.parseBalance(matcher.group(3)));
 		}
-        finally {
-            super.updateComplete();
-        }
+
+		if (accounts.isEmpty()) {
+			throw new BankException(res.getText(R.string.no_accounts_found).toString());
+		}
+
+        super.updateComplete();
 	}
 
 	@Override
-	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+	public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
+            BankException, IOException {
 		super.updateTransactions(account, urlopen);
-		Matcher matcher;
-		try {
-			response = urlopen.open("https://www.firstcard.se/mkol/translist.jsp?p=a&cardID="+account.getId());
-			matcher = reTransactions.matcher(response);
-			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-			while (matcher.find()) {
-				/*
-				 * Capture groups:
-				 * GROUP						EXAMPLE DATA
-				 * 1: date						101006
-				 * 2: specification				GOOGLE *RealArcade
-				 * 3: currency					USD
-				 * 4: amount					3,49
-				 * 5: amount in local currency	24,08
-				 * 
-				 */
-				String strDate = Html.fromHtml(matcher.group(1)).toString().trim();
-				strDate = "20"+strDate.charAt(0)+strDate.charAt(1)+"-"+strDate.charAt(2)+strDate.charAt(3)+"-"+strDate.charAt(4)+strDate.charAt(5);
-				transactions.add(new Transaction(strDate, Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(5)).negate()));
-			}
-			account.setTransactions(transactions);
-		} catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-		} catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+
+		response = urlopen.open("https://www.firstcard.se/mkol/translist.jsp?p=a&cardID="+account.getId());
+		Matcher matcher = reTransactions.matcher(response);
+		ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+		while (matcher.find()) {
+			/*
+			 * Capture groups:
+			 * GROUP						EXAMPLE DATA
+			 * 1: date						101006
+			 * 2: specification				GOOGLE *RealArcade
+			 * 3: currency					USD
+			 * 4: amount					3,49
+			 * 5: amount in local currency	24,08
+			 *
+			 */
+			String strDate = Html.fromHtml(matcher.group(1)).toString().trim();
+			strDate = "20"+strDate.charAt(0)+strDate.charAt(1)+"-"+strDate.charAt(2)+strDate.charAt(3)+"-"+strDate.charAt(4)+strDate.charAt(5);
+			transactions.add(new Transaction(strDate, Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(5)).negate()));
 		}
+		account.setTransactions(transactions);
 	}
-	
 }

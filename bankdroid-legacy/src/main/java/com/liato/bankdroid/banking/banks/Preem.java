@@ -23,6 +23,8 @@ import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
+import java.io.IOException;
+
 
 public class Preem extends AbsIkanoPartner {
     private static final String TAG = "Preem";
@@ -41,7 +43,8 @@ public class Preem extends AbsIkanoPartner {
         this.structId = "1437";
     }
 
-    public Preem(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+    public Preem(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
     }

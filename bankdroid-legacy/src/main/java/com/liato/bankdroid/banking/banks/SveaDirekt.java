@@ -60,14 +60,14 @@ public class SveaDirekt extends Bank {
         super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
     }
 
-    public SveaDirekt(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+    public SveaDirekt(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
     }
 
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         if (urlopen == null) {
             urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_sveadirekt));
             urlopen.getHttpclient().getParams().setParameter(ClientPNames.ALLOW_CIRCULAR_REDIRECTS, true);
@@ -89,25 +89,18 @@ public class SveaDirekt extends Bank {
     }
 
     @Override
-    public Urllib login() throws LoginException, BankException {
-        try {
-            LoginPackage lp = preLogin();
-            response = urlopen.open(LOGIN_URL, lp.getPostData());
-            if (response.contains("error-failed-to-login")) {
-                throw new LoginException(res.getText(
+    public Urllib login() throws LoginException, BankException, IOException {
+        LoginPackage lp = preLogin();
+        response = urlopen.open(LOGIN_URL, lp.getPostData());
+        if (response.contains("error-failed-to-login")) {
+            throw new LoginException(res.getText(
                         R.string.invalid_username_password).toString());
-            }
-
-        } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
         }
         return urlopen;
     }
 
     @Override
-    public void update() throws BankException, LoginException, BankChoiceException {
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
         if (username == null || password == null || username.length() == 0
                 || password.length() == 0) {
@@ -116,41 +109,31 @@ public class SveaDirekt extends Bank {
         }
 
         urlopen = login();
-        try {
-            List<NameValuePair> postData = new ArrayList<NameValuePair>();
-            postData.add(new BasicNameValuePair("homeForm:balance","Saldo"));
-            postData.add(new BasicNameValuePair("homeForm","homeForm"));
-            response = urlopen.open(ACCOUNTS_URL,postData);
-            Document doc = Jsoup.parse(response);
-            ArrayList<Account> accounts = parseAccounts(doc);
 
-            if (!accounts.isEmpty()) {
-                Account firstAccount = accounts.get(0);
-                // Get account details for first account
-                addAccountDetails(firstAccount, doc);
-                firstAccount.setTransactions(parseTransactions(response));
+        List<NameValuePair> postData = new ArrayList<NameValuePair>();
+        postData.add(new BasicNameValuePair("homeForm:balance","Saldo"));
+        postData.add(new BasicNameValuePair("homeForm","homeForm"));
+        response = urlopen.open(ACCOUNTS_URL,postData);
+        Document doc = Jsoup.parse(response);
+        ArrayList<Account> accounts = parseAccounts(doc);
 
-            }
+        if (!accounts.isEmpty()) {
+            Account firstAccount = accounts.get(0);
+            // Get account details for first account
+            addAccountDetails(firstAccount, doc);
+            firstAccount.setTransactions(parseTransactions(response));
 
-            // Fetch additional accounts transaction pages to get their balance.
-            for (int i = 1; i < accounts.size(); i++) {
-                Account account = accounts.get(i);
-                response = urlopen.open(TRANSACTIONS_URL, createTransactionParams(account));
-                addAccountDetails(account, Jsoup.parse(response));
-                account.setTransactions(parseTransactions(response));
-            }
-            this.setAccounts(accounts);
-        }
-        catch (ClientProtocolException e) {
-          throw new BankException(e.getMessage(), e);
-        }
-        catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
-        }
-        finally {
-          super.updateComplete();
         }
 
+        // Fetch additional accounts transaction pages to get their balance.
+        for (int i = 1; i < accounts.size(); i++) {
+            Account account = accounts.get(i);
+            response = urlopen.open(TRANSACTIONS_URL, createTransactionParams(account));
+            addAccountDetails(account, Jsoup.parse(response));
+            account.setTransactions(parseTransactions(response));
+        }
+        this.setAccounts(accounts);
+        super.updateComplete();
     }
 
     private ArrayList<Account> parseAccounts(Document pDocument) {

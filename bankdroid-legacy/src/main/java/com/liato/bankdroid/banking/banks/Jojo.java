@@ -67,7 +67,8 @@ public class Jojo extends Bank {
         super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
     }
 
-    public Jojo(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+    public Jojo(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
     }
@@ -85,23 +86,17 @@ public class Jojo extends Bank {
         return new LoginPackage(urlopen, postData, response, URL + "/mobile/customer.html");
     }
 
-    public Urllib login() throws LoginException, BankException {
-        try {
-            LoginPackage lp = preLogin();
-            response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-            if (!response.contains("[Logga ut]")) {
-                throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-            }
-        } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+    public Urllib login() throws LoginException, BankException, IOException {
+        LoginPackage lp = preLogin();
+        response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+        if (!response.contains("[Logga ut]")) {
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         return urlopen;
     }
 
     @Override
-    public void update() throws BankException, LoginException, BankChoiceException {
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
         if (username == null || password == null || username.length() == 0 || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());

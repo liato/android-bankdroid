@@ -76,14 +76,14 @@ public class Volvofinans extends Bank {
         super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
 	}
 
-	public Volvofinans(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+	public Volvofinans(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
 
 	@Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_volvofinans, R.raw.cert_volvofinans_logged_in));
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
@@ -95,73 +95,55 @@ public class Volvofinans extends Bank {
     }
 
     @Override
-	public Urllib login() throws LoginException, BankException {
-	    try {
-	        LoginPackage lp = preLogin();
-	        String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+	public Urllib login() throws LoginException, BankException, IOException {
+	    LoginPackage lp = preLogin();
+	    String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
 
-			if (response.contains("Fel personr/organisationsnr och/eller lösenord.")) {
-				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-			}
+		if (response.contains("Fel personr/organisationsnr och/eller lösenord.")) {
+			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+		}
 
-			if (response.contains("Internetbanken är stängd för tillfället och beräknas vara tillgänglig")) {
-				throw new LoginException(res.getText(R.string.bank_closed).toString());
-			}
-		}
-		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		}
-		catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
+		if (response.contains("Internetbanken är stängd för tillfället och beräknas vara tillgänglig")) {
+			throw new LoginException(res.getText(R.string.bank_closed).toString());
 		}
 		return urlopen;
 	}
 
 	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
+	public void update() throws BankException, LoginException, BankChoiceException, IOException {
 		super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		urlopen = login();
-		String response = null;
+		String response = urlopen.open("https://inloggad.volvofinans.se/privat/kund/kortkonto/oversikt/kortkonton.html");
 		try {
-			response = urlopen.open("https://inloggad.volvofinans.se/privat/kund/kortkonto/oversikt/kortkonton.html");
-			try {
-				JSONObject object = (JSONObject) new JSONTokener(response).nextValue();
-				JSONArray data = object.getJSONArray("data");
+			JSONObject object = (JSONObject) new JSONTokener(response).nextValue();
+			JSONArray data = object.getJSONArray("data");
 
-				int length = data.length();
-				for (int index = 0; index < length; index++) {
-					JSONObject account = data.getJSONObject(index);
-					Document d = Jsoup.parse(account.getString("namnUrl"));
-					Element e = d.getElementsByTag("a").first();
-					if (e != null && e.attr("href") != null) {
-    					mAccountUrlMappings.put(account.getString("kontonummer"), e.attr("href").replace("/info.html", "/info/kontoutdrag.html"));
-					}
-					accounts.add(new Account(String.format("%s (%s)", account.getString("namn"), account.getString("kontonummer")), Helpers.parseBalance(account.getString("disponibeltBelopp")).subtract(Helpers.parseBalance(account.getString("limit"))), account.getString("kontonummer")));
+			int length = data.length();
+			for (int index = 0; index < length; index++) {
+				JSONObject account = data.getJSONObject(index);
+				Document d = Jsoup.parse(account.getString("namnUrl"));
+				Element e = d.getElementsByTag("a").first();
+				if (e != null && e.attr("href") != null) {
+    				mAccountUrlMappings.put(account.getString("kontonummer"), e.attr("href").replace("/info.html", "/info/kontoutdrag.html"));
 				}
-			}
-			catch (JSONException e) {
-				throw new BankException(e.getMessage(), e);
-			}
-			if (accounts.isEmpty()) {
-				throw new BankException(res.getText(R.string.no_accounts_found).toString());
+				accounts.add(new Account(String.format("%s (%s)", account.getString("namn"), account.getString("kontonummer")), Helpers.parseBalance(account.getString("disponibeltBelopp")).subtract(Helpers.parseBalance(account.getString("limit"))), account.getString("kontonummer")));
 			}
 		}
-		catch (ClientProtocolException e) {
+		catch (JSONException e) {
 			throw new BankException(e.getMessage(), e);
 		}
-		catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
+		if (accounts.isEmpty()) {
+			throw new BankException(res.getText(R.string.no_accounts_found).toString());
 		}
-		finally {
-	      super.updateComplete();
-		}
+        super.updateComplete();
 	}
 	
     @Override
-    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+    public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
+            BankException, IOException {
         super.updateTransactions(account, urlopen);
         String response = null;
         String url = mAccountUrlMappings.get(account.getId());
@@ -192,10 +174,6 @@ public class Volvofinans extends Bank {
                     throw new BankException(res.getText(R.string.no_accounts_found).toString());
                 }
 
-            } catch (ClientProtocolException e) {
-               throw new BankException(e.getMessage(), e);
-            } catch (IOException e) {
-                throw new BankException(e.getMessage(), e);
             } catch (JSONException e) {
                 throw new BankException(e.getMessage(), e);
             }

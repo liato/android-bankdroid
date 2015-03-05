@@ -24,6 +24,8 @@ import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
+import java.io.IOException;
+
 
 public class EurobonusMastercardDk extends SEBKortBase {
     private static final String TAG = "EurobonusMastercardDk";
@@ -40,7 +42,8 @@ public class EurobonusMastercardDk extends SEBKortBase {
         super.currency = "DKK";
     }
 
-    public EurobonusMastercardDk(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+    public EurobonusMastercardDk(String username, String password, Context context)
+            throws BankException, LoginException, BankChoiceException, IOException {
         super(username, password, context, "sadk", "0101");
     }
 

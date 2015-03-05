@@ -183,14 +183,14 @@ public class Nordea extends Bank {
         super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
 	}
 
-	public Nordea(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+	public Nordea(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
 
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
 		urlopen = new Urllib(context);
 		Matcher matcher;
 		// Find "simple login" link
@@ -234,27 +234,18 @@ public class Nordea extends Bank {
     }
 
 	@Override
-	public Urllib login() throws LoginException, BankException {
-		try {
-		    LoginPackage lp = preLogin();
-		    this.lastResponse = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-		    this.currentPageType = PageType.ENTRY;
-			if (this.lastResponse.contains("fel uppgifter")) {
-				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-			}
-			
-		} catch (HttpResponseException e) {
-			throw new BankException(String.valueOf(e.getStatusCode()), e);
-		} catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		} catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
+	public Urllib login() throws LoginException, BankException, IOException {
+		LoginPackage lp = preLogin();
+		this.lastResponse = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+		this.currentPageType = PageType.ENTRY;
+		if (this.lastResponse.contains("fel uppgifter")) {
+			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		return urlopen;
 	}
 	
 	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
+	public void update() throws BankException, LoginException, BankChoiceException, IOException {
 		super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -263,66 +254,56 @@ public class Nordea extends Bank {
 		// This puts us at PageType.ENTRY
         urlopen = login();
         String loanName;
-		Matcher matcher;
-		try {
-			// Add regular accounts
-            matcher = reAccountLink.matcher(this.lastResponse);
-			while (matcher.find()) {
-				accounts.add(new Account(
-                        // Account name
-						Html.fromHtml(matcher.group(3)).toString().trim(), 
-						// Balance
-                        Helpers.parseBalance(Html.fromHtml(matcher.group(5)).toString()),
-                        // Account identifier - half censured account number: "************1234"
-						Html.fromHtml(matcher.group(4)).toString().trim()
-						));
-			}
 
-            // TODO: Code for funds
-
-            goToPage(PageType.CREDIT_CARDS);
-            matcher = reCreditCardLink.matcher(this.lastResponse);
-            // Add credit cards
-            while (matcher.find()) {
-                accounts.add(new Account(
-                        // Account/Credit card name
-                        matcher.group(2),
-                        // Balance (not available through simple login)
-                        Helpers.parseBalance(matcher.group(5)),
-                        // Account/Credit card identifier
-                        "c:" + matcher.group(3),
-                        -1L,
-                        Account.CCARD
-                        ));
-            }
-
-            goToPage(PageType.LOANS);
-            matcher = reLoanLink.matcher(this.lastResponse);
-            // Add loans
-            while (matcher.find()) {
-                loanName = matcher.group(2) + ' ' + matcher.group(3);
-                accounts.add(new Account(
-                        loanName,
-                        Helpers.parseBalance(matcher.group(5)),
-                        "l:" + matcher.group(3).trim(),
-                        -1L,
-                        Account.LOANS
-                ));
-            }
-
-			if (accounts.isEmpty()) {
-				throw new BankException(res.getText(R.string.no_accounts_found).toString());
-			}
+		// Add regular accounts
+        Matcher matcher = reAccountLink.matcher(this.lastResponse);
+		while (matcher.find()) {
+			accounts.add(new Account(
+                    // Account name
+					Html.fromHtml(matcher.group(3)).toString().trim(),
+					// Balance
+                    Helpers.parseBalance(Html.fromHtml(matcher.group(5)).toString()),
+                    // Account identifier - half censured account number: "************1234"
+					Html.fromHtml(matcher.group(4)).toString().trim()
+					));
 		}
-        catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
+
+        // TODO: Code for funds
+
+        goToPage(PageType.CREDIT_CARDS);
+        matcher = reCreditCardLink.matcher(this.lastResponse);
+        // Add credit cards
+        while (matcher.find()) {
+            accounts.add(new Account(
+                    // Account/Credit card name
+                    matcher.group(2),
+                    // Balance (not available through simple login)
+                    Helpers.parseBalance(matcher.group(5)),
+                    // Account/Credit card identifier
+                    "c:" + matcher.group(3),
+                    -1L,
+                    Account.CCARD
+                    ));
         }
-        catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+
+        goToPage(PageType.LOANS);
+        matcher = reLoanLink.matcher(this.lastResponse);
+        // Add loans
+        while (matcher.find()) {
+            loanName = matcher.group(2) + ' ' + matcher.group(3);
+            accounts.add(new Account(
+                    loanName,
+                    Helpers.parseBalance(matcher.group(5)),
+                    "l:" + matcher.group(3).trim(),
+                    -1L,
+                    Account.LOANS
+            ));
         }
-		finally {
-		    super.updateComplete();
+
+		if (accounts.isEmpty()) {
+			throw new BankException(res.getText(R.string.no_accounts_found).toString());
 		}
+        super.updateComplete();
 		
         // Demo account to use with screenshots
         //accounts.add(new Account("Personkonto", Helpers.parseBalance("7953.37"), "1"));
@@ -331,30 +312,24 @@ public class Nordea extends Bank {
 	}
 
 	@Override
-	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+	public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
+            BankException, IOException {
 		super.updateTransactions(account, urlopen);
 
         int accType = account.getType();
-
-        try {
-            switch (accType) {
-                case Account.REGULAR:
-                    updateRegularTransactions(account, urlopen);
-                    break;
-                case Account.CCARD:
-                    updateCreditTransactions(account, urlopen);
-                    break;
-                default:
-                    break;
-            }
-        } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+        switch (accType) {
+            case Account.REGULAR:
+                updateRegularTransactions(account, urlopen);
+                break;
+            case Account.CCARD:
+                updateCreditTransactions(account, urlopen);
+                break;
+            default:
+                break;
         }
 	}
 
-    private void goToPage(int pageType) throws ClientProtocolException, IOException {
+    private void goToPage(int pageType) throws IOException {
         // Convenience method for going to an overview page
         Matcher matcher;
         String link;

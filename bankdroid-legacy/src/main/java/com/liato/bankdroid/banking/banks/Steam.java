@@ -70,15 +70,15 @@ public class Steam extends Bank {
 		super.STATIC_BALANCE = STATIC_BALANCE;
 	}
 
-	public Steam(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+	public Steam(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
 
     
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_steam));
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         postData.add(new BasicNameValuePair("redir", "account"));
@@ -88,28 +88,20 @@ public class Steam extends Bank {
     }
 
     @Override
-    public Urllib login() throws LoginException, BankException {
-		try {
-		    LoginPackage lp = preLogin();
-			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-            if (response.contains("Enter the characters above")) {
-                throw new LoginException("You have entered the wrong username/password too many times and Steam now requires you to enter a CAPTCHA.\nPlease wait 10 minutes before logging in again.");
-            }
-			if (response.contains("Incorrect login.")) {
-				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-			}
-		}
-		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		}
-		catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
+    public Urllib login() throws LoginException, BankException, IOException {
+		LoginPackage lp = preLogin();
+		response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+        if (response.contains("Enter the characters above")) {
+            throw new LoginException("You have entered the wrong username/password too many times and Steam now requires you to enter a CAPTCHA.\nPlease wait 10 minutes before logging in again.");
+        }
+		if (response.contains("Incorrect login.")) {
+			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		return urlopen;
 	}
 
 	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
+	public void update() throws BankException, LoginException, BankChoiceException, IOException {
 		super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());

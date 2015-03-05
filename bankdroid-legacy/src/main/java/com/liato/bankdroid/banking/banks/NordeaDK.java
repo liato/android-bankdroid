@@ -82,14 +82,13 @@ public class NordeaDK extends Bank {
 	}
 
 	public NordeaDK(String username, String password, Context context)
-			throws BankException, LoginException, BankChoiceException {
+			throws BankException, LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
 
 	@Override
-	protected LoginPackage preLogin() throws BankException,
-			ClientProtocolException, IOException {
+	protected LoginPackage preLogin() throws BankException, IOException {
 		if (urlopen == null) {
             urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_nordea_dk));
 		}
@@ -113,26 +112,20 @@ public class NordeaDK extends Bank {
 	}
 
 	@Override
-	public Urllib login() throws LoginException, BankException {
-		try {
-			LoginPackage lp = preLogin();
-			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-			if (response.contains("class=\"icon error_icon\"")) {
-				throw new LoginException(res.getText(
+	public Urllib login() throws LoginException, BankException, IOException {
+		LoginPackage lp = preLogin();
+		response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+		if (response.contains("class=\"icon error_icon\"")) {
+			throw new LoginException(res.getText(
 						R.string.invalid_username_password).toString());
-			}
-			this.updatePrefix();
-		} catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		} catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
 		}
+		this.updatePrefix();
 		return urlopen;
 	}
 
 	@Override
 	public void update() throws BankException, LoginException,
-			BankChoiceException {
+			BankChoiceException, IOException {
 		super.update();
 		if (username == null || password == null || username.length() == 0
 				|| password.length() == 0) {
@@ -141,46 +134,42 @@ public class NordeaDK extends Bank {
 		}
 
 		urlopen = login();
-		Matcher matcher;
-		try {
-			matcher = reAccounts.matcher(response);
+		Matcher matcher = reAccounts.matcher(response);
 
-			if (!matcher.find()) {
-				throw new BankException(res.getText(R.string.unable_to_find)
-						.toString() + " accounts url.");
-			}
-			matcher.reset();
-			while (matcher.find()) {
-				/*
-				 * Capture groups: 
-				 * GROUP 		EXAMPLE DATA 
-				 * 1: Link		https://www.netbank.nordea.dk/mnetbank/servlet/AccountTransactions
-				 * 2: ID 		0 
-				 * 3: Name 		Check-in-konto 
-				 * 4: Amount	1.234,56
-				 */
-				String name = Html.fromHtml(matcher.group(3)).toString().trim();
-				String id = matcher.group(2).toString().trim();
-				BigDecimal amount = Helpers.parseBalance(matcher.group(4));
-
-				accounts.add(new Account(name, amount, id, Account.REGULAR,
-						this.currency));
-				balance = balance.add(amount);
-
-			}
-			if (accounts.isEmpty()) {
-				throw new BankException(res.getText(R.string.no_accounts_found)
-						.toString());
-			}
-			this.updatePrefix();
-		} finally {
-			super.updateComplete();
+		if (!matcher.find()) {
+			throw new BankException(res.getText(R.string.unable_to_find)
+					.toString() + " accounts url.");
 		}
+		matcher.reset();
+		while (matcher.find()) {
+			/*
+			 * Capture groups:
+			 * GROUP 		EXAMPLE DATA
+			 * 1: Link		https://www.netbank.nordea.dk/mnetbank/servlet/AccountTransactions
+			 * 2: ID 		0
+			 * 3: Name 		Check-in-konto
+			 * 4: Amount	1.234,56
+			 */
+			String name = Html.fromHtml(matcher.group(3)).toString().trim();
+			String id = matcher.group(2).toString().trim();
+			BigDecimal amount = Helpers.parseBalance(matcher.group(4));
+
+			accounts.add(new Account(name, amount, id, Account.REGULAR,
+					this.currency));
+			balance = balance.add(amount);
+
+		}
+		if (accounts.isEmpty()) {
+			throw new BankException(res.getText(R.string.no_accounts_found)
+					.toString());
+		}
+		this.updatePrefix();
+		super.updateComplete();
 	}
 
 	@Override
 	public void updateTransactions(Account account, Urllib urlopen)
-			throws LoginException, BankException {
+			throws LoginException, BankException, IOException {
 		super.updateTransactions(account, urlopen);
 
 		ArrayList<Transaction> transactions = new ArrayList<Transaction>();
@@ -198,7 +187,7 @@ public class NordeaDK extends Bank {
 	}
 
 	private ArrayList<Transaction> updateMonthTransactions(Account account,
-			Urllib urlopen, boolean oldTransactions) throws BankException {
+			Urllib urlopen, boolean oldTransactions) throws BankException, IOException {
 		String command = "command=";
 		command += (oldTransactions) ? "1" : "0";
 		String url = "https://www.netbank.nordea.dk/mnetbank/servlet/AccountTransactions?productidx="
@@ -207,45 +196,37 @@ public class NordeaDK extends Bank {
 		ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 
 		Matcher matcher;
-		try {
-			urlopen.addHeader("referer", this.referer);
-			this.response = urlopen.open(url);
-			this.updatePrefix();
-			this.referer = url;
-			
-			Matcher transYear = reTransactionYear.matcher(response);
-			String year = "";
-			if(transYear.find()) {
-				year = Html.fromHtml(transYear.group(1)).toString().trim();
-			}
-			
-			matcher = reTransactions.matcher(response);
-			/*
-			 * Capture groups: 
-			 * GROUP 	EXAMPLE 	DATA 
-			 * 1: 		Date 		29.07 
-			 * 2: 		Transaction	Bgs Check-in-konto 
-			 * 3: 		Amount 		906.56
-			 */
+		urlopen.addHeader("referer", this.referer);
+		this.response = urlopen.open(url);
+		this.updatePrefix();
+		this.referer = url;
 
-			while (matcher.find()) {
-				String monthDate = Html.fromHtml(matcher.group(1)).toString().trim();
-				String text = Html.fromHtml(matcher.group(2)).toString().trim();
-				BigDecimal amount = Helpers.parseBalance(matcher.group(3));
-				String date = year+"-"+monthDate.substring(3,5)+"-"+monthDate.substring(0,2);
-				
-				Transaction transaction = new Transaction(date, text, amount,
-						super.currency);
-				transactions.add(transaction);
-			}
-			
-		} catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-		} catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+		Matcher transYear = reTransactionYear.matcher(response);
+		String year = "";
+		if(transYear.find()) {
+			year = Html.fromHtml(transYear.group(1)).toString().trim();
 		}
-		return transactions;
 
+		matcher = reTransactions.matcher(response);
+		/*
+		 * Capture groups:
+		 * GROUP 	EXAMPLE 	DATA
+		 * 1: 		Date 		29.07
+		 * 2: 		Transaction	Bgs Check-in-konto
+		 * 3: 		Amount 		906.56
+		 */
+
+		while (matcher.find()) {
+			String monthDate = Html.fromHtml(matcher.group(1)).toString().trim();
+			String text = Html.fromHtml(matcher.group(2)).toString().trim();
+			BigDecimal amount = Helpers.parseBalance(matcher.group(3));
+			String date = year+"-"+monthDate.substring(3,5)+"-"+monthDate.substring(0,2);
+
+			Transaction transaction = new Transaction(date, text, amount,
+					super.currency);
+			transactions.add(transaction);
+		}
+    	return transactions;
 	}
 
 	private void updatePrefix() throws BankException {

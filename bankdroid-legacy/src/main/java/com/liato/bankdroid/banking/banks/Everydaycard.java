@@ -69,14 +69,14 @@ public class Everydaycard extends Bank {
 		super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
 	}
 
-	public Everydaycard(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+	public Everydaycard(String username, String password, Context context)
+            throws BankException, LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
     
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
     	return preLoginInternal("http://valuta.g2solutions.se/mobil/web/logonSubmit.do");
     }
     
@@ -85,8 +85,7 @@ public class Everydaycard extends Bank {
 //    	return preLoginInternal("https://valuta.g2solutions.se/valuta/web/logonSubmit.do");
 //    }
 
-    private LoginPackage preLoginInternal(String url) throws BankException,
-    		ClientProtocolException, IOException {
+    private LoginPackage preLoginInternal(String url) throws BankException, IOException {
     	urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_everydaycard));
     	List <NameValuePair> postData = new ArrayList <NameValuePair>();
     	postData.add(new BasicNameValuePair("nextPage", "firstPage"));                
@@ -96,25 +95,18 @@ public class Everydaycard extends Bank {
     }
     
 	@Override
-	public Urllib login() throws LoginException, BankException {
-		try {
-			//LoginPackage lp = preLoginNonMobile();
-			LoginPackage lp = preLogin();
-			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-			if (response.contains("Felaktigt Login")) {
-				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-			}
-			
-		} catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		} catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
+	public Urllib login() throws LoginException, BankException, IOException {
+		//LoginPackage lp = preLoginNonMobile();
+		LoginPackage lp = preLogin();
+		response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+		if (response.contains("Felaktigt Login")) {
+			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		return urlopen;
 	}
 
 	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
+	public void update() throws BankException, LoginException, BankChoiceException, IOException {
 		super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());

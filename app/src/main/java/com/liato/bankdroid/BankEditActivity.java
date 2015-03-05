@@ -16,6 +16,7 @@
 
 package com.liato.bankdroid;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -55,6 +56,7 @@ import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.db.DBAdapter;
+import com.liato.bankdroid.utils.NetworkUtils;
 
 public class BankEditActivity extends LockableActivity implements OnClickListener, OnItemSelectedListener {
 	private final static String TAG = "BankEditActivity";
@@ -256,6 +258,11 @@ public class BankEditActivity extends LockableActivity implements OnClickListene
 			}
             catch (BankChoiceException e) {
                 this.exc = e;
+            } catch (IOException e) {
+                this.exc = e;
+                if(NetworkUtils.isInternetAvailable()) {
+                    Crashlytics.logException(e);
+                }
             }
 			return null;
 		}

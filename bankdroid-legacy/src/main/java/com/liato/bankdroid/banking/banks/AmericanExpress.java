@@ -69,14 +69,14 @@ public class AmericanExpress extends Bank {
         super.URL = URL;
     }
 
-    public AmericanExpress(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+    public AmericanExpress(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
     }
 
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_americanexpress, R.raw.cert_americanexpress2, R.raw.cert_americanexpress_global));
         urlopen.setAllowCircularRedirects(true);
         urlopen.setContentCharset(HTTP.ISO_8859_1);
@@ -102,24 +102,18 @@ public class AmericanExpress extends Bank {
     }
 
     @Override
-    public Urllib login() throws LoginException, BankException {
-        try {
-            LoginPackage lp = preLogin();
-            response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+    public Urllib login() throws LoginException, BankException, IOException {
+        LoginPackage lp = preLogin();
+        response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
 
-            if (!response.contains("Your Personal Cards")) {
-                throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-            }
-        } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+        if (!response.contains("Your Personal Cards")) {
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         return urlopen;
     }
 
     @Override
-    public void update() throws BankException, LoginException, BankChoiceException {
+    public void update() throws BankException, LoginException, BankChoiceException,IOException {
         super.update();
         if (username == null || password == null || username.length() == 0 || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -151,43 +145,38 @@ public class AmericanExpress extends Bank {
     }
 
     @Override
-    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+    public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
+            BankException, IOException {
         super.updateTransactions(account, urlopen);
 
-        try {
-            response = urlopen.open("https://global.americanexpress.com/myca/intl/estatement/emea/statement.do?request_type=&Face=sv_SE&BPIndex=0&sorted_index=" + account.getId());
-            Matcher matcher = reTransactions.matcher(response);
-            ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+        response = urlopen.open("https://global.americanexpress.com/myca/intl/estatement/emea/statement.do?request_type=&Face=sv_SE&BPIndex=0&sorted_index=" + account.getId());
+        Matcher matcher = reTransactions.matcher(response);
+        ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 
-            SimpleDateFormat sdfFrom = new SimpleDateFormat("d MMM yyyy", new Locale("sv-SE"));
-            SimpleDateFormat sdfTo = new SimpleDateFormat("yyyy-MM-dd");
-            Date transactionDate;
+        SimpleDateFormat sdfFrom = new SimpleDateFormat("d MMM yyyy", new Locale("sv-SE"));
+        SimpleDateFormat sdfTo = new SimpleDateFormat("yyyy-MM-dd");
+        Date transactionDate;
 
-            while (matcher.find()) {
-                /*
-                 * Capture groups:
-                 * GROUP                    EXAMPLE DATA
-                 * 1: Date                  17 jan 2011
-                 * 2: Specification         xx
-                 * 3: Amount                1.582,00&nbsp;kr
-                 * 
-                 */
-                try {
-                    transactionDate = sdfFrom.parse(matcher.group(1).trim());
-                    String strDate = sdfTo.format(transactionDate);
-                    transactions.add(new Transaction(strDate,
-                                                     Html.fromHtml(matcher.group(2)).toString().trim(),
-                                                     Helpers.parseBalance(matcher.group(3).trim()).negate()));
-                }
-                catch (ParseException e) {
-                    Log.w(TAG, "Unable to parse date: " + matcher.group(1).trim());
-                }
+        while (matcher.find()) {
+            /*
+             * Capture groups:
+             * GROUP                    EXAMPLE DATA
+             * 1: Date                  17 jan 2011
+             * 2: Specification         xx
+             * 3: Amount                1.582,00&nbsp;kr
+             *
+             */
+            try {
+                transactionDate = sdfFrom.parse(matcher.group(1).trim());
+                String strDate = sdfTo.format(transactionDate);
+                transactions.add(new Transaction(strDate,
+                                                 Html.fromHtml(matcher.group(2)).toString().trim(),
+                                                 Helpers.parseBalance(matcher.group(3).trim()).negate()));
             }
-            account.setTransactions(transactions);
-        } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+            catch (ParseException e) {
+                Log.w(TAG, "Unable to parse date: " + matcher.group(1).trim());
+            }
         }
+        account.setTransactions(transactions);
     }
 }

@@ -57,7 +57,7 @@ public class EspressoHouse extends Bank {
     }
 
     public EspressoHouse(String username, String password, Context context)
-            throws BankException, LoginException, BankChoiceException {
+            throws BankException, LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
     }
@@ -83,38 +83,30 @@ public class EspressoHouse extends Bank {
     }
 
     @Override
-    public Urllib login() throws LoginException, BankException {
-        try {
-            LoginPackage lp = preLogin();
-            if (!lp.isLoggedIn()) {
-                throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-            }
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+    public Urllib login() throws LoginException, BankException, IOException {
+        LoginPackage lp = preLogin();
+        if (!lp.isLoggedIn()) {
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         return urlopen;
     }
 
     @Override
-    public void update() throws BankException, LoginException, BankChoiceException {
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
         if (username == null || password == null || username.length() == 0 || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
-        try {
-            urlopen = login();
-            String response = urlopen.open(API_URL);
-            dResponse = Jsoup.parse(response);
-            String card = dResponse.select(".transactionCardNumber").first().text().trim();
-            String cardNo = card.split(":")[1].trim();
-            String balance = dResponse.select(".balanceAmount").first().text();
-            balance = balance.substring(0, balance.length() - 2);
-            accounts.add(new Account(card,
-                    Helpers.parseBalance(balance),
-                    cardNo, Account.REGULAR, "SEK"));
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
-        }
+        urlopen = login();
+        String response = urlopen.open(API_URL);
+        dResponse = Jsoup.parse(response);
+        String card = dResponse.select(".transactionCardNumber").first().text().trim();
+        String cardNo = card.split(":")[1].trim();
+        String balance = dResponse.select(".balanceAmount").first().text();
+        balance = balance.substring(0, balance.length() - 2);
+        accounts.add(new Account(card,
+                Helpers.parseBalance(balance),
+                cardNo, Account.REGULAR, "SEK"));
         super.updateComplete();
     }
 

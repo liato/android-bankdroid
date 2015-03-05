@@ -70,7 +70,8 @@ public class Hemkop extends Bank {
         super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
     }
 
-    public Hemkop(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+    public Hemkop(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
     }
@@ -78,8 +79,7 @@ public class Hemkop extends Bank {
 
     
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_hemkop));
         urlopen.setAllowCircularRedirects(true);
         response = urlopen.open("https://www.hemkop.se/Mina-sidor/Logga-in/");
@@ -111,26 +111,18 @@ public class Hemkop extends Bank {
         return new LoginPackage(urlopen, postData, response, "https://www.hemkop.se/Mina-sidor/Logga-in/");
     }
 
-    public Urllib login() throws LoginException, BankException {
-        try {
-            LoginPackage lp = preLogin();
-            response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-            if (!response.contains("Inloggad som")) {
-                throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-            }
-            response = urlopen.open("https://www.hemkop.se/Mina-sidor/Bonussaldo/");
+    public Urllib login() throws LoginException, BankException, IOException {
+        LoginPackage lp = preLogin();
+        response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+        if (!response.contains("Inloggad som")) {
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
-        catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        }
-        catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
-        }
+        response = urlopen.open("https://www.hemkop.se/Mina-sidor/Bonussaldo/");
         return urlopen;
     }
 
     @Override
-    public void update() throws BankException, LoginException, BankChoiceException {
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
         if (username == null || password == null || username.length() == 0 || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -158,42 +150,37 @@ public class Hemkop extends Bank {
         }
         
         Account account = accounts.get(0);
-        try {
-            response = urlopen.open("https://www.hemkop.se/Mina-sidor/Kontoutdrag/");
-            d = Jsoup.parse(response);
-        	Elements es = d.select(".transactions tbody tr");
-            ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-            for (Element e : es) {
-                Transaction t = new Transaction(e.child(1).ownText().trim(),
-                					e.child(0).ownText().trim(),
-                        Helpers.parseBalance(e.child(3).ownText()));
-                if (!TextUtils.isEmpty(e.child(2).ownText())) {
-                    t.setCurrency(Helpers.parseCurrency(e.child(2).ownText().trim(), "SEK"));
-                }
-                transactions.add(t);
-        	}
-            account.setTransactions(transactions);
-            
-            es = d.select(".currentBalance,.disposable");
-            int i = 0;
-            for (Element e : es) {
-            	Account a = new Account(e.child(0).ownText().trim(), Helpers.parseBalance(e.child(1).ownText()), String.format("acc_cc_%d", i));
-            	a.setAliasfor("acc_0");
-            	accounts.add(a);
-            	i++;
+
+        response = urlopen.open("https://www.hemkop.se/Mina-sidor/Kontoutdrag/");
+        d = Jsoup.parse(response);
+    	Elements es = d.select(".transactions tbody tr");
+        ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+        for (Element e : es) {
+            Transaction t = new Transaction(e.child(1).ownText().trim(),
+            					e.child(0).ownText().trim(),
+                    Helpers.parseBalance(e.child(3).ownText()));
+            if (!TextUtils.isEmpty(e.child(2).ownText())) {
+                t.setCurrency(Helpers.parseCurrency(e.child(2).ownText().trim(), "SEK"));
             }
-            
-        } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
-        }        
-        
+            transactions.add(t);
+    	}
+        account.setTransactions(transactions);
+
+        es = d.select(".currentBalance,.disposable");
+        int i = 0;
+        for (Element e : es) {
+        	Account a = new Account(e.child(0).ownText().trim(), Helpers.parseBalance(e.child(1).ownText()), String.format("acc_cc_%d", i));
+        	a.setAliasfor("acc_0");
+        	accounts.add(a);
+        	i++;
+        }
+
         super.updateComplete();
     }
 
     @Override
-    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+    public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
+            BankException, IOException {
         super.updateTransactions(account, urlopen);
         /*
         if (!"acc_0".equals(account.getId())) return;

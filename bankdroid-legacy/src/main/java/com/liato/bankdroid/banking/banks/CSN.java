@@ -76,15 +76,15 @@ public class CSN extends Bank {
         super.STATIC_BALANCE = STATIC_BALANCE;
     }
 
-	public CSN(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+	public CSN(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
 
     
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_csn));
         urlopen.setAllowCircularRedirects(true);
         urlopen.setContentCharset(HTTP.ISO_8859_1);
@@ -92,15 +92,9 @@ public class CSN extends Bank {
         response = urlopen.open("https://www.csn.se/bas/inloggning/pinkod.do");
         List <NameValuePair> postData = new ArrayList <NameValuePair>();
         postData.add(new BasicNameValuePair("javascript", "on"));
-        try {
-            response = urlopen.open("https://www.csn.se/bas/javascript", postData);
-        }
-        catch (ClientProtocolException e) {
-            throw new BankException("pl:CPE:"+e.getMessage(), e);
-        }
-        catch (IOException e) {
-            throw new BankException("pl:IOE:"+e.getMessage(), e);
-        }        
+
+        response = urlopen.open("https://www.csn.se/bas/javascript", postData);
+
         postData.clear();
         
         postData.add(new BasicNameValuePair("metod", "validerapinkod"));
@@ -110,140 +104,118 @@ public class CSN extends Bank {
     }
 
     @Override
-	public Urllib login() throws LoginException, BankException {
-		try {
-            LoginPackage lp = preLogin();
-			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-			Matcher matcher = reLoginError.matcher(response);
-			if (matcher.find()) {
-			    throw new LoginException(Html.fromHtml(matcher.group(1)).toString().trim());
-			}
-			if (!response.contains("Inloggad&nbsp;som")) {
-				throw new BankException(res.getText(R.string.unable_to_login).toString());
-			}
+	public Urllib login() throws LoginException, BankException, IOException {
+        LoginPackage lp = preLogin();
+		response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+		Matcher matcher = reLoginError.matcher(response);
+		if (matcher.find()) {
+		    throw new LoginException(Html.fromHtml(matcher.group(1)).toString().trim());
 		}
-		catch (ClientProtocolException e) {
-			throw new BankException("login:CPE:"+e.getCause().getMessage(), e);
-		}
-		catch (IOException e) {
-			throw new BankException("login:IOE:"+e.getMessage(), e);
+		if (!response.contains("Inloggad&nbsp;som")) {
+			throw new BankException(res.getText(R.string.unable_to_login).toString());
 		}
 		return urlopen;
 	}
 
 	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
+	public void update() throws BankException, LoginException, BankChoiceException, IOException {
 		super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		urlopen = login();
-		try {
-		    response = urlopen.open("https://www.csn.se/aterbetalning/hurStorArMinSkuld/aktuellStudieskuld.do?javascript=off");
-			Matcher matcher;
-			matcher = reBalance.matcher(response);
-			int i = 0;
-			while (matcher.find()) {
-                /*
-                 * Capture groups:
-                 * GROUP                EXAMPLE DATA
-                 * 1: ID                0
-                 * 2: Name              Lån efter 30 juni 2001 (annuitetslån)
-                 * 3: Amount            123,456
-                 *  
-                 */
-			    BigDecimal amount = Helpers.parseBalance(matcher.group(3).replace(",", "")).negate();
-			    Account account = new Account(
-                        Html.fromHtml(matcher.group(2)).toString().trim(),
-                        amount,
-                        matcher.group(1).trim(),
-                        Account.LOANS);
-			    if (i > 0) {
-			        account.setAliasfor("0");
-			    }
-				accounts.add(account);
-				balance = balance.add(amount);
-				i++;
-			}
-			
-			if (accounts.isEmpty()) {
-				throw new BankException(res.getText(R.string.no_accounts_found).toString());
-			}
+
+		response = urlopen.open("https://www.csn.se/aterbetalning/hurStorArMinSkuld/aktuellStudieskuld.do?javascript=off");
+		Matcher matcher;
+		matcher = reBalance.matcher(response);
+		int i = 0;
+		while (matcher.find()) {
+            /*
+             * Capture groups:
+             * GROUP                EXAMPLE DATA
+             * 1: ID                0
+             * 2: Name              Lån efter 30 juni 2001 (annuitetslån)
+             * 3: Amount            123,456
+             *
+             */
+		    BigDecimal amount = Helpers.parseBalance(matcher.group(3).replace(",", "")).negate();
+		    Account account = new Account(
+                    Html.fromHtml(matcher.group(2)).toString().trim(),
+                    amount,
+                    matcher.group(1).trim(),
+                    Account.LOANS);
+		    if (i > 0) {
+		        account.setAliasfor("0");
+		    }
+			accounts.add(account);
+			balance = balance.add(amount);
+			i++;
 		}
-        catch (ClientProtocolException e) {
-           throw new BankException(e.getMessage(), e);
-        }
-        catch (IOException e) {
-           throw new BankException(e.getMessage(), e);
-        }		
-        finally {
-            super.updateComplete();
-        }
+			
+		if (accounts.isEmpty()) {
+			throw new BankException(res.getText(R.string.no_accounts_found).toString());
+	    }
+        super.updateComplete();
 	}
 	
     @Override
-    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+    public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
+            BankException, IOException {
         super.updateTransactions(account, urlopen);
         if (account.getAliasfor() == null || account.getAliasfor().length() == 0) return;
         
         Matcher matcher;
-        try {
-            response = urlopen.open("https://www.csn.se/studiemedel/utbetalningar/utbetalningar.do?javascript=off");
-            matcher = reTransactions.matcher(response);
-            ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-            while (matcher.find()) {
-                /*
-                 * Capture groups:
-                 * GROUP                        EXAMPLE DATA
-                 * 1: Date                      2010-11-25
-                 * 2: Specification             Vecka 47-50
-                 * 3: Status                    Utbetald
-                 * 4: Amount                    8,140
-                 * 
-                 */
-                transactions.add(new Transaction(matcher.group(1).trim(),
-                        Html.fromHtml(matcher.group(2)).toString().trim()+ " ("+Html.fromHtml(matcher.group(3)).toString().trim()+")",
-                        Helpers.parseBalance(matcher.group(4).replace(",", ""))));
-            }
-            response = urlopen.open("https://www.csn.se/aterbetalning/vadSkallJagBetalUnderAret/betalningstillfallen.do?javascript=off");
-            matcher = reTransactions.matcher(response);
-            while (matcher.find()) {
-                /*
-                 * Capture groups:
-                 * GROUP                        EXAMPLE DATA
-                 * 1: Date                      2010-11-25
-                 * 2: Specification             Bankgiro 5580-3084
-                 * 3: OCR-number                4576225900
-                 * 4: Amount                    1,234
-                 * 
-                 */
-                transactions.add(new Transaction(matcher.group(1).trim(),
-                        Html.fromHtml(matcher.group(2)).toString().trim()+ " ("+Html.fromHtml(matcher.group(3)).toString().trim()+")",
-                        Helpers.parseBalance(matcher.group(4).replace(",", "")).negate()));
-            }
-            
-            response = urlopen.open("https://www.csn.se/aterbetalning/harMinaInbetalningarKommitIn/registreradeInbetalningar.do?javascript=off");
-            matcher = reCompletedPayments.matcher(response);
-            while (matcher.find()) {
-                /*
-                 * Capture groups:
-                 * GROUP                        EXAMPLE DATA
-                 * 1: Date                      2006-08-21
-                 * 2: Specification             Återkrav första halvåret 2006 lån 1
-                 * 3: Amount                    1,050
-                 * 
-                 */
-                transactions.add(new Transaction(matcher.group(1).trim(),
-                        Html.fromHtml(matcher.group(2)).toString().trim(),
-                        Helpers.parseBalance(matcher.group(3).replace(",", "")).negate()));
-            }            
-            
-            Collections.sort(transactions, Collections.reverseOrder());
-            account.setTransactions(transactions);
-        } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+        response = urlopen.open("https://www.csn.se/studiemedel/utbetalningar/utbetalningar.do?javascript=off");
+        matcher = reTransactions.matcher(response);
+        ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+        while (matcher.find()) {
+            /*
+             * Capture groups:
+             * GROUP                        EXAMPLE DATA
+             * 1: Date                      2010-11-25
+             * 2: Specification             Vecka 47-50
+             * 3: Status                    Utbetald
+             * 4: Amount                    8,140
+             *
+             */
+            transactions.add(new Transaction(matcher.group(1).trim(),
+                    Html.fromHtml(matcher.group(2)).toString().trim()+ " ("+Html.fromHtml(matcher.group(3)).toString().trim()+")",
+                    Helpers.parseBalance(matcher.group(4).replace(",", ""))));
         }
+        response = urlopen.open("https://www.csn.se/aterbetalning/vadSkallJagBetalUnderAret/betalningstillfallen.do?javascript=off");
+        matcher = reTransactions.matcher(response);
+        while (matcher.find()) {
+            /*
+             * Capture groups:
+             * GROUP                        EXAMPLE DATA
+             * 1: Date                      2010-11-25
+             * 2: Specification             Bankgiro 5580-3084
+             * 3: OCR-number                4576225900
+             * 4: Amount                    1,234
+             *
+             */
+            transactions.add(new Transaction(matcher.group(1).trim(),
+                    Html.fromHtml(matcher.group(2)).toString().trim()+ " ("+Html.fromHtml(matcher.group(3)).toString().trim()+")",
+                    Helpers.parseBalance(matcher.group(4).replace(",", "")).negate()));
+        }
+
+        response = urlopen.open("https://www.csn.se/aterbetalning/harMinaInbetalningarKommitIn/registreradeInbetalningar.do?javascript=off");
+        matcher = reCompletedPayments.matcher(response);
+        while (matcher.find()) {
+            /*
+             * Capture groups:
+             * GROUP                        EXAMPLE DATA
+             * 1: Date                      2006-08-21
+             * 2: Specification             Återkrav första halvåret 2006 lån 1
+             * 3: Amount                    1,050
+             *
+             */
+            transactions.add(new Transaction(matcher.group(1).trim(),
+                    Html.fromHtml(matcher.group(2)).toString().trim(),
+                    Helpers.parseBalance(matcher.group(3).replace(",", "")).negate()));
+        }
+
+        Collections.sort(transactions, Collections.reverseOrder());
+        account.setTransactions(transactions);
     }	
 }

@@ -69,14 +69,14 @@ public class ForexBank extends Bank {
         super.STATIC_BALANCE = STATIC_BALANCE;
     }
 
-    public ForexBank(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+    public ForexBank(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
     }
 
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_forexbank));
         String baseUrl = "https://nettbank.edb.com";
         String res = urlopen.open(baseUrl + "/mobilepayment/index.jsp?n_bank=0087&nativeapp=android");
@@ -121,101 +121,78 @@ public class ForexBank extends Bank {
         return new LoginPackage(urlopen, postData, null, formAction);
     }
 
-    public Urllib login() throws LoginException, BankException {
-        try {
-            LoginPackage lp = preLogin();
+    public Urllib login() throws LoginException, BankException, IOException {
+        LoginPackage lp = preLogin();
 
-            // Post
-            HttpResponse httpResponse = urlopen.openAsHttpResponse(BASE_URL + lp.getLoginTarget(), lp.getPostData(), false);
+        // Post
+        HttpResponse httpResponse = urlopen.openAsHttpResponse(BASE_URL + lp.getLoginTarget(), lp.getPostData(), false);
 
-            String result = EntityUtils.toString(httpResponse.getEntity());
+        String result = EntityUtils.toString(httpResponse.getEntity());
 
-            if(!result.contains("/mobilepayment/transigo/logon/logout")) {
-                throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-            }
-        }
-        catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        }
-        catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+        if(!result.contains("/mobilepayment/transigo/logon/logout")) {
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         return urlopen;
     }
 
     @Override
-    public void update() throws BankException, LoginException, BankChoiceException {
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
         if (username == null || password == null || username.length() == 0 || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
+        /*
+        "account_number.*\\>(\\d+)"; // Kontonummer
+        "account_name.*\\>(.+)<" // Kontonamn
+        "balance.*\>(\d+,\d\d)" // Saldo
+        "disposable.*\>(\d+,\d\d)" // Disponibelt
 
-        try {
-            /*
-            "account_number.*\\>(\\d+)"; // Kontonummer
-            "account_name.*\\>(.+)<" // Kontonamn
-            "balance.*\>(\d+,\d\d)" // Saldo
-            "disposable.*\>(\d+,\d\d)" // Disponibelt
+        System.err.println("Kontonummer " + mAccountNumbers.group(i+1));
+        System.err.println("Kontonamn " + mAccountNames.group(i+1));
+        System.err.println("Saldo " + mAccountBalances.group(i+1));
+        System.err.println("Disponibelt " + mDisposables.group(i+1));
+         */
+        urlopen = login();
 
-            System.err.println("Kontonummer " + mAccountNumbers.group(i+1));
-            System.err.println("Kontonamn " + mAccountNames.group(i+1));
-            System.err.println("Saldo " + mAccountBalances.group(i+1));
-            System.err.println("Disponibelt " + mDisposables.group(i+1));
-             */
-            urlopen = login();
+        // Go to main menu
+        String result = urlopen.open("https://nettbank.edb.com/mobilepayment/transigo/menu/menu1");
+        result = result.replace("&nbsp;",""); // Remove non-breaking spaces, they fuck up balances
 
-            // Go to main menu
-            String result = urlopen.open("https://nettbank.edb.com/mobilepayment/transigo/menu/menu1");
-            result = result.replace("&nbsp;",""); // Remove non-breaking spaces, they fuck up balances
+        Matcher mAccountIds = reAccountIds.matcher(result);
+        Matcher mAccountNumbers = reAccountNumbers.matcher(result);
+        Matcher mAccountNames = reAccountName.matcher(result);
+        Matcher mAccountBalances = reAccountBalance.matcher(result);
+        Matcher mDisposables = reDisposable.matcher(result);
 
-            Matcher mAccountIds = reAccountIds.matcher(result);
-            Matcher mAccountNumbers = reAccountNumbers.matcher(result);
-            Matcher mAccountNames = reAccountName.matcher(result);
-            Matcher mAccountBalances = reAccountBalance.matcher(result);
-            Matcher mDisposables = reDisposable.matcher(result);
-
-            while(mAccountIds.find() && mAccountNumbers.find() && mAccountNames.find() && mAccountBalances.find())  {
-                if(!mAccountIds.group(1).startsWith("-") && mDisposables.find()) {
-                    accounts.add(new Account(Html.fromHtml(mAccountNames.group(1)).toString().trim(), Helpers.parseBalance(mDisposables.group(1).trim()), mAccountIds.group(1))); //Disponibelt
-                }
-                else {
-                    accounts.add(new Account(Html.fromHtml(mAccountNames.group(1)).toString().trim(), Helpers.parseBalance(mAccountBalances.group(1).trim()), mAccountIds.group(1)));
-                }
-
-                balance = balance.add(Helpers.parseBalance(mAccountBalances.group(1)));
+        while(mAccountIds.find() && mAccountNumbers.find() && mAccountNames.find() && mAccountBalances.find())  {
+            if(!mAccountIds.group(1).startsWith("-") && mDisposables.find()) {
+                accounts.add(new Account(Html.fromHtml(mAccountNames.group(1)).toString().trim(), Helpers.parseBalance(mDisposables.group(1).trim()), mAccountIds.group(1))); //Disponibelt
             }
-            if (accounts.isEmpty()) {
-                throw new BankException(res.getText(R.string.no_accounts_found).toString());
+            else {
+                accounts.add(new Account(Html.fromHtml(mAccountNames.group(1)).toString().trim(), Helpers.parseBalance(mAccountBalances.group(1).trim()), mAccountIds.group(1)));
             }
+
+            balance = balance.add(Helpers.parseBalance(mAccountBalances.group(1)));
         }
-        catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        }
-        catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+        if (accounts.isEmpty()) {
+            throw new BankException(res.getText(R.string.no_accounts_found).toString());
         }
         super.updateComplete();
     }
 
     @Override
-    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+    public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
+            BankException, IOException {
         super.updateTransactions(account, urlopen);
         String accountId = account.getId(); 
-        String response = null;
         Matcher matcher;
-        try {
-            response = urlopen.open(BASE_URL + "/mobilepayment/transigo/account/overview/accountTransactions?cvokey=" + accountId);
-            response = response.replace("&nbsp;", "");
-            matcher = reTransactions.matcher(response);
-            ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-            while (matcher.find()) {
-                transactions.add(new Transaction(matcher.group(1).trim(), matcher.group(3).trim(), Helpers.parseBalance(matcher.group(2))));
-            }
-            account.setTransactions(transactions);
-        } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+        String response = urlopen.open(BASE_URL + "/mobilepayment/transigo/account/overview/accountTransactions?cvokey=" + accountId);
+        response = response.replace("&nbsp;", "");
+        matcher = reTransactions.matcher(response);
+        ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+        while (matcher.find()) {
+            transactions.add(new Transaction(matcher.group(1).trim(), matcher.group(3).trim(), Helpers.parseBalance(matcher.group(2))));
         }
+        account.setTransactions(transactions);
     }
 }

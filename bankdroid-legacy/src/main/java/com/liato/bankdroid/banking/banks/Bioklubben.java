@@ -64,14 +64,14 @@ public class Bioklubben extends Bank {
         currency = context.getString(R.string.points);
     }
 
-    public Bioklubben(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+    public Bioklubben(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
     }
 
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context);
         urlopen.setAllowCircularRedirects(true);
         response = urlopen.open("http://bioklubben.sf.se/Start.aspx");
@@ -102,52 +102,42 @@ public class Bioklubben extends Bank {
         return new LoginPackage(urlopen, postData, response, "http://bioklubben.sf.se/Start.aspx");
     }
 
-    public Urllib login() throws LoginException, BankException {
-        try {
-            LoginPackage lp = preLogin();
-            response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-            if (response.contains("Felaktigt anv")) {
-                throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-            }
-        } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+    public Urllib login() throws LoginException, BankException, IOException {
+        LoginPackage lp = preLogin();
+        response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+        if (response.contains("Felaktigt anv")) {
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         return urlopen;
     }
 
     @Override
-    public void update() throws BankException, LoginException, BankChoiceException {
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
         if (username == null || password == null || username.length() == 0 || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();
-        try {
-            Document d = Jsoup.parse(urlopen.open("http://bioklubben.sf.se/MyPurchases.aspx?ParentTreeID=1&TreeID=1"));
-            Element e = d.getElementById("ctl00_ContentPlaceHolder1_BonusPointsLabel");
-            if (e == null) {
-                throw new BankException(res.getText(R.string.unable_to_find).toString() + " points element.");
-            }
-            BigDecimal b = Helpers.parseBalance(e.text());
-            Account a = new Account("Poäng", b, "1");
-            a.setCurrency(context.getString(R.string.points));
-            accounts.add(a);
-            balance = balance.add(a.getBalance());
-
-            Elements es = d.select(".GridViewStd_Item,.GridViewStd_ItemAlt");
-            List<Transaction> transactions = new ArrayList<Transaction>();
-            if (es != null) {
-                for (Element el : es) {
-                    transactions.add(new Transaction(el.child(0).text().trim(), el.child(1).text().trim(), Helpers.parseBalance(el.child(2).text())));
-                }
-            }
-            a.setTransactions(transactions);
-
-        } catch (IOException e) {
-                throw new BankException(e.getMessage(), e);
+        Document d = Jsoup.parse(urlopen.open("http://bioklubben.sf.se/MyPurchases.aspx?ParentTreeID=1&TreeID=1"));
+        Element e = d.getElementById("ctl00_ContentPlaceHolder1_BonusPointsLabel");
+        if (e == null) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString() + " points element.");
         }
+        BigDecimal b = Helpers.parseBalance(e.text());
+        Account a = new Account("Poäng", b, "1");
+        a.setCurrency(context.getString(R.string.points));
+        accounts.add(a);
+        balance = balance.add(a.getBalance());
+
+        Elements es = d.select(".GridViewStd_Item,.GridViewStd_ItemAlt");
+        List<Transaction> transactions = new ArrayList<Transaction>();
+        if (es != null) {
+            for (Element el : es) {
+                transactions.add(new Transaction(el.child(0).text().trim(), el.child(1).text().trim(), Helpers.parseBalance(el.child(2).text())));
+            }
+        }
+        a.setTransactions(transactions);
+
         if (accounts.isEmpty()) {
             throw new BankException(res.getText(R.string.no_accounts_found).toString());
         }

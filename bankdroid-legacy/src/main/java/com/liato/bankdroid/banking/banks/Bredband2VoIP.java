@@ -64,7 +64,7 @@ public class Bredband2VoIP extends Bank {
     }
 
     public Bredband2VoIP(String username, String password, Context context)
-            throws BankException, LoginException, BankChoiceException {
+            throws BankException, LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
     }
@@ -103,7 +103,7 @@ public class Bredband2VoIP extends Bank {
     }
 
     @Override
-    public void update() throws BankException, LoginException, BankChoiceException {
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
         if (username == null || password == null || username.length() == 0 || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -129,31 +129,28 @@ public class Bredband2VoIP extends Bank {
     }
 
     @Override
-    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+    public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
+            BankException, IOException {
         super.updateTransactions(account, urlopen);
 
-        try {
-            response = urlopen.open(API_URL + "voip/invoicelist/iPhoneProviderID/" + account.getId());
-            Matcher mInvoiceUrl = reInvoiceUrl.matcher(response);
-            ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-            int i = 1;
-            while (mInvoiceUrl.find() && i++ <= 2) {
-                try {
-                    String url = mInvoiceUrl.group(1);
-                    String sInvoice = urlopen.open(API_URL + url);
-                    Matcher mTransaction = reTransactions.matcher(sInvoice);
-                    while (mTransaction.find()) {
-                        transactions.add(new Transaction(mTransaction.group(2),
-                                mTransaction.group(1) + "  —  " + mTransaction.group(4),
-                                Helpers.parseBalance(mTransaction.group(5)).negate()));
-                    }
-                } catch (Exception e) {
-                    Log.w(TAG, "Unable to parse: " + mInvoiceUrl.group(1));
+        response = urlopen.open(API_URL + "voip/invoicelist/iPhoneProviderID/" + account.getId());
+        Matcher mInvoiceUrl = reInvoiceUrl.matcher(response);
+        ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+        int i = 1;
+        while (mInvoiceUrl.find() && i++ <= 2) {
+            try {
+                String url = mInvoiceUrl.group(1);
+                String sInvoice = urlopen.open(API_URL + url);
+                Matcher mTransaction = reTransactions.matcher(sInvoice);
+                while (mTransaction.find()) {
+                    transactions.add(new Transaction(mTransaction.group(2),
+                            mTransaction.group(1) + "  —  " + mTransaction.group(4),
+                            Helpers.parseBalance(mTransaction.group(5)).negate()));
                 }
+            } catch (Exception e) {
+                Log.w(TAG, "Unable to parse: " + mInvoiceUrl.group(1));
             }
-            account.setTransactions(transactions);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
         }
+        account.setTransactions(transactions);
     }
 }

@@ -7,6 +7,8 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import java.io.IOException;
+
 public class Swedbank extends AbstractSwedbank {
 
     private static final String TAG = "Swedbank";
@@ -25,7 +27,8 @@ public class Swedbank extends AbstractSwedbank {
 
     }
 
-    public Swedbank(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+    public Swedbank(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
     }

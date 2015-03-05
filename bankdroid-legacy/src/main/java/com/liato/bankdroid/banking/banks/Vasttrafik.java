@@ -62,14 +62,14 @@ public class Vasttrafik extends Bank {
         super.URL = URL;
     }
 
-    public Vasttrafik(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+    public Vasttrafik(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
     }
 
     @Override
-    protected LoginPackage preLogin() throws BankException,
-    ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_vasttrafik));
         response = urlopen.open("https://www.vasttrafik.se/mina-sidor/logga-in/");
 
@@ -90,76 +90,58 @@ public class Vasttrafik extends Bank {
     }
 
     @Override
-    public Urllib login() throws LoginException, BankException {
-        try {
-            LoginPackage lp = preLogin();
-            response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-            if (!response.contains("<span class=\"loggedInAs\">")) {
-                throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-            }
-        }
-        catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        }
-        catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+    public Urllib login() throws LoginException, BankException, IOException {
+        LoginPackage lp = preLogin();
+        response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+        if (!response.contains("<span class=\"loggedInAs\">")) {
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         return urlopen;
     }
 
     @Override
-    public void update() throws BankException, LoginException, BankChoiceException {
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
         if (username == null || password == null || username.length() == 0 || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();
-        try {
-            response = urlopen.open("https://www.vasttrafik.se/mina-sidor-inloggad/mina-kort/");
-            Matcher matcher;
-            Matcher matcher_b;
+        response = urlopen.open("https://www.vasttrafik.se/mina-sidor-inloggad/mina-kort/");
+        Matcher matcher;
+        Matcher matcher_b;
 
-            matcher = reAccounts.matcher(response);
-            while (matcher.find()) {
+        matcher = reAccounts.matcher(response);
+        while (matcher.find()) {
+            /*
+             * Capture groups:
+             * GROUP                EXAMPLE DATA
+             * 1: Name              Nytt
+             * 2: Balance information
+             */
+
+			if ("".equals(matcher.group(1))) {
+				continue;
+			}
+
+            matcher_b = reBalance.matcher(matcher.group(2));
+            if (matcher_b.find()) {
                 /*
                  * Capture groups:
                  * GROUP                EXAMPLE DATA
-                 * 1: Name              Nytt
-                 * 2: Balance information
+                 * 1: Type              Kontoladdning
+                 * 2: Amount            592,80 kr
                  */
 
-				if ("".equals(matcher.group(1))) {
-					continue;
-				}
+				String balanceString = matcher_b.group(2).replaceAll("\\<a[^>]*>","").replaceAll("\\<[^>]*>","").trim();
 
-                matcher_b = reBalance.matcher(matcher.group(2));
-                if (matcher_b.find()) {
-                    /*
-                     * Capture groups:
-                     * GROUP                EXAMPLE DATA
-                     * 1: Type              Kontoladdning
-                     * 2: Amount            592,80 kr
-                     */
-
-					String balanceString = matcher_b.group(2).replaceAll("\\<a[^>]*>","").replaceAll("\\<[^>]*>","").trim();
-
-					accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim() , Helpers.parseBalance(balanceString), matcher.group(1)));
-					balance = balance.add(Helpers.parseBalance(balanceString));
-                }
-            }
-
-            if (accounts.isEmpty()) {
-                throw new BankException(res.getText(R.string.no_accounts_found).toString());
+				accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim() , Helpers.parseBalance(balanceString), matcher.group(1)));
+				balance = balance.add(Helpers.parseBalance(balanceString));
             }
         }
-        catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
+
+        if (accounts.isEmpty()) {
+            throw new BankException(res.getText(R.string.no_accounts_found).toString());
         }
-        catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
-        }
-        finally {
-            super.updateComplete();
-        }
+        super.updateComplete();
     }
 }

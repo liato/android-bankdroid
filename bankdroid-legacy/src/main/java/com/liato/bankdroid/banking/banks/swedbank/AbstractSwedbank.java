@@ -71,14 +71,14 @@ public abstract class AbstractSwedbank extends Bank {
         super.WEB_VIEW_ENABLED = WEB_VIEW_ENABLED;
     }
 
-    public AbstractSwedbank(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+    public AbstractSwedbank(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
     }
 
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_swedbank));
         urlopen.addHeader("Authorization",getAuthenticationHeader());
         urlopen.addHeader("Content-Type","application/json;charset=UTF-8");
@@ -87,7 +87,7 @@ public abstract class AbstractSwedbank extends Bank {
     }
 
     @Override
-    public Urllib login() throws LoginException, BankException {
+    public Urllib login() throws LoginException, BankException, IOException {
         HttpResponse httpResponse = null;
         try {
             LoginPackage lp = preLogin();
@@ -116,12 +116,6 @@ public abstract class AbstractSwedbank extends Bank {
             } else {
                 throw new BankException("");
             }
-        }
-        catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        }
-        catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
         } finally {
             if(httpResponse != null) {
                 HttpEntity httpEntity = httpResponse.getEntity();
@@ -137,43 +131,37 @@ public abstract class AbstractSwedbank extends Bank {
     }
 
     @Override
-    public void update() throws BankException, LoginException, BankChoiceException {
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
         if (username == null || password == null || username.length() == 0 || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();
 
-        try {
-            ProfileResponse profileResponse = getAvailableProfiles();
-            setDefaultProfile(getBankId(profileResponse.getBanks()));
+        ProfileResponse profileResponse = getAvailableProfiles();
+        setDefaultProfile(getBankId(profileResponse.getBanks()));
 
-            HttpResponse httpResponse = urlopen.openAsHttpResponse(getResourceUri("engagement/overview"), false);
-            if(httpResponse.getStatusLine().getStatusCode() != 200) {
-                throw new BankException(httpResponse.getStatusLine().toString());
-            }
-
-            OverviewResponse overviewResponse = readJsonValue(httpResponse.getEntity().getContent(),OverviewResponse.class);
-            addAccounts(overviewResponse.getTransactionAccounts(),Account.REGULAR);
-            addAccounts(overviewResponse.getSavingAccounts(),Account.REGULAR);
-            addAccounts(overviewResponse.getTransactionDisposalAccounts(),Account.REGULAR);
-            addAccounts(overviewResponse.getSavingDisposalAccounts(),Account.REGULAR);
-            addCardAccounts(overviewResponse.getCardAccounts());
-            addAccounts(overviewResponse.getLoanAccounts(),Account.LOANS);
-            if (this.accounts.isEmpty()) {
-                throw new BankException(res.getText(R.string.no_accounts_found).toString());
-            }
-        } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
-        } finally {
-            updateComplete();
+        HttpResponse httpResponse = urlopen.openAsHttpResponse(getResourceUri("engagement/overview"), false);
+        if(httpResponse.getStatusLine().getStatusCode() != 200) {
+            throw new BankException(httpResponse.getStatusLine().toString());
         }
+
+        OverviewResponse overviewResponse = readJsonValue(httpResponse.getEntity().getContent(),OverviewResponse.class);
+        addAccounts(overviewResponse.getTransactionAccounts(),Account.REGULAR);
+        addAccounts(overviewResponse.getSavingAccounts(),Account.REGULAR);
+        addAccounts(overviewResponse.getTransactionDisposalAccounts(),Account.REGULAR);
+        addAccounts(overviewResponse.getSavingDisposalAccounts(),Account.REGULAR);
+        addCardAccounts(overviewResponse.getCardAccounts());
+        addAccounts(overviewResponse.getLoanAccounts(),Account.LOANS);
+        if (this.accounts.isEmpty()) {
+            throw new BankException(res.getText(R.string.no_accounts_found).toString());
+        }
+        updateComplete();
     }
 
     @Override
-    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+    public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
+            BankException, IOException {
         super.updateTransactions(account, urlopen);
         if(account.getType() == Account.CCARD) {
             updateCreditCardTransactions(account, urlopen);
@@ -185,55 +173,40 @@ public abstract class AbstractSwedbank extends Bank {
         else if(mIdMap.get(account.getId()) == null) {
             return;
         }
-        try {
 
-            HttpResponse httpResponse = urlopen.openAsHttpResponse(getResourceUri("engagement/transactions/"+mIdMap.get(account.getId())),false);
+        HttpResponse httpResponse = urlopen.openAsHttpResponse(getResourceUri("engagement/transactions/"+mIdMap.get(account.getId())),false);
 
-            TransactionsResponse response = readJsonValue(httpResponse.getEntity().getContent(), TransactionsResponse.class);
-            List<Transaction> transactions = new ArrayList<Transaction>();
-            transactions.addAll(transformTransactions(response.getTransactions()));
-            transactions.addAll(transformTransactions(response.getReservedTransactions()));
-            account.setTransactions(transactions);
-
-        } catch(ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        } catch(IOException e) {
-            throw new BankException(e.getMessage(), e);
-        }
+        TransactionsResponse response = readJsonValue(httpResponse.getEntity().getContent(), TransactionsResponse.class);
+        List<Transaction> transactions = new ArrayList<Transaction>();
+        transactions.addAll(transformTransactions(response.getTransactions()));
+        transactions.addAll(transformTransactions(response.getReservedTransactions()));
+        account.setTransactions(transactions);
     }
 
     @Override
     public void closeConnection() {
         try {
             HttpResponse response = urlopen.openAsHttpResponse(getResourceUri("identification/logout"), HttpMethod.PUT);
-        } catch(ClientProtocolException e) {
-            // Ignore logout exceptions
         } catch(IOException e) {
             //Ignore logout exceptions
         } finally {
             super.closeConnection();
         }
-
     }
 
-    private void updateCreditCardTransactions(Account account, Urllib urlopen) throws BankException {
-        try {
-            HttpResponse httpResponse = urlopen.openAsHttpResponse(getResourceUri("engagement/cardaccount/"+mIdMap.get(account.getId())),false);
-            if(httpResponse.getStatusLine().getStatusCode() != 200) {
-                Log.i(TAG, "Couldn't find transactions for creditcard");
-                account.setTransactions(Collections.<Transaction>emptyList());
-                return;
-            }
-            CardAccountResponse response = readJsonValue(httpResponse.getEntity().getContent(),CardAccountResponse.class);
-            List<Transaction> transactions = new ArrayList<Transaction>();
-            transactions.addAll(transformCardTransactions(response.getTransactions()));
-            transactions.addAll(transformCardTransactions(response.getReservedTransactions()));
-            account.setTransactions(transactions);
-        } catch (ClientProtocolException e) {
-           throw new BankException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+    private void updateCreditCardTransactions(Account account, Urllib urlopen) throws BankException,
+            IOException {
+        HttpResponse httpResponse = urlopen.openAsHttpResponse(getResourceUri("engagement/cardaccount/"+mIdMap.get(account.getId())),false);
+        if(httpResponse.getStatusLine().getStatusCode() != 200) {
+            Log.i(TAG, "Couldn't find transactions for creditcard");
+            account.setTransactions(Collections.<Transaction>emptyList());
+            return;
         }
+        CardAccountResponse response = readJsonValue(httpResponse.getEntity().getContent(),CardAccountResponse.class);
+        List<Transaction> transactions = new ArrayList<Transaction>();
+        transactions.addAll(transformCardTransactions(response.getTransactions()));
+        transactions.addAll(transformCardTransactions(response.getReservedTransactions()));
+        account.setTransactions(transactions);
     }
 
     private List<Transaction> transformTransactions(List<com.liato.bankdroid.banking.banks.swedbank.model.Transaction> transactions) {

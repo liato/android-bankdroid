@@ -77,14 +77,14 @@ public class DanskeBank extends Bank {
         super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
 	}
 
-	public DanskeBank(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+	public DanskeBank(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
 
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_danskebank));
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         urlopen.addHeader("Referer", "https://mobil.danskebank.se/");
@@ -118,23 +118,17 @@ public class DanskeBank extends Bank {
     }
 
 	@Override
-	public Urllib login() throws LoginException, BankException {
-		try {
-		    LoginPackage lp = preLogin();
-			response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-			if (response.contains("et personnummer eller servicekod du angett")) {
-				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-			}
-		} catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		} catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
+	public Urllib login() throws LoginException, BankException, IOException {
+		LoginPackage lp = preLogin();
+		response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+		if (response.contains("et personnummer eller servicekod du angett")) {
+			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
 		return urlopen;
 	}
 	
 	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
+	public void update() throws BankException, LoginException, BankChoiceException, IOException {
 		super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -156,77 +150,61 @@ public class DanskeBank extends Bank {
         else {
             throw new BankException(res.getText(R.string.unable_to_find).toString() + " personnummer.");
         }
-		
-		try {
-			response = urlopen.open(String.format("https://mobil.danskebank.se/XI?WP=XAS&WO=Konto&WA=KTList&WSES=%s&WAFT=%s", mSessionId, mPersonnr));
-			matcher = reAccounts.matcher(response);
-			while (matcher.find()) {
-                /*
-                 * Capture groups:
-                 * GROUP                    EXAMPLE DATA
-                 * 1: Internal acc number?  0123456789
-                 * 2: Account name          Danske Direkt Bas
-                 * 3: Account number        01234567890
-                 * 4: Balance               1.124,56
-                 * 5: Balance (disp.)       1.124,56
-                 * 
-                 */   		
-			    String name = Html.fromHtml(matcher.group(2)).toString().trim();
-			    Account account = new Account(name, Helpers.parseBalance(matcher.group(5)), matcher.group(1).trim());
-			    if (name.contains("lån") || name.contains("Lån")) {
-			        account.setType(Account.LOANS);
-			    }
-			    else {
-		             balance = balance.add(Helpers.parseBalance(matcher.group(5)));
-			    }
-				accounts.add(account);
-			}
-			
-			if (accounts.isEmpty()) {
-				throw new BankException(res.getText(R.string.no_accounts_found).toString());
-			}
+
+		response = urlopen.open(String.format("https://mobil.danskebank.se/XI?WP=XAS&WO=Konto&WA=KTList&WSES=%s&WAFT=%s", mSessionId, mPersonnr));
+		matcher = reAccounts.matcher(response);
+		while (matcher.find()) {
+            /*
+             * Capture groups:
+             * GROUP                    EXAMPLE DATA
+             * 1: Internal acc number?  0123456789
+             * 2: Account name          Danske Direkt Bas
+             * 3: Account number        01234567890
+             * 4: Balance               1.124,56
+             * 5: Balance (disp.)       1.124,56
+             *
+             */
+		    String name = Html.fromHtml(matcher.group(2)).toString().trim();
+		    Account account = new Account(name, Helpers.parseBalance(matcher.group(5)), matcher.group(1).trim());
+		    if (name.contains("lån") || name.contains("Lån")) {
+		        account.setType(Account.LOANS);
+		    }
+		    else {
+	             balance = balance.add(Helpers.parseBalance(matcher.group(5)));
+		    }
+			accounts.add(account);
 		}
-		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
+
+		if (accounts.isEmpty()) {
+			throw new BankException(res.getText(R.string.no_accounts_found).toString());
 		}
-		catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
-		}
-		finally {
-		    super.updateComplete();
-		}
+		super.updateComplete();
 	}
 
 	@Override
-	public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+	public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
+            BankException, IOException {
 		super.updateTransactions(account, urlopen);
 
 		//No transaction history for loans, funds and credit cards.
 		int accType = account.getType();
 		if (accType == Account.LOANS || accType == Account.FUNDS || accType == Account.CCARD) return;
 
-		Matcher matcher;
-		try {
-			response = urlopen.open(String.format("https://mobil.danskebank.se/XI?WP=XAS&WAFT=%s&WSES=%s&WO=Konto&WA=KBList&WCI=%s", mPersonnr, mSessionId, account.getId()));
-			matcher = reTransactions.matcher(response);
-			ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-			while (matcher.find()) {
-                /*
-                 * Capture groups:
-                 * GROUP                    EXAMPLE DATA
-                 * 1: Transaction           Till Fondsparande
-                 * 2: Date                  2011-07-28
-                 * 3: Amount                ?
-                 * 4: Status                Väntar | Utförd 
-                 * 
-                 */
-				transactions.add(new Transaction(Html.fromHtml(matcher.group(2)).toString().trim(), Html.fromHtml(matcher.group(1)).toString().trim(), Helpers.parseBalance(matcher.group(3))));
-			}
-			account.setTransactions(transactions);
-		} catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-		} catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+		response = urlopen.open(String.format("https://mobil.danskebank.se/XI?WP=XAS&WAFT=%s&WSES=%s&WO=Konto&WA=KBList&WCI=%s", mPersonnr, mSessionId, account.getId()));
+		Matcher matcher = reTransactions.matcher(response);
+		ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+		while (matcher.find()) {
+            /*
+             * Capture groups:
+             * GROUP                    EXAMPLE DATA
+             * 1: Transaction           Till Fondsparande
+             * 2: Date                  2011-07-28
+             * 3: Amount                ?
+             * 4: Status                Väntar | Utförd
+             *
+             */
+			transactions.add(new Transaction(Html.fromHtml(matcher.group(2)).toString().trim(), Html.fromHtml(matcher.group(1)).toString().trim(), Helpers.parseBalance(matcher.group(3))));
 		}
+		account.setTransactions(transactions);
 	}	
 }

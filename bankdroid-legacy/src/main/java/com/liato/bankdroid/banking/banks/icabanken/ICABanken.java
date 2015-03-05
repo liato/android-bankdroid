@@ -74,12 +74,12 @@ public class ICABanken extends Bank {
     }
 
     public ICABanken(String username, String password, Context context)
-            throws BankException, LoginException, BankChoiceException {
+            throws BankException, LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
     }
 
-    public Urllib login() throws LoginException, BankException {
+    public Urllib login() throws LoginException, BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_icabanken));
         urlopen.addHeader("ApiVersion", API_VERSION);
         urlopen.addHeader("Accept", "application/json");
@@ -89,31 +89,25 @@ public class ICABanken extends Bank {
         urlopen.addHeader("ClientOSVersion", Integer.toString(Build.VERSION.SDK_INT));
         urlopen.addHeader("ClientAppVersion", "777");
 
-        try {
-            String response = urlopen.open(String.format("%s/login/passwordlogin?customerId=%s&password=%s", API_URL, username, password));
-            if(response == null || "".equals(response)) {
-                throw new LoginException(res.getText(
+        String response = urlopen.open(String.format("%s/login/passwordlogin?customerId=%s&password=%s", API_URL, username, password));
+        if(response == null || "".equals(response)) {
+            throw new LoginException(res.getText(
                         R.string.invalid_username_password).toString());
-            }
-            ObjectMapper vObjectMapper = new ObjectMapper();
-            vObjectMapper.setDateFormat(new SimpleDateFormat(
-                    "yyyy-MM-dd hh:mm:ss", new Locale("sv", "SE")));
-            LoginResponse loginResponse = vObjectMapper.readValue(response,
-                    LoginResponse.class);
-
-            addAccounts(loginResponse.getAccountList());
-
-        } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
         }
+        ObjectMapper vObjectMapper = new ObjectMapper();
+        vObjectMapper.setDateFormat(new SimpleDateFormat(
+                "yyyy-MM-dd hh:mm:ss", new Locale("sv", "SE")));
+        LoginResponse loginResponse = vObjectMapper.readValue(response,
+                LoginResponse.class);
+
+        addAccounts(loginResponse.getAccountList());
+
         return urlopen;
     }
 
     @Override
     public void update() throws BankException, LoginException,
-            BankChoiceException {
+            BankChoiceException, IOException {
         super.update();
         if (username == null || password == null || username.length() == 0
                 || password.length() == 0) {
@@ -128,11 +122,6 @@ public class ICABanken extends Bank {
         }
         super.updateComplete();
 
-    }
-
-    @Override
-    public void updateTransactions(Account account, Urllib urlopen)
-            throws LoginException, BankException {
     }
 
     private void addAccounts(IcaBankenAccountList pAccountList) {

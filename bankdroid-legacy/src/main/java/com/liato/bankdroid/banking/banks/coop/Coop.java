@@ -140,7 +140,8 @@ public class Coop extends Bank {
         super.STATIC_BALANCE = true;
     }
 
-    public Coop(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+    public Coop(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
     }
@@ -164,20 +165,16 @@ public class Coop extends Bank {
 
 
     @Override
-    public Urllib login() throws LoginException, BankException {
-        try {
-            LoginPackage lp = preLogin();
-            if (!lp.isLoggedIn()) {
-                throw new BankException(res.getString(R.string.invalid_username_password));
-            }
-            return urlopen;
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+    public Urllib login() throws LoginException, BankException, IOException {
+        LoginPackage lp = preLogin();
+        if (!lp.isLoggedIn()) {
+            throw new BankException(res.getString(R.string.invalid_username_password));
         }
+        return urlopen;
     }
 
     @Override
-    public void update() throws BankException, LoginException, BankChoiceException {
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
         if (username == null || password == null || username.length() == 0 || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -185,85 +182,81 @@ public class Coop extends Bank {
 
         login();
 
-        try {
-            response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/Mina-poang/");
-            Document dResponse = Jsoup.parse(response);
-            Account poang = new Account("\u2014  Poäng",
-                    Helpers.parseBalance(dResponse.select(".Grid-cell--1 p").text()),
-                    "poang", Account.OTHER, "");
-            List<Transaction> transactions = new ArrayList<>();
-            poang.setTransactions(transactions);
-            for (Element e : dResponse.select(".Timeline-item")) {
-                try {
-                    if (e.parent().hasClass("Timeline-group--emphasized")) {
-                        transactions.add(new Transaction(
-                                formatDate(e.ownText()),
-                                e.select(".Timeline-label").text(),
-                                Helpers.parseBalance(e.select(".Timeline-title").first().text()), ""));
+        response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/Mina-poang/");
+        Document dResponse = Jsoup.parse(response);
+        Account poang = new Account("\u2014  Poäng",
+                Helpers.parseBalance(dResponse.select(".Grid-cell--1 p").text()),
+                "poang", Account.OTHER, "");
+        List<Transaction> transactions = new ArrayList<>();
+        poang.setTransactions(transactions);
+        for (Element e : dResponse.select(".Timeline-item")) {
+            try {
+                if (e.parent().hasClass("Timeline-group--emphasized")) {
+                    transactions.add(new Transaction(
+                            formatDate(e.ownText()),
+                            e.select(".Timeline-label").text(),
+                            Helpers.parseBalance(e.select(".Timeline-title").first().text()), ""));
 
+                } else {
+                    transactions.add(new Transaction(
+                            formatDate(e.select(".Timeline-header .u-nbfcAlt span").text()),
+                            e.select(".u-block").text(),
+                            Helpers.parseBalance(e.select(".Timeline-header .Timeline-title").first().ownText()), ""));
+                }
+            } finally { continue; }
+        }
+        accounts.add(poang);
+        for (AccountType at : AccountType.values()) {
+            response = urlopen.open(at.getUrl());
+            Document d = Jsoup.parse(response);
+            Elements historik = d.select("#historik section");
+            TransactionParams params = new TransactionParams();
+            mTransactionParams.put(at, params);
+            if (historik != null && !historik.isEmpty()) {
+                String data = historik.first().attr("data-controller");
+                Matcher m = rePageGuid.matcher(data);
+                if (m.find()) {
+                    params.setPageGuid(m.group(1));
+                }
+            }
+            Element date = d.getElementById("dateFrom");
+            if (date != null) {
+                params.setMinDate(date.hasAttr("min") ? date.attr("min") : null);
+                params.setMaxDate(date.hasAttr("max") ? date.attr("max") : null);
+            }
+            Elements es = d.select(".List:contains(Saldo)");
+            if (es != null && !es.isEmpty()) {
+                List<String> names = new ArrayList<>();
+                List<String> values = new ArrayList<>();
+                for (Element e : es.first().select("dt")) {
+                    names.add(e.text().replaceAll(":", "").trim());
+                }
+                for (Element e : es.first().select("dd")) {
+                    values.add(e.text().trim());
+                }
+                for (int i = 0; i < Math.min(names.size(), values.size()); i++) {
+                    Account a = new Account(names.get(i), Helpers.parseBalance(values.get(i)), String.format("%s%d", at.getPrefix(), i));
+                    a.setCurrency(Helpers.parseCurrency(values.get(i), "SEK"));
+                    if (a.getName().toLowerCase().contains("disponibelt")) {
+                        a.setType(Account.REGULAR);
+                        balance = a.getBalance();
+                        setCurrency(a.getCurrency());
                     } else {
-                        transactions.add(new Transaction(
-                                formatDate(e.select(".Timeline-header .u-nbfcAlt span").text()),
-                                e.select(".u-block").text(),
-                                Helpers.parseBalance(e.select(".Timeline-header .Timeline-title").first().ownText()), ""));
+                        a.setType(Account.OTHER);
                     }
-                } finally { continue; }
-            }
-            accounts.add(poang);
-            for (AccountType at : AccountType.values()) {
-                response = urlopen.open(at.getUrl());
-                Document d = Jsoup.parse(response);
-                Elements historik = d.select("#historik section");
-                TransactionParams params = new TransactionParams();
-                mTransactionParams.put(at, params);
-                if (historik != null && !historik.isEmpty()) {
-                    String data = historik.first().attr("data-controller");
-                    Matcher m = rePageGuid.matcher(data);
-                    if (m.find()) {
-                        params.setPageGuid(m.group(1));
-                    }
-                }
-                Element date = d.getElementById("dateFrom");
-                if (date != null) {
-                    params.setMinDate(date.hasAttr("min") ? date.attr("min") : null);
-                    params.setMaxDate(date.hasAttr("max") ? date.attr("max") : null);
-                }
-                Elements es = d.select(".List:contains(Saldo)");
-                if (es != null && !es.isEmpty()) {
-                    List<String> names = new ArrayList<>();
-                    List<String> values = new ArrayList<>();
-                    for (Element e : es.first().select("dt")) {
-                        names.add(e.text().replaceAll(":", "").trim());
-                    }
-                    for (Element e : es.first().select("dd")) {
-                        values.add(e.text().trim());
-                    }
-                    for (int i = 0; i < Math.min(names.size(), values.size()); i++) {
-                        Account a = new Account(names.get(i), Helpers.parseBalance(values.get(i)), String.format("%s%d", at.getPrefix(), i));
-                        a.setCurrency(Helpers.parseCurrency(values.get(i), "SEK"));
-                        if (a.getName().toLowerCase().contains("disponibelt")) {
-                            a.setType(Account.REGULAR);
-                            balance = a.getBalance();
-                            setCurrency(a.getCurrency());
-                        } else {
-                            a.setType(Account.OTHER);
-                        }
 
-                        if (i > 0) {
-                            a.setAliasfor(String.format("%s%d", at.getPrefix(), 0));
-                        }
-                        accounts.add(a);
+                    if (i > 0) {
+                        a.setAliasfor(String.format("%s%d", at.getPrefix(), 0));
                     }
+                    accounts.add(a);
                 }
             }
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
         }
 
 
         try {
             response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/Information-om-aterbaringen/");
-            Document dResponse = Jsoup.parse(response);
+            dResponse = Jsoup.parse(response);
             Account a = new Account("Återbäring",
                     Helpers.parseBalance(dResponse.select(".Heading--coopNew").text()),
                     "refound", Account.OTHER, "SEK");
@@ -338,5 +331,4 @@ public class Coop extends Bank {
         }
         return null;
     }
-
 }

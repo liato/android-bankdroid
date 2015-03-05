@@ -66,13 +66,14 @@ public class SvenskaSpel extends Bank {
 		super.INPUT_TITLETEXT_USERNAME = INPUT_TITLETEXT_USERNAME;
 	}
 
-	public SvenskaSpel(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+	public SvenskaSpel(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
 
 	@Override
-	protected LoginPackage preLogin() throws BankException, ClientProtocolException, IOException {
+	protected LoginPackage preLogin() throws BankException, IOException {
 		urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_svenskaspel));
 
 		List<NameValuePair> postData = new ArrayList<NameValuePair>();
@@ -80,30 +81,22 @@ public class SvenskaSpel extends Bank {
 	}
 
 	@Override
-	public Urllib login() throws LoginException, BankException {
-		try {
-			LoginPackage lp = preLogin();
+	public Urllib login() throws LoginException, BankException, IOException {
+		LoginPackage lp = preLogin();
 
-			StringEntity postdata = new StringEntity(
-					"{\"userName\":\"" + username + "\",\"password\":\"" + password + "\"}");
-			HttpResponse httpResponse = urlopen.openAsHttpResponse(lp.getLoginTarget(), postdata, true);
+		StringEntity postdata = new StringEntity(
+				"{\"userName\":\"" + username + "\",\"password\":\"" + password + "\"}");
+		HttpResponse httpResponse = urlopen.openAsHttpResponse(lp.getLoginTarget(), postdata, true);
 
-			if (httpResponse.getStatusLine().getStatusCode() != 200) {
-				throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-			}
-			response = EntityUtils.toString(httpResponse.getEntity());
+		if (httpResponse.getStatusLine().getStatusCode() != 200) {
+			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
 		}
-		catch (ClientProtocolException e) {
-			throw new BankException(e.getMessage(), e);
-		}
-		catch (IOException e) {
-			throw new BankException(e.getMessage(), e);
-		}
+		response = EntityUtils.toString(httpResponse.getEntity());
 		return urlopen;
 	}
 
 	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
+	public void update() throws BankException, LoginException, BankChoiceException, IOException {
 		super.update();
 		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
 			throw new LoginException(res.getText(R.string.invalid_username_password).toString());

@@ -22,6 +22,8 @@ import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
+import java.io.IOException;
+
 
 public class Seat extends AbsIkanoPartner {
     private static final String TAG = "Seat";
@@ -40,10 +42,9 @@ public class Seat extends AbsIkanoPartner {
         this.structId = "1301";
     }
 
-    public Seat(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+    public Seat(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
     }
-
-
 }

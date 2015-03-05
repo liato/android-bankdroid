@@ -65,15 +65,15 @@ public class TicketRikskortet extends Bank {
         super.URL = URL;
     }
 
-    public TicketRikskortet(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+    public TicketRikskortet(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
     }
 
     
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_ticketrikskortet));
         response = urlopen.open("https://www.edenred.se/sv/System/Logga-in/");
         Matcher matcher = reViewState.matcher(response);
@@ -100,25 +100,17 @@ public class TicketRikskortet extends Bank {
         return new LoginPackage(urlopen, postData, response, "https://www.edenred.se/sv/System/Logga-in/");
     }
 
-    public Urllib login() throws LoginException, BankException {
-        try {
-            LoginPackage lp = preLogin();
-            response = urlopen.open(lp.getLoginTarget(), lp.getPostData());         
-            if (response.contains("Inloggningen misslyckades")) {
-                throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-            }
-        }
-        catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        }
-        catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+    public Urllib login() throws LoginException, BankException, IOException {
+        LoginPackage lp = preLogin();
+        response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+        if (response.contains("Inloggningen misslyckades")) {
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         return urlopen;
     }
 
     @Override
-    public void update() throws BankException, LoginException, BankChoiceException {
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
         if (username == null || password == null || username.length() == 0 || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -155,33 +147,27 @@ public class TicketRikskortet extends Bank {
     }
 
     @Override
-    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+    public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
+            BankException, IOException {
         super.updateTransactions(account, urlopen);
 
-        String response = null;
         Matcher matcher;
-        try {
-            response = urlopen.open("https://www.edenred.se/sv/Apps/Employee/Start/Transaktioner/");
-            matcher = reTransactions.matcher(response);
-            ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+        String response = urlopen.open("https://www.edenred.se/sv/Apps/Employee/Start/Transaktioner/");
+        matcher = reTransactions.matcher(response);
+        ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 
-            while (matcher.find()) {
-                /*
-                 * Capture groups:
-                 * GROUP                EXAMPLE DATA
-                 * 1: Trans. date       2012-06-01
-                 * 2: Specification     DANMARKSG  KISTA
-                 * 3: Amount            - 85 kr
-                 * 
-                 */
+        while (matcher.find()) {
+            /*
+             * Capture groups:
+             * GROUP                EXAMPLE DATA
+             * 1: Trans. date       2012-06-01
+             * 2: Specification     DANMARKSG  KISTA
+             * 3: Amount            - 85 kr
+             *
+             */
 
-                transactions.add(new Transaction(matcher.group(1), Html.fromHtml(matcher.group(2).trim()).toString(), Helpers.parseBalance(matcher.group(3))));
-            }
-            account.setTransactions(transactions);
-        } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+            transactions.add(new Transaction(matcher.group(1), Html.fromHtml(matcher.group(2).trim()).toString(), Helpers.parseBalance(matcher.group(3))));
         }
+        account.setTransactions(transactions);
     }
 }

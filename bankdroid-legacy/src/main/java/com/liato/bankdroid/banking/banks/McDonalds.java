@@ -68,7 +68,8 @@ public class McDonalds extends Bank {
 		super.INPUT_TITLETEXT_USERNAME = INPUT_TITLETEXT_USERNAME;
 	}
 
-	public McDonalds(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+	public McDonalds(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
 		this(context);
 		this.update(username, password);
 	}
@@ -85,25 +86,17 @@ public class McDonalds extends Bank {
 	}
 
 	@Override
-	public Urllib login() throws LoginException, BankException {
-        try {
-            LoginPackage lp = preLogin();
-            response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-            if (response.contains("felaktigt kortnummer")) {
-                throw new LoginException(res.getText(R.string.invalid_card_number).toString());
-            }
-        }
-        catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        }
-        catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+	public Urllib login() throws LoginException, BankException, IOException {
+        LoginPackage lp = preLogin();
+        response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+        if (response.contains("felaktigt kortnummer")) {
+            throw new LoginException(res.getText(R.string.invalid_card_number).toString());
         }
         return urlopen;		
 	}
 
 	@Override
-	public void update() throws BankException, LoginException, BankChoiceException {
+	public void update() throws BankException, LoginException, BankChoiceException, IOException {
 		super.update();
 		if (username == null || username.length() != 19) {
 			throw new LoginException(res.getText(R.string.invalid_card_number).toString());

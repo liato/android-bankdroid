@@ -64,10 +64,10 @@ public class Rikslunchen extends Bank {
         super.INPUT_HIDDEN_PASSWORD = true;
     }
 
-    public Rikslunchen(String username, String password, Context context) throws BankException, LoginException, BankChoiceException {
+    public Rikslunchen(String username, String password, Context context) throws BankException,
+            LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
-
     }
 
     @Override
@@ -76,7 +76,7 @@ public class Rikslunchen extends Bank {
     }
 
     @Override
-    public void update() throws BankException, LoginException, BankChoiceException {
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
         if (TextUtils.isEmpty(username)) {
             throw new LoginException(res.getText(R.string.invalid_card_number).toString());
@@ -108,10 +108,6 @@ public class Rikslunchen extends Bank {
             accounts.add(new Account("Rikslunchen", balance, "1"));
         } catch (UnsupportedEncodingException e) {
             throw new BankException(e.getMessage(), e);
-        } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
         }
         if (accounts.isEmpty()) {
             throw new BankException(res.getText(R.string.no_accounts_found)
@@ -119,5 +115,4 @@ public class Rikslunchen extends Bank {
         }
         super.updateComplete();
     }
-
 }

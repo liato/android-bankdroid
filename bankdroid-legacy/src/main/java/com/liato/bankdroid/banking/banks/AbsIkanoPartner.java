@@ -61,13 +61,13 @@ public abstract class AbsIkanoPartner extends Bank {
     }
 
     public AbsIkanoPartner(String username, String password, Context context) throws BankException, LoginException,
-            BankChoiceException {
+            BankChoiceException, IOException {
         this(context);
         this.update(username, password);
     }
 
     @Override
-    protected LoginPackage preLogin() throws BankException, ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_ikanopartner));
         response = urlopen.open("https://partner.ikanobank.se/web/engines/page.aspx?structid=" + structId);
 
@@ -100,26 +100,19 @@ public abstract class AbsIkanoPartner extends Bank {
     }
 
     @Override
-    public Urllib login() throws LoginException, BankException {
-        try {
-            LoginPackage lp = preLogin();
-            response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+    public Urllib login() throws LoginException, BankException, IOException {
+        LoginPackage lp = preLogin();
+        response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
             if (response.contains("eller personnumme") || response.contains("elaktigt personnummer")
                     || response.contains("ontrollera personnummer") || response.contains("elaktig inloggningskod")
                     || response.contains("elaktig självbetjäningskod")) {
                 throw new LoginException(res.getText(R.string.invalid_username_password).toString());
             }
-
-        } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
-        }
         return urlopen;
     }
 
     @Override
-    public void update() throws BankException, LoginException, BankChoiceException {
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
         if (username == null || password == null || username.length() == 0 || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -130,50 +123,43 @@ public abstract class AbsIkanoPartner extends Bank {
         Element element = d.select("#primary-nav > li:eq(1) > a").first();
         if (element != null && element.attr("href") != null) {
             String myAccountUrl = element.attr("href");
-            try {
-                response = urlopen.open("https://partner.ikanobank.se/" + myAccountUrl);
-                d = Jsoup.parse(response);
-                Elements es = d.select("#CustomerAccountInformationSpan > span > span");
-                int accId = 0;
-                for (Element el : es) {
-                    Element name = el.select("> span > span:eq(0)").first();
-                    Element balance = el.select("> span:eq(1)").first();
-                    Element currency = el.select("> span:eq(2)").first();
-                    if (name != null && balance != null && currency != null) {
-                        Account account = new Account(name.text().trim(), Helpers.parseBalance(balance.text()),
-                                Integer.toString(accId));
-                        account.setCurrency(Helpers.parseCurrency(currency.text(), "SEK"));
-                        if (accId > 0) {
-                            account.setAliasfor("0");
-                        }
-                        accounts.add(account);
-                        accId++;
-                    }
-                }
-                if (accounts.isEmpty()) {
-                    throw new BankException(res.getText(R.string.no_accounts_found).toString());
-                }
-                // Use the amount from "Kvar att handla för" which should be the
-                // last account in the list.
-                this.balance = accounts.get(accounts.size() - 1).getBalance();
-                ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-                es = d.select("#ShowCustomerTransactionPurchasesInformationDiv table tr:has(td)");
-                for (Element el : es) {
-                    if (el.childNodeSize() == 6) {
-                        Transaction transaction = new Transaction(el.child(0).text().trim(), el.child(1).text().trim(),
-                                Helpers.parseBalance(el.child(2).text()));
-                        transaction.setCurrency(Helpers.parseCurrency(el.child(3).text().trim(), "SEK"));
-                        transactions.add(transaction);
-                    }
-                }
-                accounts.get(0).setTransactions(transactions);
-            }
 
-            catch (ClientProtocolException e) {
-                throw new BankException(e.getMessage(), e);
-            } catch (IOException e) {
-                throw new BankException(e.getMessage(), e);
+            response = urlopen.open("https://partner.ikanobank.se/" + myAccountUrl);
+            d = Jsoup.parse(response);
+            Elements es = d.select("#CustomerAccountInformationSpan > span > span");
+            int accId = 0;
+            for (Element el : es) {
+                Element name = el.select("> span > span:eq(0)").first();
+                Element currency = el.select("> span:eq(2)").first();
+                Element balance = el.select("> span:eq(1)").first();
+                if (name != null && balance != null && currency != null) {
+                    Account account = new Account(name.text().trim(), Helpers.parseBalance(balance.text()),
+                            Integer.toString(accId));
+                    account.setCurrency(Helpers.parseCurrency(currency.text(), "SEK"));
+                    if (accId > 0) {
+                        account.setAliasfor("0");
+                    }
+                    accounts.add(account);
+                    accId++;
+                }
             }
+            if (accounts.isEmpty()) {
+                throw new BankException(res.getText(R.string.no_accounts_found).toString());
+            }
+            // Use the amount from "Kvar att handla för" which should be the
+            // last account in the list.
+            this.balance = accounts.get(accounts.size() - 1).getBalance();
+            ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+            es = d.select("#ShowCustomerTransactionPurchasesInformationDiv table tr:has(td)");
+            for (Element el : es) {
+                if (el.childNodeSize() == 6) {
+                    Transaction transaction = new Transaction(el.child(0).text().trim(), el.child(1).text().trim(),
+                            Helpers.parseBalance(el.child(2).text()));
+                    transaction.setCurrency(Helpers.parseCurrency(el.child(3).text().trim(), "SEK"));
+                    transactions.add(transaction);
+                }
+            }
+            accounts.get(0).setTransactions(transactions);
         }
         if (accounts.isEmpty()) {
             throw new BankException(res.getText(R.string.no_accounts_found).toString());

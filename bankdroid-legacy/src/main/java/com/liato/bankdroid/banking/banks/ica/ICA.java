@@ -74,12 +74,12 @@ public class ICA extends Bank {
     }
 
     public ICA(String username, String password, Context context)
-            throws BankException, LoginException, BankChoiceException {
+            throws BankException, LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
     }
 
-    public Urllib login() throws LoginException, BankException {
+    public Urllib login() throws LoginException, BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_ica));
         urlopen.addHeader("Accept", "application/json;charset=UTF-8");
         urlopen.addHeader("Content-Type", "application/json;charset=UTF-8");
@@ -156,17 +156,13 @@ public class ICA extends Bank {
             httpResponse.getStatusLine();
         } catch (JsonParseException e) {
             throw new BankException(e.getMessage(), e);
-        } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
         }
         return urlopen;
     }
 
     @Override
     public void update() throws BankException, LoginException,
-            BankChoiceException {
+            BankChoiceException, IOException {
         super.update();
         if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
             throw new LoginException(res.getText(
