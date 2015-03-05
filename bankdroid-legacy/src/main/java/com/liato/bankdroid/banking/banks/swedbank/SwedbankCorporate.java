@@ -9,16 +9,16 @@ import com.liato.bankdroid.provider.IBankTypes;
 
 import java.io.IOException;
 
-public class Sparbankerna extends AbstractSwedbank {
+public class SwedbankCorporate extends AbstractSwedbank {
 
-    private static final String TAG = "Sparbankerna";
-    private static final String NAME = "Sparbankerna";
-    protected static final String NAME_SHORT = "sparbankerna";
-    private static final int BANKTYPE_ID = IBankTypes.SPARBANKERNA;
+    private static final String TAG = "Swedbank Företag";
+    private static final String NAME = "Swedbank Företag";
+    private static final String NAME_SHORT = "swedbank-corporate";
+    private static final int BANKTYPE_ID = IBankTypes.SWEDBANK_CORPORATE;
 
-    private static final String APP_ID = "qdorTi1mqZ09Zcyc";
+    private static final String APP_ID = "Our91qzclXdNmpdE";
 
-    public Sparbankerna(Context context) {
+    public SwedbankCorporate(Context context) {
         super(context);
         super.TAG = TAG;
         super.NAME = NAME;
@@ -27,7 +27,7 @@ public class Sparbankerna extends AbstractSwedbank {
 
     }
 
-    public Sparbankerna(String username, String password, Context context)
+    public SwedbankCorporate(String username, String password, Context context)
             throws BankException, LoginException, BankChoiceException, IOException {
         this(context);
         this.update(username, password);
@@ -36,5 +36,10 @@ public class Sparbankerna extends AbstractSwedbank {
     @Override
     protected String getAppId() {
         return APP_ID;
+    }
+
+    @Override
+    public int getImageResource() {
+        return res.getIdentifier("logo_" + Swedbank.NAME_SHORT, "drawable", context.getPackageName());
     }
 }
