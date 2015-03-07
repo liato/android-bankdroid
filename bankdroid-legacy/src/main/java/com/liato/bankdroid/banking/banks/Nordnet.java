@@ -52,8 +52,9 @@ public class Nordnet extends Bank {
     private static final String URL = "https://www.nordnet.se/mux/login/startSE.html";
     private static final int BANKTYPE_ID = IBankTypes.NORDNET;
 
-    
-    private Pattern reBalance = Pattern.compile("<a[^>]+>([^<]+)</a>\\s*<span\\s*class=\"bullet\">.*?</span>\\s*<span>([^\\d]+)([0-9 ]{1,})</span>\\s*</div>\\s*</div>\\s*<div\\s*class=\"value\">\\s*([0-9][^<]+)<");
+    private Pattern reAccounts =
+            Pattern.compile("<span class=\"bullet\">·<\\/span>\\n\\t\\t\\t\\t\\t\\t<span>(.*?)<\\/span>");
+    private Pattern reBalance = Pattern.compile("<div class=\\\"value\\\">\\n(.*?)\\n\\t\\t<\\/div>");
     private String response = null;
 
     public Nordnet(Context context) {
@@ -117,28 +118,33 @@ public class Nordnet extends Bank {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();
-        Matcher matcher = reBalance.matcher(response);
+        Matcher matcher = reAccounts.matcher(response);
+        Matcher matcher_b = reBalance.matcher(response);
         while (matcher.find()) {
             /*
              * Capture groups:
              * GROUP                EXAMPLE DATA
-             * 1: Name              Efternamnet Förnamnet | Sparkonto
-             * 2: Account name      Aktie- och fonddepå   | Sparkonto
-             * 3: Account number    1234567               | 1234 567890 1
-             * 4: Amount            31 337                | 123
+             * 1: Account name and number      Investeringssparkonto 1234567   | Sparkonto 1234 567890 1
              *
              */
-            Account account = new Account(Html.fromHtml(matcher.group(2)).toString().trim() + " "
-                    + Html.fromHtml(matcher.group(3)).toString().trim(),
-                    Helpers.parseBalance(matcher.group(4)),
-                    Html.fromHtml(matcher.group(3)).toString().trim().replaceAll(" ", ""));
+            if(matcher_b.find()) {
+                /*
+                * Capture groups:
+                * GROUP                EXAMPLE DATA
+                * 1: Account balance     62 356 | 0
+                *
+                */
+                Account account = new Account(Html.fromHtml(matcher.group(1)).toString().trim(),
+                        Helpers.parseBalance(matcher_b.group(1)),
+                        Html.fromHtml(matcher.group(1)).toString().trim().replaceAll(" ", ""));
 
-            // Saving accounts contain white space characters in the account number
-            if (!matcher.group(3).trim().contains(" ")) {
-                account.setType(Account.FUNDS);
+                // Saving accounts contain white space characters in the account number
+                if (!matcher.group(1).trim().contains(" ")) {
+                    account.setType(Account.FUNDS);
+                }
+                accounts.add(account);
+                balance = balance.add(Helpers.parseBalance(matcher_b.group(1)));
             }
-            accounts.add(account);
-            balance = balance.add(Helpers.parseBalance(matcher.group(4)));
         }
 
         if (accounts.isEmpty()) {
