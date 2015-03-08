@@ -70,7 +70,11 @@ import com.liato.bankdroid.banking.banks.lansforsakringar.Lansforsakringar;
 import com.liato.bankdroid.banking.banks.nordea.Nordea;
 import com.liato.bankdroid.banking.banks.rikslunchen.Rikslunchen;
 import com.liato.bankdroid.banking.banks.swedbank.Sparbankerna;
+import com.liato.bankdroid.banking.banks.swedbank.SparbankernaCorporate;
+import com.liato.bankdroid.banking.banks.swedbank.SparbankernaYouth;
 import com.liato.bankdroid.banking.banks.swedbank.Swedbank;
+import com.liato.bankdroid.banking.banks.swedbank.SwedbankCorporate;
+import com.liato.bankdroid.banking.banks.swedbank.SwedbankYouth;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.provider.IBankTypes;
 
@@ -244,6 +248,14 @@ public class LegacyBankFactory {
                 return new EspressoHouse(context);
             case IBankTypes.MINPENSION:
                 return new MinPension(context);
+            case IBankTypes.SPARBANKERNA_CORPORATE:
+                return new SparbankernaCorporate(context);
+            case IBankTypes.SPARBANKERNA_YOUTH:
+                return new SparbankernaYouth(context);
+            case IBankTypes.SWEDBANK_CORPORATE:
+                return new SwedbankCorporate(context);
+            case IBankTypes.SWEDBANK_YOUTH:
+                return new SwedbankYouth(context);
             default:
                 throw new BankException("BankType id not found.");
         }
@@ -332,6 +344,10 @@ public class LegacyBankFactory {
         banks.add(new Bredband2VoIP(context));
         banks.add(new EspressoHouse(context));
         banks.add(new MinPension(context));
+        banks.add(new SparbankernaCorporate(context));
+        banks.add(new SparbankernaYouth(context));
+        banks.add(new SwedbankCorporate(context));
+        banks.add(new SwedbankYouth(context));
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) {

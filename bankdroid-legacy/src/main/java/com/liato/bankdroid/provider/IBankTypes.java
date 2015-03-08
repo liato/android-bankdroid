@@ -103,4 +103,8 @@ public interface IBankTypes {
     public final static int BREDBAND2VOIP = 79;
     public final static int ESPRESSOHOUSE = 80;
     public final static int MINPENSION = 81;
+    public final static int SWEDBANK_YOUTH = 82;
+    public final static int SWEDBANK_CORPORATE = 83;
+    public final static int SPARBANKERNA_YOUTH = 84;
+    public final static int SPARBANKERNA_CORPORATE = 85;
 }
