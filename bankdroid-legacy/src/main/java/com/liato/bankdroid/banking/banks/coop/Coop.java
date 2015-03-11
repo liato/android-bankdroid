@@ -154,12 +154,11 @@ public class Coop extends Bank {
         HttpResponse httpResponse = urlopen.openAsHttpResponse("https://www.coop.se/Personliga-Baren/Logga-in/?method=Login",
                 new StringEntity("{\"isBar\":\"true\",\"username\":\"" + username + "\",\"password\":\"" + password + "\"}"),
                 true);
-        if (httpResponse.getStatusLine().getStatusCode() != 200) {
-            throw new BankException(res.getString(R.string.invalid_username_password));
-        }
         urlopen.removeHeader("X-Requested-With");
         LoginPackage lp = new LoginPackage(urlopen, null, response, "https://www.coop.se/Mina-sidor/Oversikt/");
-        lp.setIsLoggedIn(true);
+        if (httpResponse.getStatusLine().getStatusCode() == 200) {
+            lp.setIsLoggedIn(true);
+        }
         return lp;
     }
 
@@ -168,7 +167,7 @@ public class Coop extends Bank {
     public Urllib login() throws LoginException, BankException, IOException {
         LoginPackage lp = preLogin();
         if (!lp.isLoggedIn()) {
-            throw new BankException(res.getString(R.string.invalid_username_password));
+            throw new LoginException(res.getString(R.string.invalid_username_password));
         }
         return urlopen;
     }

@@ -70,8 +70,7 @@ public class Bredband2VoIP extends Bank {
     }
 
     @Override
-    protected LoginPackage preLogin() throws BankException,
-            ClientProtocolException, IOException {
+    protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_bredband2));
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("cUsername", username));
@@ -79,25 +78,18 @@ public class Bredband2VoIP extends Bank {
         postData.add(new BasicNameValuePair("bIsCompany", "0"));
         postData.add(new BasicNameValuePair("submit", "Logga in"));
         response = urlopen.open(API_URL + "index/", postData, true);
-        if (!response.contains("Logga ut")) {
-            throw new BankException(res.getText(R.string.invalid_username_password).toString());
-        }
         LoginPackage lp = new LoginPackage(urlopen, postData, response, API_URL + "index/");
-        lp.setIsLoggedIn(true);
+        if (response.contains("Logga ut")) {
+            lp.setIsLoggedIn(true);
+        }
         return lp;
     }
 
     @Override
-    public Urllib login() throws LoginException, BankException {
-        try {
-            LoginPackage lp = preLogin();
-            if (!lp.isLoggedIn()) {
-                throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-            }
-        } catch (ClientProtocolException e) {
-            throw new BankException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new BankException(e.getMessage(), e);
+    public Urllib login() throws LoginException, BankException, IOException {
+        LoginPackage lp = preLogin();
+        if (!lp.isLoggedIn()) {
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         return urlopen;
     }

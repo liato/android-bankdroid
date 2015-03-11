@@ -80,7 +80,7 @@ public class BlekingeTrafiken extends Bank {
         HttpResponse httpResponse = urlopen.openAsHttpResponse(URL + "/webshop/card/balance/",
                 new StringEntity("{\"cardnr\":\"" + username + "\"}"), true);
         if(httpResponse.getStatusLine().getStatusCode() != 200) {
-            throw new LoginException(res.getText(R.string.invalid_card_number).toString());
+            throw new BankException(res.getText(R.string.invalid_card_number).toString());
         }
         response = EntityUtils.toString(httpResponse.getEntity());
         return urlopen;
