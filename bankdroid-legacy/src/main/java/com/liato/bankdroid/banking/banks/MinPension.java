@@ -70,7 +70,9 @@ public class MinPension extends Bank {
         String response = urlopen.open("https://www.minpension.se/AjaxifyContent/795");
         Document jDoc = Jsoup.parse(response);
         Element el = jDoc.select("input[name=__RequestVerificationToken]").first();
-        if (el == null) return null;
+        if (el == null) {
+            throw new BankException(res.getText(R.string.unable_to_find).toString() + " token.");
+        }
         postData.add(new BasicNameValuePair("__RequestVerificationToken", el.val()));
         postData.add(new BasicNameValuePair("viewModel.Personnummer", username));
         postData.add(new BasicNameValuePair("viewModel.Kod", password));
