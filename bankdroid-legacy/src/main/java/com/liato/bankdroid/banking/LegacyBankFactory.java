@@ -46,7 +46,6 @@ import com.liato.bankdroid.banking.banks.ResursBank;
 import com.liato.bankdroid.banking.banks.Seat;
 import com.liato.bankdroid.banking.banks.SevenDay;
 import com.liato.bankdroid.banking.banks.Shell;
-import com.liato.bankdroid.banking.banks.Skandiabanken;
 import com.liato.bankdroid.banking.banks.Skoda;
 import com.liato.bankdroid.banking.banks.SparbankenOresund;
 import com.liato.bankdroid.banking.banks.SparbankenSyd;
@@ -194,8 +193,8 @@ public class LegacyBankFactory {
                 return new SparbankenOresund(context);
             case IBankTypes.NORDNETDIREKT:
                 return new Nordnetdirekt(context);
-            case IBankTypes.SKANDIABANKEN:
-                return new Skandiabanken(context);
+            // case IBankTypes.SKANDIABANKEN:
+            //    return new Skandiabanken(context);
             case IBankTypes.DANSKEBANK:
                 return new DanskeBank(context);
             case IBankTypes.NORDEA_DK:
@@ -302,7 +301,7 @@ public class LegacyBankFactory {
         banks.add(new SparbankenSyd(context));
         // banks.add(new SparbankenOresund(context));
         // banks.add(new Opel(context));
-        banks.add(new Skandiabanken(context));
+        // banks.add(new Skandiabanken(context));
         banks.add(new AmericanExpress(context));
         banks.add(new PlusGirot(context));
         banks.add(new Nordnetdirekt(context));
