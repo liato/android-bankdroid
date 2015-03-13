@@ -19,13 +19,13 @@ repositories {
 
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.1"
+    compileSdkVersion 22
+    buildToolsVersion "22.0.0"
 
     defaultConfig {
         applicationId "com.liato.bankdroid"
         minSdkVersion 9
-        targetSdkVersion 21
+        targetSdkVersion 22
         versionCode 202
         versionName "1.9.8.0"
     }
@@ -37,6 +37,11 @@ android {
             keyAlias "andmrkt"
             keyPassword ""
         }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
 
     // Get signing keys for release
@@ -79,7 +84,7 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':bankdroid-legacy')
-    compile "com.android.support:appcompat-v7:21.0.+"
+    compile "com.android.support:appcompat-v7:22.0.+"
     compile 'com.google.collections:google-collections:1.0'
     compile('com.crashlytics.sdk.android:crashlytics:2.2.1@aar') {
         transitive = true;
