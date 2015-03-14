@@ -1,0 +1,24 @@
+apply plugin: 'checkstyle'
+
+// Add checkstyle and lint to the check task.
+check.dependsOn 'checkstyle', 'lint'
+
+task checkstyle(type: Checkstyle) {
+    configFile file("${project.rootDir}/config/quality/checkstyle/checkstyle.xml")
+    configProperties.checkstyleSuppressionsPath = file("${project.rootDir}/config/quality/checkstyle/suppressions.xml").absolutePath
+    
+    source 'src'
+    include '**/*.java'
+    classpath = files()
+}
+
+checkstyle {
+    toolVersion '6.1.1' // TODO https://github.com/jshiell/checkstyle-idea/blob/dbe595028c3488400790e6caed2f122fba0bded1/README#L13-19
+    ignoreFailures true // TODO Remove when project has been cleaned.
+}
+
+android {
+    lintOptions {
+        abortOnError false // TODO Set to true when project has been cleaned.
+    }
+}

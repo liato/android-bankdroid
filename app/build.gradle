@@ -8,6 +8,7 @@ buildscript {
     }
 }
 apply plugin: 'com.android.application'
+apply from: '../config/quality/quality.gradle'
 
 if(new File('app/crashlytics.properties').exists()) {
     apply plugin: 'io.fabric'
@@ -74,11 +75,6 @@ android {
             ext.enableCrashlytics = false
         }
     }
-
-    lintOptions {
-        abortOnError false
-    }
-
 }
 
 dependencies {
