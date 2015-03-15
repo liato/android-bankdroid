@@ -26,32 +26,22 @@ package com.ast.util;
 public class CookieParser {
 
     /**
-     * Abstract representation of an HTTP cookie.
-     */
-    public static class Cookie {
-
-        public String host;
-        public String value; // cookie string without the leading intro: "Set-Cookie: "
-        public String expires;
-        public String path;
-        public String domain;
-        public String sessionId;
-        public boolean secure;
-    }
-
-    /**
-     * Parses the given <tt>setCookieString</tt> from an HTTP response and creates a {@link Cookie} from it.
+     * Parses the given <tt>setCookieString</tt> from an HTTP response and creates a {@link Cookie}
+     * from it.
      * The {@link Cookie} can be used by clients to send cookie on subsequent requests.
      *
-     * @param host <code>String</code> cookie host
+     * @param host            <code>String</code> cookie host
      * @param setCookieString <code>String</code> complete cookie string
      * @return a {@link Cookie} that was created from the given <tt>setCookieString</tt>
      */
     public static Cookie parse(String host, String setCookieString) {
 
-        if (host == null) throw new IllegalArgumentException("Parameter \"host\" must not be null");
-        if (setCookieString == null)
+        if (host == null) {
+            throw new IllegalArgumentException("Parameter \"host\" must not be null");
+        }
+        if (setCookieString == null) {
             throw new IllegalArgumentException("Parameter \"setCookieString\" must not be null");
+        }
 
         Cookie result = new Cookie();
 
@@ -59,7 +49,7 @@ public class CookieParser {
         String[] fields = setCookieString.split(";\\s*");
         result.host = host;
 
-        // ignore leading cookie intro 
+        // ignore leading cookie intro
         result.value = fields[0].startsWith("Set-Cookie: ") ? fields[0].substring(12) : fields[0];
         if (result.value.startsWith("JSESSIONID=")) {
             result.sessionId = result.value.substring(11);
@@ -81,6 +71,26 @@ public class CookieParser {
             }
         }
         return result;
+    }
+
+    /**
+     * Abstract representation of an HTTP cookie.
+     */
+    public static class Cookie {
+
+        public String host;
+
+        public String value; // cookie string without the leading intro: "Set-Cookie: "
+
+        public String expires;
+
+        public String path;
+
+        public String domain;
+
+        public String sessionId;
+
+        public boolean secure;
     }
 
 }

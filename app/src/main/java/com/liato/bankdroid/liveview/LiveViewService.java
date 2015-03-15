@@ -55,14 +55,17 @@ import android.util.Log;
 
 /**
  * Implementation of the Live View plug-in service.
- * 
+ *
  * @author firetech
  */
 public class LiveViewService extends Service {
-	// Announce intent information keys
-	public static final String INTENT_EXTRA_ANNOUNCE = "isAnnounce";
-	public static final String INTENT_EXTRA_TITLE = "title";
-	public static final String INTENT_EXTRA_TEXT = "text";
+
+    // Announce intent information keys
+    public static final String INTENT_EXTRA_ANNOUNCE = "isAnnounce";
+
+    public static final String INTENT_EXTRA_TITLE = "title";
+
+    public static final String INTENT_EXTRA_TEXT = "text";
 
     // Template menu icon file name.
     private static final String MENU_ICON_FILENAME = "plugin_icon.png";
@@ -75,47 +78,60 @@ public class LiveViewService extends Service {
 
     // Current plugin Id
     protected int mPluginId = 0;
-    
-    // Reference to LiveView application stub
-    private IPluginServiceV1 mLiveView = null;
 
     // Menu icon that will be shown in LiveView unit
     protected String mMenuIcon = null;
 
+    // Reference to LiveView application stub
+    private IPluginServiceV1 mLiveView = null;
+
     /**
-     * LiveView callback interface method.
+     * The service connection that is used to bind the plugin to the LiveView
+     * service.
+     *
+     * When connected to the service, the plugin is registered. When
+     * disconnected to the service, the plugin is unregistered.
      */
-    private class LiveViewCallback extends IPluginServiceCallbackV1.Stub {
-        Handler mCallbackHandler = new Handler();
+    private ServiceConnection mServiceConnection = new ServiceConnection() {
 
-        
-        public String getPluginName() throws RemoteException {
-            return mPluginName;
-        }
+        @Override
+        public void onServiceConnected(final ComponentName className, IBinder service) {
+            Log.d(PluginConstants.LOG_TAG,
+                    "Enter LiveViewService.ServiceConnection.onServiceConnected.");
 
-       
-        public void openInPhone(final String openInPhoneAction) throws RemoteException {
-            mCallbackHandler.post(new Runnable() {
-                public void run() {
-                    LiveViewService.this.openInPhone(openInPhoneAction);
+            mLiveView = IPluginServiceV1.Stub.asInterface(service);
+
+            // Init adapter
+            LiveViewCallback lvCallback = new LiveViewCallback();
+
+            // Install plugin
+            try {
+                if (mLiveView != null) {
+                    // Register
+                    mPluginId = mLiveView
+                            .register(lvCallback, mMenuIcon, mPluginName, false, getPackageName());
+                    Log.d(PluginConstants.LOG_TAG, "Plugin registered with id: " + mPluginId);
                 }
-            });
+            } catch (RemoteException re) {
+                Log.e(PluginConstants.LOG_TAG, "Failed to install plugin. Stop self.");
+                stopSelf();
+            }
+
+            Log.d(PluginConstants.LOG_TAG, "Plugin registered. mPluginId: " + mPluginId);
         }
 
-		//Unused methods required by API.
-		public void startPlugin() throws RemoteException {}
-		public void stopPlugin() throws RemoteException {}
-		public void onUnregistered() throws RemoteException {}
-		public void displayCaps(int displayWidthPixels, int displayHeigthPixels)
-				throws RemoteException {}
-		public void button(String buttonType, boolean doublepress,
-				boolean longpress) throws RemoteException {}
-		public void screenMode(int screenMode) throws RemoteException {}
-    }
+        @Override
+        public void onServiceDisconnected(ComponentName className) {
+            Log.d(PluginConstants.LOG_TAG,
+                    "Enter LiveViewService.ServiceConnection.onServiceDisconnected.");
+            stopSelf();
+        }
+
+    };
 
     /**
      * Check if service is already running.
-     * 
+     *
      * @return running?
      */
     public static boolean isAlreadyRunning() {
@@ -145,92 +161,53 @@ public class LiveViewService extends Service {
         alreadyRunning = false;
     }
 
-	public void onStart(Intent intent, int startId) {
+    public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
         Log.d(PluginConstants.LOG_TAG, "Enter LiveViewService.onStart.");
-        if (intent == null) return;
-		if (intent.getBooleanExtra(INTENT_EXTRA_ANNOUNCE, false)) {
-			Bundle extras = intent.getExtras();
-			if (extras != null) {
-				try {
-					if(mLiveView != null) {
-						mLiveView.sendAnnounce(mPluginId, mMenuIcon, extras.getString(INTENT_EXTRA_TITLE), 
-					    		extras.getString(INTENT_EXTRA_TEXT), System.currentTimeMillis(), "");
-						Log.d(PluginConstants.LOG_TAG, "Announce sent to LiveView Application");
-					} else {
-						Log.d(PluginConstants.LOG_TAG, "LiveView Application not reachable");
-					}
-				} catch(Exception e) {
-					Log.e(PluginConstants.LOG_TAG, "Failed to send announce", e);
-				}
-			}
-			
-		} else {
-			// We end up here when LiveView Application probes the plugin
-	        if (isAlreadyRunning()) {
-	            Log.d(PluginConstants.LOG_TAG, "Already started.");
-	        } else {
-	            // Init
-	            mPluginName = PluginUtils.getDynamicResourceString(this,
-	                    PluginConstants.RESOURCE_STRING_PLUGIN_NAME);
+        if (intent == null) {
+            return;
+        }
+        if (intent.getBooleanExtra(INTENT_EXTRA_ANNOUNCE, false)) {
+            Bundle extras = intent.getExtras();
+            if (extras != null) {
+                try {
+                    if (mLiveView != null) {
+                        mLiveView.sendAnnounce(mPluginId, mMenuIcon,
+                                extras.getString(INTENT_EXTRA_TITLE),
+                                extras.getString(INTENT_EXTRA_TEXT), System.currentTimeMillis(),
+                                "");
+                        Log.d(PluginConstants.LOG_TAG, "Announce sent to LiveView Application");
+                    } else {
+                        Log.d(PluginConstants.LOG_TAG, "LiveView Application not reachable");
+                    }
+                } catch (Exception e) {
+                    Log.e(PluginConstants.LOG_TAG, "Failed to send announce", e);
+                }
+            }
 
-	            // Bind to LiveView
-	            connectToLiveView();
+        } else {
+            // We end up here when LiveView Application probes the plugin
+            if (isAlreadyRunning()) {
+                Log.d(PluginConstants.LOG_TAG, "Already started.");
+            } else {
+                // Init
+                mPluginName = PluginUtils.getDynamicResourceString(this,
+                        PluginConstants.RESOURCE_STRING_PLUGIN_NAME);
 
-	            // Singleton
-	            alreadyRunning = true;
-	        }
-		}
-	}
+                // Bind to LiveView
+                connectToLiveView();
+
+                // Singleton
+                alreadyRunning = true;
+            }
+        }
+    }
 
     @Override
     public IBinder onBind(final Intent intent) {
         Log.d(PluginConstants.LOG_TAG, "Enter LiveViewService.onBind.");
         return null;
     }
-
-    /**
-     * The service connection that is used to bind the plugin to the LiveView
-     * service.
-     * 
-     * When connected to the service, the plugin is registered. When
-     * disconnected to the service, the plugin is unregistered.
-     */
-    private ServiceConnection mServiceConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(final ComponentName className, IBinder service) {
-            Log.d(PluginConstants.LOG_TAG,
-                    "Enter LiveViewService.ServiceConnection.onServiceConnected.");
-
-            mLiveView = IPluginServiceV1.Stub.asInterface(service);
-
-            // Init adapter
-            LiveViewCallback lvCallback = new LiveViewCallback();
-
-            // Install plugin
-            try {
-            	if(mLiveView != null) {
-	                // Register
-	                mPluginId = mLiveView.register(lvCallback, mMenuIcon, mPluginName, false, getPackageName());
-	                Log.d(PluginConstants.LOG_TAG, "Plugin registered with id: " + mPluginId);
-	            }
-            } catch (RemoteException re) {
-                Log.e(PluginConstants.LOG_TAG, "Failed to install plugin. Stop self.");
-                stopSelf();
-            }
-
-            Log.d(PluginConstants.LOG_TAG, "Plugin registered. mPluginId: " + mPluginId);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName className) {
-            Log.d(PluginConstants.LOG_TAG,
-                    "Enter LiveViewService.ServiceConnection.onServiceDisconnected.");
-            stopSelf();
-        }
-
-    };
 
     /**
      * Connects to the LiveView service.
@@ -246,16 +223,60 @@ public class LiveViewService extends Service {
         }
     }
 
-	/**
-	 * When a user presses the "open in phone" button on the LiveView device, this method is called.
-	 * 
-	 * Opens the MainActivity on the phone.
-	 */
-	protected void openInPhone(String openInPhoneAction) {
-		Log.d(PluginConstants.LOG_TAG, "openInPhone");
-		Intent i = new Intent(this, MainActivity.class)
-			.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		startActivity(i);
-	}
+    /**
+     * When a user presses the "open in phone" button on the LiveView device, this method is
+     * called.
+     *
+     * Opens the MainActivity on the phone.
+     */
+    protected void openInPhone(String openInPhoneAction) {
+        Log.d(PluginConstants.LOG_TAG, "openInPhone");
+        Intent i = new Intent(this, MainActivity.class)
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
+    }
+
+    /**
+     * LiveView callback interface method.
+     */
+    private class LiveViewCallback extends IPluginServiceCallbackV1.Stub {
+
+        Handler mCallbackHandler = new Handler();
+
+
+        public String getPluginName() throws RemoteException {
+            return mPluginName;
+        }
+
+
+        public void openInPhone(final String openInPhoneAction) throws RemoteException {
+            mCallbackHandler.post(new Runnable() {
+                public void run() {
+                    LiveViewService.this.openInPhone(openInPhoneAction);
+                }
+            });
+        }
+
+        //Unused methods required by API.
+        public void startPlugin() throws RemoteException {
+        }
+
+        public void stopPlugin() throws RemoteException {
+        }
+
+        public void onUnregistered() throws RemoteException {
+        }
+
+        public void displayCaps(int displayWidthPixels, int displayHeigthPixels)
+                throws RemoteException {
+        }
+
+        public void button(String buttonType, boolean doublepress,
+                boolean longpress) throws RemoteException {
+        }
+
+        public void screenMode(int screenMode) throws RemoteException {
+        }
+    }
 
 }

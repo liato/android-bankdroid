@@ -42,7 +42,7 @@ public class OverviewResponse {
     }
 
     public List<Account> getTransactionAccounts() {
-        if(transactionAccounts == null) {
+        if (transactionAccounts == null) {
             transactionAccounts = new ArrayList<Account>();
         }
         return transactionAccounts;
@@ -53,7 +53,7 @@ public class OverviewResponse {
     }
 
     public List<Account> getSavingAccounts() {
-        if(savingAccounts == null) {
+        if (savingAccounts == null) {
             savingAccounts = new ArrayList<Account>();
         }
         return savingAccounts;
@@ -64,7 +64,7 @@ public class OverviewResponse {
     }
 
     public List<Account> getLoanAccounts() {
-        if(loanAccounts == null) {
+        if (loanAccounts == null) {
             loanAccounts = new ArrayList<Account>();
         }
         return loanAccounts;
@@ -75,7 +75,7 @@ public class OverviewResponse {
     }
 
     public List<Account> getTransactionDisposalAccounts() {
-        if(transactionDisposalAccounts == null) {
+        if (transactionDisposalAccounts == null) {
             transactionDisposalAccounts = new ArrayList<Account>();
         }
         return transactionDisposalAccounts;
@@ -86,7 +86,7 @@ public class OverviewResponse {
     }
 
     public List<Account> getSavingDisposalAccounts() {
-        if(savingDisposalAccounts == null) {
+        if (savingDisposalAccounts == null) {
             savingDisposalAccounts = new ArrayList<Account>();
         }
         return savingDisposalAccounts;
@@ -97,7 +97,7 @@ public class OverviewResponse {
     }
 
     public List<CardAccount> getCardAccounts() {
-        if(cardAccounts == null) {
+        if (cardAccounts == null) {
             cardAccounts = new ArrayList<CardAccount>();
         }
         return cardAccounts;

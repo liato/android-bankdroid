@@ -16,17 +16,17 @@
 
 package com.liato.bankdroid.banking.banks;
 
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
+import com.liato.bankdroid.Helpers;
+import com.liato.bankdroid.banking.Account;
+import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.Transaction;
+import com.liato.bankdroid.banking.exceptions.BankChoiceException;
+import com.liato.bankdroid.banking.exceptions.BankException;
+import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
+import com.liato.bankdroid.provider.IBankTypes;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
@@ -40,107 +40,130 @@ import org.jsoup.nodes.Element;
 import android.content.Context;
 import android.text.InputType;
 
-import com.liato.bankdroid.Helpers;
-import com.liato.bankdroid.legacy.R;
-import com.liato.bankdroid.banking.Account;
-import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.Transaction;
-import com.liato.bankdroid.banking.exceptions.BankChoiceException;
-import com.liato.bankdroid.banking.exceptions.BankException;
-import com.liato.bankdroid.banking.exceptions.LoginException;
-import com.liato.bankdroid.provider.IBankTypes;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Volvofinans extends Bank {
-	private static final String TAG = "Volvofinans";
-	private static final String NAME = "Volvofinans";
-	private static final String NAME_SHORT = "volvofinans";
-	private static final String URL = "https://inloggad.volvofinans.se/privat/inloggning/forenklad.html";
-	private static final int BANKTYPE_ID = IBankTypes.VOLVOFINANS;
+
+    private static final String TAG = "Volvofinans";
+
+    private static final String NAME = "Volvofinans";
+
+    private static final String NAME_SHORT = "volvofinans";
+
+    private static final String URL
+            = "https://inloggad.volvofinans.se/privat/inloggning/forenklad.html";
+
+    private static final int BANKTYPE_ID = IBankTypes.VOLVOFINANS;
+
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+
     private static final String INPUT_HINT_USERNAME = "ÅÅÅÅMMDDXXXX";
-    private static SimpleDateFormat DATE_PARSER = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy", Locale.UK);
-    private static SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd", new Locale("sv_SE"));
+
+    private static SimpleDateFormat DATE_PARSER = new SimpleDateFormat(
+            "EEE MMM d HH:mm:ss zzz yyyy", Locale.UK);
+
+    private static SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd",
+            new Locale("sv_SE"));
+
     private HashMap<String, String> mAccountUrlMappings = new HashMap<String, String>();
-    
-	public Volvofinans(Context context) {
-		super(context);
-		super.TAG = TAG;
-		super.NAME = NAME;
-		super.NAME_SHORT = NAME_SHORT;
-		super.BANKTYPE_ID = BANKTYPE_ID;
-		super.URL = URL;
+
+    public Volvofinans(Context context) {
+        super(context);
+        super.TAG = TAG;
+        super.NAME = NAME;
+        super.NAME_SHORT = NAME_SHORT;
+        super.BANKTYPE_ID = BANKTYPE_ID;
+        super.URL = URL;
         super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
         super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
-	}
+    }
 
-	public Volvofinans(String username, String password, Context context) throws BankException,
+    public Volvofinans(String username, String password, Context context) throws BankException,
             LoginException, BankChoiceException, IOException {
-		this(context);
-		this.update(username, password);
-	}
-
-	@Override
-    protected LoginPackage preLogin() throws BankException, IOException {
-        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_volvofinans, R.raw.cert_volvofinans_logged_in));
-        urlopen.setContentCharset(HTTP.ISO_8859_1);
-        List <NameValuePair> postData = new ArrayList <NameValuePair>();
-        postData.add(new BasicNameValuePair("username", username));
-        postData.add(new BasicNameValuePair("password", password));
-        postData.add(new BasicNameValuePair("TARGET", "https://inloggad.volvofinans.se/privat/inloggning/redirect.html"));
-        postData.add(new BasicNameValuePair("REFERER", "https://inloggad.volvofinans.se/privat/inloggning/forenklad.html"));
-        return new LoginPackage(urlopen, postData, null, "https://secure.volvofinans.se/neas/KodAuth");
+        this(context);
+        this.update(username, password);
     }
 
     @Override
-	public Urllib login() throws LoginException, BankException, IOException {
-	    LoginPackage lp = preLogin();
-	    String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+    protected LoginPackage preLogin() throws BankException, IOException {
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context,
+                R.raw.cert_volvofinans, R.raw.cert_volvofinans_logged_in));
+        urlopen.setContentCharset(HTTP.ISO_8859_1);
+        List<NameValuePair> postData = new ArrayList<NameValuePair>();
+        postData.add(new BasicNameValuePair("username", username));
+        postData.add(new BasicNameValuePair("password", password));
+        postData.add(new BasicNameValuePair("TARGET",
+                "https://inloggad.volvofinans.se/privat/inloggning/redirect.html"));
+        postData.add(new BasicNameValuePair("REFERER",
+                "https://inloggad.volvofinans.se/privat/inloggning/forenklad.html"));
+        return new LoginPackage(urlopen, postData, null,
+                "https://secure.volvofinans.se/neas/KodAuth");
+    }
 
-		if (response.contains("Fel personr/organisationsnr och/eller lösenord.")) {
-			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-		}
+    @Override
+    public Urllib login() throws LoginException, BankException, IOException {
+        LoginPackage lp = preLogin();
+        String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
 
-		if (response.contains("Internetbanken är stängd för tillfället och beräknas vara tillgänglig")) {
-			throw new LoginException(res.getText(R.string.bank_closed).toString());
-		}
-		return urlopen;
-	}
+        if (response.contains("Fel personr/organisationsnr och/eller lösenord.")) {
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+        }
 
-	@Override
-	public void update() throws BankException, LoginException, BankChoiceException, IOException {
-		super.update();
-		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
-			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-		}
-		urlopen = login();
-		String response = urlopen.open("https://inloggad.volvofinans.se/privat/kund/kortkonto/oversikt/kortkonton.html");
-		try {
-			JSONObject object = (JSONObject) new JSONTokener(response).nextValue();
-			JSONArray data = object.getJSONArray("data");
+        if (response.contains(
+                "Internetbanken är stängd för tillfället och beräknas vara tillgänglig")) {
+            throw new LoginException(res.getText(R.string.bank_closed).toString());
+        }
+        return urlopen;
+    }
 
-			int length = data.length();
-			for (int index = 0; index < length; index++) {
-				JSONObject account = data.getJSONObject(index);
-				Document d = Jsoup.parse(account.getString("namnUrl"));
-				Element e = d.getElementsByTag("a").first();
-				if (e != null && e.attr("href") != null) {
-    				mAccountUrlMappings.put(account.getString("kontonummer"), e.attr("href").replace("/info.html", "/info/kontoutdrag.html"));
-				}
-				accounts.add(new Account(String.format("%s (%s)", account.getString("namn"), account.getString("kontonummer")), Helpers.parseBalance(account.getString("disponibeltBelopp")).subtract(Helpers.parseBalance(account.getString("limit"))), account.getString("kontonummer")));
-			}
-		}
-		catch (JSONException e) {
-			throw new BankException(e.getMessage(), e);
-		}
-		if (accounts.isEmpty()) {
-			throw new BankException(res.getText(R.string.no_accounts_found).toString());
-		}
+    @Override
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
+        super.update();
+        if (username == null || password == null || username.length() == 0
+                || password.length() == 0) {
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+        }
+        urlopen = login();
+        String response = urlopen.open(
+                "https://inloggad.volvofinans.se/privat/kund/kortkonto/oversikt/kortkonton.html");
+        try {
+            JSONObject object = (JSONObject) new JSONTokener(response).nextValue();
+            JSONArray data = object.getJSONArray("data");
+
+            int length = data.length();
+            for (int index = 0; index < length; index++) {
+                JSONObject account = data.getJSONObject(index);
+                Document d = Jsoup.parse(account.getString("namnUrl"));
+                Element e = d.getElementsByTag("a").first();
+                if (e != null && e.attr("href") != null) {
+                    mAccountUrlMappings.put(account.getString("kontonummer"),
+                            e.attr("href").replace("/info.html", "/info/kontoutdrag.html"));
+                }
+                accounts.add(new Account(String.format("%s (%s)", account.getString("namn"),
+                        account.getString("kontonummer")),
+                        Helpers.parseBalance(account.getString("disponibeltBelopp")).subtract(
+                                Helpers.parseBalance(account.getString("limit"))),
+                        account.getString("kontonummer")));
+            }
+        } catch (JSONException e) {
+            throw new BankException(e.getMessage(), e);
+        }
+        if (accounts.isEmpty()) {
+            throw new BankException(res.getText(R.string.no_accounts_found).toString());
+        }
         super.updateComplete();
-	}
-	
+    }
+
     @Override
     public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
             BankException, IOException {
@@ -165,7 +188,7 @@ public class Volvofinans extends Bank {
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
-                    
+
                     transactions.add(new Transaction(date, acc.getString("text"), Helpers
                             .parseBalance(acc.getString("belopp")).negate()));
                 }

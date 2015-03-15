@@ -16,14 +16,8 @@
 
 package com.liato.bankdroid.banking.banks.ica;
 
-import android.content.Context;
-import android.text.InputType;
-import android.text.TextUtils;
-import android.util.Base64;
-
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
@@ -32,12 +26,17 @@ import com.liato.bankdroid.banking.banks.ica.model.Overview;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.provider.IBankTypes;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
+
+import android.content.Context;
+import android.text.InputType;
+import android.text.TextUtils;
+import android.util.Base64;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,11 +50,17 @@ import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class ICA extends Bank {
+
     private static final String API_URL = "https://api.ica.se/api/";
+
     private static final String AUTHENTICATION_TICKET_HEADER = "AuthenticationTicket";
+
     private static final String SESSION_TICKET_HEADER = "SessionTicket";
+
     private static final String LOGOUT_KEY_HEADER = "LogoutKey";
+
     private ObjectMapper mObjectMapper = new ObjectMapper();
+
     private Map<String, String> mHeaders = new HashMap<String, String>();
 
     public ICA(Context context) {
@@ -83,16 +88,18 @@ public class ICA extends Bank {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_ica));
         urlopen.addHeader("Accept", "application/json;charset=UTF-8");
         urlopen.addHeader("Content-Type", "application/json;charset=UTF-8");
-        urlopen.addHeader("Authorization", "Basic " + Base64.encodeToString(new String(username + ":" + password).getBytes(), Base64.NO_WRAP));
+        urlopen.addHeader("Authorization", "Basic " + Base64.encodeToString(
+                new String(username + ":" + password).getBytes(), Base64.NO_WRAP));
 
         try {
-            HttpResponse httpResponse = urlopen.openAsHttpResponse(API_URL + "login", new ArrayList<NameValuePair>(), false);
+            HttpResponse httpResponse = urlopen.openAsHttpResponse(API_URL + "login",
+                    new ArrayList<NameValuePair>(), false);
             if (httpResponse.getStatusLine().getStatusCode() == 401) {
                 LoginError le = readJsonValue(httpResponse, LoginError.class);
                 if (le != null && "UsernamePassword".equals(le.getMessageCode())) {
                     if (!TextUtils.isEmpty(le.getMessage())) {
                         throw new LoginException(le.getMessage());
-                    } else  {
+                    } else {
                         throw new LoginException(context.getText(
                                 R.string.invalid_username_password).toString());
                     }
@@ -111,8 +118,10 @@ public class ICA extends Bank {
                 mHeaders.put(entry.getKey(), header.getValue());
             }
 
-            urlopen.addHeader(AUTHENTICATION_TICKET_HEADER, mHeaders.get(AUTHENTICATION_TICKET_HEADER));
-            httpResponse = urlopen.openAsHttpResponse(API_URL + "user/minasidor", new ArrayList<NameValuePair>(), false);
+            urlopen.addHeader(AUTHENTICATION_TICKET_HEADER,
+                    mHeaders.get(AUTHENTICATION_TICKET_HEADER));
+            httpResponse = urlopen.openAsHttpResponse(API_URL + "user/minasidor",
+                    new ArrayList<NameValuePair>(), false);
             Overview overview = readJsonValue(httpResponse, Overview.class);
 
             if (overview == null) {
@@ -120,30 +129,39 @@ public class ICA extends Bank {
             }
 
             if (!TextUtils.isEmpty(overview.getAccountName())) {
-                Account account = new Account(overview.getAccountName(), BigDecimal.valueOf(overview.getAvailableAmount()), overview.getAccountNumber());
+                Account account = new Account(overview.getAccountName(),
+                        BigDecimal.valueOf(overview.getAvailableAmount()),
+                        overview.getAccountNumber());
                 balance = balance.add(account.getBalance());
                 accounts.add(account);
                 List<Transaction> transactions = new ArrayList<Transaction>();
-                for (com.liato.bankdroid.banking.banks.ica.model.Transaction t : overview.getTransactions()) {
-                    transactions.add(new Transaction(t.getTransactionDate(), t.getDescription(), BigDecimal.valueOf(t.getAmount())));
+                for (com.liato.bankdroid.banking.banks.ica.model.Transaction t : overview
+                        .getTransactions()) {
+                    transactions.add(new Transaction(t.getTransactionDate(), t.getDescription(),
+                            BigDecimal.valueOf(t.getAmount())));
                 }
                 account.setTransactions(transactions);
             }
             for (com.liato.bankdroid.banking.banks.ica.model.Account a : overview.getAccounts()) {
-                Account account = new Account(a.getName(), BigDecimal.valueOf(a.getAvailableAmount()), a.getAccountNumber());
+                Account account = new Account(a.getName(),
+                        BigDecimal.valueOf(a.getAvailableAmount()), a.getAccountNumber());
                 balance = balance.add(account.getBalance());
                 accounts.add(account);
                 List<Transaction> transactions = new ArrayList<Transaction>();
-                for (com.liato.bankdroid.banking.banks.ica.model.Transaction t : a.getTransactions()) {
-                    transactions.add(new Transaction(t.getTransactionDate(), t.getDescription(), BigDecimal.valueOf(t.getAmount())));
+                for (com.liato.bankdroid.banking.banks.ica.model.Transaction t : a
+                        .getTransactions()) {
+                    transactions.add(new Transaction(t.getTransactionDate(), t.getDescription(),
+                            BigDecimal.valueOf(t.getAmount())));
                 }
                 account.setTransactions(transactions);
             }
 
-            Account account  = new Account("Erhållen bonus i år", BigDecimal.valueOf(overview.getAcquiredBonus()), "bonus");
+            Account account = new Account("Erhållen bonus i år",
+                    BigDecimal.valueOf(overview.getAcquiredBonus()), "bonus");
             account.setType(Account.OTHER);
             accounts.add(account);
-            account  = new Account("Årets totala inköp på ICA", BigDecimal.valueOf(overview.getYearlyTotalPurchased()), "totalpurchased");
+            account = new Account("Årets totala inköp på ICA",
+                    BigDecimal.valueOf(overview.getYearlyTotalPurchased()), "totalpurchased");
             account.setType(Account.OTHER);
             accounts.add(account);
 
@@ -152,7 +170,8 @@ public class ICA extends Bank {
             }
 
             urlopen.addHeader(LOGOUT_KEY_HEADER, mHeaders.get(LOGOUT_KEY_HEADER));
-            httpResponse = urlopen.openAsHttpResponse(API_URL + "logout", new ArrayList<NameValuePair>(), false);
+            httpResponse = urlopen.openAsHttpResponse(API_URL + "logout",
+                    new ArrayList<NameValuePair>(), false);
             httpResponse.getStatusLine();
         } catch (JsonParseException e) {
             throw new BankException(e.getMessage(), e);

@@ -17,7 +17,7 @@ public class TransactionsResponse {
     private List<Transaction> reservedTransactions;
 
     public List<Transaction> getTransactions() {
-        if(transactions == null) {
+        if (transactions == null) {
             transactions = new ArrayList<Transaction>();
         }
         return transactions;
@@ -28,7 +28,7 @@ public class TransactionsResponse {
     }
 
     public List<Transaction> getReservedTransactions() {
-        if(reservedTransactions == null) {
+        if (reservedTransactions == null) {
             reservedTransactions = new ArrayList<Transaction>();
         }
         return reservedTransactions;

@@ -36,7 +36,7 @@ public class ProfileResponse {
     }
 
     public List<Bank> getBanks() {
-        if(banks == null) {
+        if (banks == null) {
             banks = new ArrayList<Bank>();
         }
         return banks;

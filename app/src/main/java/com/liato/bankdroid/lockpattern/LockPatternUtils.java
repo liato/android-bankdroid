@@ -16,13 +16,7 @@
 
 package com.liato.bankdroid.lockpattern;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.List;
+import com.google.common.collect.Lists;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -34,16 +28,18 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.google.common.collect.Lists;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Utilities for the lock patten and its settings.
  */
 public class LockPatternUtils {
-
-    private static final String TAG = "LockPatternUtils";
-    
-    private static final String LOCK_PATTERN_FILE = "gesture.key";
 
     /**
      * The maximum number of incorrect attempts before the user is prevented
@@ -78,18 +74,26 @@ public class LockPatternUtils {
      * attempt for it to be counted against the counts that affect
      * {@link #FAILED_ATTEMPTS_BEFORE_TIMEOUT} and {@link #FAILED_ATTEMPTS_BEFORE_RESET}
      */
-    public static final int MIN_PATTERN_REGISTER_FAIL = 3;    
+    public static final int MIN_PATTERN_REGISTER_FAIL = 3;
+
+    private static final String TAG = "LockPatternUtils";
+
+    private static final String LOCK_PATTERN_FILE = "gesture.key";
 
     private final static String LOCKOUT_PERMANENT_KEY = "lockscreen.lockedoutpermanently";
+
     private final static String LOCKOUT_ATTEMPT_DEADLINE = "lockscreen.lockoutattemptdeadline";
+
     private final static String PATTERN_EVER_CHOSEN = "lockscreen.patterneverchosen";
+
+    private static String sLockPatternFilename;
+
+    private static Context mContext;
+
+    private static SharedPreferences mPrefs;
 
     private final ContentResolver mContentResolver;
 
-    private static String sLockPatternFilename;
-    private static Context mContext;
-    private static SharedPreferences mPrefs;
-    
     /**
      * @param contentResolver Used to look up and save settings.
      */
@@ -106,8 +110,73 @@ public class LockPatternUtils {
     }
 
     /**
+     * Deserialize a pattern.
+     *
+     * @param string The pattern serialized with {@link #patternToString}
+     * @return The pattern.
+     */
+    public static List<LockPatternView.Cell> stringToPattern(String string) {
+        List<LockPatternView.Cell> result = Lists.newArrayList();
+
+        final byte[] bytes = string.getBytes();
+        for (int i = 0; i < bytes.length; i++) {
+            byte b = bytes[i];
+            result.add(LockPatternView.Cell.of(b / 3, b % 3));
+        }
+        return result;
+    }
+
+    /**
+     * Serialize a pattern.
+     *
+     * @param pattern The pattern.
+     * @return The pattern in string form.
+     */
+    public static String patternToString(List<LockPatternView.Cell> pattern) {
+        if (pattern == null) {
+            return "";
+        }
+        final int patternSize = pattern.size();
+
+        byte[] res = new byte[patternSize];
+        for (int i = 0; i < patternSize; i++) {
+            LockPatternView.Cell cell = pattern.get(i);
+            res[i] = (byte) (cell.getRow() * 3 + cell.getColumn());
+        }
+        return new String(res);
+    }
+
+    /*
+     * Generate an SHA-1 hash for the pattern. Not the most secure, but it is
+     * at least a second level of protection. First level is that the file
+     * is in a location only readable by the system process.
+     * @param pattern the gesture pattern.
+     * @return the hash of the pattern in a byte array.
+     */
+    static byte[] patternToHash(List<LockPatternView.Cell> pattern) {
+        if (pattern == null) {
+            return null;
+        }
+
+        final int patternSize = pattern.size();
+        byte[] res = new byte[patternSize];
+        for (int i = 0; i < patternSize; i++) {
+            LockPatternView.Cell cell = pattern.get(i);
+            res[i] = (byte) (cell.getRow() * 3 + cell.getColumn());
+        }
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+            byte[] hash = md.digest(res);
+            return hash;
+        } catch (NoSuchAlgorithmException nsa) {
+            return res;
+        }
+    }
+
+    /**
      * Check to see if a pattern matches the saved pattern.  If no pattern exists,
      * always returns true.
+     *
      * @param pattern The pattern to check.
      * @return Whether the pattern matchees the stored one.
      */
@@ -132,6 +201,7 @@ public class LockPatternUtils {
 
     /**
      * Check to see if the user has stored a lock pattern.
+     *
      * @return Whether a saved pattern exists.
      */
     public boolean savedPatternExists() {
@@ -160,17 +230,17 @@ public class LockPatternUtils {
 
     /**
      * Save a lock pattern.
+     *
      * @param pattern The new pattern to save.
      */
     public void saveLockPattern(List<LockPatternView.Cell> pattern) {
         if (pattern == null) {
             Log.d(TAG, "Removing lock pattern");
-        }
-        else {
-            Log.d(TAG, "Saving lock pattern: "+LockPatternUtils.patternToString(pattern));
+        } else {
+            Log.d(TAG, "Saving lock pattern: " + LockPatternUtils.patternToString(pattern));
         }
         // Compute the hash
-        final byte[] hash  = LockPatternUtils.patternToHash(pattern);
+        final byte[] hash = LockPatternUtils.patternToHash(pattern);
         try {
             // Write the hash to file
             RandomAccessFile raf = new RandomAccessFile(sLockPatternFilename, "rw");
@@ -188,68 +258,6 @@ public class LockPatternUtils {
         } catch (IOException ioe) {
             // Cant do much
             Log.e(TAG, "Unable to save lock pattern to " + sLockPatternFilename);
-        }
-    }
-
-    /**
-     * Deserialize a pattern.
-     * @param string The pattern serialized with {@link #patternToString}
-     * @return The pattern.
-     */
-    public static List<LockPatternView.Cell> stringToPattern(String string) {
-        List<LockPatternView.Cell> result = Lists.newArrayList();
-
-        final byte[] bytes = string.getBytes();
-        for (int i = 0; i < bytes.length; i++) {
-            byte b = bytes[i];
-            result.add(LockPatternView.Cell.of(b / 3, b % 3));
-        }
-        return result;
-    }
-
-    /**
-     * Serialize a pattern.
-     * @param pattern The pattern.
-     * @return The pattern in string form.
-     */
-    public static String patternToString(List<LockPatternView.Cell> pattern) {
-        if (pattern == null) {
-            return "";
-        }
-        final int patternSize = pattern.size();
-
-        byte[] res = new byte[patternSize];
-        for (int i = 0; i < patternSize; i++) {
-            LockPatternView.Cell cell = pattern.get(i);
-            res[i] = (byte) (cell.getRow() * 3 + cell.getColumn());
-        }
-        return new String(res);
-    }
-    
-    /*
-     * Generate an SHA-1 hash for the pattern. Not the most secure, but it is
-     * at least a second level of protection. First level is that the file
-     * is in a location only readable by the system process.
-     * @param pattern the gesture pattern.
-     * @return the hash of the pattern in a byte array.
-     */
-    static byte[] patternToHash(List<LockPatternView.Cell> pattern) {
-        if (pattern == null) {
-            return null;
-        }
-        
-        final int patternSize = pattern.size();
-        byte[] res = new byte[patternSize];
-        for (int i = 0; i < patternSize; i++) {
-            LockPatternView.Cell cell = pattern.get(i);
-            res[i] = (byte) (cell.getRow() * 3 + cell.getColumn());
-        }
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-1");
-            byte[] hash = md.digest(res);
-            return hash;
-        } catch (NoSuchAlgorithmException nsa) {
-            return res;
         }
     }
 
@@ -298,6 +306,7 @@ public class LockPatternUtils {
     /**
      * Set and store the lockout deadline, meaning the user can't attempt his/her unlock
      * pattern until the deadline has passed.
+     *
      * @return the chosen deadline.
      */
     public long setLockoutAttemptDeadline() {
@@ -308,8 +317,8 @@ public class LockPatternUtils {
 
     /**
      * @return The elapsed time in millis in the future when the user is allowed to
-     *   attempt to enter his/her lock pattern, or 0 if the user is welcome to
-     *   enter a pattern.
+     * attempt to enter his/her lock pattern, or 0 if the user is welcome to
+     * enter a pattern.
      */
     public long getLockoutAttemptDeadline() {
         final long deadline = getLong(LOCKOUT_ATTEMPT_DEADLINE, 0L);
@@ -322,8 +331,8 @@ public class LockPatternUtils {
 
     /**
      * @return Whether the user is permanently locked out until they verify their
-     *   credentials.  Occurs after {@link #FAILED_ATTEMPTS_BEFORE_RESET} failed
-     *   attempts.
+     * credentials.  Occurs after {@link #FAILED_ATTEMPTS_BEFORE_RESET} failed
+     * attempts.
      */
     public boolean isPermanentlyLocked() {
         return getBoolean(LOCKOUT_PERMANENT_KEY);
@@ -334,9 +343,10 @@ public class LockPatternUtils {
      * must authenticate via other means.  If false, that means the user has gone
      * out of permanent lock, so the existing (forgotten) lock pattern needs to
      * be cleared.
+     *
      * @param locked Whether the user is permanently locked out until they verify their
-     *   credentials.  Occurs after {@link #FAILED_ATTEMPTS_BEFORE_RESET} failed
-     *   attempts.
+     *               credentials.  Occurs after {@link #FAILED_ATTEMPTS_BEFORE_RESET} failed
+     *               attempts.
      */
     public void setPermanentlyLocked(boolean locked) {
         setBoolean(LOCKOUT_PERMANENT_KEY, locked);
@@ -349,7 +359,7 @@ public class LockPatternUtils {
 
     /**
      * @return A formatted string of the next alarm (for showing on the lock screen),
-     *   or null if there is no next alarm.
+     * or null if there is no next alarm.
      */
     public String getNextAlarm() {
         String nextAlarm = Settings.System.getString(mContentResolver,
@@ -367,7 +377,7 @@ public class LockPatternUtils {
     private void setBoolean(String systemSettingKey, boolean enabled) {
         Editor editor = mPrefs.edit();
         editor.putBoolean(systemSettingKey, enabled);
-        editor.commit();        
+        editor.commit();
     }
 
     private long getLong(String systemSettingKey, long def) {
@@ -377,7 +387,7 @@ public class LockPatternUtils {
     private void setLong(String systemSettingKey, long value) {
         Editor editor = mPrefs.edit();
         editor.putLong(systemSettingKey, value);
-        editor.commit(); 
+        editor.commit();
     }
 
 

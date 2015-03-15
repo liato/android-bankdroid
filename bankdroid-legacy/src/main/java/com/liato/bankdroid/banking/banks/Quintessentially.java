@@ -15,34 +15,38 @@
  */
 package com.liato.bankdroid.banking.banks;
 
-import android.content.Context;
-
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.banks.sebkort.SEBKortBase;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
+import android.content.Context;
+
 import java.io.IOException;
 
 
 public class Quintessentially extends SEBKortBase {
-	private static final String TAG = "Quintessentially";
-	private static final String NAME = "Quintessentially Credit Card";
-	private static final String NAME_SHORT = "quintessentially";
-	private static final int BANKTYPE_ID = Bank.QUINTESSENTIALLY;
 
-	public Quintessentially(Context context) {
-		super(context, "quse", "0119");
-		super.TAG = TAG;
-		super.NAME = NAME;
-		super.NAME_SHORT = NAME_SHORT;
-		super.BANKTYPE_ID = BANKTYPE_ID;
-	}
-	
-	public Quintessentially(String username, String password, Context context) throws BankException,
+    private static final String TAG = "Quintessentially";
+
+    private static final String NAME = "Quintessentially Credit Card";
+
+    private static final String NAME_SHORT = "quintessentially";
+
+    private static final int BANKTYPE_ID = Bank.QUINTESSENTIALLY;
+
+    public Quintessentially(Context context) {
+        super(context, "quse", "0119");
+        super.TAG = TAG;
+        super.NAME = NAME;
+        super.NAME_SHORT = NAME_SHORT;
+        super.BANKTYPE_ID = BANKTYPE_ID;
+    }
+
+    public Quintessentially(String username, String password, Context context) throws BankException,
             LoginException, BankChoiceException, IOException {
-		super(username, password, context, "quse", "0119");
-	}
+        super(username, password, context, "quse", "0119");
+    }
 
 }

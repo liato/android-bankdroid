@@ -1,20 +1,23 @@
 package com.liato.bankdroid.banking.banks.swedbank;
 
-import android.content.Context;
-
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import android.content.Context;
+
 import java.io.IOException;
 
 public class Swedbank extends AbstractSwedbank {
 
-    private static final String TAG = "Swedbank";
-    private static final String NAME = "Swedbank";
-    private static final int BANKTYPE_ID = IBankTypes.SWEDBANK;
     protected static final String NAME_SHORT = "swedbank";
+
+    private static final String TAG = "Swedbank";
+
+    private static final String NAME = "Swedbank";
+
+    private static final int BANKTYPE_ID = IBankTypes.SWEDBANK;
 
     private static final String APP_ID = "vgmYRMelBJ0Yzujs";
 

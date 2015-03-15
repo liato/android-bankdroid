@@ -15,34 +15,38 @@
  */
 package com.liato.bankdroid.banking.banks;
 
-import android.content.Context;
-
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.banks.sebkort.SEBKortBase;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
+import android.content.Context;
+
 import java.io.IOException;
 
 
 public class Opel extends SEBKortBase {
-	private static final String TAG = "Opel";
-	private static final String NAME = "OpelKortet";
-	private static final String NAME_SHORT = "opel";
-	private static final int BANKTYPE_ID = Bank.OPEL;
 
-	public Opel(Context context) {
-		super(context, "opse", "0107");
-		super.TAG = TAG;
-		super.NAME = NAME;
-		super.NAME_SHORT = NAME_SHORT;
-		super.BANKTYPE_ID = BANKTYPE_ID;
-	}
-	
-	public Opel(String username, String password, Context context) throws BankException,
+    private static final String TAG = "Opel";
+
+    private static final String NAME = "OpelKortet";
+
+    private static final String NAME_SHORT = "opel";
+
+    private static final int BANKTYPE_ID = Bank.OPEL;
+
+    public Opel(Context context) {
+        super(context, "opse", "0107");
+        super.TAG = TAG;
+        super.NAME = NAME;
+        super.NAME_SHORT = NAME_SHORT;
+        super.BANKTYPE_ID = BANKTYPE_ID;
+    }
+
+    public Opel(String username, String password, Context context) throws BankException,
             LoginException, BankChoiceException, IOException {
-		super(username, password, context, "opse", "0107");
-	}
+        super(username, password, context, "opse", "0107");
+    }
 
 }

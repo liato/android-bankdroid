@@ -16,21 +16,25 @@
  */
 package com.liato.bankdroid.banking.banks;
 
-import android.content.Context;
-
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.banks.sebkort.SEBKortBase;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
+import android.content.Context;
+
 import java.io.IOException;
 
 
 public class EurobonusMastercardDk extends SEBKortBase {
+
     private static final String TAG = "EurobonusMastercardDk";
+
     private static final String NAME = "SAS EuroBonus MasterCard (Denmark)";
+
     private static final String NAME_SHORT = "ebmaster_dk";
+
     private static final int BANKTYPE_ID = Bank.SASEUROBONUSMASTERCARD_DK;
 
     public EurobonusMastercardDk(Context context) {

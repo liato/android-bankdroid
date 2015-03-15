@@ -16,25 +16,24 @@
 
 package com.liato.bankdroid.banking.banks;
 
-import android.content.Context;
-import android.text.InputType;
-
 import com.liato.bankdroid.Helpers;
-import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.provider.IBankTypes;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import android.content.Context;
+import android.text.InputType;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -45,12 +44,19 @@ import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Jojo extends Bank {
+
     private static final String TAG = "Jojo";
+
     private static final String NAME = "Jojo Reskassa";
+
     private static final String NAME_SHORT = "jojo";
+
     private static final String URL = "https://www.shop.skanetrafiken.se";
+
     private static final int BANKTYPE_ID = IBankTypes.JOJO;
-    private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT | + InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
+
+    private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT
+            | +InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
 
     private static final String NAME_NOT_SET = "KortnamnSaknas";
 
@@ -98,7 +104,8 @@ public class Jojo extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0 || password.length() == 0) {
+        if (username == null || password == null || username.length() == 0
+                || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();
@@ -106,7 +113,7 @@ public class Jojo extends Bank {
         Document d = Jsoup.parse(response);
         Elements cards = d.select(".my_cards_allinfo table tbody");
         if (!cards.isEmpty()) {
-            for(Element card : cards) {
+            for (Element card : cards) {
                 String cardNumber = card.select("tr:first-child td").text().trim();
                 BigDecimal saldo = getSaldo(cardNumber);
                 String name = card.select("tr:nth-child(2) td").text().trim();
@@ -126,13 +133,13 @@ public class Jojo extends Bank {
     private BigDecimal getSaldo(String cardNumber) {
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("cardno", cardNumber));
-        postData.add(new BasicNameValuePair("fromlist","1"));
+        postData.add(new BasicNameValuePair("fromlist", "1"));
         postData.add(new BasicNameValuePair("ST_CHECK_SALDO", "1"));
         try {
-            String saldoData = urlopen.open(URL + "/saldodata.html",postData,true);
+            String saldoData = urlopen.open(URL + "/saldodata.html", postData, true);
             Document saldoDocument = Jsoup.parse(saldoData);
             Elements saldo = saldoDocument.select("td.greenrow.right h3");
-            if(!saldo.isEmpty()) {
+            if (!saldo.isEmpty()) {
                 return Helpers.parseBalance(saldo.first().text().trim());
             }
         } catch (IOException e) {

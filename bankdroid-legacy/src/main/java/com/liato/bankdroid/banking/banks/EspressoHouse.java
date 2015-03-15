@@ -16,9 +16,6 @@
 
 package com.liato.bankdroid.banking.banks;
 
-import android.content.Context;
-import android.text.InputType;
-
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
@@ -36,6 +33,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import android.content.Context;
+import android.text.InputType;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +43,9 @@ import java.util.List;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class EspressoHouse extends Bank {
+
     private static final String API_URL = "http://www.espressohouse.com/coffee-card/min-sida/";
+
     private Document dResponse = null;
 
     public EspressoHouse(Context context) {
@@ -52,7 +54,8 @@ public class EspressoHouse extends Bank {
         NAME = "Espresso House";
         NAME_SHORT = "espressohouse";
         BANKTYPE_ID = IBankTypes.ESPRESSOHOUSE;
-        INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT | +InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
+        INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT
+                | +InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
         INPUT_TITLETEXT_USERNAME = R.string.email;
     }
 
@@ -70,11 +73,14 @@ public class EspressoHouse extends Bank {
         urlopen.setFollowRedirects(false);
         postData.add(new BasicNameValuePair("__EVENTTARGET",
                 "ctl00$ctl00$ctl00$ContentPlaceHolderDefault$ContentPlaceHolderDefault$LoginView1$LoginUser$LoginButton"));
-        postData.add(new BasicNameValuePair("ctl00$ctl00$ctl00$ContentPlaceHolderDefault$ContentPlaceHolderDefault$LoginView1$LoginUser$UserName",
+        postData.add(new BasicNameValuePair(
+                "ctl00$ctl00$ctl00$ContentPlaceHolderDefault$ContentPlaceHolderDefault$LoginView1$LoginUser$UserName",
                 username));
-        postData.add(new BasicNameValuePair("ctl00$ctl00$ctl00$ContentPlaceHolderDefault$ContentPlaceHolderDefault$LoginView1$LoginUser$Password",
+        postData.add(new BasicNameValuePair(
+                "ctl00$ctl00$ctl00$ContentPlaceHolderDefault$ContentPlaceHolderDefault$LoginView1$LoginUser$Password",
                 password));
-        HttpResponse httpResponse = urlopen.openAsHttpResponse("http://www.espressohouse.com/coffee-card/logga-inladda/", postData, true);
+        HttpResponse httpResponse = urlopen.openAsHttpResponse(
+                "http://www.espressohouse.com/coffee-card/logga-inladda/", postData, true);
         LoginPackage lp = new LoginPackage(urlopen, postData, null, API_URL);
         if (httpResponse.getStatusLine().getStatusCode() == 302) {
             lp.setIsLoggedIn(true);
@@ -94,7 +100,8 @@ public class EspressoHouse extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0 || password.length() == 0) {
+        if (username == null || password == null || username.length() == 0
+                || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();
@@ -111,7 +118,8 @@ public class EspressoHouse extends Bank {
     }
 
     @Override
-    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+    public void updateTransactions(Account account, Urllib urlopen)
+            throws LoginException, BankException {
         List<Element> eBalance = dResponse.select(".lineTotalAmount");
         List<Element> eTransaction = dResponse.select(".lineTime");
         List<Transaction> transactions = new ArrayList<>();

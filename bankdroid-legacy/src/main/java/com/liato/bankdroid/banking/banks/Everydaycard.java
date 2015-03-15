@@ -17,6 +17,21 @@
 
 package com.liato.bankdroid.banking.banks;
 
+import com.liato.bankdroid.Helpers;
+import com.liato.bankdroid.banking.Account;
+import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.exceptions.BankChoiceException;
+import com.liato.bankdroid.banking.exceptions.BankException;
+import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
+import com.liato.bankdroid.provider.IBankTypes;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
+import android.content.Context;
+import android.text.InputType;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -24,115 +39,116 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.message.BasicNameValuePair;
-
-import android.content.Context;
-import android.text.InputType;
-
-import com.liato.bankdroid.Helpers;
-import com.liato.bankdroid.legacy.R;
-import com.liato.bankdroid.banking.Account;
-import com.liato.bankdroid.banking.Bank;
-//import com.liato.bankdroid.banking.Transaction;
-import com.liato.bankdroid.banking.exceptions.BankChoiceException;
-import com.liato.bankdroid.banking.exceptions.BankException;
-import com.liato.bankdroid.banking.exceptions.LoginException;
-import com.liato.bankdroid.provider.IBankTypes;
-
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
-public class Everydaycard extends Bank {
-	private static final String TAG = "Everydaycard";
-	private static final String NAME = "Everydaycard";
-	private static final String NAME_SHORT = "everydaycard";
-	private static final String URL = "http://www.everydaycard.se/mobil/";
-	private static final int BANKTYPE_ID = IBankTypes.EVERYDAYCARD;
-	private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
-    private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
-	
-	private Pattern reSaldo = Pattern.compile("Utnyttjad kredit \\(sek\\)</td>\\s*<td></td>\\s*<td>([^<]+)<", Pattern.CASE_INSENSITIVE);
-	private Pattern reBonus = Pattern.compile("Aktuell bonus \\(sek\\)</td>\\s*<td>.*</td>\\s*<td>([^<]+)<", Pattern.CASE_INSENSITIVE);
-//	private Pattern reAccountTransactions = Pattern.compile("<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>.*</td>\\s*<td>.*</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
-//	private Pattern reBonusTransactions = Pattern.compile("<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>.*</td>\\s*<td>.*</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
-	private String response = null;
-	public Everydaycard(Context context) {
-		super(context);
-		super.TAG = TAG;
-		super.NAME = NAME;
-		super.NAME_SHORT = NAME_SHORT;
-		super.BANKTYPE_ID = BANKTYPE_ID;
-		super.URL = URL;
-		super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
-		super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
-	}
+//import com.liato.bankdroid.banking.Transaction;
 
-	public Everydaycard(String username, String password, Context context)
+public class Everydaycard extends Bank {
+
+    private static final String TAG = "Everydaycard";
+
+    private static final String NAME = "Everydaycard";
+
+    private static final String NAME_SHORT = "everydaycard";
+
+    private static final String URL = "http://www.everydaycard.se/mobil/";
+
+    private static final int BANKTYPE_ID = IBankTypes.EVERYDAYCARD;
+
+    private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+
+    private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
+
+    private Pattern reSaldo = Pattern.compile(
+            "Utnyttjad kredit \\(sek\\)</td>\\s*<td></td>\\s*<td>([^<]+)<",
+            Pattern.CASE_INSENSITIVE);
+
+    private Pattern reBonus = Pattern.compile(
+            "Aktuell bonus \\(sek\\)</td>\\s*<td>.*</td>\\s*<td>([^<]+)<",
+            Pattern.CASE_INSENSITIVE);
+
+    //	private Pattern reAccountTransactions = Pattern.compile("<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>.*</td>\\s*<td>.*</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
+//	private Pattern reBonusTransactions = Pattern.compile("<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>.*</td>\\s*<td>.*</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
+    private String response = null;
+
+    public Everydaycard(Context context) {
+        super(context);
+        super.TAG = TAG;
+        super.NAME = NAME;
+        super.NAME_SHORT = NAME_SHORT;
+        super.BANKTYPE_ID = BANKTYPE_ID;
+        super.URL = URL;
+        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
+        super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
+    }
+
+    public Everydaycard(String username, String password, Context context)
             throws BankException, LoginException, BankChoiceException, IOException {
-		this(context);
-		this.update(username, password);
-	}
-    
+        this(context);
+        this.update(username, password);
+    }
+
     @Override
     protected LoginPackage preLogin() throws BankException, IOException {
-    	return preLoginInternal("http://valuta.g2solutions.se/mobil/web/logonSubmit.do");
+        return preLoginInternal("http://valuta.g2solutions.se/mobil/web/logonSubmit.do");
     }
-    
+
 //    private LoginPackage preLoginNonMobile() throws BankException,
 //            ClientProtocolException, IOException {
 //    	return preLoginInternal("https://valuta.g2solutions.se/valuta/web/logonSubmit.do");
 //    }
 
     private LoginPackage preLoginInternal(String url) throws BankException, IOException {
-    	urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_everydaycard));
-    	List <NameValuePair> postData = new ArrayList <NameValuePair>();
-    	postData.add(new BasicNameValuePair("nextPage", "firstPage"));                
-    	postData.add(new BasicNameValuePair("username", username));
-    	postData.add(new BasicNameValuePair("password", password));
-    	return new LoginPackage(urlopen, postData, response, url);
+        urlopen = new Urllib(context,
+                CertificateReader.getCertificates(context, R.raw.cert_everydaycard));
+        List<NameValuePair> postData = new ArrayList<NameValuePair>();
+        postData.add(new BasicNameValuePair("nextPage", "firstPage"));
+        postData.add(new BasicNameValuePair("username", username));
+        postData.add(new BasicNameValuePair("password", password));
+        return new LoginPackage(urlopen, postData, response, url);
     }
-    
-	@Override
-	public Urllib login() throws LoginException, BankException, IOException {
-		//LoginPackage lp = preLoginNonMobile();
-		LoginPackage lp = preLogin();
-		response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-		if (response.contains("Felaktigt Login")) {
-			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-		}
-		return urlopen;
-	}
 
-	@Override
-	public void update() throws BankException, LoginException, BankChoiceException, IOException {
-		super.update();
-		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
-			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-		}
-		urlopen = login();
-	
-		Matcher matcher = reBonus.matcher(response);
- 		if (matcher.find()) {
- 			BigDecimal bonusBalance = Helpers.parseBalance(matcher.group(1));
-			Account account = new Account("Bonus", bonusBalance, "Bonus", Account.OTHER);
-			balance = balance.add(bonusBalance);
-			accounts.add(account);
-		}
+    @Override
+    public Urllib login() throws LoginException, BankException, IOException {
+        //LoginPackage lp = preLoginNonMobile();
+        LoginPackage lp = preLogin();
+        response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+        if (response.contains("Felaktigt Login")) {
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+        }
+        return urlopen;
+    }
 
-		matcher = reSaldo.matcher(response);
- 		if (matcher.find()) {
- 			BigDecimal accountBalance = Helpers.parseBalance(matcher.group(1)).negate();
-			Account account = new Account("Everydaycard", accountBalance, "1", Account.CCARD);
-			balance = balance.add(accountBalance);
-			accounts.add(account);
-		}
-		if (accounts.isEmpty()) {
-			throw new BankException(res.getText(R.string.no_accounts_found).toString());
-		}
+    @Override
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
+        super.update();
+        if (username == null || password == null || username.length() == 0
+                || password.length() == 0) {
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+        }
+        urlopen = login();
+
+        Matcher matcher = reBonus.matcher(response);
+        if (matcher.find()) {
+            BigDecimal bonusBalance = Helpers.parseBalance(matcher.group(1));
+            Account account = new Account("Bonus", bonusBalance, "Bonus", Account.OTHER);
+            balance = balance.add(bonusBalance);
+            accounts.add(account);
+        }
+
+        matcher = reSaldo.matcher(response);
+        if (matcher.find()) {
+            BigDecimal accountBalance = Helpers.parseBalance(matcher.group(1)).negate();
+            Account account = new Account("Everydaycard", accountBalance, "1", Account.CCARD);
+            balance = balance.add(accountBalance);
+            accounts.add(account);
+        }
+        if (accounts.isEmpty()) {
+            throw new BankException(res.getText(R.string.no_accounts_found).toString());
+        }
         super.updateComplete();
-	}
+    }
 
 //	@Override
 //    public void updateAllTransactions() throws LoginException, BankException {

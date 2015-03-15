@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.liato.bankdroid.banking.banks.swedbank.model.CardAccount;
 import com.liato.bankdroid.banking.banks.swedbank.model.CardTransaction;
-import com.liato.bankdroid.banking.banks.swedbank.model.Transaction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +29,7 @@ public class CardAccountResponse {
     }
 
     public List<CardTransaction> getTransactions() {
-        if(transactions == null) {
+        if (transactions == null) {
             transactions = new ArrayList<CardTransaction>();
         }
         return transactions;
@@ -41,7 +40,7 @@ public class CardAccountResponse {
     }
 
     public List<CardTransaction> getReservedTransactions() {
-        if(reservedTransactions == null) {
+        if (reservedTransactions == null) {
             reservedTransactions = new ArrayList<CardTransaction>();
         }
         return reservedTransactions;

@@ -16,141 +16,152 @@
 
 package com.liato.bankdroid.banking;
 
+import com.liato.bankdroid.provider.IAccountTypes;
+
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.liato.bankdroid.provider.IAccountTypes;
-
 public class Account implements IAccountTypes {
-	private String name;
-	private BigDecimal balance;
-	private String id;
-	private Bank bank = null;
-	private long bankId = -1;
-	private int type = Account.REGULAR;
-	private boolean hidden = false;
-	private boolean notify = true;
-	private String currency;
-	private List<Transaction> transactions;
-	private String aliasfor;
 
-	public List<Transaction> getTransactions() {
-		return transactions;
-	}
+    private String name;
 
-	public void setTransactions(final List<Transaction> transactions) {
-		this.transactions = transactions;
-	}
+    private BigDecimal balance;
 
-	public Account(final String name, final BigDecimal balance,
-			final String id, final long bankId, final int type,
-			final String currency) {
-		this.name = name;
-		this.balance = balance;
-		this.id = id;
-		this.bankId = bankId;
-		this.type = type;
-		this.currency = currency;
-	}
+    private String id;
 
-	public Account(final String name, final BigDecimal balance,
-			final String id, final long bankId) {
-		this(name, balance, id, bankId, REGULAR, "SEK");
-	}
+    private Bank bank = null;
 
-	public Account(final String name, final BigDecimal balance,
-			final String id, final long bankId, final int type) {
-		this(name, balance, id, bankId, type, "SEK");
-	}
+    private long bankId = -1;
 
-	public Account(final String name, final BigDecimal balance, final String id) {
-		this(name, balance, id, -1L);
-	}
+    private int type = Account.REGULAR;
 
-	public Account(final String name, final BigDecimal balance,
-			final String id, final int type) {
-		this(name, balance, id, -1L, type);
-	}
+    private boolean hidden = false;
 
-	public Account(final String name, final BigDecimal balance,
-			final String id, final int type, final String currency) {
-		this(name, balance, id, -1L, type, currency);
-	}
+    private boolean notify = true;
 
-	public boolean isNotify() {
-		return notify;
-	}
+    private String currency;
 
-	public void setNotify(final boolean notify) {
-		this.notify = notify;
-	}
+    private List<Transaction> transactions;
 
-	public void setBalance(final BigDecimal balance) {
-		this.balance = balance;
-	}
+    private String aliasfor;
 
-	public BigDecimal getBalance() {
-		return balance;
-	}
+    public Account(final String name, final BigDecimal balance,
+            final String id, final long bankId, final int type,
+            final String currency) {
+        this.name = name;
+        this.balance = balance;
+        this.id = id;
+        this.bankId = bankId;
+        this.type = type;
+        this.currency = currency;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public Account(final String name, final BigDecimal balance,
+            final String id, final long bankId) {
+        this(name, balance, id, bankId, REGULAR, "SEK");
+    }
 
-	public void setName(final String name) {
-		this.name = name;
-	}
+    public Account(final String name, final BigDecimal balance,
+            final String id, final long bankId, final int type) {
+        this(name, balance, id, bankId, type, "SEK");
+    }
 
-	public String getId() {
-		return id;
-	}
-	
-	public void setId(String id) {
-	    this.id = id;
-	}
+    public Account(final String name, final BigDecimal balance, final String id) {
+        this(name, balance, id, -1L);
+    }
 
-	public Bank getBank() {
-		return bank;
-	}
+    public Account(final String name, final BigDecimal balance,
+            final String id, final int type) {
+        this(name, balance, id, -1L, type);
+    }
 
-	public void setBank(final Bank bank) {
-		this.bank = bank;
-	}
+    public Account(final String name, final BigDecimal balance,
+            final String id, final int type, final String currency) {
+        this(name, balance, id, -1L, type, currency);
+    }
 
-	public long getBankDbId() {
-		return bankId;
-	}
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
 
-	public void setType(final int type) {
-		this.type = type;
-	}
+    public void setTransactions(final List<Transaction> transactions) {
+        this.transactions = transactions;
+    }
 
-	public int getType() {
-		return type;
-	}
+    public boolean isNotify() {
+        return notify;
+    }
 
-	public boolean isHidden() {
-		return this.hidden;
-	}
+    public void setNotify(final boolean notify) {
+        this.notify = notify;
+    }
 
-	public void setHidden(final boolean hidden) {
-		this.hidden = hidden;
-	}
+    public BigDecimal getBalance() {
+        return balance;
+    }
 
-	public String getCurrency() {
-		return currency;
-	}
+    public void setBalance(final BigDecimal balance) {
+        this.balance = balance;
+    }
 
-	public void setCurrency(final String currency) {
-		this.currency = currency;
-	}
-	
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Bank getBank() {
+        return bank;
+    }
+
+    public void setBank(final Bank bank) {
+        this.bank = bank;
+    }
+
+    public long getBankDbId() {
+        return bankId;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(final int type) {
+        this.type = type;
+    }
+
+    public boolean isHidden() {
+        return this.hidden;
+    }
+
+    public void setHidden(final boolean hidden) {
+        this.hidden = hidden;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(final String currency) {
+        this.currency = currency;
+    }
+
     public String getAliasfor() {
         return aliasfor;
     }
 
     public void setAliasfor(final String aliasfor) {
         this.aliasfor = aliasfor;
-    }	
+    }
 
 }

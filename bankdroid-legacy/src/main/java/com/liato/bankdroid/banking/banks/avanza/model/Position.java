@@ -5,33 +5,48 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 
 public class Position implements Serializable {
+
     private static final long serialVersionUID = 4138023852221811457L;
+
     @JsonProperty("instrumentName")
     private String mInstrumentName;
+
     @JsonProperty("averageAcquiredPrice")
     private double mAverageAcquiredPrice;
+
     @JsonProperty("marketValue")
     private double mMarketValue;
+
     @JsonProperty("price")
     private double mPrice;
+
     @JsonProperty("profit")
     private double mProfit;
+
     @JsonProperty("modified")
     private long mModified;
+
     @JsonProperty("expiryDate")
     private long mExpiryDate;
+
     @JsonProperty("volume")
     private int mVolume;
+
     @JsonProperty("tradable")
     private boolean mTradable;
+
     @JsonProperty("orderbookId")
     private long mOrderbookId;
+
     @JsonProperty("profitPercent")
     private double mProfitPercent;
+
     @JsonProperty("type")
     private int mType;
+
     @JsonProperty("instrumentType")
     private String mInstrumentType;
+
     @JsonProperty("change")
     private double mChange;
 

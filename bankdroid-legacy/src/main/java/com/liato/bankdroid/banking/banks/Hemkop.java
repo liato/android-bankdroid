@@ -17,13 +17,17 @@
 
 package com.liato.bankdroid.banking.banks;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import com.liato.bankdroid.Helpers;
+import com.liato.bankdroid.banking.Account;
+import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.Transaction;
+import com.liato.bankdroid.banking.exceptions.BankChoiceException;
+import com.liato.bankdroid.banking.exceptions.BankException;
+import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
+import com.liato.bankdroid.provider.IBankTypes;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -33,28 +37,29 @@ import org.jsoup.select.Elements;
 import android.content.Context;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.util.Log;
 
-import com.liato.bankdroid.Helpers;
-import com.liato.bankdroid.legacy.R;
-import com.liato.bankdroid.banking.Account;
-import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.Transaction;
-import com.liato.bankdroid.banking.exceptions.BankChoiceException;
-import com.liato.bankdroid.banking.exceptions.BankException;
-import com.liato.bankdroid.banking.exceptions.LoginException;
-import com.liato.bankdroid.provider.IBankTypes;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Hemkop extends Bank {
+
     private static final String TAG = "Hemkop";
+
     private static final String NAME = "Hemköp Kundkort";
+
     private static final String NAME_SHORT = "hemkop";
+
     private static final String URL = "https://www.hemkop.se/Mina-sidor/Logga-in/";
+
     private static final int BANKTYPE_ID = IBankTypes.HEMKOP;
+
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+
     private static final String INPUT_HINT_USERNAME = "ÅÅÅÅMMDDXXXX";
 
     private String response = null;
@@ -77,28 +82,29 @@ public class Hemkop extends Bank {
     }
 
 
-    
     @Override
     protected LoginPackage preLogin() throws BankException, IOException {
-        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_hemkop));
+        urlopen = new Urllib(context,
+                CertificateReader.getCertificates(context, R.raw.cert_hemkop));
         urlopen.setAllowCircularRedirects(true);
         response = urlopen.open("https://www.hemkop.se/Mina-sidor/Logga-in/");
-        
+
         Document d = Jsoup.parse(response);
         Element e = d.getElementById("__VIEWSTATE");
         if (e == null || e.attr("value") == null) {
-            throw new BankException(res.getText(R.string.unable_to_find).toString() + " ViewState.");
+            throw new BankException(
+                    res.getText(R.string.unable_to_find).toString() + " ViewState.");
         }
         String viewState = e.attr("value");
 
         e = d.getElementById("__EVENTVALIDATION");
         if (e == null || e.attr("value") == null) {
-            throw new BankException(res.getText(R.string.unable_to_find).toString() + " EventValidation.");
+            throw new BankException(
+                    res.getText(R.string.unable_to_find).toString() + " EventValidation.");
         }
         String eventValidation = e.attr("value");
-        
-        
-        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+
+        List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("__EVENTTARGET", "ctl00$MainContent$BtnLogin"));
         postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
         postData.add(new BasicNameValuePair("__VIEWSTATE", viewState));
@@ -108,7 +114,8 @@ public class Hemkop extends Bank {
         postData.add(new BasicNameValuePair("ctl00$uiTopMenu$Search", ""));
         postData.add(new BasicNameValuePair("ctl00$MainContent$tbUsername", username));
         postData.add(new BasicNameValuePair("ctl00$MainContent$tbPassword", password));
-        return new LoginPackage(urlopen, postData, response, "https://www.hemkop.se/Mina-sidor/Logga-in/");
+        return new LoginPackage(urlopen, postData, response,
+                "https://www.hemkop.se/Mina-sidor/Logga-in/");
     }
 
     public Urllib login() throws LoginException, BankException, IOException {
@@ -124,23 +131,25 @@ public class Hemkop extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0 || password.length() == 0) {
+        if (username == null || password == null || username.length() == 0
+                || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 
         urlopen = login();
-        
+
         Document d = Jsoup.parse(response);
-    	Elements amounts = d.select(".bonusStatement .amount");
-    	Elements names = d.select(".bonusStatement .label");
+        Elements amounts = d.select(".bonusStatement .amount");
+        Elements names = d.select(".bonusStatement .label");
         for (int i = 0; i < Math.min(amounts.size(), names.size()); i++) {
-        	Element amount = amounts.get(i);
-        	Element name = names.get(i);
-    		BigDecimal accountBalance = Helpers.parseBalance(amount.ownText());
-    		Account account = new Account(name.ownText().replace(":", "").trim(), accountBalance, String.format("acc_%d", i));
-    		if (i > 0) {
-    			account.setAliasfor("acc_0");
-    		}
+            Element amount = amounts.get(i);
+            Element name = names.get(i);
+            BigDecimal accountBalance = Helpers.parseBalance(amount.ownText());
+            Account account = new Account(name.ownText().replace(":", "").trim(), accountBalance,
+                    String.format("acc_%d", i));
+            if (i > 0) {
+                account.setAliasfor("acc_0");
+            }
             accounts.add(account);
             balance = balance.add(accountBalance);
         }
@@ -148,31 +157,32 @@ public class Hemkop extends Bank {
         if (accounts.isEmpty()) {
             throw new BankException(res.getText(R.string.no_accounts_found).toString());
         }
-        
+
         Account account = accounts.get(0);
 
         response = urlopen.open("https://www.hemkop.se/Mina-sidor/Kontoutdrag/");
         d = Jsoup.parse(response);
-    	Elements es = d.select(".transactions tbody tr");
+        Elements es = d.select(".transactions tbody tr");
         ArrayList<Transaction> transactions = new ArrayList<Transaction>();
         for (Element e : es) {
             Transaction t = new Transaction(e.child(1).ownText().trim(),
-            					e.child(0).ownText().trim(),
+                    e.child(0).ownText().trim(),
                     Helpers.parseBalance(e.child(3).ownText()));
             if (!TextUtils.isEmpty(e.child(2).ownText())) {
                 t.setCurrency(Helpers.parseCurrency(e.child(2).ownText().trim(), "SEK"));
             }
             transactions.add(t);
-    	}
+        }
         account.setTransactions(transactions);
 
         es = d.select(".currentBalance,.disposable");
         int i = 0;
         for (Element e : es) {
-        	Account a = new Account(e.child(0).ownText().trim(), Helpers.parseBalance(e.child(1).ownText()), String.format("acc_cc_%d", i));
-        	a.setAliasfor("acc_0");
-        	accounts.add(a);
-        	i++;
+            Account a = new Account(e.child(0).ownText().trim(),
+                    Helpers.parseBalance(e.child(1).ownText()), String.format("acc_cc_%d", i));
+            a.setAliasfor("acc_0");
+            accounts.add(a);
+            i++;
         }
 
         super.updateComplete();

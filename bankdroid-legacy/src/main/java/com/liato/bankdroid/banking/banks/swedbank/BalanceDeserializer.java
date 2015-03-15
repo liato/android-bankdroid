@@ -11,8 +11,10 @@ import java.math.BigDecimal;
 
 
 public class BalanceDeserializer extends JsonDeserializer<BigDecimal> {
+
     @Override
-    public BigDecimal deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+    public BigDecimal deserialize(JsonParser jp, DeserializationContext ctxt)
+            throws IOException, JsonProcessingException {
         return Helpers.parseBalance(jp.getValueAsString());
 
     }

@@ -1,9 +1,5 @@
 package com.liato.bankdroid.banking;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-
 import com.liato.bankdroid.banking.banks.AkeliusInvest;
 import com.liato.bankdroid.banking.banks.AkeliusSpar;
 import com.liato.bankdroid.banking.banks.AmericanExpress;
@@ -13,8 +9,8 @@ import com.liato.bankdroid.banking.banks.AvanzaMini;
 import com.liato.bankdroid.banking.banks.BetterGlobe;
 import com.liato.bankdroid.banking.banks.Bioklubben;
 import com.liato.bankdroid.banking.banks.BlekingeTrafiken;
-import com.liato.bankdroid.banking.banks.BrummerKF;
 import com.liato.bankdroid.banking.banks.Bredband2VoIP;
+import com.liato.bankdroid.banking.banks.BrummerKF;
 import com.liato.bankdroid.banking.banks.CSN;
 import com.liato.bankdroid.banking.banks.Chalmrest;
 import com.liato.bankdroid.banking.banks.DanskeBank;
@@ -76,6 +72,10 @@ import com.liato.bankdroid.banking.banks.swedbank.SwedbankCorporate;
 import com.liato.bankdroid.banking.banks.swedbank.SwedbankYouth;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.provider.IBankTypes;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import java.util.ArrayList;
 

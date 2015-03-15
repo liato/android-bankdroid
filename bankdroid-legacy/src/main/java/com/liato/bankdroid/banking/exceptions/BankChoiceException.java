@@ -16,18 +16,21 @@
 
 package com.liato.bankdroid.banking.exceptions;
 
-import java.util.ArrayList;
-
 import com.liato.bankdroid.banking.BankChoice;
 
-public class BankChoiceException extends Exception {
-	private static final long serialVersionUID = 1L;
-	private ArrayList<BankChoice> banks;
-	public BankChoiceException(String message) {
-		super(message);
-	}
+import java.util.ArrayList;
 
-	public BankChoiceException(String message,  ArrayList<BankChoice> banks) {
+public class BankChoiceException extends Exception {
+
+    private static final long serialVersionUID = 1L;
+
+    private ArrayList<BankChoice> banks;
+
+    public BankChoiceException(String message) {
+        super(message);
+    }
+
+    public BankChoiceException(String message, ArrayList<BankChoice> banks) {
         super(message);
         this.banks = banks;
     }
@@ -37,5 +40,5 @@ public class BankChoiceException extends Exception {
      */
     public ArrayList<BankChoice> getBanks() {
         return banks;
-    }	
+    }
 }

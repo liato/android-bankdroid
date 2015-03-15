@@ -13,7 +13,7 @@ public class CardAccount {
 
     @JsonProperty
     private String name;
-    
+
     @JsonProperty
     private BigDecimal creditLimit;
 

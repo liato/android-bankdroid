@@ -14,26 +14,29 @@ import java.util.UUID;
  * The id is generated the first time the {@link #id(android.content.Context)} is called
  * and are then persisted until the application is uninstalled.
  *
- * @see <a href="http://android-developers.blogspot.se/2011/03/identifying-app-installations.html">Identifying App Installations</a>.
+ * @see <a href="http://android-developers.blogspot.se/2011/03/identifying-app-installations.html">Identifying
+ * App Installations</a>.
  */
 public class Installation {
 
-    private static String sID = null;
-
     private static final String INSTALLATION = "INSTALLATION";
+
+    private static String sID = null;
 
     /**
      * Get the unique identification for the installation.
      * A new id will be generated the first time the method is called and are then
      * persisted until the application is uninstalled.
+     *
      * @return The unique identification for the installed application.
      */
     public synchronized static String id(Context context) {
         if (sID == null) {
             File installation = new File(context.getFilesDir(), INSTALLATION);
             try {
-                if (!installation.exists())
+                if (!installation.exists()) {
                     writeInstallationFile(installation);
+                }
                 sID = readInstallationFile(installation);
             } catch (Exception e) {
                 throw new RuntimeException(e);

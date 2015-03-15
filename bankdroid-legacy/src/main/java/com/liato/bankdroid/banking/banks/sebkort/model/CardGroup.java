@@ -8,12 +8,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CardGroup implements Serializable {
+
     private static final long serialVersionUID = 4603347903479018508L;
 
     private List<TransactionGroup> mTransactionGroups = new ArrayList<TransactionGroup>();
+
     private double mTotalNumber;
+
     private String mTotal;
+
     private String mMaskedCardNumber;
+
     private String mNameOnCard;
 
     @JsonProperty("transactionGroups")

@@ -43,7 +43,8 @@ public class CertificateReader {
         return certificates.toArray(new Certificate[certificates.size()]);
     }
 
-    public static ClientCertificate getClientCertificate(Context context, int rawResCert, String password) {
+    public static ClientCertificate getClientCertificate(Context context, int rawResCert,
+            String password) {
         InputStream is = null;
         try {
             KeyStore keyStore = KeyStore.getInstance("PKCS12");
@@ -97,7 +98,7 @@ public class CertificateReader {
         int len = b.length;
         String data = new String();
 
-        for (int i = 0; i < len; i++){
+        for (int i = 0; i < len; i++) {
             data += Integer.toHexString((b[i] >> 4) & 0xf);
             data += Integer.toHexString(b[i] & 0xf);
         }

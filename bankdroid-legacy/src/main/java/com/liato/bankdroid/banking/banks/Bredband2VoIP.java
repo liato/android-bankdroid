@@ -16,24 +16,22 @@
 
 package com.liato.bankdroid.banking.banks;
 
-import android.content.Context;
-import android.text.InputType;
-import android.util.Log;
-
 import com.liato.bankdroid.Helpers;
-import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.provider.IBankTypes;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
+
+import android.content.Context;
+import android.text.InputType;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,12 +43,21 @@ import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Bredband2VoIP extends Bank {
+
     private static final String API_URL = "https://portal.bredband2.com/";
 
-    private Pattern reSaldoUrl = Pattern.compile("<a href=\"/voip/digisipbalance/iPhoneProviderID/(\\d+)/\" class=\"digisipBalance\" target=\"_blank\">Saldo</a>", Pattern.CASE_INSENSITIVE);
-    private Pattern reSaldo = Pattern.compile("<td class=\"white\">(\\d+.\\d{2}) kr", Pattern.CASE_INSENSITIVE);
+    private Pattern reSaldoUrl = Pattern.compile(
+            "<a href=\"/voip/digisipbalance/iPhoneProviderID/(\\d+)/\" class=\"digisipBalance\" target=\"_blank\">Saldo</a>",
+            Pattern.CASE_INSENSITIVE);
+
+    private Pattern reSaldo = Pattern.compile("<td class=\"white\">(\\d+.\\d{2}) kr",
+            Pattern.CASE_INSENSITIVE);
+
     private Pattern reInvoiceUrl = Pattern.compile("<a href=\"([^\"]+)\"/\" class=\"invoice\"");
-    private Pattern reTransactions = Pattern.compile("^\\s+([\\d-]+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)", Pattern.MULTILINE);
+
+    private Pattern reTransactions = Pattern.compile(
+            "^\\s+([\\d-]+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)", Pattern.MULTILINE);
+
     private String response = null;
 
     public Bredband2VoIP(Context context) {
@@ -71,7 +78,8 @@ public class Bredband2VoIP extends Bank {
 
     @Override
     protected LoginPackage preLogin() throws BankException, IOException {
-        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_bredband2));
+        urlopen = new Urllib(context,
+                CertificateReader.getCertificates(context, R.raw.cert_bredband2));
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("cUsername", username));
         postData.add(new BasicNameValuePair("cPassword", password));
@@ -97,7 +105,8 @@ public class Bredband2VoIP extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0 || password.length() == 0) {
+        if (username == null || password == null || username.length() == 0
+                || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();
@@ -106,7 +115,8 @@ public class Bredband2VoIP extends Bank {
             Matcher mSaldoUrl = reSaldoUrl.matcher(response);
             while (mSaldoUrl.find()) {
                 String account = mSaldoUrl.group(1);
-                String r = urlopen.open(API_URL + "voip/digisipbalance/iPhoneProviderID/" + account + "/");
+                String r = urlopen.open(
+                        API_URL + "voip/digisipbalance/iPhoneProviderID/" + account + "/");
                 Matcher mSaldo = reSaldo.matcher(r);
                 if (mSaldo.find()) {
                     accounts.add(new Account(account,

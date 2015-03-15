@@ -16,105 +16,120 @@
 
 package com.liato.bankdroid.banking.banks;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.liato.bankdroid.Helpers;
+import com.liato.bankdroid.banking.Account;
+import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.exceptions.BankChoiceException;
+import com.liato.bankdroid.banking.exceptions.BankException;
+import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
+import com.liato.bankdroid.provider.IBankTypes;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
 import android.text.Html;
 import android.text.InputType;
 
-import com.liato.bankdroid.Helpers;
-import com.liato.bankdroid.legacy.R;
-import com.liato.bankdroid.banking.Account;
-import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.exceptions.BankChoiceException;
-import com.liato.bankdroid.banking.exceptions.BankException;
-import com.liato.bankdroid.banking.exceptions.LoginException;
-import com.liato.bankdroid.provider.IBankTypes;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class SevenDay extends Bank {
-	private static final String TAG = "SevenDay";
-	private static final String NAME = "SevenDay";
-	private static final String NAME_SHORT = "sevenday";
-	private static final String URL = "https://www.sevenday.se/mina-sidor/mina-sidor.htm";
-	private static final int BANKTYPE_ID = IBankTypes.SEVENDAY;
+
+    private static final String TAG = "SevenDay";
+
+    private static final String NAME = "SevenDay";
+
+    private static final String NAME_SHORT = "sevenday";
+
+    private static final String URL = "https://www.sevenday.se/mina-sidor/mina-sidor.htm";
+
+    private static final int BANKTYPE_ID = IBankTypes.SEVENDAY;
+
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDD-XXXX";
-	
-    
-	private Pattern reViewState = Pattern.compile("ViewState\"\\s+value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
-    private Pattern reAccounts = Pattern.compile("'depositAccountNum':'([^=]+)=='[^>]+>([^<]+)</a></td>\\s*<td[^>]+>\\s*<span[^>]+>\\s*([0-9,]+)[^<]+</span>\\s*</td>\\s*<td[^>]+>\\s*<span[^>]+>\\s*([^<]+)<");
-	private String response = null;
-	
-	public SevenDay(Context context) {
-		super(context);
-		super.TAG = TAG;
-		super.NAME = NAME;
-		super.NAME_SHORT = NAME_SHORT;
-		super.BANKTYPE_ID = BANKTYPE_ID;
-		super.URL = URL;
+
+
+    private Pattern reViewState = Pattern.compile("ViewState\"\\s+value=\"([^\"]+)\"",
+            Pattern.CASE_INSENSITIVE);
+
+    private Pattern reAccounts = Pattern.compile(
+            "'depositAccountNum':'([^=]+)=='[^>]+>([^<]+)</a></td>\\s*<td[^>]+>\\s*<span[^>]+>\\s*([0-9,]+)[^<]+</span>\\s*</td>\\s*<td[^>]+>\\s*<span[^>]+>\\s*([^<]+)<");
+
+    private String response = null;
+
+    public SevenDay(Context context) {
+        super(context);
+        super.TAG = TAG;
+        super.NAME = NAME;
+        super.NAME_SHORT = NAME_SHORT;
+        super.BANKTYPE_ID = BANKTYPE_ID;
+        super.URL = URL;
         super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
         super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
-	}
+    }
 
-	public SevenDay(String username, String password, Context context) throws BankException,
+    public SevenDay(String username, String password, Context context) throws BankException,
             LoginException, BankChoiceException, IOException {
-		this(context);
-		this.update(username, password);
-	}
+        this(context);
+        this.update(username, password);
+    }
 
-    
+
     @Override
     protected LoginPackage preLogin() throws BankException, IOException {
-        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_sevenday));
+        urlopen = new Urllib(context,
+                CertificateReader.getCertificates(context, R.raw.cert_sevenday));
         response = urlopen.open("https://www.sevenday.se/mina-sidor/mina-sidor.htm");
-        
+
         Matcher matcher = reViewState.matcher(response);
         if (!matcher.find()) {
-            throw new BankException(res.getText(R.string.unable_to_find).toString()+" ViewState.");
+            throw new BankException(
+                    res.getText(R.string.unable_to_find).toString() + " ViewState.");
         }
         String viewState = matcher.group(1);
 
-        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+        List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("loginForm", "loginForm"));
         postData.add(new BasicNameValuePair("login", "login"));
         postData.add(new BasicNameValuePair("javax.faces.ViewState", viewState));
         postData.add(new BasicNameValuePair("ssn", username));
         postData.add(new BasicNameValuePair("password", password));
-        
-        return new LoginPackage(urlopen, postData, response, "https://www.sevenday.se/mina-sidor/mina-sidor.htm");
+
+        return new LoginPackage(urlopen, postData, response,
+                "https://www.sevenday.se/mina-sidor/mina-sidor.htm");
     }
 
     @Override
-	public Urllib login() throws LoginException, BankException, IOException {
-		LoginPackage lp = preLogin();
-		response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-		if (response.contains("Logga in med personnummer") || response.contains("kommer automatiskt till startsidan")) {
-			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-		}
-		return urlopen;
-	}
+    public Urllib login() throws LoginException, BankException, IOException {
+        LoginPackage lp = preLogin();
+        response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+        if (response.contains("Logga in med personnummer") || response.contains(
+                "kommer automatiskt till startsidan")) {
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+        }
+        return urlopen;
+    }
 
-	@Override
-	public void update() throws BankException, LoginException, BankChoiceException, IOException {
-		super.update();
-		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
-			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-		}
-		urlopen = login();
+    @Override
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
+        super.update();
+        if (username == null || password == null || username.length() == 0
+                || password.length() == 0) {
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+        }
+        urlopen = login();
 
-		Matcher matcher = reAccounts.matcher(response);
-		while (matcher.find()) {
+        Matcher matcher = reAccounts.matcher(response);
+        while (matcher.find()) {
             /*
              * Capture groups:
              * GROUP                EXAMPLE DATA
@@ -124,15 +139,15 @@ public class SevenDay extends Bank {
              * 4: Amount            10&nbsp;kr
              *
              */
-			accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(),
-			        Helpers.parseBalance(matcher.group(4)),
-			        Html.fromHtml(matcher.group(1)).toString().trim()));
-			balance = balance.add(Helpers.parseBalance(matcher.group(4)));
-		}
+            accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(),
+                    Helpers.parseBalance(matcher.group(4)),
+                    Html.fromHtml(matcher.group(1)).toString().trim()));
+            balance = balance.add(Helpers.parseBalance(matcher.group(4)));
+        }
 
-		if (accounts.isEmpty()) {
-			throw new BankException(res.getText(R.string.no_accounts_found).toString());
-		}
-	    super.updateComplete();
-	}
+        if (accounts.isEmpty()) {
+            throw new BankException(res.getText(R.string.no_accounts_found).toString());
+        }
+        super.updateComplete();
+    }
 }

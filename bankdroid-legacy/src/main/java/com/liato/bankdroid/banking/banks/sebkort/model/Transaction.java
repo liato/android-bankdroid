@@ -6,21 +6,35 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import java.io.Serializable;
 
 public class Transaction implements Serializable {
+
     private static final long serialVersionUID = 2810644466680342679L;
 
     private String mCity;
+
     private String mRefTransactionId;
+
     private String mDescription;
+
     private String mExchangeRateDescription;
+
     private String mOriginalAmountDate;
+
     private String mOriginalAmountOrVat;
+
     private String mPostingDate;
+
     private long mPostingDateDate;
+
     private String mCurrency;
+
     private String mAmount;
+
     private double mAmountNumber;
+
     private long mTransactionId;
+
     private String mOriginalAmountOrVatNumber;
+
     private long mOriginalAmountDateDate;
 
     @JsonProperty("city")

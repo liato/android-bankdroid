@@ -19,12 +19,7 @@ package com.liato.bankdroid.lockpattern;
 import com.google.common.collect.Lists;
 
 import com.liato.bankdroid.R;
-import com.liato.bankdroid.R.id;
-import com.liato.bankdroid.R.layout;
-import com.liato.bankdroid.R.string;
-import com.liato.bankdroid.lockpattern.LockPatternView.Cell;
 import com.liato.bankdroid.lockpattern.LockPatternView.DisplayMode;
-import com.liato.bankdroid.lockpattern.LockPatternView.OnPatternListener;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -46,7 +41,7 @@ import java.util.List;
  * - asks for confirmation / restart
  * - saves chosen password when confirmed
  */
-public class ChooseLockPattern extends Activity implements View.OnClickListener{
+public class ChooseLockPattern extends Activity implements View.OnClickListener {
 
     /**
      * Used by the choose lock pattern wizard to indicate the wizard is
@@ -58,7 +53,7 @@ public class ChooseLockPattern extends Activity implements View.OnClickListener{
      * result.
      */
     static final int RESULT_FINISHED = RESULT_FIRST_USER;
-    
+
     // how long after a confirmation message is shown before moving on
     static final int INFORMATION_MSG_TIMEOUT_MS = 3000;
 
@@ -67,178 +62,35 @@ public class ChooseLockPattern extends Activity implements View.OnClickListener{
 
     private static final int ID_EMPTY_MESSAGE = -1;
 
+    private static final String KEY_UI_STAGE = "uiStage";
 
-    protected TextView mHeaderText;
-    protected LockPatternView mLockPatternView;
-    protected TextView mFooterText;
-    private TextView mFooterLeftButton;
-    private TextView mFooterRightButton;
-
-    protected List<LockPatternView.Cell> mChosenPattern = null;
-
-    protected LockPatternUtils mLockPatternUtils;
+    private static final String KEY_PATTERN_CHOICE = "chosenPattern";
 
     /**
      * The patten used during the help screen to show how to draw a pattern.
      */
     private final List<LockPatternView.Cell> mAnimatePattern =
             Collections.unmodifiableList(
-                Lists.newArrayList(
-                        LockPatternView.Cell.of(0, 0),
-                        LockPatternView.Cell.of(0, 1),
-                        LockPatternView.Cell.of(1, 1),
-                        LockPatternView.Cell.of(2, 1)
+                    Lists.newArrayList(
+                            LockPatternView.Cell.of(0, 0),
+                            LockPatternView.Cell.of(0, 1),
+                            LockPatternView.Cell.of(1, 1),
+                            LockPatternView.Cell.of(2, 1)
                     ));
 
+    protected TextView mHeaderText;
 
-    /**
-     * The pattern listener that responds according to a user choosing a new
-     * lock pattern.
-     */
-    protected LockPatternView.OnPatternListener mChooseNewLockPatternListener = new LockPatternView.OnPatternListener() {
+    protected LockPatternView mLockPatternView;
 
-            public void onPatternStart() {
-                mLockPatternView.removeCallbacks(mClearPatternRunnable);
-                patternInProgress();
-            }
+    protected TextView mFooterText;
 
-            public void onPatternCleared() {
-                mLockPatternView.removeCallbacks(mClearPatternRunnable);
-            }
+    protected List<LockPatternView.Cell> mChosenPattern = null;
 
-            public void onPatternDetected(List<LockPatternView.Cell> pattern) {
-                if (mUiStage == Stage.NeedToConfirm || mUiStage == Stage.ConfirmWrong) {
-                    if (mChosenPattern == null) throw new IllegalStateException("null chosen pattern in stage 'need to confirm");
-                    if (mChosenPattern.equals(pattern)) {
-                        updateStage(Stage.ChoiceConfirmed);
-                    } else {
-                        updateStage(Stage.ConfirmWrong);
-                    }
-                } else if (mUiStage == Stage.Introduction || mUiStage == Stage.ChoiceTooShort){
-                    if (pattern.size() < LockPatternUtils.MIN_LOCK_PATTERN_SIZE) {
-                        updateStage(Stage.ChoiceTooShort);
-                    } else {
-                        mChosenPattern = new ArrayList<LockPatternView.Cell>(pattern);
-                        updateStage(Stage.FirstChoiceValid);
-                    }
-                } else {
-                    throw new IllegalStateException("Unexpected stage " + mUiStage + " when "
-                            + "entering the pattern.");
-                }
-            }
+    protected LockPatternUtils mLockPatternUtils;
 
-            private void patternInProgress() {
-                mHeaderText.setText(R.string.lockpattern_recording_inprogress);
-                mFooterText.setText("");
-                mFooterLeftButton.setEnabled(false);
-                mFooterRightButton.setEnabled(false);
-            }
-     };
+    private TextView mFooterLeftButton;
 
-
-    /**
-     * The states of the left footer button.
-     */
-    enum LeftButtonMode {
-        Cancel(R.string.lock_cancel, true),
-        CancelDisabled(R.string.lock_cancel, false),
-        Retry(R.string.lockpattern_retry_button_text, true),
-        RetryDisabled(R.string.lockpattern_retry_button_text, false),
-        Gone(ID_EMPTY_MESSAGE, false);
-
-
-        /**
-         * @param text The displayed text for this mode.
-         * @param enabled Whether the button should be enabled.
-         */
-        LeftButtonMode(int text, boolean enabled) {
-            this.text = text;
-            this.enabled = enabled;
-        }
-
-        final int text;
-        final boolean enabled;
-    }
-
-    /**
-     * The states of the right button.
-     */
-    enum RightButtonMode {
-        Continue(R.string.lockpattern_continue_button_text, true),
-        ContinueDisabled(R.string.lockpattern_continue_button_text, false),
-        Confirm(R.string.lockpattern_confirm_button_text, true),
-        ConfirmDisabled(R.string.lockpattern_confirm_button_text, false),
-        Ok(R.string.lock_ok, true);
-
-        /**
-         * @param text The displayed text for this mode.
-         * @param enabled Whether the button should be enabled.
-         */
-        RightButtonMode(int text, boolean enabled) {
-            this.text = text;
-            this.enabled = enabled;
-        }
-
-        final int text;
-        final boolean enabled;
-    }
-
-    /**
-     * Keep track internally of where the user is in choosing a pattern.
-     */
-    protected enum Stage {
-
-        Introduction(
-                R.string.lockpattern_recording_intro_header,
-                LeftButtonMode.Cancel, RightButtonMode.ContinueDisabled,
-                R.string.lockpattern_recording_intro_footer, true),
-        HelpScreen(
-                R.string.lockpattern_settings_help_how_to_record,
-                LeftButtonMode.Gone, RightButtonMode.Ok, ID_EMPTY_MESSAGE, false),
-        ChoiceTooShort(
-                R.string.lockpattern_recording_incorrect_too_short,
-                LeftButtonMode.Retry, RightButtonMode.ContinueDisabled,
-                ID_EMPTY_MESSAGE, true),
-        FirstChoiceValid(
-                R.string.lockpattern_pattern_entered_header,
-                LeftButtonMode.Retry, RightButtonMode.Continue, ID_EMPTY_MESSAGE, false),
-        NeedToConfirm(
-                R.string.lockpattern_need_to_confirm,
-                LeftButtonMode.CancelDisabled, RightButtonMode.ConfirmDisabled,
-                ID_EMPTY_MESSAGE, true),
-        ConfirmWrong(
-                R.string.lockpattern_need_to_unlock_wrong,
-                LeftButtonMode.Cancel, RightButtonMode.ConfirmDisabled,
-                ID_EMPTY_MESSAGE, true),
-        ChoiceConfirmed(
-                R.string.lockpattern_pattern_confirmed_header,
-                LeftButtonMode.Cancel, RightButtonMode.Confirm, ID_EMPTY_MESSAGE, false);
-
-
-        /**
-         * @param headerMessage The message displayed at the top.
-         * @param leftMode The mode of the left button.
-         * @param rightMode The mode of the right button.
-         * @param footerMessage The footer message.
-         * @param patternEnabled Whether the pattern widget is enabled.
-         */
-        Stage(int headerMessage,
-                LeftButtonMode leftMode,
-                RightButtonMode rightMode,
-                int footerMessage, boolean patternEnabled) {
-            this.headerMessage = headerMessage;
-            this.leftMode = leftMode;
-            this.rightMode = rightMode;
-            this.footerMessage = footerMessage;
-            this.patternEnabled = patternEnabled;
-        }
-
-        final int headerMessage;
-        final LeftButtonMode leftMode;
-        final RightButtonMode rightMode;
-        final int footerMessage;
-        final boolean patternEnabled;
-    }
+    private TextView mFooterRightButton;
 
     private Stage mUiStage = Stage.Introduction;
 
@@ -248,8 +100,53 @@ public class ChooseLockPattern extends Activity implements View.OnClickListener{
         }
     };
 
-    private static final String KEY_UI_STAGE = "uiStage";
-    private static final String KEY_PATTERN_CHOICE = "chosenPattern";
+    /**
+     * The pattern listener that responds according to a user choosing a new
+     * lock pattern.
+     */
+    protected LockPatternView.OnPatternListener mChooseNewLockPatternListener
+            = new LockPatternView.OnPatternListener() {
+
+        public void onPatternStart() {
+            mLockPatternView.removeCallbacks(mClearPatternRunnable);
+            patternInProgress();
+        }
+
+        public void onPatternCleared() {
+            mLockPatternView.removeCallbacks(mClearPatternRunnable);
+        }
+
+        public void onPatternDetected(List<LockPatternView.Cell> pattern) {
+            if (mUiStage == Stage.NeedToConfirm || mUiStage == Stage.ConfirmWrong) {
+                if (mChosenPattern == null) {
+                    throw new IllegalStateException(
+                            "null chosen pattern in stage 'need to confirm");
+                }
+                if (mChosenPattern.equals(pattern)) {
+                    updateStage(Stage.ChoiceConfirmed);
+                } else {
+                    updateStage(Stage.ConfirmWrong);
+                }
+            } else if (mUiStage == Stage.Introduction || mUiStage == Stage.ChoiceTooShort) {
+                if (pattern.size() < LockPatternUtils.MIN_LOCK_PATTERN_SIZE) {
+                    updateStage(Stage.ChoiceTooShort);
+                } else {
+                    mChosenPattern = new ArrayList<LockPatternView.Cell>(pattern);
+                    updateStage(Stage.FirstChoiceValid);
+                }
+            } else {
+                throw new IllegalStateException("Unexpected stage " + mUiStage + " when "
+                        + "entering the pattern.");
+            }
+        }
+
+        private void patternInProgress() {
+            mHeaderText.setText(R.string.lockpattern_recording_inprogress);
+            mFooterText.setText("");
+            mFooterLeftButton.setEnabled(false);
+            mFooterRightButton.setEnabled(false);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -260,7 +157,7 @@ public class ChooseLockPattern extends Activity implements View.OnClickListener{
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         setupViews();
-        
+
         // make it so unhandled touch events within the unlock screen go to the
         // lock pattern view.
         final LinearLayoutWithDefaultTouchRecepient topLayout
@@ -273,7 +170,7 @@ public class ChooseLockPattern extends Activity implements View.OnClickListener{
             updateStage(Stage.Introduction);
             if (mLockPatternUtils.savedPatternExists()) {
                 confirmPattern();
-            } 
+            }
         } else {
             // restore from previous state
             final String patternString = savedInstanceState.getString(KEY_PATTERN_CHOICE);
@@ -283,19 +180,19 @@ public class ChooseLockPattern extends Activity implements View.OnClickListener{
             updateStage(Stage.values()[savedInstanceState.getInt(KEY_UI_STAGE)]);
         }
     }
-    
+
     /**
      * Keep all "find view" related stuff confined to this function since in
      * case someone needs to subclass and customize.
      */
     protected void setupViews() {
         setContentView(R.layout.choose_lock_pattern);
-        
+
         mHeaderText = (TextView) findViewById(R.id.headerText);
 
         mLockPatternView = (LockPatternView) findViewById(R.id.lockPattern);
         mLockPatternView.setOnPatternListener(mChooseNewLockPatternListener);
-        mLockPatternView.setTactileFeedbackEnabled(mLockPatternUtils.isTactileFeedbackEnabled());        
+        mLockPatternView.setTactileFeedbackEnabled(mLockPatternUtils.isTactileFeedbackEnabled());
 
         mFooterText = (TextView) findViewById(R.id.footerText);
 
@@ -318,7 +215,7 @@ public class ChooseLockPattern extends Activity implements View.OnClickListener{
                 finish();
             } else {
                 throw new IllegalStateException("left footer button pressed, but stage of " +
-                    mUiStage + " doesn't make sense");
+                        mUiStage + " doesn't make sense");
             }
         } else if (v == mFooterRightButton) {
 
@@ -336,8 +233,9 @@ public class ChooseLockPattern extends Activity implements View.OnClickListener{
                 saveChosenPatternAndFinish();
             } else if (mUiStage.rightMode == RightButtonMode.Ok) {
                 if (mUiStage != Stage.HelpScreen) {
-                    throw new IllegalStateException("Help screen is only mode with ok button, but " +
-                            "stage is " + mUiStage);
+                    throw new IllegalStateException(
+                            "Help screen is only mode with ok button, but " +
+                                    "stage is " + mUiStage);
                 }
                 mLockPatternView.clearPattern();
                 mLockPatternView.setDisplayMode(DisplayMode.Correct);
@@ -364,6 +262,7 @@ public class ChooseLockPattern extends Activity implements View.OnClickListener{
 
     /**
      * Launch screen to confirm the existing lock pattern.
+     *
      * @see #onActivityResult(int, int, android.content.Intent)
      */
     protected void confirmPattern() {
@@ -397,22 +296,21 @@ public class ChooseLockPattern extends Activity implements View.OnClickListener{
 
         outState.putInt(KEY_UI_STAGE, mUiStage.ordinal());
         if (mChosenPattern != null) {
-            outState.putString(KEY_PATTERN_CHOICE, LockPatternUtils.patternToString(mChosenPattern));
+            outState.putString(KEY_PATTERN_CHOICE,
+                    LockPatternUtils.patternToString(mChosenPattern));
         }
     }
-
 
     /**
      * Updates the messages and buttons appropriate to what stage the user
      * is at in choosing a view.  This doesn't handle clearing out the pattern;
      * the pattern is expected to be in the right state.
-     * @param stage
      */
     protected void updateStage(Stage stage) {
 
         mUiStage = stage;
 
-        // header text, footer text, visibility and 
+        // header text, footer text, visibility and
         // enabled state all known from the stage
         if (stage == Stage.ChoiceTooShort) {
             mHeaderText.setText(
@@ -475,7 +373,6 @@ public class ChooseLockPattern extends Activity implements View.OnClickListener{
         }
     }
 
-
     // clear the wrong pattern unless they have started a new one
     // already
     private void postClearPatternRunnable() {
@@ -493,8 +390,118 @@ public class ChooseLockPattern extends Activity implements View.OnClickListener{
             mLockPatternUtils.setVisiblePatternEnabled(true);
             mLockPatternUtils.setTactileFeedbackEnabled(false);
         }
-        
+
         setResult(RESULT_FINISHED);
         finish();
+    }
+
+
+    /**
+     * The states of the left footer button.
+     */
+    enum LeftButtonMode {
+        Cancel(R.string.lock_cancel, true),
+        CancelDisabled(R.string.lock_cancel, false),
+        Retry(R.string.lockpattern_retry_button_text, true),
+        RetryDisabled(R.string.lockpattern_retry_button_text, false),
+        Gone(ID_EMPTY_MESSAGE, false);
+
+        final int text;
+
+        final boolean enabled;
+
+        /**
+         * @param text    The displayed text for this mode.
+         * @param enabled Whether the button should be enabled.
+         */
+        LeftButtonMode(int text, boolean enabled) {
+            this.text = text;
+            this.enabled = enabled;
+        }
+    }
+
+
+    /**
+     * The states of the right button.
+     */
+    enum RightButtonMode {
+        Continue(R.string.lockpattern_continue_button_text, true),
+        ContinueDisabled(R.string.lockpattern_continue_button_text, false),
+        Confirm(R.string.lockpattern_confirm_button_text, true),
+        ConfirmDisabled(R.string.lockpattern_confirm_button_text, false),
+        Ok(R.string.lock_ok, true);
+
+        final int text;
+
+        final boolean enabled;
+
+        /**
+         * @param text    The displayed text for this mode.
+         * @param enabled Whether the button should be enabled.
+         */
+        RightButtonMode(int text, boolean enabled) {
+            this.text = text;
+            this.enabled = enabled;
+        }
+    }
+
+    /**
+     * Keep track internally of where the user is in choosing a pattern.
+     */
+    protected enum Stage {
+
+        Introduction(
+                R.string.lockpattern_recording_intro_header,
+                LeftButtonMode.Cancel, RightButtonMode.ContinueDisabled,
+                R.string.lockpattern_recording_intro_footer, true),
+        HelpScreen(
+                R.string.lockpattern_settings_help_how_to_record,
+                LeftButtonMode.Gone, RightButtonMode.Ok, ID_EMPTY_MESSAGE, false),
+        ChoiceTooShort(
+                R.string.lockpattern_recording_incorrect_too_short,
+                LeftButtonMode.Retry, RightButtonMode.ContinueDisabled,
+                ID_EMPTY_MESSAGE, true),
+        FirstChoiceValid(
+                R.string.lockpattern_pattern_entered_header,
+                LeftButtonMode.Retry, RightButtonMode.Continue, ID_EMPTY_MESSAGE, false),
+        NeedToConfirm(
+                R.string.lockpattern_need_to_confirm,
+                LeftButtonMode.CancelDisabled, RightButtonMode.ConfirmDisabled,
+                ID_EMPTY_MESSAGE, true),
+        ConfirmWrong(
+                R.string.lockpattern_need_to_unlock_wrong,
+                LeftButtonMode.Cancel, RightButtonMode.ConfirmDisabled,
+                ID_EMPTY_MESSAGE, true),
+        ChoiceConfirmed(
+                R.string.lockpattern_pattern_confirmed_header,
+                LeftButtonMode.Cancel, RightButtonMode.Confirm, ID_EMPTY_MESSAGE, false);
+
+        final int headerMessage;
+
+        final LeftButtonMode leftMode;
+
+        final RightButtonMode rightMode;
+
+        final int footerMessage;
+
+        final boolean patternEnabled;
+
+        /**
+         * @param headerMessage  The message displayed at the top.
+         * @param leftMode       The mode of the left button.
+         * @param rightMode      The mode of the right button.
+         * @param footerMessage  The footer message.
+         * @param patternEnabled Whether the pattern widget is enabled.
+         */
+        Stage(int headerMessage,
+                LeftButtonMode leftMode,
+                RightButtonMode rightMode,
+                int footerMessage, boolean patternEnabled) {
+            this.headerMessage = headerMessage;
+            this.leftMode = leftMode;
+            this.rightMode = rightMode;
+            this.footerMessage = footerMessage;
+            this.patternEnabled = patternEnabled;
+        }
     }
 }

@@ -16,14 +16,9 @@
 
 package com.liato.bankdroid.banking.banks.seb;
 
-import android.content.Context;
-import android.text.InputType;
-import android.util.Log;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.banks.seb.model.DEVID;
@@ -36,15 +31,19 @@ import com.liato.bankdroid.banking.banks.seb.model.VODB;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.provider.IBankTypes;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
+
+import android.content.Context;
+import android.text.InputType;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,18 +56,31 @@ import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class SEB extends Bank {
+
     private static final String TAG = "SEB";
+
     private static final String NAME = "SEB";
+
     private static final String NAME_SHORT = "seb";
+
     private static final String URL = "https://m.seb.se/cgi-bin/pts3/mpo/mpo0001.aspx";
+
     private static final int BANKTYPE_ID = IBankTypes.SEB;
+
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
 
-    private Pattern reAccounts = Pattern.compile("/cgi-bin/pts3/mps/1100/mps1102\\.aspx\\?M1=show&amp;P1=([^&]+)&amp;P2=1&amp;P4=1\">([^<]+)</a></td>\\s*</tr>\\s*<tr[^>]+>\\s*<td>[^<]+</td>\\s*<td[^>]+>[^<]+</td>\\s*<td[^>]+>([^<]+)</td>\\s*", Pattern.CASE_INSENSITIVE);
-    private Pattern reTransactions = Pattern.compile("(\\d{6})\\s*<br\\s?/>\\s*<span\\s*id=\"MPSMaster_MainPlaceHolder_repAccountTransactions[^\"]+\"\\s*class=\"name\">([^/]+)(?:/(\\d{2}-\\d{2}-\\d{2}))?</span>\\s*<span\\s*id=\"MPSMaster_MainPlaceHolder_repAccountTransactions[^\"]+\"\\s*class=\"value\">([^<]+)</span>", Pattern.CASE_INSENSITIVE);
+    private Pattern reAccounts = Pattern.compile(
+            "/cgi-bin/pts3/mps/1100/mps1102\\.aspx\\?M1=show&amp;P1=([^&]+)&amp;P2=1&amp;P4=1\">([^<]+)</a></td>\\s*</tr>\\s*<tr[^>]+>\\s*<td>[^<]+</td>\\s*<td[^>]+>[^<]+</td>\\s*<td[^>]+>([^<]+)</td>\\s*",
+            Pattern.CASE_INSENSITIVE);
+
+    private Pattern reTransactions = Pattern.compile(
+            "(\\d{6})\\s*<br\\s?/>\\s*<span\\s*id=\"MPSMaster_MainPlaceHolder_repAccountTransactions[^\"]+\"\\s*class=\"name\">([^/]+)(?:/(\\d{2}-\\d{2}-\\d{2}))?</span>\\s*<span\\s*id=\"MPSMaster_MainPlaceHolder_repAccountTransactions[^\"]+\"\\s*class=\"value\">([^<]+)</span>",
+            Pattern.CASE_INSENSITIVE);
 
     private String response = null;
+
     private ObjectMapper mObjectMapper;
 
     public SEB(Context context) {
@@ -90,26 +102,32 @@ public class SEB extends Bank {
 
     @Override
     protected LoginPackage preLogin() throws BankException, IOException {
-        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_seb_web));
+        urlopen = new Urllib(context,
+                CertificateReader.getCertificates(context, R.raw.cert_seb_web));
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         urlopen.addHeader("Referer", "https://m.seb.se/");
         urlopen.setKeepAliveTimeout(5);
         //response = urlopen.open("https://m.seb.se/cgi-bin/pts3/mpo/9000/mpo9001.aspx?P1=logon.htm");
-        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+        List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("A1", username));
         postData.add(new BasicNameValuePair("A2", password));
         postData.add(new BasicNameValuePair("A3", "4"));
-        return new LoginPackage(urlopen, postData, response, "https://m.seb.se/cgi-bin/pts3/mps/1000/mps1001bm.aspx");
+        return new LoginPackage(urlopen, postData, response,
+                "https://m.seb.se/cgi-bin/pts3/mps/1000/mps1001bm.aspx");
     }
 
     @Override
     public Urllib login() throws LoginException, BankException, IOException {
-        urlopen = new Urllib(context, CertificateReader.getClientCertificate(context, R.raw.cert_client_seb, "openbankdata"), CertificateReader.getCertificates(context, R.raw.cert_seb));
+        urlopen = new Urllib(context, CertificateReader
+                .getClientCertificate(context, R.raw.cert_client_seb, "openbankdata"),
+                CertificateReader.getCertificates(context, R.raw.cert_seb));
         urlopen.setFollowRedirects(false);
-        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+        List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("A1", username));
         postData.add(new BasicNameValuePair("A2", password));
-        HttpResponse hr = urlopen.openAsHttpResponse("https://mP.seb.se/nauth2/Authentication/Auth?SEB_Referer=/priv/ServiceFactory-pw", postData, true);
+        HttpResponse hr = urlopen.openAsHttpResponse(
+                "https://mP.seb.se/nauth2/Authentication/Auth?SEB_Referer=/priv/ServiceFactory-pw",
+                postData, true);
         if (hr.getStatusLine().getStatusCode() == 200) {
             throw new LoginException(res.getString(R.string.invalid_username_password));
         } else if (hr.getStatusLine().getStatusCode() != 302) {
@@ -123,7 +141,8 @@ public class SEB extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0 || password.length() == 0) {
+        if (username == null || password == null || username.length() == 0
+                || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 
@@ -147,7 +166,9 @@ public class SEB extends Bank {
 
         try {
             HttpEntity e = new StringEntity(getObjectmapper().writeValueAsString(sessionRequest));
-            HttpResponse hr = urlopen.openAsHttpResponse("https://mP.seb.se/1000/ServiceFactory/PC_BANK/PC_BankAktivera01Session01.asmx/Execute", e, true);
+            HttpResponse hr = urlopen.openAsHttpResponse(
+                    "https://mP.seb.se/1000/ServiceFactory/PC_BANK/PC_BankAktivera01Session01.asmx/Execute",
+                    e, true);
             hr.getEntity().getContent();
 
         } catch (UnsupportedEncodingException e1) {
@@ -155,7 +176,6 @@ public class SEB extends Bank {
         } catch (JsonProcessingException e1) {
             e1.printStackTrace();
         }
-
 
 //        {
 //            "request": {
@@ -238,7 +258,9 @@ public class SEB extends Bank {
 
         //No transaction history for loans, funds and credit cards.
         int accType = account.getType();
-        if (accType == Account.LOANS || accType == Account.FUNDS || accType == Account.CCARD) return;
+        if (accType == Account.LOANS || accType == Account.FUNDS || accType == Account.CCARD) {
+            return;
+        }
 
 //        Matcher matcher;
 //        try {

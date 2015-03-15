@@ -15,33 +15,37 @@
  */
 package com.liato.bankdroid.banking.banks;
 
-import android.content.Context;
-
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.banks.sebkort.SEBKortBase;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
+import android.content.Context;
+
 import java.io.IOException;
 
 
 public class SJPrio extends SEBKortBase {
-	private static final String TAG = "SJPrio";
-	private static final String NAME = "SJ Prio MasterCard";
-	private static final String NAME_SHORT = "sj_prio";
-	private static final int BANKTYPE_ID = Bank.SJPRIO;
 
-	public SJPrio(Context context) {
-		super(context, "sjse", "0104");
-		super.TAG = TAG;
-		super.NAME = NAME;
-		super.NAME_SHORT = NAME_SHORT;
-		super.BANKTYPE_ID = BANKTYPE_ID;
-	}
-	
-	public SJPrio(String username, String password, Context context) throws BankException,
+    private static final String TAG = "SJPrio";
+
+    private static final String NAME = "SJ Prio MasterCard";
+
+    private static final String NAME_SHORT = "sj_prio";
+
+    private static final int BANKTYPE_ID = Bank.SJPRIO;
+
+    public SJPrio(Context context) {
+        super(context, "sjse", "0104");
+        super.TAG = TAG;
+        super.NAME = NAME;
+        super.NAME_SHORT = NAME_SHORT;
+        super.BANKTYPE_ID = BANKTYPE_ID;
+    }
+
+    public SJPrio(String username, String password, Context context) throws BankException,
             LoginException, BankChoiceException, IOException {
-		super(username, password, context, "sjse", "0104");
-	}
+        super(username, password, context, "sjse", "0104");
+    }
 }

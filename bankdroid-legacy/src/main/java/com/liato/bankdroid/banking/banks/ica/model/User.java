@@ -8,8 +8,10 @@ public class User {
 
     @JsonProperty("FirstName")
     private String firstName;
+
     @JsonProperty("LastName")
     private String lastName;
+
     @JsonProperty("Ttl")
     private int ttl;
 

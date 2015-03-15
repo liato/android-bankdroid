@@ -15,21 +15,27 @@
  */
 package com.liato.bankdroid.banking.banks;
 
-import android.content.Context;
-
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
+import android.content.Context;
+
 import java.io.IOException;
 
 
 public class Audi extends AbsIkanoPartner {
+
     private static final String TAG = "Audi";
+
     private static final String NAME = "AudiKortet";
+
     private static final String NAME_SHORT = "audi";
-    private static final String URL = "https://partner.ikanobank.se/web/engines/page.aspx?structid=2177";
+
+    private static final String URL
+            = "https://partner.ikanobank.se/web/engines/page.aspx?structid=2177";
+
     private static final int BANKTYPE_ID = Bank.AUDI;
 
     public Audi(Context context) {

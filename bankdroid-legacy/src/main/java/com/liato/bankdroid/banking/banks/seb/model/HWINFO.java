@@ -8,8 +8,10 @@ public class HWINFO implements Serializable {
 
     @JsonProperty("LONGITUDE_DECIMAL")
     private String longitudeDecimal;
+
     @JsonProperty("LATITUDE_DECIMAL")
     private String latitudeDecimal;
+
     @JsonProperty("COUNTRY_PREFIX")
     private long countryPrefix;
 

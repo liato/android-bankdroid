@@ -16,21 +16,27 @@
 
 package com.liato.bankdroid.banking.banks;
 
-import android.content.Context;
-
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
+import android.content.Context;
+
 import java.io.IOException;
 
 
 public class Preem extends AbsIkanoPartner {
+
     private static final String TAG = "Preem";
+
     private static final String NAME = "Preem Privatkort";
+
     private static final String NAME_SHORT = "preem";
-    private static final String URL = "https://partner.ikanobank.se/web/engines/page.aspx?structid=1437";
+
+    private static final String URL
+            = "https://partner.ikanobank.se/web/engines/page.aspx?structid=1437";
+
     private static final int BANKTYPE_ID = Bank.PREEM;
 
     public Preem(Context context) {

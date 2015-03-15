@@ -7,20 +7,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VODB implements Serializable {
+
     private static final long serialVersionUID = 6084093222386932965L;
 
     @JsonProperty("USRINF01")
     private Object usrinf01;
+
     @JsonProperty("DBZV160")
     private List<Object> dbzv160 = new ArrayList<Object>();
+
     @JsonProperty("DEVID01")
     private DEVID devid01;
+
     @JsonProperty("HWINFO01")
     private HWINFO hWINFO01;
+
     @JsonProperty("CBEW501")
     private List<Object> cbew501 = new ArrayList<Object>();
+
     @JsonProperty("DBZV170")
     private List<Object> dbzv170 = new ArrayList<Object>();
+
     @JsonProperty("CBEW502")
     private List<Object> cbew502 = new ArrayList<Object>();
 

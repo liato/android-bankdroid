@@ -7,15 +7,16 @@ import java.net.UnknownHostException;
 
 public class NetworkUtils {
 
-    private NetworkUtils() {}
+    private NetworkUtils() {
+    }
 
     public static boolean isInternetAvailable() {
-        return ping(new byte[]{8,8,8,8}, 500);
+        return ping(new byte[]{8, 8, 8, 8}, 500);
     }
 
 
     public static boolean ping(byte[] ipAddress, int timeout) {
-        DatagramSocket datagramSocket= null;
+        DatagramSocket datagramSocket = null;
         try {
             datagramSocket = new DatagramSocket();
             datagramSocket.setSoTimeout(timeout);
@@ -26,7 +27,7 @@ public class NetworkUtils {
         } catch (SocketException | UnknownHostException e) {
             return false;
         } finally {
-            if(datagramSocket != null) {
+            if (datagramSocket != null) {
                 datagramSocket.close();
             }
         }

@@ -9,60 +9,64 @@ import android.view.View;
 import android.widget.TimePicker;
 
 public class TimePreference extends DialogPreference {
-	private int lastValue = 0;
-	private TimePicker picker = null;
 
-	public TimePreference(Context ctxt, AttributeSet attrs) {
-		super(ctxt, attrs);
+    private int lastValue = 0;
 
-		setPositiveButtonText("Set");
-		setNegativeButtonText("Cancel");
-	}
+    private TimePicker picker = null;
 
-	@Override
-	protected View onCreateDialogView() {
-		picker = new TimePicker(getContext());
-		picker.setIs24HourView(true);
-		return picker;
-	}
+    public TimePreference(Context ctxt, AttributeSet attrs) {
+        super(ctxt, attrs);
 
-	@Override
-	protected void onBindDialogView(View v) {
-		super.onBindDialogView(v);
+        setPositiveButtonText("Set");
+        setNegativeButtonText("Cancel");
+    }
 
-		picker.setCurrentHour(lastValue / 60);
-		picker.setCurrentMinute(lastValue % 60);
-	}
+    @Override
+    protected View onCreateDialogView() {
+        picker = new TimePicker(getContext());
+        picker.setIs24HourView(true);
+        return picker;
+    }
 
-	@Override
-	protected void onDialogClosed(boolean positiveResult) {
-		super.onDialogClosed(positiveResult);
+    @Override
+    protected void onBindDialogView(View v) {
+        super.onBindDialogView(v);
 
-		if (positiveResult) {
-			lastValue = picker.getCurrentHour() * 60 + picker.getCurrentMinute(); 
+        picker.setCurrentHour(lastValue / 60);
+        picker.setCurrentMinute(lastValue % 60);
+    }
 
-			if (callChangeListener(lastValue))
-				persistInt(lastValue);
-		}
-	}
+    @Override
+    protected void onDialogClosed(boolean positiveResult) {
+        super.onDialogClosed(positiveResult);
 
-	@Override
-	protected Object onGetDefaultValue(TypedArray a, int index) {
-		return (a.getInt(index, 0));
-	}
+        if (positiveResult) {
+            lastValue = picker.getCurrentHour() * 60 + picker.getCurrentMinute();
 
-	@Override
-	protected void onSetInitialValue(boolean restoreValue, Object defaultValue) {
-		int val = 0;
-		
-		if (restoreValue) {
-			val = getPersistedInt(val);
-		} else {
-			try{
-				val = Integer.parseInt(defaultValue.toString());
-			} catch (NumberFormatException e) { }
-		}
-		
-		lastValue = val;
-	}
+            if (callChangeListener(lastValue)) {
+                persistInt(lastValue);
+            }
+        }
+    }
+
+    @Override
+    protected Object onGetDefaultValue(TypedArray a, int index) {
+        return (a.getInt(index, 0));
+    }
+
+    @Override
+    protected void onSetInitialValue(boolean restoreValue, Object defaultValue) {
+        int val = 0;
+
+        if (restoreValue) {
+            val = getPersistedInt(val);
+        } else {
+            try {
+                val = Integer.parseInt(defaultValue.toString());
+            } catch (NumberFormatException e) {
+            }
+        }
+
+        lastValue = val;
+    }
 }

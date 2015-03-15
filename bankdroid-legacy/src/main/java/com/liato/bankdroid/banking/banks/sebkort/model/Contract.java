@@ -6,10 +6,15 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import java.io.Serializable;
 
 public class Contract implements Serializable {
+
     private static final long serialVersionUID = 9210413430068677151L;
+
     private String mUnInvoicedAmount;
+
     private String mContractName;
+
     private String mCreditAmount;
+
     private String mContractId;
 
     @JsonProperty("unInvoicedAmount")

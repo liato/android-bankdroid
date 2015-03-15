@@ -17,8 +17,6 @@
 package com.liato.bankdroid.lockpattern;
 
 import com.liato.bankdroid.R;
-import com.liato.bankdroid.R.id;
-import com.liato.bankdroid.R.layout;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -26,11 +24,13 @@ import android.os.Bundle;
 import android.view.View;
 
 public class ChooseLockPatternTutorial extends Activity implements View.OnClickListener {
+
     private static final int REQUESTCODE_EXAMPLE = 1;
-    
+
     private View mNextButton;
+
     private View mSkipButton;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +45,7 @@ public class ChooseLockPatternTutorial extends Activity implements View.OnClickL
             initViews();
         }
     }
-    
+
     private void initViews() {
         setContentView(R.layout.choose_lock_pattern_tutorial);
         mNextButton = findViewById(R.id.next_button);
@@ -72,6 +72,6 @@ public class ChooseLockPatternTutorial extends Activity implements View.OnClickL
             finish();
         }
     }
-    
+
 }
 

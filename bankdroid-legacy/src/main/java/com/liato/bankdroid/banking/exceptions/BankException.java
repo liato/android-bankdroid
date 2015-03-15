@@ -17,10 +17,13 @@
 package com.liato.bankdroid.banking.exceptions;
 
 public class BankException extends Exception {
-	private static final long serialVersionUID = 1L;
-	public BankException(String message) {
-		super(message);
-	}
+
+    private static final long serialVersionUID = 1L;
+
+    public BankException(String message) {
+        super(message);
+    }
+
     public BankException(String message, Throwable throwable) {
         super(message, throwable);
     }

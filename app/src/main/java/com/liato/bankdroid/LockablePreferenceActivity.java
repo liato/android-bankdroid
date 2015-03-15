@@ -27,34 +27,41 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.util.Log;
-import android.view.Window;
 import android.view.WindowManager;
 
 public class LockablePreferenceActivity extends PreferenceActivity {
+
     private static int PATTERNLOCK_UNLOCK = 42;
-	private SharedPreferences mPrefs;
-	private Editor mEditor;
-	private LockPatternUtils mLockPatternUtils;
+
+    private SharedPreferences mPrefs;
+
+    private Editor mEditor;
+
+    private LockPatternUtils mLockPatternUtils;
+
     private boolean mHasLoaded = false;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-		mLockPatternUtils = new LockPatternUtils(this);
-        mLockPatternUtils.setVisiblePatternEnabled(mPrefs.getBoolean("patternlock_visible_pattern", true));
-        mLockPatternUtils.setTactileFeedbackEnabled(mPrefs.getBoolean("patternlock_tactile_feedback", false));
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        mLockPatternUtils = new LockPatternUtils(this);
+        mLockPatternUtils
+                .setVisiblePatternEnabled(mPrefs.getBoolean("patternlock_visible_pattern", true));
+        mLockPatternUtils.setTactileFeedbackEnabled(
+                mPrefs.getBoolean("patternlock_tactile_feedback", false));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
         }
-	}
+    }
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-		// Don't do anything if no lock pattern is set
-		if (!mLockPatternUtils.isLockPatternEnabled()) return;
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Don't do anything if no lock pattern is set
+        if (!mLockPatternUtils.isLockPatternEnabled()) {
+            return;
+        }
         /*
         Save the current time If a lock pattern has been set
         If this activity never loaded set the lock time to
@@ -65,41 +72,40 @@ public class LockablePreferenceActivity extends PreferenceActivity {
             3. User presses the home button
             4. "lock time" is set in onPause to when the home button was pressed
             5. Activity is started again within 2 seconds and no lock screen is shown this time.
-        */ 
+        */
         if (mHasLoaded) {
             writeLockTime();
         } else {
-            writeLockTime(SystemClock.elapsedRealtime()-10000);
+            writeLockTime(SystemClock.elapsedRealtime() - 10000);
         }
     }
 
-	@Override
-	protected void onResume() {
-		super.onResume();
+    @Override
+    protected void onResume() {
+        super.onResume();
         // Don't do anything if lock pattern is not set
-		if (!mLockPatternUtils.isLockPatternEnabled() || !isLockEnabled()) {
-		    return;
-		}
-		// If a lock pattern is set we need to check the time for when the last
-		// activity was open. If it's been more than two seconds the user
-		// will have to enter the lock pattern to continue.
-		long currentTime = SystemClock.elapsedRealtime();
-		long lockedAt = mPrefs.getLong("locked_at", currentTime-10000);
-		long timedif = Math.abs(currentTime - lockedAt);
-		if (timedif > 2000) {
-		    launchPatternLock();
-		}
-        else {
-            mHasLoaded = true;          
+        if (!mLockPatternUtils.isLockPatternEnabled() || !isLockEnabled()) {
+            return;
         }
-	}
+        // If a lock pattern is set we need to check the time for when the last
+        // activity was open. If it's been more than two seconds the user
+        // will have to enter the lock pattern to continue.
+        long currentTime = SystemClock.elapsedRealtime();
+        long lockedAt = mPrefs.getLong("locked_at", currentTime - 10000);
+        long timedif = Math.abs(currentTime - lockedAt);
+        if (timedif > 2000) {
+            launchPatternLock();
+        } else {
+            mHasLoaded = true;
+        }
+    }
 
-	private void launchPatternLock() {
+    private void launchPatternLock() {
         Intent intent = new Intent(this, ConfirmLockPattern.class);
         intent.putExtra(ConfirmLockPattern.HEADER_TEXT, getText(R.string.patternlock_header));
-        startActivityForResult(intent, PATTERNLOCK_UNLOCK);         
-	}
-	
+        startActivityForResult(intent, PATTERNLOCK_UNLOCK);
+    }
+
     private void writeLockTime() {
         writeLockTime(SystemClock.elapsedRealtime());
     }
@@ -107,27 +113,26 @@ public class LockablePreferenceActivity extends PreferenceActivity {
     private void writeLockTime(long time) {
         mEditor = mPrefs.edit();
         mEditor.putLong("locked_at", time);
-        mEditor.commit();       
+        mEditor.commit();
     }
 
-	protected void setLockEnabled(boolean enabled) {
+    protected boolean isLockEnabled() {
+        return mPrefs.getBoolean("lock_enabled", true);
+    }
+
+    protected void setLockEnabled(boolean enabled) {
         mEditor = mPrefs.edit();
         mEditor.putBoolean("lock_enabled", enabled);
-        mEditor.commit();        
-	}
+        mEditor.commit();
+    }
 
-    protected boolean isLockEnabled() {
-        return mPrefs.getBoolean("lock_enabled", true);       
-    }	
-    
     protected void onActivityResult(int requestCode, int resultCode,
             Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PATTERNLOCK_UNLOCK) {
             if (resultCode == RESULT_OK) {
                 writeLockTime();
-            }
-            else {
+            } else {
                 launchPatternLock();
             }
         }
@@ -137,6 +142,6 @@ public class LockablePreferenceActivity extends PreferenceActivity {
     protected void onStop() {
         super.onStop();
         setLockEnabled(true);
-    }   	
-    
+    }
+
 }

@@ -16,6 +16,9 @@
 
 package com.liato.bankdroid;
 
+import com.liato.bankdroid.lockpattern.ConfirmLockPattern;
+import com.liato.bankdroid.lockpattern.LockPatternUtils;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -36,38 +39,43 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 
-import com.liato.bankdroid.lockpattern.ConfirmLockPattern;
-import com.liato.bankdroid.lockpattern.LockPatternUtils;
-
 public class LockableActivity extends ActionBarActivity {
+
     private static int PATTERNLOCK_UNLOCK = 42;
-	private SharedPreferences mPrefs;
-	private Editor mEditor;
-	private LockPatternUtils mLockPatternUtils;
-	private boolean mHasLoaded = false;
-	protected boolean mSkipLockOnce = false;
-	
-//	private LinearLayout mTitlebarButtons;
-	private LayoutInflater mInflater;
+
+    protected boolean mSkipLockOnce = false;
+
+    private SharedPreferences mPrefs;
+
+    private Editor mEditor;
+
+    private LockPatternUtils mLockPatternUtils;
+
+    private boolean mHasLoaded = false;
+
+    //	private LinearLayout mTitlebarButtons;
+    private LayoutInflater mInflater;
 //	private ProgressBar mProgressBar;
-	
+
 //    private ImageView mHomeButton;
 //    private View mHomeButtonCont;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-		mLockPatternUtils = new LockPatternUtils(this);
-        mLockPatternUtils.setVisiblePatternEnabled(mPrefs.getBoolean("patternlock_visible_pattern", true));
-        mLockPatternUtils.setTactileFeedbackEnabled(mPrefs.getBoolean("patternlock_tactile_feedback", false));
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        mLockPatternUtils = new LockPatternUtils(this);
+        mLockPatternUtils
+                .setVisiblePatternEnabled(mPrefs.getBoolean("patternlock_visible_pattern", true));
+        mLockPatternUtils.setTactileFeedbackEnabled(
+                mPrefs.getBoolean("patternlock_tactile_feedback", false));
 //        requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
         }
     }
-	
-	@Override
+
+    @Override
     public void setContentView(int layoutResID) {
         super.setContentView(layoutResID);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -170,14 +178,16 @@ public class LockableActivity extends ActionBarActivity {
 //        });
 //        mProgressBar.startAnimation(animation);
 //    }
-    
+
     @Override
-	protected void onPause() {
-		super.onPause();
-		// Don't do anything if no lock pattern is set
-		if (!mLockPatternUtils.isLockPatternEnabled()) return;
+    protected void onPause() {
+        super.onPause();
+        // Don't do anything if no lock pattern is set
+        if (!mLockPatternUtils.isLockPatternEnabled()) {
+            return;
+        }
         /*
-		Save the current time If a lock pattern has been set
+                Save the current time If a lock pattern has been set
 		If this activity never loaded set the lock time to
 		10 seconds ago.
 		This is to prevent the following scenario:
@@ -186,73 +196,71 @@ public class LockableActivity extends ActionBarActivity {
             3. User presses the home button
             4. "lock time" is set in onPause to when the home button was pressed
             5. Activity is started again within 2 seconds and no lock screen is shown this time.
-	    */ 
-		if (mHasLoaded) {
-		    writeLockTime();
-		} else {
-		    writeLockTime(SystemClock.elapsedRealtime()-10000);
-		}
-	}
+	    */
+        if (mHasLoaded) {
+            writeLockTime();
+        } else {
+            writeLockTime(SystemClock.elapsedRealtime() - 10000);
+        }
+    }
 
-	@Override
-	protected void onResume() {
-		super.onResume();
+    @Override
+    protected void onResume() {
+        super.onResume();
         // Don't do anything if no lock pattern is set
-		if (!mLockPatternUtils.isLockPatternEnabled()) {
-		    return;
-		}
-		if (mSkipLockOnce) {
-		    mSkipLockOnce = false;
-		    return;
-		}
-		// If a lock pattern is set we need to check the time for when the last
-		// activity was open. If it's been more than two seconds the user
-		// will have to enter the lock pattern to continue.
-		long currentTime = SystemClock.elapsedRealtime();
-		long lockedAt = mPrefs.getLong("locked_at", currentTime-10000);
-		long timedif = Math.abs(currentTime - lockedAt);
-		if (timedif > 2000) {
-            mHasLoaded = false;         
-		    launchPatternLock();
-		}
-		else {
-		    mHasLoaded = true;		    
-		}
-	}
+        if (!mLockPatternUtils.isLockPatternEnabled()) {
+            return;
+        }
+        if (mSkipLockOnce) {
+            mSkipLockOnce = false;
+            return;
+        }
+        // If a lock pattern is set we need to check the time for when the last
+        // activity was open. If it's been more than two seconds the user
+        // will have to enter the lock pattern to continue.
+        long currentTime = SystemClock.elapsedRealtime();
+        long lockedAt = mPrefs.getLong("locked_at", currentTime - 10000);
+        long timedif = Math.abs(currentTime - lockedAt);
+        if (timedif > 2000) {
+            mHasLoaded = false;
+            launchPatternLock();
+        } else {
+            mHasLoaded = true;
+        }
+    }
 
-	private void launchPatternLock() {
+    private void launchPatternLock() {
         Intent intent = new Intent(this, ConfirmLockPattern.class);
         intent.putExtra(ConfirmLockPattern.HEADER_TEXT, getText(R.string.patternlock_header));
-        startActivityForResult(intent, PATTERNLOCK_UNLOCK);         
-	}
-	
-	private void writeLockTime() {
+        startActivityForResult(intent, PATTERNLOCK_UNLOCK);
+    }
+
+    private void writeLockTime() {
         writeLockTime(SystemClock.elapsedRealtime());
-	}
+    }
 
     private void writeLockTime(long time) {
         mEditor = mPrefs.edit();
         mEditor.putLong("locked_at", time);
-        mEditor.commit();       
+        mEditor.commit();
     }
-	
+
     protected void onActivityResult(int requestCode, int resultCode,
             Intent data) {
         if (requestCode == PATTERNLOCK_UNLOCK) {
             if (resultCode == RESULT_OK) {
                 writeLockTime();
-            }
-            else {
+            } else {
                 launchPatternLock();
             }
         }
-    }   	
-    
+    }
+
     protected void skipLockOnce() {
         mSkipLockOnce = true;
     }
-    
-    
+
+
     @Override
     public boolean onCreateThumbnail(Bitmap outBitmap, Canvas canvas) {
         View decorview = getWindow().getDecorView();
@@ -265,13 +273,14 @@ public class LockableActivity extends ActionBarActivity {
         final int dw = outBitmap.getWidth();
         final int dh = outBitmap.getHeight();
 
-        Bitmap bluredBitmap = Bitmap.createBitmap(outBitmap.getWidth(), outBitmap.getHeight(), outBitmap.getConfig());
+        Bitmap bluredBitmap = Bitmap
+                .createBitmap(outBitmap.getWidth(), outBitmap.getHeight(), outBitmap.getConfig());
         Canvas c = new Canvas(bluredBitmap);
-        
+
         c.save();
-        c.scale(((float)dw)/vw, ((float)dh)/vh);
+        c.scale(((float) dw) / vw, ((float) dh) / vh);
         decorview.draw(c);
-        c.restore();        
+        c.restore();
 
         canvas.drawBitmap(pixelate(bluredBitmap, 5), 0, 0, null);
         Bitmap lockbitmap = BitmapFactory.decodeResource(getResources(), R.drawable.lock);
@@ -280,12 +289,13 @@ public class LockableActivity extends ActionBarActivity {
         p.setAntiAlias(true);
         p.setDither(true);
         p.setFilterBitmap(true);
-        
-        canvas.drawBitmap(lockbitmap, null, new RectF(dw*0.25f,dh*0.25f,dw*0.75f,dh*0.75f), p);
-        
+
+        canvas.drawBitmap(lockbitmap, null,
+                new RectF(dw * 0.25f, dh * 0.25f, dw * 0.75f, dh * 0.75f), p);
+
         return true;
     }
-    
+
     private Bitmap pixelate(Bitmap bitmap, int size) {
         Bitmap bm = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
         Canvas c = new Canvas(bm);
@@ -293,11 +303,11 @@ public class LockableActivity extends ActionBarActivity {
         p.setStyle(Style.FILL);
         int w = bm.getWidth();
         int h = bm.getHeight();
-        
-        int[] pixels = new int[w*h];
+
+        int[] pixels = new int[w * h];
         bitmap.getPixels(pixels, 0, w, 0, 0, w, h);
-        for (int i = 0; i < h; i = i+size) {
-            for (int j = 0; j < w; j = j+size) {
+        for (int i = 0; i < h; i = i + size) {
+            for (int j = 0; j < w; j = j + size) {
                 int a = 0;
                 int r = 0;
                 int g = 0;
@@ -305,7 +315,7 @@ public class LockableActivity extends ActionBarActivity {
                 int pc = 0;
                 for (int k = 0; k < size; k++) {
                     for (int l = 0; l < size; l++) {
-                        int pxp = (i+k)*w+j+l;
+                        int pxp = (i + k) * w + j + l;
                         if (pxp < pixels.length) {
                             int pixel = pixels[pxp];
                             a += Color.alpha(pixel);
@@ -321,7 +331,7 @@ public class LockableActivity extends ActionBarActivity {
                 g /= pc;
                 b /= pc;
                 p.setColor(Color.argb(a, r, g, b));
-                c.drawRect(j, i, j+size, i+size, p);
+                c.drawRect(j, i, j + size, i + size, p);
             }
         }
         return bm;
@@ -330,5 +340,5 @@ public class LockableActivity extends ActionBarActivity {
     public boolean shouldShowActionBar() {
         return true;
     }
-    
+
 }

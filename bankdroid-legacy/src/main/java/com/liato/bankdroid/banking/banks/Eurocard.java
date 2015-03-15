@@ -16,25 +16,29 @@
 
 package com.liato.bankdroid.banking.banks;
 
-import android.content.Context;
-
-import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.banking.banks.sebkort.SEBKortBase;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.provider.IBankTypes;
+
+import android.content.Context;
 
 import java.io.IOException;
 
 public class Eurocard extends SEBKortBase {
-	private static final String TAG = "Eurocard";
-	private static final String NAME = "Eurocard";
-	private static final String NAME_SHORT = "eurocard";
-	private static final int BANKTYPE_ID = IBankTypes.EUROCARD;
+
+    private static final String TAG = "Eurocard";
+
+    private static final String NAME = "Eurocard";
+
+    private static final String NAME_SHORT = "eurocard";
+
+    private static final int BANKTYPE_ID = IBankTypes.EUROCARD;
 
     public Eurocard(Context context) {
-        super(context, "ecse", "0005", "secure.eurocard.se", new int[] {R.raw.cert_eurocard});
+        super(context, "ecse", "0005", "secure.eurocard.se", new int[]{R.raw.cert_eurocard});
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
@@ -43,7 +47,8 @@ public class Eurocard extends SEBKortBase {
 
     public Eurocard(String username, String password, Context context)
             throws BankException, LoginException, BankChoiceException, IOException {
-        super(username, password, context, "ecse", "0005", "secure.eurocard.se", new int[] {R.raw.cert_eurocard});
+        super(username, password, context, "ecse", "0005", "secure.eurocard.se",
+                new int[]{R.raw.cert_eurocard});
     }
-	
+
 }

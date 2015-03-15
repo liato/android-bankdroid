@@ -16,14 +16,9 @@
 
 package com.liato.bankdroid.banking.banks.avanza;
 
-import android.content.Context;
-import android.text.TextUtils;
-import android.util.Base64;
-
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.liato.bankdroid.Helpers;
-import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
@@ -33,14 +28,18 @@ import com.liato.bankdroid.banking.banks.avanza.model.PositionAggregation;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.provider.IBankTypes;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.content.Context;
+import android.text.TextUtils;
+import android.util.Base64;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -52,6 +51,7 @@ import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Avanza extends Bank {
+
     private static final String API_URL = "https://iphone.avanza.se/iphone-ws/";
 
     public Avanza(Context context) {
@@ -71,7 +71,8 @@ public class Avanza extends Bank {
 
     @Override
     protected LoginPackage preLogin() throws BankException, IOException {
-        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_avanza));
+        urlopen = new Urllib(context,
+                CertificateReader.getCertificates(context, R.raw.cert_avanza));
         urlopen.addHeader("Referer", URL + "/start");
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("j_username", username));
@@ -83,7 +84,8 @@ public class Avanza extends Bank {
             JSONObject jsonResponse = new JSONObject(response);
             homeUrl = jsonResponse.getString("redirectUrl");
         } catch (JSONException e) {
-            throw new BankException(res.getText(R.string.unable_to_find).toString()+" login link.");
+            throw new BankException(
+                    res.getText(R.string.unable_to_find).toString() + " login link.");
         }
         LoginPackage lp = new LoginPackage(urlopen, postData, "", URL + homeUrl);
         lp.setIsLoggedIn(true);
@@ -91,28 +93,34 @@ public class Avanza extends Bank {
     }
 
     public Urllib login() throws LoginException, BankException {
-        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_avanza));
+        urlopen = new Urllib(context,
+                CertificateReader.getCertificates(context, R.raw.cert_avanza));
         urlopen.addHeader("ctag", "1122334455");
-        urlopen.addHeader("Authorization", "Basic " + Base64.encodeToString(new String(username + ":" + password).getBytes(), Base64.NO_WRAP));
+        urlopen.addHeader("Authorization", "Basic " + Base64.encodeToString(
+                new String(username + ":" + password).getBytes(), Base64.NO_WRAP));
         balance = new BigDecimal(0);
 
         try {
-            HttpResponse httpResponse = urlopen.openAsHttpResponse(API_URL + "account/overview/all", new ArrayList<NameValuePair>(), false);
+            HttpResponse httpResponse = urlopen.openAsHttpResponse(API_URL + "account/overview/all",
+                    new ArrayList<NameValuePair>(), false);
             if (httpResponse.getStatusLine().getStatusCode() == 401) {
                 throw new LoginException(context.getText(
                         R.string.invalid_username_password).toString());
             }
             ObjectMapper vObjectMapper = new ObjectMapper();
-            AccountOverview r = vObjectMapper.readValue(httpResponse.getEntity().getContent(), AccountOverview.class);
+            AccountOverview r = vObjectMapper.readValue(httpResponse.getEntity().getContent(),
+                    AccountOverview.class);
             for (com.liato.bankdroid.banking.banks.avanza.model.Account account : r.getAccounts()) {
-                Account a = new Account(account.getAccountName(), new BigDecimal(account.getOwnCapital()), account.getAccountId());
+                Account a = new Account(account.getAccountName(),
+                        new BigDecimal(account.getOwnCapital()), account.getAccountId());
                 if (!account.getCurrencyAccounts().isEmpty()) {
                     a.setCurrency(account.getCurrencyAccounts().get(0).getCurrency());
                 }
                 if (!account.getPositionAggregations().isEmpty()) {
                     Date now = new Date();
                     ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-                    for (com.liato.bankdroid.banking.banks.avanza.model.CurrencyAccount currencyAccount : account.getCurrencyAccounts()) {
+                    for (com.liato.bankdroid.banking.banks.avanza.model.CurrencyAccount currencyAccount : account
+                            .getCurrencyAccounts()) {
                         transactions.add(new Transaction(Helpers.formatDate(now),
                                 "\u2014  " + currencyAccount.getCurrency() + "  \u2014",
                                 BigDecimal.valueOf(currencyAccount.getBalance()),
@@ -143,7 +151,8 @@ public class Avanza extends Bank {
                 // Add subtypes for account as own account.
                 if (!account.getPositionAggregations().isEmpty()) {
                     Date now = new Date();
-                    for (com.liato.bankdroid.banking.banks.avanza.model.CurrencyAccount currencyAccount : account.getCurrencyAccounts()) {
+                    for (com.liato.bankdroid.banking.banks.avanza.model.CurrencyAccount currencyAccount : account
+                            .getCurrencyAccounts()) {
                         Account b = new Account("\u2014  " + account.getAccountId() + ",  " +
                                 currencyAccount.getCurrency(),
                                 new BigDecimal(currencyAccount.getBalance()),

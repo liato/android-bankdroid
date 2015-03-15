@@ -10,10 +10,13 @@ public class ServiceInput implements Serializable {
 
     @JsonProperty("Condition")
     private String condition;
+
     @JsonProperty("VariableNamePossibleValues")
     private List<Object> variableNamePossibleValues = new ArrayList<Object>();
+
     @JsonProperty("VariableName")
     private String variableName;
+
     @JsonProperty("VariableValue")
     private String variableValue;
 

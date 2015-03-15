@@ -16,14 +16,17 @@
 
 package com.liato.bankdroid.banking.banks;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.liato.bankdroid.Helpers;
+import com.liato.bankdroid.banking.Account;
+import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.Transaction;
+import com.liato.bankdroid.banking.exceptions.BankChoiceException;
+import com.liato.bankdroid.banking.exceptions.BankException;
+import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
+import com.liato.bankdroid.provider.IBankTypes;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
@@ -31,34 +34,50 @@ import android.text.Html;
 import android.text.InputType;
 import android.util.Log;
 
-import com.liato.bankdroid.Helpers;
-import com.liato.bankdroid.legacy.R;
-import com.liato.bankdroid.banking.Account;
-import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.Transaction;
-import com.liato.bankdroid.banking.exceptions.BankChoiceException;
-import com.liato.bankdroid.banking.exceptions.BankException;
-import com.liato.bankdroid.banking.exceptions.LoginException;
-import com.liato.bankdroid.provider.IBankTypes;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class IkanoBank extends Bank {
+
     private static final String TAG = "IkanoBank";
+
     private static final String NAME = "Ikano Bank";
+
     private static final String NAME_SHORT = "ikanobank";
+
     private static final String URL = "https://secure.ikanobank.se/engines/page.aspx?structid=1895";
+
     private static final int BANKTYPE_ID = IBankTypes.IKANOBANK;
+
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+
     private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
+
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
 
-    private Pattern reEventValidation = Pattern.compile("__EVENTVALIDATION\"\\s+.*?value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
-    private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+.*?value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
-    private Pattern reAccounts = Pattern.compile("(ctl\\d{1,}_rptAccountList_ctl\\d{1,}_RowLink)[^>]+>([^<]+)</a>\\s*</td>\\s*<td>([^<]+)</td>\\s*<td>[^<]+</td>\\s*<td[^>]+>[^<]+</td>\\s*<td[^>]+>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
-    private Pattern reTransactions = Pattern.compile("<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>([^<]+)</td>\\s*<td>[^<]+</td>\\s*<td[^>]+>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
-    private Pattern reErrorMessage = Pattern.compile("<div\\s*class=\"(?:error|message)-box-inner\">\\s*<div>\\s*<p>(.+)</p");
+    private Pattern reEventValidation = Pattern.compile(
+            "__EVENTVALIDATION\"\\s+.*?value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
+
+    private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+.*?value=\"([^\"]+)\"",
+            Pattern.CASE_INSENSITIVE);
+
+    private Pattern reAccounts = Pattern.compile(
+            "(ctl\\d{1,}_rptAccountList_ctl\\d{1,}_RowLink)[^>]+>([^<]+)</a>\\s*</td>\\s*<td>([^<]+)</td>\\s*<td>[^<]+</td>\\s*<td[^>]+>[^<]+</td>\\s*<td[^>]+>([^<]+)</td>",
+            Pattern.CASE_INSENSITIVE);
+
+    private Pattern reTransactions = Pattern.compile(
+            "<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>([^<]+)</td>\\s*<td>[^<]+</td>\\s*<td[^>]+>([^<]+)</td>",
+            Pattern.CASE_INSENSITIVE);
+
+    private Pattern reErrorMessage = Pattern.compile(
+            "<div\\s*class=\"(?:error|message)-box-inner\">\\s*<div>\\s*<p>(.+)</p");
+
     private String response = null;
 
     public IkanoBank(Context context) {
@@ -80,30 +99,32 @@ public class IkanoBank extends Bank {
     }
 
 
-    
     @Override
     protected LoginPackage preLogin() throws BankException, IOException {
-        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_ikanobank));
+        urlopen = new Urllib(context,
+                CertificateReader.getCertificates(context, R.raw.cert_ikanobank));
         response = urlopen.open("https://secure.ikanobank.se/login");
         Matcher matcher;
         if (response.contains("Banken är stängd")) {
             matcher = reErrorMessage.matcher(response);
             if (matcher.find()) {
                 throw new BankException(Helpers.removeHtml(matcher.group(1).replace("<BR>", "\n")));
-            } 
+            }
         }
         matcher = reViewState.matcher(response);
         if (!matcher.find()) {
-            throw new BankException(res.getText(R.string.unable_to_find).toString()+" ViewState.");
+            throw new BankException(
+                    res.getText(R.string.unable_to_find).toString() + " ViewState.");
         }
         String strViewState = matcher.group(1);
         matcher = reEventValidation.matcher(response);
         if (!matcher.find()) {
-            throw new BankException(res.getText(R.string.unable_to_find).toString()+" EventValidation.");
+            throw new BankException(
+                    res.getText(R.string.unable_to_find).toString() + " EventValidation.");
         }
         String strEventValidation = matcher.group(1);
 
-        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+        List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("__LASTFOCUS", ""));
         postData.add(new BasicNameValuePair("__EVENTTARGET", "ctl02$lbLogin"));
         postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
@@ -111,19 +132,22 @@ public class IkanoBank extends Bank {
         postData.add(new BasicNameValuePair("ctl02$txtSocialSecurityNumber", username));
         postData.add(new BasicNameValuePair("ctl02$txtPinCode", password));
         postData.add(new BasicNameValuePair("__EVENTVALIDATION", strEventValidation));
-        return new LoginPackage(urlopen, postData, response, "https://secure.ikanobank.se/engines/page.aspx?structid=1895");
+        return new LoginPackage(urlopen, postData, response,
+                "https://secure.ikanobank.se/engines/page.aspx?structid=1895");
     }
 
     public Urllib login() throws LoginException, BankException, IOException {
         LoginPackage lp = preLogin();
         response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-        if (response.contains("Ogiltigt personnummer") || response.contains("felaktigt personnummer")) {
+        if (response.contains("Ogiltigt personnummer") || response.contains(
+                "felaktigt personnummer")) {
             Matcher matcher = reErrorMessage.matcher(response);
             if (matcher.find()) {
-                throw new LoginException(Helpers.removeHtml(matcher.group(1).replace("<BR>", "\n")));
-            }
-            else {
-                throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+                throw new LoginException(
+                        Helpers.removeHtml(matcher.group(1).replace("<BR>", "\n")));
+            } else {
+                throw new LoginException(
+                        res.getText(R.string.invalid_username_password).toString());
             }
 
         }
@@ -133,7 +157,8 @@ public class IkanoBank extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0 || password.length() == 0) {
+        if (username == null || password == null || username.length() == 0
+                || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 
@@ -148,8 +173,9 @@ public class IkanoBank extends Bank {
              * 3: Account number        123456
              * 4: Balance               316 000,39
              * 
-             */    
-            accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(4).trim()), matcher.group(1).trim()));
+             */
+            accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(),
+                    Helpers.parseBalance(matcher.group(4).trim()), matcher.group(1).trim()));
             balance = balance.add(Helpers.parseBalance(matcher.group(4)));
         }
 
@@ -177,14 +203,15 @@ public class IkanoBank extends Bank {
             Log.e(TAG, "Unable to find EventValidation. L161.");
             return;
         }
-        String strEventValidation = matcher.group(1);       
+        String strEventValidation = matcher.group(1);
 
-        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+        List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("__EVENTTARGET", account.getId().replace("_", "$")));
         postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
         postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
         postData.add(new BasicNameValuePair("__EVENTVALIDATION", strEventValidation));
-        response = urlopen.open("https://secure.ikanobank.se/engines/page.aspx?structid=1787", postData);
+        response = urlopen.open("https://secure.ikanobank.se/engines/page.aspx?structid=1787",
+                postData);
 
         matcher = reTransactions.matcher(response);
         ArrayList<Transaction> transactions = new ArrayList<Transaction>();

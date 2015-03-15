@@ -16,6 +16,22 @@
 
 package com.liato.bankdroid.banking.banks;
 
+import com.liato.bankdroid.Helpers;
+import com.liato.bankdroid.banking.Account;
+import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.Transaction;
+import com.liato.bankdroid.banking.exceptions.BankChoiceException;
+import com.liato.bankdroid.banking.exceptions.BankException;
+import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
+import com.liato.bankdroid.provider.IBankTypes;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
+import android.content.Context;
+import android.text.Html;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -23,29 +39,18 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.message.BasicNameValuePair;
-
-import android.content.Context;
-import android.text.Html;
-
-import com.liato.bankdroid.Helpers;
-import com.liato.bankdroid.legacy.R;
-import com.liato.bankdroid.banking.Account;
-import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.Transaction;
-import com.liato.bankdroid.banking.exceptions.BankChoiceException;
-import com.liato.bankdroid.banking.exceptions.BankException;
-import com.liato.bankdroid.banking.exceptions.LoginException;
-import com.liato.bankdroid.provider.IBankTypes;
-
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class ResursBank extends Bank {
-    private Pattern reAccounts = Pattern.compile("kontonummer</td>\\s*<td>([^<]+)</td>\\s*</tr>\\s*<tr>\\s*<td[^>]+>Beviljad\\s*kredit</td>\\s*<td>([^<]+)</td>\\s*</tr>\\s*<tr>\\s*<td[^>]+>Utnyttjad\\s*kredit</td>\\s*<td>([^<]+)</td>\\s*</tr>\\s*<tr>\\s*<td[^>]+>Reserverat\\s*belopp</td>\\s*<td>([^<]+)</td>\\s*</tr>\\s*<tr>\\s*<td[^>]+>Kvar\\s*att\\s*utnyttja</td>\\s*<td>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
-    private Pattern reTransactions = Pattern.compile("<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]*)</td>\\s*<td>([^<]+)</", Pattern.CASE_INSENSITIVE);
+
+    private Pattern reAccounts = Pattern.compile(
+            "kontonummer</td>\\s*<td>([^<]+)</td>\\s*</tr>\\s*<tr>\\s*<td[^>]+>Beviljad\\s*kredit</td>\\s*<td>([^<]+)</td>\\s*</tr>\\s*<tr>\\s*<td[^>]+>Utnyttjad\\s*kredit</td>\\s*<td>([^<]+)</td>\\s*</tr>\\s*<tr>\\s*<td[^>]+>Reserverat\\s*belopp</td>\\s*<td>([^<]+)</td>\\s*</tr>\\s*<tr>\\s*<td[^>]+>Kvar\\s*att\\s*utnyttja</td>\\s*<td>([^<]+)</td>",
+            Pattern.CASE_INSENSITIVE);
+
+    private Pattern reTransactions = Pattern.compile(
+            "<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]*)</td>\\s*<td>([^<]+)</",
+            Pattern.CASE_INSENSITIVE);
 
     private String response = null;
 
@@ -66,13 +71,15 @@ public class ResursBank extends Bank {
 
     @Override
     protected LoginPackage preLogin() throws BankException, IOException {
-        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_resursbank));
+        urlopen = new Urllib(context,
+                CertificateReader.getCertificates(context, R.raw.cert_resursbank));
         response = urlopen.open("https://secure.resurs.se/internetbank/default.jsp");
-        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+        List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("kontonummer", username));
         postData.add(new BasicNameValuePair("password", password));
         postData.add(new BasicNameValuePair("page", "privat"));
-        return new LoginPackage(urlopen, postData, response, "https://secure.resurs.se/internetbank/login.jsp");
+        return new LoginPackage(urlopen, postData, response,
+                "https://secure.resurs.se/internetbank/login.jsp");
     }
 
     @Override
@@ -89,7 +96,8 @@ public class ResursBank extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0 || password.length() == 0) {
+        if (username == null || password == null || username.length() == 0
+                || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 
@@ -106,26 +114,27 @@ public class ResursBank extends Bank {
              * 5: Kvar att utnyttja     0,00 kr
              * 
              */
-            String accountId = Html.fromHtml(matcher.group(1)).toString().trim().replaceAll("[^0-9]*", "");
+            String accountId = Html.fromHtml(matcher.group(1)).toString().trim().replaceAll(
+                    "[^0-9]*", "");
             accounts.add(new Account("Beviljad kredit",
                     Helpers.parseBalance(matcher.group(2)),
-                    "b_"+accountId));
+                    "b_" + accountId));
 
             BigDecimal utnyttjad = Helpers.parseBalance(matcher.group(3));
             utnyttjad = utnyttjad.add(Helpers.parseBalance(matcher.group(4)));
             utnyttjad = utnyttjad.negate();
             accounts.add(new Account("Utnyttjad kredit",
                     utnyttjad,
-                    "u_"+accountId));
+                    "u_" + accountId));
 
             balance = balance.add(Helpers.parseBalance(matcher.group(3)));
             balance = balance.add(utnyttjad);
             accounts.add(new Account("Reserverat belopp",
                     Helpers.parseBalance(matcher.group(4)),
-                    "r_"+accountId));
+                    "r_" + accountId));
             accounts.add(new Account("Disponibelt",
                     Helpers.parseBalance(matcher.group(5)),
-                    "k_"+accountId));
+                    "k_" + accountId));
         }
 
         if (accounts.isEmpty()) {
@@ -139,7 +148,9 @@ public class ResursBank extends Bank {
             BankException, IOException {
         super.updateTransactions(account, urlopen);
         // Only update transactions for the main account
-        if (!account.getId().startsWith("b_")) return;
+        if (!account.getId().startsWith("b_")) {
+            return;
+        }
 
         response = urlopen.open("https://secure.resurs.se/internetbank/kontoutdrag.jsp");
         Matcher matcher = reTransactions.matcher(response);

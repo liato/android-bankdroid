@@ -1,4 +1,3 @@
-
 package com.liato.bankdroid.banking.banks.coop.model.web;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -9,24 +8,34 @@ public class Result {
 
     @JsonProperty("date")
     private String date;
+
     @JsonProperty("icon")
     private boolean icon;
+
     @JsonProperty("title")
     private String title;
+
     @JsonProperty("cardholder")
     private String cardholder;
+
     @JsonProperty("location")
     private String location;
+
     @JsonProperty("sum")
     private double sum;
+
     @JsonProperty("charity")
     private boolean charity;
+
     @JsonProperty("hasdetails")
     private boolean hasdetails;
+
     @JsonProperty("detailsurl")
     private String detailsurl;
+
     @JsonProperty("batchnumber")
     private int batchnumber;
+
     @JsonProperty("sequencenumber")
     private int sequencenumber;
 

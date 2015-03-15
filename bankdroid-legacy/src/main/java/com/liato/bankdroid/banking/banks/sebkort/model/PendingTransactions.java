@@ -8,14 +8,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PendingTransactions implements Serializable {
+
     private static final long serialVersionUID = 8675073239578979403L;
+
     private double mTotalNumber;
+
     private boolean mMoreDataExists;
+
     private List<CardGroup> mCobrandCardGroups = new ArrayList<CardGroup>();
+
     private String mReservedAmount;
+
     private String mReservedAmountNumber;
+
     private List<CardGroup> mCardGroups = new ArrayList<CardGroup>();
+
     private List<TransactionGroup> mTransactionGroups = new ArrayList<TransactionGroup>();
+
     private String mTotal;
 
     @JsonProperty("totalNumber")

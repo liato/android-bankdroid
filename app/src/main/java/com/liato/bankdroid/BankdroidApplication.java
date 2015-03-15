@@ -1,11 +1,11 @@
 package com.liato.bankdroid;
 
-import android.app.Application;
-import android.widget.Toast;
-
 import com.crashlytics.android.Crashlytics;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.BankFactory;
+
+import android.app.Application;
+import android.widget.Toast;
 
 import java.util.List;
 import java.util.Locale;
@@ -15,6 +15,7 @@ import io.fabric.sdk.android.Fabric;
 public class BankdroidApplication extends Application {
 
     public static final String LOG_KEY_LOCALE = "locale";
+
     public static final String LOG_KEY_BANKS = "banks";
 
     private String message = "";
@@ -35,7 +36,8 @@ public class BankdroidApplication extends Application {
                 bankStringBuilder.append(bank.getName())
                         .append(",");
             }
-            Crashlytics.setString(LOG_KEY_BANKS, bankStringBuilder.substring(0, bankStringBuilder.length() - 1));
+            Crashlytics.setString(LOG_KEY_BANKS,
+                    bankStringBuilder.substring(0, bankStringBuilder.length() - 1));
         }
     }
 

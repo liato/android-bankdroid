@@ -1,24 +1,22 @@
 package com.liato.bankdroid.banking.banks;
 
-import android.content.Context;
-import android.text.Html;
-import android.text.InputType;
 import com.liato.bankdroid.Helpers;
-import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.provider.IBankTypes;
 
-import eu.nullbyte.android.urllib.CertificateReader;
-import eu.nullbyte.android.urllib.Urllib;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
+
+import android.content.Context;
+import android.text.Html;
+import android.text.InputType;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -27,19 +25,32 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Meniga extends Bank{
+import eu.nullbyte.android.urllib.CertificateReader;
+import eu.nullbyte.android.urllib.Urllib;
+
+public class Meniga extends Bank {
+
     private static final String TAG = "Meniga";
+
     private static final String NAME = "Meniga";
+
     private static final String NAME_SHORT = "meniga";
+
     private static final String URL = "https://www.meniga.is/";
+
     private static final int BANKTYPE_ID = IBankTypes.MENIGA;
+
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
+
     private static final String INPUT_HINT_USERNAME = "name@company.com";
 
-    private Pattern reAccounts = Pattern.compile("\\?account=([^']+)'[^>]*>\\s*<div\\s*class=\"account-info\">[^<]*<span\\s*class=\"bold\">([^<]+)</span>\\s*(?:</div>\\s*<div\\s*class=\"account-status\">)\\s*<span\\s*class=\"(minus|plus)\">([^<]+)</span>");
-    private Pattern reTransactions = Pattern.compile("\"Id\":([^,]*),.*?\"Text\":\"([^\"]*)\".*?\"OriginalDate\":\".?.?Date\\(([^\\)]*)\\).*?\"Amount\":([^,]*),");
-
     String response;
+
+    private Pattern reAccounts = Pattern.compile(
+            "\\?account=([^']+)'[^>]*>\\s*<div\\s*class=\"account-info\">[^<]*<span\\s*class=\"bold\">([^<]+)</span>\\s*(?:</div>\\s*<div\\s*class=\"account-status\">)\\s*<span\\s*class=\"(minus|plus)\">([^<]+)</span>");
+
+    private Pattern reTransactions = Pattern.compile(
+            "\"Id\":([^,]*),.*?\"Text\":\"([^\"]*)\".*?\"OriginalDate\":\".?.?Date\\(([^\\)]*)\\).*?\"Amount\":([^,]*),");
 
     public Meniga(Context context) {
         super(context);
@@ -61,7 +72,8 @@ public class Meniga extends Bank{
 
     @Override
     protected LoginPackage preLogin() throws BankException, IOException {
-        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_meniga));
+        urlopen = new Urllib(context,
+                CertificateReader.getCertificates(context, R.raw.cert_meniga));
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         response = urlopen.open("https://www.meniga.is/Mobile");
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
@@ -86,7 +98,8 @@ public class Meniga extends Bank{
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0 || password.length() == 0) {
+        if (username == null || password == null || username.length() == 0
+                || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();
@@ -103,9 +116,10 @@ public class Meniga extends Bank{
              * 4: Balance            5 678
              *
              */
-            String balanceString ;
+            String balanceString;
             balanceString = matcher.group(4) + ".00";
-            Account account = new Account(Html.fromHtml(matcher.group(2)).toString(), Helpers.parseBalance(balanceString), matcher.group(1).trim());
+            Account account = new Account(Html.fromHtml(matcher.group(2)).toString(),
+                    Helpers.parseBalance(balanceString), matcher.group(1).trim());
             account.setCurrency("ISK");
             balance = balance.add(Helpers.parseBalance(matcher.group(4)));
             accounts.add(account);
@@ -121,13 +135,15 @@ public class Meniga extends Bank{
     public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
             BankException, IOException {
         super.updateTransactions(account, urlopen);
-        if (account.getType() == Account.OTHER) return;
+        if (account.getType() == Account.OTHER) {
+            return;
+        }
 
         String response;
         Matcher matcher;
 
         ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-        response = urlopen.open("https://www.meniga.is/Transactions?account="+account.getId());
+        response = urlopen.open("https://www.meniga.is/Transactions?account=" + account.getId());
         matcher = reTransactions.matcher(response);
         while (matcher.find()) {
             /*
@@ -141,8 +157,10 @@ public class Meniga extends Bank{
              *
              */
             Long date = Long.valueOf(matcher.group(3));
-            SimpleDateFormat ft = new SimpleDateFormat ("yy-MM-dd");
-            Transaction transaction = new Transaction(ft.format(date), Html.fromHtml(matcher.group(2)).toString().trim(), Helpers.parseBalance(matcher.group(4)));
+            SimpleDateFormat ft = new SimpleDateFormat("yy-MM-dd");
+            Transaction transaction = new Transaction(ft.format(date),
+                    Html.fromHtml(matcher.group(2)).toString().trim(),
+                    Helpers.parseBalance(matcher.group(4)));
             transaction.setCurrency("ISK");
             transactions.add(transaction);
         }

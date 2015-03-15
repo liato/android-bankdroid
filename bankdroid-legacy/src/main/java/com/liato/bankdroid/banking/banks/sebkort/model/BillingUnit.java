@@ -7,24 +7,43 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class BillingUnit implements Serializable {
+
     private static final long serialVersionUID = 335801680600207389L;
+
     private String mUnInvoicedAmount;
+
     private boolean mShowCreditAmount;
+
     private String mArrangementId;
+
     private ArrayList<Contract> mContracts = new ArrayList<Contract>();
+
     private String mCutOffDate;
+
     private String mInterestPercentage;
+
     private String mCreditAmount;
+
     private String mLatestPaymentDate;
+
     private boolean mShowInvoices;
+
     private String mCreditAmountNumber;
+
     private String mBillingUnitName;
+
     private String mBillingUnitId;
+
     private String mDisposableAmount;
+
     private String mBalance;
+
     private boolean mFinanceServiceAllowed;
+
     private String mLatestPaymentAmount;
+
     private String mArrangementNumber;
+
     private String mNextInvoiceDate;
 
     @JsonProperty("unInvoicedAmount")

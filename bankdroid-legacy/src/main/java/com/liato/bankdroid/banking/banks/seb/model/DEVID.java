@@ -5,18 +5,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 
 public class DEVID implements Serializable {
+
     private static final long serialVersionUID = -8706994448508325149L;
 
     @JsonProperty("APPLICATION_VERSION")
     private String applicationVersion;
+
     @JsonProperty("OS_NAME")
     private String osName;
+
     @JsonProperty("MODEL")
     private String model;
+
     @JsonProperty("MANUFACTURER")
     private String manufacturer;
+
     @JsonProperty("OS_VERSION")
     private String osVersion;
+
     @JsonProperty("APPLICATION_NAME")
     private String applicationName;
 
@@ -25,7 +31,8 @@ public class DEVID implements Serializable {
 
     }
 
-    public DEVID(String model, String applicationName, String applicationVersion, String osName, String osVersion, String manufacturer) {
+    public DEVID(String model, String applicationName, String applicationVersion, String osName,
+            String osVersion, String manufacturer) {
         this.model = model;
         this.applicationName = applicationName;
         this.osVersion = osVersion;
@@ -97,7 +104,6 @@ public class DEVID implements Serializable {
     public void setApplicationName(String applicationName) {
         this.applicationName = applicationName;
     }
-
 
 
 }
