@@ -11,34 +11,49 @@ public class Overview {
 
     @JsonProperty("Saldo")
     private double saldo;
+
     @JsonProperty("YearlyTotalPurchased")
     private double yearlyTotalPurchased;
+
     @JsonProperty("PurchaseToDate")
     private String purchaseToDate;
+
     @JsonProperty("AcquiredDiscount")
     private double acquiredDiscount;
+
     @JsonProperty("AmountSinceLastBonusCheck")
     private double amountSinceLastBonusCheck;
+
     @JsonProperty("AmountLeftUntilNextBonusCheck")
     private double amountLeftUntilNextBonusCheck;
+
     @JsonProperty("NextBonusCheckValue")
     private double nextBonusCheckValue;
+
     @JsonProperty("AcquiredBonus")
     private double acquiredBonus;
+
     @JsonProperty("BonusToDate")
     private String bonusToDate;
+
     @JsonProperty("IcaBankUrl")
     private String icaBankUrl;
+
     @JsonProperty("AccountNumber")
     private String accountNumber;
+
     @JsonProperty("AccountName")
     private String accountName;
+
     @JsonProperty("AvailableAmount")
     private double availableAmount;
+
     @JsonProperty("CreditLimit")
     private double creditLimit;
+
     @JsonProperty("Accounts")
     private List<Account> accounts = new ArrayList<Account>();
+
     @JsonProperty("Transactions")
     private List<Transaction> transactions = new ArrayList<Transaction>();
 

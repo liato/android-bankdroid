@@ -15,22 +15,27 @@
  */
 package com.liato.bankdroid.banking.banks;
 
-import android.content.Context;
-
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
+import android.content.Context;
+
 import java.io.IOException;
 
 
 public class SparbankenOresund extends MobilbankenBase {
-	private static final String TAG = "SparbankenOresund";
-	private static final String NAME = "Sparbanken Öresund";
-	private static final String NAME_SHORT = "sparbanken_oresund";
-	private static final String URL = "https://mobil-banken.se/0003/login.html";
-	private static final int BANKTYPE_ID = Bank.SPARBANKEN_ORESUND;
+
+    private static final String TAG = "SparbankenOresund";
+
+    private static final String NAME = "Sparbanken Öresund";
+
+    private static final String NAME_SHORT = "sparbanken_oresund";
+
+    private static final String URL = "https://mobil-banken.se/0003/login.html";
+
+    private static final int BANKTYPE_ID = Bank.SPARBANKEN_ORESUND;
 
     public SparbankenOresund(Context context) {
         super(context);

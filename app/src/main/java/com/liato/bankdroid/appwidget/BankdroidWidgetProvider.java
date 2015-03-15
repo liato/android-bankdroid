@@ -16,6 +16,19 @@
 
 package com.liato.bankdroid.appwidget;
 
+import com.crashlytics.android.Crashlytics;
+import com.liato.bankdroid.Helpers;
+import com.liato.bankdroid.MainActivity;
+import com.liato.bankdroid.R;
+import com.liato.bankdroid.banking.Account;
+import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.BankFactory;
+import com.liato.bankdroid.banking.exceptions.BankChoiceException;
+import com.liato.bankdroid.banking.exceptions.BankException;
+import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.db.DBAdapter;
+import com.liato.bankdroid.utils.NetworkUtils;
+
 import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
@@ -34,43 +47,37 @@ import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
-import com.crashlytics.android.Crashlytics;
-import com.liato.bankdroid.Helpers;
-import com.liato.bankdroid.MainActivity;
-import com.liato.bankdroid.R;
-import com.liato.bankdroid.banking.Account;
-import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.BankFactory;
-import com.liato.bankdroid.banking.exceptions.BankChoiceException;
-import com.liato.bankdroid.banking.exceptions.BankException;
-import com.liato.bankdroid.banking.exceptions.LoginException;
-import com.liato.bankdroid.db.DBAdapter;
-import com.liato.bankdroid.utils.NetworkUtils;
-
 import java.io.IOException;
 
 public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
-	private final static String TAG = "BankdroidWidgetProvider";
-    private final static String ACTION_WIDGET_BLUR = "com.liato.bankdroid.action.WIDGET_BLUR";
-    private final static String ACTION_WIDGET_UNBLUR = "com.liato.bankdroid.action.WIDGET_UNBLUR";
-	
-	static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-			int appWidgetId, Account account) {
-		RemoteViews views = buildAppWidget(context, appWidgetManager, appWidgetId, account);
-		if (views != null) appWidgetManager.updateAppWidget(appWidgetId, views);
-	}
 
-	static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-			int appWidgetId) {
-		RemoteViews views = buildAppWidget(context, appWidgetManager, appWidgetId);
-		if (views != null) appWidgetManager.updateAppWidget(appWidgetId, views);
-	}
-	
+    private final static String TAG = "BankdroidWidgetProvider";
+
+    private final static String ACTION_WIDGET_BLUR = "com.liato.bankdroid.action.WIDGET_BLUR";
+
+    private final static String ACTION_WIDGET_UNBLUR = "com.liato.bankdroid.action.WIDGET_UNBLUR";
+
+    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
+            int appWidgetId, Account account) {
+        RemoteViews views = buildAppWidget(context, appWidgetManager, appWidgetId, account);
+        if (views != null) {
+            appWidgetManager.updateAppWidget(appWidgetId, views);
+        }
+    }
+
+    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
+            int appWidgetId) {
+        RemoteViews views = buildAppWidget(context, appWidgetManager, appWidgetId);
+        if (views != null) {
+            appWidgetManager.updateAppWidget(appWidgetId, views);
+        }
+    }
+
     static void unblurAppWidget(Context context, AppWidgetManager appWidgetManager,
             int appWidgetId) {
-        SharedPreferences prefs = context.getSharedPreferences("widget_prefs", 0);  
+        SharedPreferences prefs = context.getSharedPreferences("widget_prefs", 0);
         Editor e = prefs.edit();
-        e.putBoolean("widget_unblurred_"+appWidgetId, true);
+        e.putBoolean("widget_unblurred_" + appWidgetId, true);
         e.commit();
 
         RemoteViews views = buildAppWidget(context, appWidgetManager, appWidgetId);
@@ -81,13 +88,13 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
             views.setViewVisibility(R.id.txtWidgetAccountname, View.VISIBLE);
             appWidgetManager.updateAppWidget(appWidgetId, views);
         }
-    }	
+    }
 
     static void blurAppWidget(Context context, AppWidgetManager appWidgetManager,
             int appWidgetId) {
-        SharedPreferences prefs = context.getSharedPreferences("widget_prefs", 0);  
+        SharedPreferences prefs = context.getSharedPreferences("widget_prefs", 0);
         Editor e = prefs.edit();
-        e.remove("widget_unblurred_"+appWidgetId);
+        e.remove("widget_unblurred_" + appWidgetId);
         e.commit();
         RemoteViews views = buildAppWidget(context, appWidgetManager, appWidgetId);
         if (views != null) {
@@ -97,178 +104,185 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
             views.setViewVisibility(R.id.txtWidgetAccountname, View.GONE);
             appWidgetManager.updateAppWidget(appWidgetId, views);
         }
-    }   
+    }
 
-    
+
     static RemoteViews buildAppWidget(Context context, AppWidgetManager appWidgetManager,
-			int appWidgetId) {
-		String accountId = WidgetConfigureActivity.getAccountId(context, appWidgetId);
-		long bankId = WidgetConfigureActivity.getBankId(context, appWidgetId);
-		if (accountId == null) {
-			Log.w("BankdroidWidgetProvider", "Widget not found. ID: "+appWidgetId);
-			return disableAppWidget(context, appWidgetManager,
-					appWidgetId);
-		}
-		Account account = BankFactory.accountFromDb(context, bankId + "_" + accountId, false);
-		if (account == null) {
-			Log.w("BankdroidWidgetProvider", "Account not found in db: "+accountId);
-			return disableAppWidget(context, appWidgetManager,
-					appWidgetId);
-			
-		}
+            int appWidgetId) {
+        String accountId = WidgetConfigureActivity.getAccountId(context, appWidgetId);
+        long bankId = WidgetConfigureActivity.getBankId(context, appWidgetId);
+        if (accountId == null) {
+            Log.w("BankdroidWidgetProvider", "Widget not found. ID: " + appWidgetId);
+            return disableAppWidget(context, appWidgetManager,
+                    appWidgetId);
+        }
+        Account account = BankFactory.accountFromDb(context, bankId + "_" + accountId, false);
+        if (account == null) {
+            Log.w("BankdroidWidgetProvider", "Account not found in db: " + accountId);
+            return disableAppWidget(context, appWidgetManager,
+                    appWidgetId);
 
-		Bank bank = BankFactory.bankFromDb(account.getBankDbId(), context, false);
-		if (bank == null) {
-			Log.w("BankdroidWidgetProvider", "Bank not found: " + account.getBankDbId());
-			return disableAppWidget(context, appWidgetManager,
-					appWidgetId);
-			
-		}
-		
-		account.setBank(bank);
-		return buildAppWidget(context, appWidgetManager,
-				appWidgetId, account);
-	}	
+        }
+
+        Bank bank = BankFactory.bankFromDb(account.getBankDbId(), context, false);
+        if (bank == null) {
+            Log.w("BankdroidWidgetProvider", "Bank not found: " + account.getBankDbId());
+            return disableAppWidget(context, appWidgetManager,
+                    appWidgetId);
+
+        }
+
+        account.setBank(bank);
+        return buildAppWidget(context, appWidgetManager,
+                appWidgetId, account);
+    }
 
 
-
-	static RemoteViews buildAppWidget(Context context, AppWidgetManager appWidgetManager,
-			int appWidgetId, Account account) {
-		AppWidgetProviderInfo providerInfo = appWidgetManager.getAppWidgetInfo(appWidgetId);
-		int layoutId = (providerInfo == null) ? R.layout.widget : providerInfo.initialLayout;
-        SharedPreferences prefs = context.getSharedPreferences("widget_prefs", 0);		
+    static RemoteViews buildAppWidget(Context context, AppWidgetManager appWidgetManager,
+            int appWidgetId, Account account) {
+        AppWidgetProviderInfo providerInfo = appWidgetManager.getAppWidgetInfo(appWidgetId);
+        int layoutId = (providerInfo == null) ? R.layout.widget : providerInfo.initialLayout;
+        SharedPreferences prefs = context.getSharedPreferences("widget_prefs", 0);
         SharedPreferences defprefs = PreferenceManager.getDefaultSharedPreferences(context);
-		if (prefs.getBoolean("transperant_background" + appWidgetId, false) && (providerInfo != null)) {
-			if (providerInfo.initialLayout == R.layout.widget_large) {
-				layoutId = R.layout.widget_large_transparent;
-			} else {
-				layoutId = R.layout.widget_transparent;
-			}
-		}
-		Bank bank = account.getBank();
-		RemoteViews views = new RemoteViews(context.getPackageName(), layoutId);
+        if (prefs.getBoolean("transperant_background" + appWidgetId, false) && (providerInfo
+                != null)) {
+            if (providerInfo.initialLayout == R.layout.widget_large) {
+                layoutId = R.layout.widget_large_transparent;
+            } else {
+                layoutId = R.layout.widget_transparent;
+            }
+        }
+        Bank bank = account.getBank();
+        RemoteViews views = new RemoteViews(context.getPackageName(), layoutId);
         views.setTextViewText(R.id.txtWidgetAccountname, account.getName().toUpperCase());
         views.setTextViewText(R.id.txtWidgetAccountnameBlur, account.getName().toUpperCase());
-        views.setTextViewText(R.id.txtWidgetAccountbalance, Helpers.formatBalance(account.getBalance(), account.getCurrency(), defprefs.getBoolean("round_widget_balance", false), bank.getDecimalFormatter()));
-		views.setImageViewResource(R.id.imgWidgetIcon, bank.getImageResource());
-		if (bank.isDisabled()) {
-			views.setViewVisibility(R.id.frmWarning, View.VISIBLE);
-		}
-		else {
-			views.setViewVisibility(R.id.frmWarning, View.INVISIBLE);
-		}
-		Intent intent = new Intent(context, MainActivity.class);
-		PendingIntent pendingIntent;
+        views.setTextViewText(R.id.txtWidgetAccountbalance,
+                Helpers.formatBalance(account.getBalance(), account.getCurrency(),
+                        defprefs.getBoolean("round_widget_balance", false),
+                        bank.getDecimalFormatter()));
+        views.setImageViewResource(R.id.imgWidgetIcon, bank.getImageResource());
+        if (bank.isDisabled()) {
+            views.setViewVisibility(R.id.frmWarning, View.VISIBLE);
+        } else {
+            views.setViewVisibility(R.id.frmWarning, View.INVISIBLE);
+        }
+        Intent intent = new Intent(context, MainActivity.class);
+        PendingIntent pendingIntent;
 
-		//intent = new Intent(context, AccountsActivity.class);
-		pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-		views.setOnClickPendingIntent(R.id.imgWarning, pendingIntent);
-		
-		intent = new Intent(context, WidgetService.class);
-		intent.setAction(AutoRefreshService.BROADCAST_WIDGET_REFRESH);
-		intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-		intent.setData(Uri.parse("rofl://copter/"+appWidgetId+"/"+System.currentTimeMillis()));
-		pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		views.setOnClickPendingIntent(R.id.imgWidgetIcon, pendingIntent);
-		views.setOnClickPendingIntent(R.id.hitBox, pendingIntent);
-		
+        //intent = new Intent(context, AccountsActivity.class);
+        pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        views.setOnClickPendingIntent(R.id.imgWarning, pendingIntent);
+
+        intent = new Intent(context, WidgetService.class);
+        intent.setAction(AutoRefreshService.BROADCAST_WIDGET_REFRESH);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        intent.setData(
+                Uri.parse("rofl://copter/" + appWidgetId + "/" + System.currentTimeMillis()));
+        pendingIntent = PendingIntent
+                .getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setOnClickPendingIntent(R.id.imgWidgetIcon, pendingIntent);
+        views.setOnClickPendingIntent(R.id.hitBox, pendingIntent);
+
         intent = new Intent(context, WidgetService.class);
         intent.setAction(BankdroidWidgetProvider.ACTION_WIDGET_UNBLUR);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        intent.setData(Uri.parse("rofl://copter/widgetunblur/"+appWidgetId+"/"+System.currentTimeMillis()));
-        pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        intent.setData(Uri.parse(
+                "rofl://copter/widgetunblur/" + appWidgetId + "/" + System.currentTimeMillis()));
+        pendingIntent = PendingIntent
+                .getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setOnClickPendingIntent(R.id.imgBalanceblur, pendingIntent);
-        
-        if (defprefs.getBoolean("widget_blur_balance", false) && !prefs.getBoolean("widget_unblurred_" + appWidgetId, false)) {
+
+        if (defprefs.getBoolean("widget_blur_balance", false) && !prefs
+                .getBoolean("widget_unblurred_" + appWidgetId, false)) {
             views.setViewVisibility(R.id.imgBalanceblur, View.VISIBLE);
             views.setViewVisibility(R.id.txtWidgetAccountnameBlur, View.VISIBLE);
             views.setViewVisibility(R.id.txtWidgetAccountbalance, View.GONE);
             views.setViewVisibility(R.id.txtWidgetAccountname, View.GONE);
             views.setOnClickPendingIntent(R.id.layWidgetContainer, pendingIntent);
-        }
-        else {
+        } else {
             views.setViewVisibility(R.id.imgBalanceblur, View.GONE);
             views.setViewVisibility(R.id.txtWidgetAccountnameBlur, View.GONE);
             views.setViewVisibility(R.id.txtWidgetAccountbalance, View.VISIBLE);
-            views.setViewVisibility(R.id.txtWidgetAccountname, View.VISIBLE);            
+            views.setViewVisibility(R.id.txtWidgetAccountname, View.VISIBLE);
 
             intent = new Intent(context, MainActivity.class);
             intent.setAction(AutoRefreshService.ACTION_MAIN_SHOW_TRANSACTIONS);
-            intent.setData(Uri.parse("rofl://copter/showtransactions/"+appWidgetId+"/"+System.currentTimeMillis()));
+            intent.setData(Uri.parse("rofl://copter/showtransactions/" + appWidgetId + "/" + System
+                    .currentTimeMillis()));
             intent.putExtra("bank", bank.getDbId());
             intent.putExtra("account", account.getId());
             pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
             views.setOnClickPendingIntent(R.id.txtWidgetAccountbalance, pendingIntent);
-            views.setOnClickPendingIntent(R.id.layWidgetContainer, pendingIntent);        
+            views.setOnClickPendingIntent(R.id.layWidgetContainer, pendingIntent);
         }
 
-		return views;
-	}
-	
-
-	static RemoteViews disableAppWidget(Context context, AppWidgetManager appWidgetManager,
-			int appWidgetId) {
-		AppWidgetProviderInfo providerInfo = appWidgetManager.getAppWidgetInfo(appWidgetId);
-		int layoutId = (providerInfo == null) ? R.layout.widget : providerInfo.initialLayout;
-        SharedPreferences prefs = context.getSharedPreferences("widget_prefs", 0);		
-		if (prefs.getBoolean("transperant_background" + appWidgetId, false) && (providerInfo != null)) {
-			if (providerInfo.initialLayout == R.layout.widget_large) {
-				layoutId=R.layout.widget_large_transparent;
-			} else {
-				layoutId=R.layout.widget_transparent;
-			}
-		}		
-		RemoteViews views = new RemoteViews(context.getPackageName(), layoutId);
-		views.setTextViewText(R.id.txtWidgetAccountname, "");
-		views.setTextViewText(R.id.txtWidgetAccountbalance, "ERROR");
-		views.setImageViewResource(R.id.imgWidgetIcon, R.drawable.icon_large);
-		views.setViewVisibility(R.id.frmWarning, View.VISIBLE);
-
-		Intent intent = new Intent(context, MainActivity.class);
-		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-		views.setOnClickPendingIntent(R.id.txtWidgetAccountbalance, pendingIntent);
-		views.setOnClickPendingIntent(R.id.layWidgetContainer, pendingIntent);
-
-		return views;
-	}	
-	
-	
-	
-	public void onReceive(Context context, Intent intent) {
-		// v1.5 fix that doesn't call onDelete Action
-		final String action = intent.getAction();
-		if (AppWidgetManager.ACTION_APPWIDGET_DELETED.equals(action)) {
-			final int appWidgetId = intent.getExtras().getInt( AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
-			if (appWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
-				this.onDeleted(context, new int[] { appWidgetId });
-			}
-		}
-		else {
-			super.onReceive(context, intent);
-		}
+        return views;
+    }
 
 
-		if (action.equals(AutoRefreshService.BROADCAST_WIDGET_REFRESH) || action.equals(android.appwidget.AppWidgetManager.ACTION_APPWIDGET_UPDATE)) {
-			AppWidgetManager appWM = AppWidgetManager.getInstance(context);
-			int[] appWidgetIds = appWM.getAppWidgetIds(intent.getComponent());
-			final int N = appWidgetIds.length;
-			for (int i = 0; i < N; i++) {
-				int appWidgetId = appWidgetIds[i];
-				updateAppWidget(context, appWM, appWidgetId);
-			}
-		}
-	}	
+    static RemoteViews disableAppWidget(Context context, AppWidgetManager appWidgetManager,
+            int appWidgetId) {
+        AppWidgetProviderInfo providerInfo = appWidgetManager.getAppWidgetInfo(appWidgetId);
+        int layoutId = (providerInfo == null) ? R.layout.widget : providerInfo.initialLayout;
+        SharedPreferences prefs = context.getSharedPreferences("widget_prefs", 0);
+        if (prefs.getBoolean("transperant_background" + appWidgetId, false) && (providerInfo
+                != null)) {
+            if (providerInfo.initialLayout == R.layout.widget_large) {
+                layoutId = R.layout.widget_large_transparent;
+            } else {
+                layoutId = R.layout.widget_transparent;
+            }
+        }
+        RemoteViews views = new RemoteViews(context.getPackageName(), layoutId);
+        views.setTextViewText(R.id.txtWidgetAccountname, "");
+        views.setTextViewText(R.id.txtWidgetAccountbalance, "ERROR");
+        views.setImageViewResource(R.id.imgWidgetIcon, R.drawable.icon_large);
+        views.setViewVisibility(R.id.frmWarning, View.VISIBLE);
 
-	@Override
-	public void onDeleted(Context context, int[] appWidgetIds) {
-		super.onDeleted(context, appWidgetIds);
-		final int N = appWidgetIds.length;
-		for (int i = 0; i < N; i++) {
-			WidgetConfigureActivity.delAccountId(context, appWidgetIds[i]);
-		}
-	}
+        Intent intent = new Intent(context, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        views.setOnClickPendingIntent(R.id.txtWidgetAccountbalance, pendingIntent);
+        views.setOnClickPendingIntent(R.id.layWidgetContainer, pendingIntent);
 
-	public static class WidgetService extends Service {
+        return views;
+    }
+
+
+    public void onReceive(Context context, Intent intent) {
+        // v1.5 fix that doesn't call onDelete Action
+        final String action = intent.getAction();
+        if (AppWidgetManager.ACTION_APPWIDGET_DELETED.equals(action)) {
+            final int appWidgetId = intent.getExtras().getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
+                    AppWidgetManager.INVALID_APPWIDGET_ID);
+            if (appWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+                this.onDeleted(context, new int[]{appWidgetId});
+            }
+        } else {
+            super.onReceive(context, intent);
+        }
+
+        if (action.equals(AutoRefreshService.BROADCAST_WIDGET_REFRESH) || action
+                .equals(android.appwidget.AppWidgetManager.ACTION_APPWIDGET_UPDATE)) {
+            AppWidgetManager appWM = AppWidgetManager.getInstance(context);
+            int[] appWidgetIds = appWM.getAppWidgetIds(intent.getComponent());
+            final int N = appWidgetIds.length;
+            for (int i = 0; i < N; i++) {
+                int appWidgetId = appWidgetIds[i];
+                updateAppWidget(context, appWM, appWidgetId);
+            }
+        }
+    }
+
+    @Override
+    public void onDeleted(Context context, int[] appWidgetIds) {
+        super.onDeleted(context, appWidgetIds);
+        final int N = appWidgetIds.length;
+        for (int i = 0; i < N; i++) {
+            WidgetConfigureActivity.delAccountId(context, appWidgetIds[i]);
+        }
+    }
+
+    public static class WidgetService extends Service {
 
         @Override
         public void onStart(Intent intent, int startId) {
@@ -282,19 +296,24 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
         }
 
         public void handleStart(Intent intent, int startId) {
-            if (intent == null) return;
+            if (intent == null) {
+                return;
+            }
             int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
             Context context = getApplicationContext();
             String action = intent.getAction();
-            if (action == null) return;
-            if (action.equals(AutoRefreshService.BROADCAST_WIDGET_REFRESH)) {
-                new WidgetUpdateTask(context, AppWidgetManager.getInstance(context), appWidgetId).execute();
+            if (action == null) {
+                return;
             }
-            else if (action.equals(BankdroidWidgetProvider.ACTION_WIDGET_UNBLUR)) {
+            if (action.equals(AutoRefreshService.BROADCAST_WIDGET_REFRESH)) {
+                new WidgetUpdateTask(context, AppWidgetManager.getInstance(context), appWidgetId)
+                        .execute();
+            } else if (action.equals(BankdroidWidgetProvider.ACTION_WIDGET_UNBLUR)) {
                 unblurAppWidget(context, AppWidgetManager.getInstance(context), appWidgetId);
 
                 Handler blurHandler = new Handler();
                 class BlurRunnable implements Runnable {
+
                     private int mAppWidgetId;
 
                     public BlurRunnable(int appWidgetId) {
@@ -309,100 +328,105 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 
                 }
 
-
                 SharedPreferences defprefs = PreferenceManager.getDefaultSharedPreferences(context);
-                Integer unblurTimeout = 1000*Integer.parseInt(defprefs.getString("widget_blur_balance_timeout", "5"));
+                Integer unblurTimeout = 1000 * Integer
+                        .parseInt(defprefs.getString("widget_blur_balance_timeout", "5"));
                 blurHandler.postDelayed(new BlurRunnable(appWidgetId), unblurTimeout);
-            }
-            else if (action.equals(BankdroidWidgetProvider.ACTION_WIDGET_BLUR)) {
+            } else if (action.equals(BankdroidWidgetProvider.ACTION_WIDGET_BLUR)) {
                 blurAppWidget(context, AppWidgetManager.getInstance(context), appWidgetId);
             }
         }
 
-		@Override
-		public IBinder onBind(Intent arg0) {
-			// TODO Auto-generated method stub
-			return null;
-		}
+        @Override
+        public IBinder onBind(Intent arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
 
-		protected class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
-			@Override
-			protected void onPreExecute() {
-				super.onPreExecute();
-				RemoteViews views = buildAppWidget(context, appWidgetManager, appWidgetId);
-				if (views != null) {
-					views.setViewVisibility(R.id.frmProgress, View.VISIBLE);
-					appWidgetManager.updateAppWidget(appWidgetId, views);
-				}
-			}
+        protected class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
 
-			private Context context;
-			private AppWidgetManager appWidgetManager;
-			private int appWidgetId;
-			private SharedPreferences prefs;
+            private Context context;
 
-			public WidgetUpdateTask(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
-				this.context = context;
-				this.appWidgetManager = appWidgetManager;
-				this.appWidgetId = appWidgetId;
-				this.prefs = PreferenceManager.getDefaultSharedPreferences(context);
-			}
+            private AppWidgetManager appWidgetManager;
 
-			@Override
-			protected Void doInBackground(Void... params) {
-				String accountId = WidgetConfigureActivity.getAccountId(context, appWidgetId);
-				if (accountId == null) {
-					Log.w("WidgetService", "Widget not found in db: "+appWidgetId);
-					return null;
-				}
-				long bankId = WidgetConfigureActivity.getBankId(context, appWidgetId);
-				Bank bank = BankFactory.bankFromDb(new Long(bankId), context, true);
-				if (bank == null) {
-					return null;
-				}
+            private int appWidgetId;
 
-				try {
-					if (!bank.isDisabled()) {
-						bank.update();
-						if (prefs.getBoolean("widget_updates_transactions", false)) {
-						    bank.updateAllTransactions();
-						}
-						bank.closeConnection();
-						DBAdapter.save(bank, context);
-					}
+            private SharedPreferences prefs;
 
-				} 
-				catch (BankException e) {
-    				Log.e(TAG, "Error while updating bank '"+bank.getDbId()+"'; "+e.getMessage());
-                    Crashlytics.logException(e);
-				} catch (LoginException e) {
-					Log.e("", "Disabling bank: "+bank.getDbId());
-					DBAdapter.disable(bank,context);
-				}
-                catch (BankChoiceException e) {
-                    Log.e(TAG, "Error while updating bank '"+bank.getDbId()+"'; "+e.getMessage());
+            public WidgetUpdateTask(Context context, AppWidgetManager appWidgetManager,
+                    int appWidgetId) {
+                this.context = context;
+                this.appWidgetManager = appWidgetManager;
+                this.appWidgetId = appWidgetId;
+                this.prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            }
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                RemoteViews views = buildAppWidget(context, appWidgetManager, appWidgetId);
+                if (views != null) {
+                    views.setViewVisibility(R.id.frmProgress, View.VISIBLE);
+                    appWidgetManager.updateAppWidget(appWidgetId, views);
                 }
-                catch(IOException e) {
-                    Log.e(TAG, "Error while updating bank '"+bank.getDbId()+"'; "+e.getMessage());
-                    if(NetworkUtils.isInternetAvailable()) {
+            }
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                String accountId = WidgetConfigureActivity.getAccountId(context, appWidgetId);
+                if (accountId == null) {
+                    Log.w("WidgetService", "Widget not found in db: " + appWidgetId);
+                    return null;
+                }
+                long bankId = WidgetConfigureActivity.getBankId(context, appWidgetId);
+                Bank bank = BankFactory.bankFromDb(new Long(bankId), context, true);
+                if (bank == null) {
+                    return null;
+                }
+
+                try {
+                    if (!bank.isDisabled()) {
+                        bank.update();
+                        if (prefs.getBoolean("widget_updates_transactions", false)) {
+                            bank.updateAllTransactions();
+                        }
+                        bank.closeConnection();
+                        DBAdapter.save(bank, context);
+                    }
+
+                } catch (BankException e) {
+                    Log.e(TAG, "Error while updating bank '" + bank.getDbId() + "'; " + e
+                            .getMessage());
+                    Crashlytics.logException(e);
+                } catch (LoginException e) {
+                    Log.e("", "Disabling bank: " + bank.getDbId());
+                    DBAdapter.disable(bank, context);
+                } catch (BankChoiceException e) {
+                    Log.e(TAG, "Error while updating bank '" + bank.getDbId() + "'; " + e
+                            .getMessage());
+                } catch (IOException e) {
+                    Log.e(TAG, "Error while updating bank '" + bank.getDbId() + "'; " + e
+                            .getMessage());
+                    if (NetworkUtils.isInternetAvailable()) {
                         Crashlytics.logException(e);
                     }
                 }
-				BankdroidWidgetProvider.updateAppWidget(context, appWidgetManager, appWidgetId);
-				return null;
-			}
-			@Override
-			protected void onPostExecute(Void result) {
-				super.onPostExecute(result);
-				RemoteViews views = buildAppWidget(context, appWidgetManager, appWidgetId);
-				if (views != null) {
-					views.setViewVisibility(R.id.frmProgress, View.INVISIBLE);
-					appWidgetManager.updateAppWidget(appWidgetId, views);
-				}
-				WidgetService.this.stopSelf();
-			}
+                BankdroidWidgetProvider.updateAppWidget(context, appWidgetManager, appWidgetId);
+                return null;
+            }
 
-			
-		}
-	}
+            @Override
+            protected void onPostExecute(Void result) {
+                super.onPostExecute(result);
+                RemoteViews views = buildAppWidget(context, appWidgetManager, appWidgetId);
+                if (views != null) {
+                    views.setViewVisibility(R.id.frmProgress, View.INVISIBLE);
+                    appWidgetManager.updateAppWidget(appWidgetId, views);
+                }
+                WidgetService.this.stopSelf();
+            }
+
+
+        }
+    }
 }

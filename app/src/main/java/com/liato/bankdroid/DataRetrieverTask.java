@@ -16,18 +16,6 @@
 
 package com.liato.bankdroid;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.os.AsyncTask;
-import android.preference.PreferenceManager;
-import android.util.Log;
-
 import com.crashlytics.android.Crashlytics;
 import com.liato.bankdroid.appwidget.AutoRefreshService;
 import com.liato.bankdroid.banking.Account;
@@ -39,130 +27,149 @@ import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.db.DBAdapter;
 import com.liato.bankdroid.utils.NetworkUtils;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.os.AsyncTask;
+import android.preference.PreferenceManager;
+import android.util.Log;
+
+import java.io.IOException;
+import java.util.ArrayList;
+
 public class DataRetrieverTask extends AsyncTask<String, String, Void> {
+
     private final static String TAG = "DataRetrieverTask";
-	private final ProgressDialog dialog;
-	private ArrayList<String> errors;
-	private final MainActivity parent;
-	private int bankcount;
-	private final Resources res;
-	private long bankId = -1;
 
-	public DataRetrieverTask(final MainActivity parent) {
-		this.parent = parent;
-		this.res = parent.getResources();
-		this.dialog = new ProgressDialog(parent);
-	}
+    private final ProgressDialog dialog;
 
-	public DataRetrieverTask(final MainActivity parent, final long bankId) {
-		this(parent);
-		this.bankId = bankId;
-	}
+    private final MainActivity parent;
 
-	@Override
-	protected void onPreExecute() {
-		this.dialog.setMessage(res.getText(R.string.updating_account_balance)
-				+ "\n ");
-		this.dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-		this.dialog.setCancelable(false);
-		this.dialog.show();
-	}
+    private final Resources res;
 
-	@Override
-	protected Void doInBackground(final String... args) {
-		errors = new ArrayList<String>();
-		ArrayList<Bank> banks;
-		if (bankId != -1) {
-			banks = new ArrayList<Bank>();
-			banks.add(BankFactory.bankFromDb(bankId, parent, true));
-		} else {
-			banks = BankFactory.banksFromDb(parent, true);
-		}
-		bankcount = banks.size();
-		this.dialog.setMax(bankcount);
-		int i = 0;
-		for (final Bank bank : banks) {
-			publishProgress(new String[] { new Integer(i).toString(),
-					bank.getName() + " (" + bank.getUsername() + ")" });
-			if (bank.isDisabled()) {
-				continue;
-			}
-			try {
-				bank.update();
-				bank.updateAllTransactions();
-				bank.closeConnection();
-				DBAdapter.save(bank, parent);
-				i++;
-			} catch (final BankException e) {
-				this.errors.add(bank.getName() + " (" + bank.getUsername()
-						+ ")");
+    private ArrayList<String> errors;
+
+    private int bankcount;
+
+    private long bankId = -1;
+
+    public DataRetrieverTask(final MainActivity parent) {
+        this.parent = parent;
+        this.res = parent.getResources();
+        this.dialog = new ProgressDialog(parent);
+    }
+
+    public DataRetrieverTask(final MainActivity parent, final long bankId) {
+        this(parent);
+        this.bankId = bankId;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        this.dialog.setMessage(res.getText(R.string.updating_account_balance)
+                + "\n ");
+        this.dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        this.dialog.setCancelable(false);
+        this.dialog.show();
+    }
+
+    @Override
+    protected Void doInBackground(final String... args) {
+        errors = new ArrayList<String>();
+        ArrayList<Bank> banks;
+        if (bankId != -1) {
+            banks = new ArrayList<Bank>();
+            banks.add(BankFactory.bankFromDb(bankId, parent, true));
+        } else {
+            banks = BankFactory.banksFromDb(parent, true);
+        }
+        bankcount = banks.size();
+        this.dialog.setMax(bankcount);
+        int i = 0;
+        for (final Bank bank : banks) {
+            publishProgress(new String[]{new Integer(i).toString(),
+                    bank.getName() + " (" + bank.getUsername() + ")"});
+            if (bank.isDisabled()) {
+                continue;
+            }
+            try {
+                bank.update();
+                bank.updateAllTransactions();
+                bank.closeConnection();
+                DBAdapter.save(bank, parent);
+                i++;
+            } catch (final BankException e) {
+                this.errors.add(bank.getName() + " (" + bank.getUsername()
+                        + ")");
 
                 Crashlytics.logException(e);
-			} catch (final LoginException e) {
-				this.errors.add(bank.getName() + " (" + bank.getUsername()
-						+ ")");
-				DBAdapter.disable(bank, parent);
-			} catch (BankChoiceException e) {
+            } catch (final LoginException e) {
+                this.errors.add(bank.getName() + " (" + bank.getUsername()
+                        + ")");
+                DBAdapter.disable(bank, parent);
+            } catch (BankChoiceException e) {
                 this.errors.add(bank.getName() + " (" + bank.getUsername()
                         + ")");
                 Log.e(TAG, "BankChoiceError: " + e.getMessage());
-            } catch(IOException e) {
+            } catch (IOException e) {
                 this.errors.add(bank.getName() + " (" + bank.getUsername()
                         + ")");
-                if(NetworkUtils.isInternetAvailable()) {
+                if (NetworkUtils.isInternetAvailable()) {
                     Crashlytics.logException(e);
                 }
             }
 
-			final SharedPreferences prefs = PreferenceManager
-					.getDefaultSharedPreferences(parent);
-			if (prefs.getBoolean("content_provider_enabled", false)) {
-				final ArrayList<Account> accounts = bank.getAccounts();
-				for (final Account account : accounts) {
-					AutoRefreshService.broadcastTransactionUpdate(parent,
-							bank.getDbId(), account.getId());
-				}
-			}
-		}
-		publishProgress(new String[] { new Integer(i).toString(), "" });
-		return null;
-	}
+            final SharedPreferences prefs = PreferenceManager
+                    .getDefaultSharedPreferences(parent);
+            if (prefs.getBoolean("content_provider_enabled", false)) {
+                final ArrayList<Account> accounts = bank.getAccounts();
+                for (final Account account : accounts) {
+                    AutoRefreshService.broadcastTransactionUpdate(parent,
+                            bank.getDbId(), account.getId());
+                }
+            }
+        }
+        publishProgress(new String[]{new Integer(i).toString(), ""});
+        return null;
+    }
 
-	@Override
-	protected void onProgressUpdate(final String... args) {
-		this.dialog.setProgress(new Integer(args[0]));
-		this.dialog.setMessage(res.getText(R.string.updating_account_balance)
-				+ "\n" + args[1]);
-	}
+    @Override
+    protected void onProgressUpdate(final String... args) {
+        this.dialog.setProgress(new Integer(args[0]));
+        this.dialog.setMessage(res.getText(R.string.updating_account_balance)
+                + "\n" + args[1]);
+    }
 
-	@Override
-	protected void onPostExecute(final Void unused) {
-		parent.refreshView();
-		AutoRefreshService.sendWidgetRefresh(parent);
-		ActivityHelper.dismissDialog(this.dialog);
+    @Override
+    protected void onPostExecute(final Void unused) {
+        parent.refreshView();
+        AutoRefreshService.sendWidgetRefresh(parent);
+        ActivityHelper.dismissDialog(this.dialog);
 
-		if ((this.errors != null) && !this.errors.isEmpty()) {
-			final StringBuilder errormsg = new StringBuilder();
-			errormsg.append(res.getText(R.string.accounts_were_not_updated)
-					+ ":\n");
-			for (final String err : errors) {
-				errormsg.append(err);
-				errormsg.append("\n");
-			}
-			final AlertDialog.Builder builder = new AlertDialog.Builder(parent);
-			builder.setMessage(errormsg.toString())
-					.setTitle(res.getText(R.string.errors_when_updating))
-					.setIcon(android.R.drawable.ic_dialog_alert)
-					.setNeutralButton("Ok",
-							new DialogInterface.OnClickListener() {
-								public void onClick(
-										final DialogInterface dialog,
-										final int id) {
-									dialog.cancel();
-								}
-							});
-			final AlertDialog alert = builder.create();
-			alert.show();
-		}
-	}
+        if ((this.errors != null) && !this.errors.isEmpty()) {
+            final StringBuilder errormsg = new StringBuilder();
+            errormsg.append(res.getText(R.string.accounts_were_not_updated)
+                    + ":\n");
+            for (final String err : errors) {
+                errormsg.append(err);
+                errormsg.append("\n");
+            }
+            final AlertDialog.Builder builder = new AlertDialog.Builder(parent);
+            builder.setMessage(errormsg.toString())
+                    .setTitle(res.getText(R.string.errors_when_updating))
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setNeutralButton("Ok",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(
+                                        final DialogInterface dialog,
+                                        final int id) {
+                                    dialog.cancel();
+                                }
+                            });
+            final AlertDialog alert = builder.create();
+            alert.show();
+        }
+    }
 }

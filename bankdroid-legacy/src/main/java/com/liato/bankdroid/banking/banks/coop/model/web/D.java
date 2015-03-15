@@ -1,4 +1,3 @@
-
 package com.liato.bankdroid.banking.banks.coop.model.web;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -9,6 +8,7 @@ public class D {
 
     @JsonProperty("template")
     private String template;
+
     @JsonProperty("model")
     private Model model;
 

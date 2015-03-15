@@ -7,21 +7,30 @@ import java.util.Collections;
 import java.util.List;
 
 public class PositionAggregation implements Serializable {
+
     private static final long serialVersionUID = 5531947007427482418L;
+
     @JsonProperty("totalChange")
     private double mTotalChange;
+
     @JsonProperty("positions")
     private List<Position> mPositions = Collections.emptyList();
+
     @JsonProperty("totalProfit")
     private double mTotalProfit;
+
     @JsonProperty("instrumentTypeName")
     private String mInstrumentTypeName;
+
     @JsonProperty("totalProfitPercent")
     private double mTotalProfitPercent;
+
     @JsonProperty("totalValue")
     private double mTotalValue;
+
     @JsonProperty("instrumentType")
     private int mInstrumentType;
+
     @JsonProperty("totalAverage")
     private double mTotalAverage;
 

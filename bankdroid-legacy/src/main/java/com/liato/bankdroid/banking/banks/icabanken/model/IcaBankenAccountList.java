@@ -1,10 +1,10 @@
 package com.liato.bankdroid.banking.banks.icabanken.model;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class IcaBankenAccountList {
@@ -12,14 +12,21 @@ public class IcaBankenAccountList {
     private List<IcaBankenAccount> mAccounts;
 
     private String mDefaultAccountIdForEgiros;
+
     private String mDefaultAccountIdForPayments;
+
     private String mDefaultAccountIdForTransfers;
+
     private BigDecimal mJointAccountsTotalAvailableAmount;
 
     private BigDecimal mJointAccountsTotalCurrentAmount;
+
     private BigDecimal mMinorsAccountsTotalAvailableAmount;
+
     private BigDecimal mMinorsAccountsTotalCurrentAmount;
+
     private BigDecimal mOwnAccountsTotalAvailableAmount;
+
     private BigDecimal mOwnAccountsTotalCurrentAmount;
 
     @JsonProperty("Accounts")

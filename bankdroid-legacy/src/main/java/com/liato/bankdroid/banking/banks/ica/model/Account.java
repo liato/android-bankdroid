@@ -13,18 +13,25 @@ public class Account {
 
     @JsonProperty("Name")
     private String name;
+
     @JsonProperty("AccountNumber")
     private String accountNumber;
+
     @JsonProperty("AvailableAmount")
     private double availableAmount;
+
     @JsonProperty("ReservedAmount")
     private double reservedAmount;
+
     @JsonProperty("Saldo")
     private double saldo;
+
     @JsonProperty("CreditLimit")
     private double creditLimit;
+
     @JsonProperty("Transactions")
     private List<Transaction> transactions = new ArrayList<Transaction>();
+
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("Name")

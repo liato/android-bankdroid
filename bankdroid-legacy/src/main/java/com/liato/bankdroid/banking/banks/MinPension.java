@@ -16,9 +16,6 @@
 
 package com.liato.bankdroid.banking.banks;
 
-import android.content.Context;
-import android.text.InputType;
-
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
@@ -36,6 +33,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import android.content.Context;
+import android.text.InputType;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -45,6 +45,7 @@ import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class MinPension extends Bank {
+
     public MinPension(Context context) {
         super(context);
         TAG = "MinPension";
@@ -52,7 +53,8 @@ public class MinPension extends Bank {
         NAME_SHORT = "minpension";
         BANKTYPE_ID = IBankTypes.MINPENSION;
         INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
-        INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE | InputType.TYPE_TEXT_VARIATION_PASSWORD;;
+        INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE | InputType.TYPE_TEXT_VARIATION_PASSWORD;
+        ;
         INPUT_HINT_USERNAME = res.getText(R.string.pno).toString();
     }
 
@@ -66,7 +68,8 @@ public class MinPension extends Bank {
     protected LoginPackage preLogin() throws BankException,
             IOException {
         List<NameValuePair> postData = new ArrayList<>();
-        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_minpension));
+        urlopen = new Urllib(context,
+                CertificateReader.getCertificates(context, R.raw.cert_minpension));
         String response = urlopen.open("https://www.minpension.se/AjaxifyContent/795");
         Document jDoc = Jsoup.parse(response);
         Element el = jDoc.select("input[name=__RequestVerificationToken]").first();
@@ -76,7 +79,8 @@ public class MinPension extends Bank {
         postData.add(new BasicNameValuePair("__RequestVerificationToken", el.val()));
         postData.add(new BasicNameValuePair("viewModel.Personnummer", username));
         postData.add(new BasicNameValuePair("viewModel.Kod", password));
-        LoginPackage lp = new LoginPackage(urlopen, postData, null, "https://www.minpension.se/inloggning/personlig-kod");
+        LoginPackage lp = new LoginPackage(urlopen, postData, null,
+                "https://www.minpension.se/inloggning/personlig-kod");
         return lp;
     }
 
@@ -88,7 +92,8 @@ public class MinPension extends Bank {
         if (!response.contains("LoggaUt.aspx")) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
-        response = urlopen.open("https://www.minpension.se/mina-sidor/redirect?path=MinPension%2FDefault.aspx&bodyMargin=0");
+        response = urlopen.open(
+                "https://www.minpension.se/mina-sidor/redirect?path=MinPension%2FDefault.aspx&bodyMargin=0");
         Document document = Jsoup.parse(response);
         Element e = document.select("#authenticationResult").first();
         if (e == null) {
@@ -104,7 +109,8 @@ public class MinPension extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0 || password.length() == 0) {
+        if (username == null || password == null || username.length() == 0
+                || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();
@@ -153,7 +159,9 @@ public class MinPension extends Bank {
         }
 
         balance = BigDecimal.ZERO;
-        for (Transaction t : transactions) balance = balance.add(t.getAmount());
+        for (Transaction t : transactions) {
+            balance = balance.add(t.getAmount());
+        }
         Account account = new Account(name, balance, name, Account.REGULAR, "");
         account.setTransactions(transactions);
         return account;

@@ -25,7 +25,7 @@ public class PersonalCodeResponse {
     }
 
     public List<OperationalMessages> getOperationalMessages() {
-        if(operationalMessages == null) {
+        if (operationalMessages == null) {
             operationalMessages = new ArrayList<OperationalMessages>();
         }
         return operationalMessages;

@@ -16,6 +16,24 @@
 
 package com.liato.bankdroid.banking.banks;
 
+import com.liato.bankdroid.Helpers;
+import com.liato.bankdroid.banking.Account;
+import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.Transaction;
+import com.liato.bankdroid.banking.exceptions.BankChoiceException;
+import com.liato.bankdroid.banking.exceptions.BankException;
+import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
+import com.liato.bankdroid.provider.IBankTypes;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
+
+import android.content.Context;
+import android.text.Html;
+import android.text.InputType;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -24,65 +42,66 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
-
-import android.content.Context;
-import android.text.Html;
-import android.text.InputType;
-
-import com.liato.bankdroid.Helpers;
-import com.liato.bankdroid.legacy.R;
-import com.liato.bankdroid.banking.Account;
-import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.Transaction;
-import com.liato.bankdroid.banking.exceptions.BankChoiceException;
-import com.liato.bankdroid.banking.exceptions.BankException;
-import com.liato.bankdroid.banking.exceptions.LoginException;
-import com.liato.bankdroid.provider.IBankTypes;
-
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class CSN extends Bank {
-	private static final String TAG = "CSN";
-	private static final String NAME = "CSN";
-	private static final String NAME_SHORT = "csn";
-	private static final String URL = "https://www.csn.se/bas/inloggning/pinkod.do";
-	private static final int BANKTYPE_ID = IBankTypes.CSN;
+
+    private static final String TAG = "CSN";
+
+    private static final String NAME = "CSN";
+
+    private static final String NAME_SHORT = "csn";
+
+    private static final String URL = "https://www.csn.se/bas/inloggning/pinkod.do";
+
+    private static final int BANKTYPE_ID = IBankTypes.CSN;
+
     private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
+
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
+
     private static final boolean STATIC_BALANCE = true;
-	
-    private Pattern reLoginError = Pattern.compile("<h3>Observera</h3>\\s*<ul>\\s*<li>([^<]+)</li>", Pattern.CASE_INSENSITIVE);
-    private Pattern reBalance = Pattern.compile("aktuellStudieskuld\\.do\\?metod=init&(?:amp;)?SpecNr=(\\d{1,})\">([^<]+)</a>\\s*</td>\\s*<td[^>]+>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
-    private Pattern reTransactions = Pattern.compile("<td>\\s*(\\d{4}-\\d{2}-\\d{2})\\s*</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]+)</td>.*?startHideInfoBoxTimer\\(\\d{1,}\\);\">([^<]+)</", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-    private Pattern reCompletedPayments = Pattern.compile("<td>\\s*(\\d{4}-\\d{2}-\\d{2})\\s*</td>\\s*<td>([^<]+)</td>.*?startHideInfoBoxTimer\\(\\d{1,}\\);\"[^>]+>([^<]+)</", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-	private String response = null;
-	
-	public CSN(Context context) {
-		super(context);
-		super.TAG = TAG;
-		super.NAME = NAME;
-		super.NAME_SHORT = NAME_SHORT;
-		super.BANKTYPE_ID = BANKTYPE_ID;
-		super.URL = URL;
+
+    private Pattern reLoginError = Pattern.compile("<h3>Observera</h3>\\s*<ul>\\s*<li>([^<]+)</li>",
+            Pattern.CASE_INSENSITIVE);
+
+    private Pattern reBalance = Pattern.compile(
+            "aktuellStudieskuld\\.do\\?metod=init&(?:amp;)?SpecNr=(\\d{1,})\">([^<]+)</a>\\s*</td>\\s*<td[^>]+>([^<]+)</td>",
+            Pattern.CASE_INSENSITIVE);
+
+    private Pattern reTransactions = Pattern.compile(
+            "<td>\\s*(\\d{4}-\\d{2}-\\d{2})\\s*</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]+)</td>.*?startHideInfoBoxTimer\\(\\d{1,}\\);\">([^<]+)</",
+            Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+
+    private Pattern reCompletedPayments = Pattern.compile(
+            "<td>\\s*(\\d{4}-\\d{2}-\\d{2})\\s*</td>\\s*<td>([^<]+)</td>.*?startHideInfoBoxTimer\\(\\d{1,}\\);\"[^>]+>([^<]+)</",
+            Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+
+    private String response = null;
+
+    public CSN(Context context) {
+        super(context);
+        super.TAG = TAG;
+        super.NAME = NAME;
+        super.NAME_SHORT = NAME_SHORT;
+        super.BANKTYPE_ID = BANKTYPE_ID;
+        super.URL = URL;
         super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
         super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
         super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
         super.STATIC_BALANCE = STATIC_BALANCE;
     }
 
-	public CSN(String username, String password, Context context) throws BankException,
+    public CSN(String username, String password, Context context) throws BankException,
             LoginException, BankChoiceException, IOException {
-		this(context);
-		this.update(username, password);
-	}
+        this(context);
+        this.update(username, password);
+    }
 
-    
+
     @Override
     protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_csn));
@@ -90,46 +109,49 @@ public class CSN extends Bank {
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         urlopen.addHeader("Referer", "https://www.csn.se/bas/");
         response = urlopen.open("https://www.csn.se/bas/inloggning/pinkod.do");
-        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+        List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("javascript", "on"));
 
         response = urlopen.open("https://www.csn.se/bas/javascript", postData);
 
         postData.clear();
-        
+
         postData.add(new BasicNameValuePair("metod", "validerapinkod"));
         postData.add(new BasicNameValuePair("pnr", username));
         postData.add(new BasicNameValuePair("pinkod", password));
-        return new LoginPackage(urlopen, postData, response, "https://www.csn.se/bas/inloggning/Pinkod.do");
+        return new LoginPackage(urlopen, postData, response,
+                "https://www.csn.se/bas/inloggning/Pinkod.do");
     }
 
     @Override
-	public Urllib login() throws LoginException, BankException, IOException {
+    public Urllib login() throws LoginException, BankException, IOException {
         LoginPackage lp = preLogin();
-		response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-		Matcher matcher = reLoginError.matcher(response);
-		if (matcher.find()) {
-		    throw new LoginException(Html.fromHtml(matcher.group(1)).toString().trim());
-		}
-		if (!response.contains("Inloggad&nbsp;som")) {
-			throw new BankException(res.getText(R.string.unable_to_login).toString());
-		}
-		return urlopen;
-	}
+        response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+        Matcher matcher = reLoginError.matcher(response);
+        if (matcher.find()) {
+            throw new LoginException(Html.fromHtml(matcher.group(1)).toString().trim());
+        }
+        if (!response.contains("Inloggad&nbsp;som")) {
+            throw new BankException(res.getText(R.string.unable_to_login).toString());
+        }
+        return urlopen;
+    }
 
-	@Override
-	public void update() throws BankException, LoginException, BankChoiceException, IOException {
-		super.update();
-		if (username == null || password == null || username.length() == 0 || password.length() == 0) {
-			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-		}
-		urlopen = login();
+    @Override
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
+        super.update();
+        if (username == null || password == null || username.length() == 0
+                || password.length() == 0) {
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+        }
+        urlopen = login();
 
-		response = urlopen.open("https://www.csn.se/aterbetalning/hurStorArMinSkuld/aktuellStudieskuld.do?javascript=off");
-		Matcher matcher;
-		matcher = reBalance.matcher(response);
-		int i = 0;
-		while (matcher.find()) {
+        response = urlopen.open(
+                "https://www.csn.se/aterbetalning/hurStorArMinSkuld/aktuellStudieskuld.do?javascript=off");
+        Matcher matcher;
+        matcher = reBalance.matcher(response);
+        int i = 0;
+        while (matcher.find()) {
             /*
              * Capture groups:
              * GROUP                EXAMPLE DATA
@@ -138,34 +160,37 @@ public class CSN extends Bank {
              * 3: Amount            123,456
              *
              */
-		    BigDecimal amount = Helpers.parseBalance(matcher.group(3).replace(",", "")).negate();
-		    Account account = new Account(
+            BigDecimal amount = Helpers.parseBalance(matcher.group(3).replace(",", "")).negate();
+            Account account = new Account(
                     Html.fromHtml(matcher.group(2)).toString().trim(),
                     amount,
                     matcher.group(1).trim(),
                     Account.LOANS);
-		    if (i > 0) {
-		        account.setAliasfor("0");
-		    }
-			accounts.add(account);
-			balance = balance.add(amount);
-			i++;
-		}
-			
-		if (accounts.isEmpty()) {
-			throw new BankException(res.getText(R.string.no_accounts_found).toString());
-	    }
+            if (i > 0) {
+                account.setAliasfor("0");
+            }
+            accounts.add(account);
+            balance = balance.add(amount);
+            i++;
+        }
+
+        if (accounts.isEmpty()) {
+            throw new BankException(res.getText(R.string.no_accounts_found).toString());
+        }
         super.updateComplete();
-	}
-	
+    }
+
     @Override
     public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
             BankException, IOException {
         super.updateTransactions(account, urlopen);
-        if (account.getAliasfor() == null || account.getAliasfor().length() == 0) return;
-        
+        if (account.getAliasfor() == null || account.getAliasfor().length() == 0) {
+            return;
+        }
+
         Matcher matcher;
-        response = urlopen.open("https://www.csn.se/studiemedel/utbetalningar/utbetalningar.do?javascript=off");
+        response = urlopen.open(
+                "https://www.csn.se/studiemedel/utbetalningar/utbetalningar.do?javascript=off");
         matcher = reTransactions.matcher(response);
         ArrayList<Transaction> transactions = new ArrayList<Transaction>();
         while (matcher.find()) {
@@ -179,10 +204,12 @@ public class CSN extends Bank {
              *
              */
             transactions.add(new Transaction(matcher.group(1).trim(),
-                    Html.fromHtml(matcher.group(2)).toString().trim()+ " ("+Html.fromHtml(matcher.group(3)).toString().trim()+")",
+                    Html.fromHtml(matcher.group(2)).toString().trim() + " (" + Html
+                            .fromHtml(matcher.group(3)).toString().trim() + ")",
                     Helpers.parseBalance(matcher.group(4).replace(",", ""))));
         }
-        response = urlopen.open("https://www.csn.se/aterbetalning/vadSkallJagBetalUnderAret/betalningstillfallen.do?javascript=off");
+        response = urlopen.open(
+                "https://www.csn.se/aterbetalning/vadSkallJagBetalUnderAret/betalningstillfallen.do?javascript=off");
         matcher = reTransactions.matcher(response);
         while (matcher.find()) {
             /*
@@ -195,11 +222,13 @@ public class CSN extends Bank {
              *
              */
             transactions.add(new Transaction(matcher.group(1).trim(),
-                    Html.fromHtml(matcher.group(2)).toString().trim()+ " ("+Html.fromHtml(matcher.group(3)).toString().trim()+")",
+                    Html.fromHtml(matcher.group(2)).toString().trim() + " (" + Html
+                            .fromHtml(matcher.group(3)).toString().trim() + ")",
                     Helpers.parseBalance(matcher.group(4).replace(",", "")).negate()));
         }
 
-        response = urlopen.open("https://www.csn.se/aterbetalning/harMinaInbetalningarKommitIn/registreradeInbetalningar.do?javascript=off");
+        response = urlopen.open(
+                "https://www.csn.se/aterbetalning/harMinaInbetalningarKommitIn/registreradeInbetalningar.do?javascript=off");
         matcher = reCompletedPayments.matcher(response);
         while (matcher.find()) {
             /*
@@ -217,5 +246,5 @@ public class CSN extends Bank {
 
         Collections.sort(transactions, Collections.reverseOrder());
         account.setTransactions(transactions);
-    }	
+    }
 }

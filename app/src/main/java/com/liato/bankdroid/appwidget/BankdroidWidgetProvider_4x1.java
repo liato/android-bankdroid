@@ -17,6 +17,6 @@
 package com.liato.bankdroid.appwidget;
 
 
-
 public class BankdroidWidgetProvider_4x1 extends BankdroidWidgetProvider {
+
 }

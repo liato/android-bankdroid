@@ -1,7 +1,5 @@
 package com.liato.bankdroid.banking.banks.seb.model;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
@@ -12,12 +10,16 @@ public class Request implements Serializable {
 
     @JsonProperty("ResultInfo")
     private Object resultInfo;
+
     @JsonProperty("VODB")
     private VODB vODB;
+
     @JsonProperty("ServiceInput")
     private List<ServiceInput> serviceInput = new ArrayList<ServiceInput>();
+
     @JsonProperty("UserCredentials")
     private UserCredentials userCredentials;
+
     @JsonProperty("ServiceInfo")
     private Object serviceInfo;
 

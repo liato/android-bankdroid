@@ -16,8 +16,7 @@
 
 package com.liato.bankdroid.provider;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.liato.bankdroid.db.DatabaseHelper;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -31,203 +30,214 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.liato.bankdroid.db.DatabaseHelper;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
  * This is the implementation of the BankTransactionsProvider. It provides
  * access to the transaction data for specific banks.
  * </p>
- * 
+ *
  * @author Magnus Andersson
- * @since 8 jan 2011
  * @see IBankTransactionsProvider
+ * @since 8 jan 2011
  */
 public class BankTransactionsProvider extends ContentProvider implements
-		IBankTransactionsProvider {
+        IBankTransactionsProvider {
 
-	private static final String CONTENT_PROVIDER_ENABLED = "content_provider_enabled";
-	private static final String CONTENT_PROVIDER_API_KEY = "content_provider_api_key";
+    private static final String CONTENT_PROVIDER_ENABLED = "content_provider_enabled";
 
-	private final static String TAG = "BankTransactionsProvider";
-	private final static int TRANSACTIONS = 0;
-	private final static int BANK_ACCOUNTS = 1;
-	private static final String WILD_CARD = "*";
+    private static final String CONTENT_PROVIDER_API_KEY = "content_provider_api_key";
 
-	private static final String BANK_TABLE = "banks"; 
-	private static final String ACCOUNT_TABLE = "accounts";
-	private static final String BANK_ACCOUNT_TABLES = BANK_TABLE + " LEFT JOIN " + ACCOUNT_TABLE + " ON banks."
-			+ BANK_ID + " = accounts.bankid";
-	private static final String TRANSACTIONS_TABLE = "transactions";
+    private final static String TAG = "BankTransactionsProvider";
 
-	private DatabaseHelper dbHelper;
-	private final static UriMatcher uriMatcher;
-	private final static Map<String, String> bankAccountProjectionMap;
-	private final static Map<String, String> transProjectionMap;
+    private final static int TRANSACTIONS = 0;
 
-	static {
-		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-		uriMatcher.addURI(AUTHORITY, TRANSACTIONS_CAT + "/" + WILD_CARD,
-				TRANSACTIONS);
-		uriMatcher.addURI(AUTHORITY, BANK_ACCOUNTS_CAT + "/" + WILD_CARD,
-				BANK_ACCOUNTS);
+    private final static int BANK_ACCOUNTS = 1;
 
-		// Projections are "Poor mans views" of the data.
-		bankAccountProjectionMap = new HashMap<String, String>();
+    private static final String WILD_CARD = "*";
 
-		// Must match bankAccountProjection in
-		// IBankTransactionsProvider#bankAccountProjection
-		bankAccountProjectionMap.put(BANK_ID, BANK_ID);
-		bankAccountProjectionMap.put(BANK_NAME, BANK_NAME);
-		bankAccountProjectionMap.put(BANK_TYPE, BANK_TYPE);
-		bankAccountProjectionMap.put(BANK_LAST_UPDATED, BANK_LAST_UPDATED);
-		bankAccountProjectionMap.put(ACC_ID, ACC_ID);
-		bankAccountProjectionMap.put(ACC_NAME, ACC_NAME);
-		// Table name has to be explicitly included here since Banks also have a column named balance.
-		bankAccountProjectionMap.put(ACC_BALANCE, ACCOUNT_TABLE + "." + ACC_BALANCE); 
-		bankAccountProjectionMap.put(ACC_TYPE, ACC_TYPE);
+    private static final String BANK_TABLE = "banks";
 
-		transProjectionMap = new HashMap<String, String>();
+    private static final String ACCOUNT_TABLE = "accounts";
 
-		// Must match transactionProjection in
-		// IBankTransactionsProvider#transactionProjection
-		transProjectionMap.put(TRANS_ID, TRANS_ID);
-		transProjectionMap.put(TRANS_DATE, TRANS_DATE);
-		transProjectionMap.put(TRANS_DESC, TRANS_DESC);
-		transProjectionMap.put(TRANS_AMT, TRANS_AMT);
-		transProjectionMap.put(TRANS_CUR, TRANS_CUR);
-		transProjectionMap.put(TRANS_ACCNT, TRANS_ACCNT);
-	}
+    private static final String BANK_ACCOUNT_TABLES = BANK_TABLE + " LEFT JOIN " + ACCOUNT_TABLE
+            + " ON banks."
+            + BANK_ID + " = accounts.bankid";
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int delete(final Uri uri, final String selection,
-			final String[] selectionArgs) {
-		throw new UnsupportedOperationException(
-				"This provider does not implement the delete method");
-	}
+    private static final String TRANSACTIONS_TABLE = "transactions";
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getType(final Uri uri) {
-		Log.d(TAG, "Got URI " + uri.toString());
+    private final static UriMatcher uriMatcher;
 
-		switch (uriMatcher.match(uri)) {
-		case BANK_ACCOUNTS:
-			return BANK_ACCOUNTS_MIME;
-		case TRANSACTIONS:
-			return TRANSACTIONS_MIME;
-		default:
-			throw new IllegalArgumentException("Unsupported URI: " + uri);
-		}
-	}
+    private final static Map<String, String> bankAccountProjectionMap;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Uri insert(final Uri uri, final ContentValues values) {
-		throw new UnsupportedOperationException(
-				"This provider does not implement the insert method");
-	}
+    private final static Map<String, String> transProjectionMap;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean onCreate() {
-		dbHelper = DatabaseHelper.getHelper(getContext());
-		return true;
-	}
+    static {
+        uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+        uriMatcher.addURI(AUTHORITY, TRANSACTIONS_CAT + "/" + WILD_CARD,
+                TRANSACTIONS);
+        uriMatcher.addURI(AUTHORITY, BANK_ACCOUNTS_CAT + "/" + WILD_CARD,
+                BANK_ACCOUNTS);
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Cursor query(final Uri uri, final String[] projection,
-			final String selection, final String[] selectionArgs,
-			final String sortOrder) {
+        // Projections are "Poor mans views" of the data.
+        bankAccountProjectionMap = new HashMap<String, String>();
 
-		if (!isApiKeyEnabled(getContext())) {
-			return null;
-		}
+        // Must match bankAccountProjection in
+        // IBankTransactionsProvider#bankAccountProjection
+        bankAccountProjectionMap.put(BANK_ID, BANK_ID);
+        bankAccountProjectionMap.put(BANK_NAME, BANK_NAME);
+        bankAccountProjectionMap.put(BANK_TYPE, BANK_TYPE);
+        bankAccountProjectionMap.put(BANK_LAST_UPDATED, BANK_LAST_UPDATED);
+        bankAccountProjectionMap.put(ACC_ID, ACC_ID);
+        bankAccountProjectionMap.put(ACC_NAME, ACC_NAME);
+        // Table name has to be explicitly included here since Banks also have a column named balance.
+        bankAccountProjectionMap.put(ACC_BALANCE, ACCOUNT_TABLE + "." + ACC_BALANCE);
+        bankAccountProjectionMap.put(ACC_TYPE, ACC_TYPE);
 
-		final String apiKey = uri.getPathSegments().get(1);
+        transProjectionMap = new HashMap<String, String>();
 
-		Log.d(TAG, "Trying to access database with " + apiKey);
+        // Must match transactionProjection in
+        // IBankTransactionsProvider#transactionProjection
+        transProjectionMap.put(TRANS_ID, TRANS_ID);
+        transProjectionMap.put(TRANS_DATE, TRANS_DATE);
+        transProjectionMap.put(TRANS_DESC, TRANS_DESC);
+        transProjectionMap.put(TRANS_AMT, TRANS_AMT);
+        transProjectionMap.put(TRANS_CUR, TRANS_CUR);
+        transProjectionMap.put(TRANS_ACCNT, TRANS_ACCNT);
+    }
 
-		if (!apiKey.startsWith(API_KEY, 0)) {
-			return null;
-			// throw new IllegalArgumentException(API_KEY +
-			// "<API-KEY> must be a part of the URI!");
-		}
+    private DatabaseHelper dbHelper;
 
-		final String key = apiKey.replace(API_KEY, "");
+    public static String getApiKey(final Context ctx) {
+        final SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(ctx);
+        if (!prefs.getBoolean(CONTENT_PROVIDER_ENABLED, false)) {
+            throw new IllegalStateException(
+                    "Access to Content Provider is not enabled.");
+        }
 
-		if (!key.equals(getApiKey(getContext()))) {
-			return null;
-			// throw new
-			// IllegalAccessError("The supplied API_KEY does not exist");
-		}
+        final String apiKey = prefs.getString(CONTENT_PROVIDER_API_KEY, "");
 
-		final SQLiteDatabase db = dbHelper.getReadableDatabase();
-		SQLiteQueryBuilder qb;
+        if (apiKey.equals("")) {
+            throw new IllegalArgumentException("The API-Key must be set.");
+        }
 
-		if (BANK_ACCOUNTS_MIME.equals(getType(uri))) {
-			qb = new SQLiteQueryBuilder();
-			qb.setTables(BANK_ACCOUNT_TABLES);
-			qb.setProjectionMap(bankAccountProjectionMap);
-			qb.setDistinct(true);
-		} else if (TRANSACTIONS_MIME.equals(getType(uri))) {
-			qb = new SQLiteQueryBuilder();
-			qb.setTables(TRANSACTIONS_TABLE);
-			qb.setProjectionMap(transProjectionMap);
-		} else {
-			throw new IllegalArgumentException("Unsupported URI: " + uri);
-		}
+        return apiKey;
+    }
 
-				
-		final Cursor cur = qb.query(db, projection, selection, selectionArgs,
-				null, null, sortOrder);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int delete(final Uri uri, final String selection,
+            final String[] selectionArgs) {
+        throw new UnsupportedOperationException(
+                "This provider does not implement the delete method");
+    }
 
-		cur.setNotificationUri(getContext().getContentResolver(), uri);
-		return cur;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getType(final Uri uri) {
+        Log.d(TAG, "Got URI " + uri.toString());
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int update(final Uri uri, final ContentValues values,
-			final String selection, final String[] selectionArgs) {
-		throw new UnsupportedOperationException(
-				"This provider does not implement the update method");
-	}
+        switch (uriMatcher.match(uri)) {
+            case BANK_ACCOUNTS:
+                return BANK_ACCOUNTS_MIME;
+            case TRANSACTIONS:
+                return TRANSACTIONS_MIME;
+            default:
+                throw new IllegalArgumentException("Unsupported URI: " + uri);
+        }
+    }
 
-	public static String getApiKey(final Context ctx) {
-		final SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(ctx);
-		if (!prefs.getBoolean(CONTENT_PROVIDER_ENABLED, false)) {
-			throw new IllegalStateException(
-					"Access to Content Provider is not enabled.");
-		}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Uri insert(final Uri uri, final ContentValues values) {
+        throw new UnsupportedOperationException(
+                "This provider does not implement the insert method");
+    }
 
-		final String apiKey = prefs.getString(CONTENT_PROVIDER_API_KEY, "");
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onCreate() {
+        dbHelper = DatabaseHelper.getHelper(getContext());
+        return true;
+    }
 
-		if (apiKey.equals("")) {
-			throw new IllegalArgumentException("The API-Key must be set.");
-		}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Cursor query(final Uri uri, final String[] projection,
+            final String selection, final String[] selectionArgs,
+            final String sortOrder) {
 
-		return apiKey;
-	}
+        if (!isApiKeyEnabled(getContext())) {
+            return null;
+        }
 
-	private boolean isApiKeyEnabled(final Context ctx) {
-		final SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(ctx);
-		return prefs.getBoolean(CONTENT_PROVIDER_ENABLED, false);
-	}
+        final String apiKey = uri.getPathSegments().get(1);
+
+        Log.d(TAG, "Trying to access database with " + apiKey);
+
+        if (!apiKey.startsWith(API_KEY, 0)) {
+            return null;
+            // throw new IllegalArgumentException(API_KEY +
+            // "<API-KEY> must be a part of the URI!");
+        }
+
+        final String key = apiKey.replace(API_KEY, "");
+
+        if (!key.equals(getApiKey(getContext()))) {
+            return null;
+            // throw new
+            // IllegalAccessError("The supplied API_KEY does not exist");
+        }
+
+        final SQLiteDatabase db = dbHelper.getReadableDatabase();
+        SQLiteQueryBuilder qb;
+
+        if (BANK_ACCOUNTS_MIME.equals(getType(uri))) {
+            qb = new SQLiteQueryBuilder();
+            qb.setTables(BANK_ACCOUNT_TABLES);
+            qb.setProjectionMap(bankAccountProjectionMap);
+            qb.setDistinct(true);
+        } else if (TRANSACTIONS_MIME.equals(getType(uri))) {
+            qb = new SQLiteQueryBuilder();
+            qb.setTables(TRANSACTIONS_TABLE);
+            qb.setProjectionMap(transProjectionMap);
+        } else {
+            throw new IllegalArgumentException("Unsupported URI: " + uri);
+        }
+
+        final Cursor cur = qb.query(db, projection, selection, selectionArgs,
+                null, null, sortOrder);
+
+        cur.setNotificationUri(getContext().getContentResolver(), uri);
+        return cur;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int update(final Uri uri, final ContentValues values,
+            final String selection, final String[] selectionArgs) {
+        throw new UnsupportedOperationException(
+                "This provider does not implement the update method");
+    }
+
+    private boolean isApiKeyEnabled(final Context ctx) {
+        final SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(ctx);
+        return prefs.getBoolean(CONTENT_PROVIDER_ENABLED, false);
+    }
 }

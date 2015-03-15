@@ -1,26 +1,24 @@
 package com.liato.bankdroid.banking.banks;
 
-import android.content.Context;
-import android.text.InputType;
-import android.util.Log;
-
-import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.banking.Account;
-import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.provider.IBankTypes;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.message.BasicNameValuePair;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import android.content.Context;
+import android.text.InputType;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -31,20 +29,34 @@ import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class SveaDirekt extends Bank {
+
     private static final String TAG = "SveaDirekt";
+
     private static final String NAME = "Svea Direkt";
+
     private static final String NAME_SHORT = "sveadirekt";
+
     private static final String URL = "https://http://www.sveadirekt.com/sv/swe//";
+
     private static final int BANKTYPE_ID = IBankTypes.SVEADIREKT;
+
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+
     private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_TEXT;
+
     private static final String INPUT_HINT_USERNAME = "YYMMDDXXXX";
 
 
     private static final String BASE_URL = "https://services.sveadirekt.se/mypages/sv/";
-    private static final String LOGIN_URL = "https://services.sveadirekt.se/mypages/sv/j_security_check";
-    private static final String ACCOUNTS_URL = "https://services.sveadirekt.se/faces/WEB-INF/britney_jsp_s/home.jsp";
-    private static final String TRANSACTIONS_URL = "https://services.sveadirekt.se/faces/WEB-INF/britney_jsp_s/balance.jsp";
+
+    private static final String LOGIN_URL
+            = "https://services.sveadirekt.se/mypages/sv/j_security_check";
+
+    private static final String ACCOUNTS_URL
+            = "https://services.sveadirekt.se/faces/WEB-INF/britney_jsp_s/home.jsp";
+
+    private static final String TRANSACTIONS_URL
+            = "https://services.sveadirekt.se/faces/WEB-INF/britney_jsp_s/balance.jsp";
 
     private String response;
 
@@ -69,8 +81,10 @@ public class SveaDirekt extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException, IOException {
         if (urlopen == null) {
-            urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_sveadirekt));
-            urlopen.getHttpclient().getParams().setParameter(ClientPNames.ALLOW_CIRCULAR_REDIRECTS, true);
+            urlopen = new Urllib(context,
+                    CertificateReader.getCertificates(context, R.raw.cert_sveadirekt));
+            urlopen.getHttpclient().getParams().setParameter(ClientPNames.ALLOW_CIRCULAR_REDIRECTS,
+                    true);
         }
         response = urlopen
                 .open(BASE_URL);
@@ -94,7 +108,7 @@ public class SveaDirekt extends Bank {
         response = urlopen.open(LOGIN_URL, lp.getPostData());
         if (response.contains("error-failed-to-login")) {
             throw new LoginException(res.getText(
-                        R.string.invalid_username_password).toString());
+                    R.string.invalid_username_password).toString());
         }
         return urlopen;
     }
@@ -111,9 +125,9 @@ public class SveaDirekt extends Bank {
         urlopen = login();
 
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("homeForm:balance","Saldo"));
-        postData.add(new BasicNameValuePair("homeForm","homeForm"));
-        response = urlopen.open(ACCOUNTS_URL,postData);
+        postData.add(new BasicNameValuePair("homeForm:balance", "Saldo"));
+        postData.add(new BasicNameValuePair("homeForm", "homeForm"));
+        response = urlopen.open(ACCOUNTS_URL, postData);
         Document doc = Jsoup.parse(response);
         ArrayList<Account> accounts = parseAccounts(doc);
 
@@ -140,8 +154,8 @@ public class SveaDirekt extends Bank {
         ArrayList<Account> accountList = new ArrayList<Account>();
         Element element = pDocument.getElementById("balanceForm:accountsList");
         Elements accounts = element.select("td a[href=#]");
-        for (int i = 0; i<accounts.size(); i++) {
-            Account account = new Account("",BigDecimal.ZERO,Integer.toString(i));
+        for (int i = 0; i < accounts.size(); i++) {
+            Account account = new Account("", BigDecimal.ZERO, Integer.toString(i));
             accountList.add(account);
         }
         return accountList;
@@ -170,23 +184,24 @@ public class SveaDirekt extends Bank {
 
             Elements vTransactionElement = element.select("td");
 
-           BigDecimal amount = new BigDecimal(vTransactionElement.get(1).text()
+            BigDecimal amount = new BigDecimal(vTransactionElement.get(1).text()
                     .replaceAll("[^\\d-]", ""));
             String description = vTransactionElement.get(2).text();
             if (description == null || description.isEmpty()) {
-               description = amount.compareTo(BigDecimal.ZERO) > 0 ? "Insättning"
-                                : "Uttag";
+                description = amount.compareTo(BigDecimal.ZERO) > 0 ? "Insättning"
+                        : "Uttag";
             }
             String date = vTransactionElement.first().text();
-            vTransactions.add(new Transaction(date,description,amount));
+            vTransactions.add(new Transaction(date, description, amount));
         }
         return vTransactions;
     }
 
-    List<NameValuePair>  createTransactionParams(Account pAccount) {
+    List<NameValuePair> createTransactionParams(Account pAccount) {
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("balanceForm", "balanceForm"));
-        postData.add(new BasicNameValuePair("balanceForm:_idcl","balanceForm:accountsList:"+pAccount.getId()+":_id15"));
+        postData.add(new BasicNameValuePair("balanceForm:_idcl",
+                "balanceForm:accountsList:" + pAccount.getId() + ":_id15"));
         return postData;
     }
 }

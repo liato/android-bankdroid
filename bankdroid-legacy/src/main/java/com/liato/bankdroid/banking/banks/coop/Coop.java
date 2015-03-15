@@ -16,13 +16,9 @@
 
 package com.liato.bankdroid.banking.banks.coop;
 
-import android.content.Context;
-import android.text.TextUtils;
-
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.liato.bankdroid.Helpers;
-import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
@@ -31,6 +27,7 @@ import com.liato.bankdroid.banking.banks.coop.model.web.WebTransactionHistoryRes
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.provider.IBankTypes;
 
 import org.apache.http.HttpResponse;
@@ -39,6 +36,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import android.content.Context;
+import android.text.TextUtils;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -54,81 +54,35 @@ import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Coop extends Bank {
+
     private static final String TAG = "Coop";
+
     private static final String NAME = "Coop";
+
     private static final String NAME_SHORT = "coop";
+
     private static final String URL = "https://www.coop.se/mina-sidor/oversikt/";
+
     private static final int BANKTYPE_ID = IBankTypes.COOP;
+
     private static final Map<String, String> MONTHS = new HashMap<>();
+
     static {
-        String[] ms = new String[] {"januari", "februari", "mars", "april", "maj", "juni", "juli", "augusti", "september", "oktober", "november", "december"};
+        String[] ms = new String[]{"januari", "februari", "mars", "april", "maj", "juni", "juli",
+                "augusti", "september", "oktober", "november", "december"};
         for (int i = 0; i < ms.length; i++) {
-            MONTHS.put(ms[i], String.format("%02d", i+1));
+            MONTHS.put(ms[i], String.format("%02d", i + 1));
         }
     }
 
-    enum AccountType {
-        MEDMERA_KONTO("konto_", "https://www.coop.se/Mina-sidor/Oversikt/MedMera-Konto/"),
-        MEDMERA_EFTER("efter_", "https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Efter/"),
-        MEDMERA_EFTER1("efter1_", "https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Efter1/"),
-        MEDMERA_FORE("fore_", "https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Fore/"),
-        MEDMERA_MER("mer_", "https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Mer/"),
-        MEDMERA_VISA("visa_", "https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Visa/");
+    private final Pattern rePageGuid = Pattern
+            .compile("pageGuid\"\\s*:\\s*\"([^\"]+)", Pattern.CASE_INSENSITIVE);
 
-        final String prefix;
-        final String url;
-        private AccountType(String prefix, String url) {
-            this.prefix = prefix;
-            this.url = url;
-        }
-
-        public String getPrefix() {
-            return prefix;
-        }
-
-        public String getUrl() {
-            return url;
-        }
-    }
-
-    class TransactionParams {
-        String pageGuid;
-        String minDate;
-        String maxDate;
-
-        public String getPageGuid() {
-            return pageGuid;
-        }
-
-        public void setPageGuid(String pageGuid) {
-            this.pageGuid = pageGuid;
-        }
-
-        public String getMinDate() {
-            return minDate;
-        }
-
-        public void setMinDate(String minDate) {
-            this.minDate = minDate;
-        }
-
-        public String getMaxDate() {
-            return maxDate;
-        }
-
-        public void setMaxDate(String maxDate) {
-            this.maxDate = maxDate;
-        }
-
-        public boolean isValid() {
-            return pageGuid != null && minDate != null && maxDate != null;
-        }
-    }
-
-    private final Pattern rePageGuid = Pattern.compile("pageGuid\"\\s*:\\s*\"([^\"]+)", Pattern.CASE_INSENSITIVE);
-    private ObjectMapper mObjectMapper;
-    private String response;
     private final Map<AccountType, TransactionParams> mTransactionParams = new HashMap<>();
+
+    private ObjectMapper mObjectMapper;
+
+    private String response;
 
     public Coop(Context context) {
         super(context);
@@ -151,17 +105,19 @@ public class Coop extends Bank {
             IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_coop));
         urlopen.addHeader("X-Requested-With", "XMLHttpRequest");
-        HttpResponse httpResponse = urlopen.openAsHttpResponse("https://www.coop.se/Personliga-Baren/Logga-in/?method=Login",
-                new StringEntity("{\"isBar\":\"true\",\"username\":\"" + username + "\",\"password\":\"" + password + "\"}"),
-                true);
+        HttpResponse httpResponse = urlopen
+                .openAsHttpResponse("https://www.coop.se/Personliga-Baren/Logga-in/?method=Login",
+                        new StringEntity("{\"isBar\":\"true\",\"username\":\"" + username
+                                + "\",\"password\":\"" + password + "\"}"),
+                        true);
         urlopen.removeHeader("X-Requested-With");
-        LoginPackage lp = new LoginPackage(urlopen, null, response, "https://www.coop.se/Mina-sidor/Oversikt/");
+        LoginPackage lp = new LoginPackage(urlopen, null, response,
+                "https://www.coop.se/Mina-sidor/Oversikt/");
         if (httpResponse.getStatusLine().getStatusCode() == 200) {
             lp.setIsLoggedIn(true);
         }
         return lp;
     }
-
 
     @Override
     public Urllib login() throws LoginException, BankException, IOException {
@@ -175,7 +131,8 @@ public class Coop extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0 || password.length() == 0) {
+        if (username == null || password == null || username.length() == 0
+                || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 
@@ -200,9 +157,13 @@ public class Coop extends Bank {
                     transactions.add(new Transaction(
                             formatDate(e.select(".Timeline-header .u-nbfcAlt span").text()),
                             e.select(".u-block").text(),
-                            Helpers.parseBalance(e.select(".Timeline-header .Timeline-title").first().ownText()), ""));
+                            Helpers.parseBalance(
+                                    e.select(".Timeline-header .Timeline-title").first().ownText()),
+                            ""));
                 }
-            } finally { continue; }
+            } finally {
+                continue;
+            }
         }
         accounts.add(poang);
         for (AccountType at : AccountType.values()) {
@@ -234,7 +195,8 @@ public class Coop extends Bank {
                     values.add(e.text().trim());
                 }
                 for (int i = 0; i < Math.min(names.size(), values.size()); i++) {
-                    Account a = new Account(names.get(i), Helpers.parseBalance(values.get(i)), String.format("%s%d", at.getPrefix(), i));
+                    Account a = new Account(names.get(i), Helpers.parseBalance(values.get(i)),
+                            String.format("%s%d", at.getPrefix(), i));
                     a.setCurrency(Helpers.parseCurrency(values.get(i), "SEK"));
                     if (a.getName().toLowerCase().contains("disponibelt")) {
                         a.setType(Account.REGULAR);
@@ -252,9 +214,9 @@ public class Coop extends Bank {
             }
         }
 
-
         try {
-            response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/Information-om-aterbaringen/");
+            response = urlopen
+                    .open("https://www.coop.se/Mina-sidor/Oversikt/Information-om-aterbaringen/");
             dResponse = Jsoup.parse(response);
             Account a = new Account("Återbäring",
                     Helpers.parseBalance(dResponse.select(".Heading--coopNew").text()),
@@ -280,24 +242,34 @@ public class Coop extends Bank {
     }
 
     @Override
-    public void updateTransactions(Account account, Urllib urlopen) throws LoginException, BankException {
+    public void updateTransactions(Account account, Urllib urlopen)
+            throws LoginException, BankException {
         AccountType at = getAccuntType(account.getId());
         TransactionParams tp = mTransactionParams.get(at);
-        if (at == null || tp == null || !tp.isValid() || !isFirstAccountForType(account.getId())) return;
+        if (at == null || tp == null || !tp.isValid() || !isFirstAccountForType(account.getId())) {
+            return;
+        }
         try {
-            String data = URLEncoder.encode(String.format("{\"page\":1,\"pageSize\":15,\"from\":\"%s\",\"to\":\"%s\"}", tp.getMinDate(), tp.getMaxDate()), "utf-8");
-            String url = String.format("https://www.coop.se/Services/PlainService.svc/JsonExecuteGet?pageGuid=%s&method=GetTransactions&data=%s&_=%s", tp.getPageGuid(), data, System.currentTimeMillis());
-            WebTransactionHistoryResponse transactionsResponse = getObjectmapper().readValue(urlopen.openStream(url), WebTransactionHistoryResponse.class);
+            String data = URLEncoder.encode(String
+                    .format("{\"page\":1,\"pageSize\":15,\"from\":\"%s\",\"to\":\"%s\"}",
+                            tp.getMinDate(), tp.getMaxDate()), "utf-8");
+            String url = String
+                    .format("https://www.coop.se/Services/PlainService.svc/JsonExecuteGet?pageGuid=%s&method=GetTransactions&data=%s&_=%s",
+                            tp.getPageGuid(), data, System.currentTimeMillis());
+            WebTransactionHistoryResponse transactionsResponse = getObjectmapper()
+                    .readValue(urlopen.openStream(url), WebTransactionHistoryResponse.class);
             if (transactionsResponse != null && transactionsResponse.getModel() != null) {
                 List<Transaction> transactions = new ArrayList<>();
                 account.setTransactions(transactions);
                 for (Result r : transactionsResponse.getModel().getResults()) {
-                    StringBuilder title = new StringBuilder(!TextUtils.isEmpty(r.getLocation()) ? r.getLocation() : r.getTitle());
+                    StringBuilder title = new StringBuilder(
+                            !TextUtils.isEmpty(r.getLocation()) ? r.getLocation() : r.getTitle());
                     if (!TextUtils.isEmpty(r.getCardholder())) {
                         title.append(" (").append(r.getCardholder()).append(")");
                     }
                     if (r.getDate() != null) {
-                        transactions.add(new Transaction(formatDate(r.getDate()), title.toString(), BigDecimal.valueOf(r.getSum())));
+                        transactions.add(new Transaction(formatDate(r.getDate()), title.toString(),
+                                BigDecimal.valueOf(r.getSum())));
                     }
                 }
             }
@@ -308,9 +280,12 @@ public class Coop extends Bank {
 
     private String formatDate(String date) {
         String[] parts = date.split(" ");
-        if( parts.length < 3)
+        if (parts.length < 3) {
             return "";
-        return String.format("%s-%s-%02d", parts[2], MONTHS.containsKey(parts[1].toLowerCase()) ? MONTHS.get(parts[1].toLowerCase()) : "01", Integer.parseInt(parts[0]));
+        }
+        return String.format("%s-%s-%02d", parts[2],
+                MONTHS.containsKey(parts[1].toLowerCase()) ? MONTHS.get(parts[1].toLowerCase())
+                        : "01", Integer.parseInt(parts[0]));
     }
 
     private boolean isFirstAccountForType(String accountId) {
@@ -329,5 +304,70 @@ public class Coop extends Bank {
             }
         }
         return null;
+    }
+
+    enum AccountType {
+        MEDMERA_KONTO("konto_", "https://www.coop.se/Mina-sidor/Oversikt/MedMera-Konto/"),
+        MEDMERA_EFTER("efter_",
+                "https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Efter/"),
+        MEDMERA_EFTER1("efter1_",
+                "https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Efter1/"),
+        MEDMERA_FORE("fore_", "https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Fore/"),
+        MEDMERA_MER("mer_", "https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Mer/"),
+        MEDMERA_VISA("visa_", "https://www.coop.se/Mina-sidor/Oversikt/Kontoutdrag-MedMera-Visa/");
+
+        final String prefix;
+
+        final String url;
+
+        private AccountType(String prefix, String url) {
+            this.prefix = prefix;
+            this.url = url;
+        }
+
+        public String getPrefix() {
+            return prefix;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+    }
+
+    class TransactionParams {
+
+        String pageGuid;
+
+        String minDate;
+
+        String maxDate;
+
+        public String getPageGuid() {
+            return pageGuid;
+        }
+
+        public void setPageGuid(String pageGuid) {
+            this.pageGuid = pageGuid;
+        }
+
+        public String getMinDate() {
+            return minDate;
+        }
+
+        public void setMinDate(String minDate) {
+            this.minDate = minDate;
+        }
+
+        public String getMaxDate() {
+            return maxDate;
+        }
+
+        public void setMaxDate(String maxDate) {
+            this.maxDate = maxDate;
+        }
+
+        public boolean isValid() {
+            return pageGuid != null && minDate != null && maxDate != null;
+        }
     }
 }

@@ -16,6 +16,11 @@
 
 package com.liato.bankdroid;
 
+import com.liato.bankdroid.banking.Account;
+import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.BankFactory;
+import com.liato.bankdroid.banking.Transaction;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,16 +32,12 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.liato.bankdroid.banking.Account;
-import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.BankFactory;
-import com.liato.bankdroid.banking.Transaction;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class TransactionsActivity extends LockableActivity {
+
     final static String TAG = "TransactionActivity";
 
     @Override
@@ -46,12 +47,14 @@ public class TransactionsActivity extends LockableActivity {
         setContentView(R.layout.transactions);
         Bundle extras = getIntent().getExtras();
         Bank bank = BankFactory.bankFromDb(extras.getLong("bank"), this, false);
-        if(bank == null) {
+        if (bank == null) {
             redirectToMain(getString(R.string.error_bank_not_found));
             return;
         }
-        Account account = BankFactory.accountFromDb(this, extras.getLong("bank") + "_" + extras.getString("account"), true);
-        if(account == null) {
+        Account account = BankFactory
+                .accountFromDb(this, extras.getLong("bank") + "_" + extras.getString("account"),
+                        true);
+        if (account == null) {
             redirectToMain(getString(R.string.error_account_not_found));
             return;
         }
@@ -62,7 +65,8 @@ public class TransactionsActivity extends LockableActivity {
         ImageView icon = (ImageView) findViewById(R.id.imgListitemAccountsGroup);
         viewBankName.setText(bank.getDisplayName());
         viewAccountName.setText(account.getName());
-        viewAccountBalance.setText(Helpers.formatBalance(account.getBalance(), account.getCurrency()));
+        viewAccountBalance
+                .setText(Helpers.formatBalance(account.getBalance(), account.getCurrency()));
         icon.setImageResource(bank.getImageResource());
         List<Transaction> transactions = account.getTransactions();
 
@@ -86,8 +90,17 @@ public class TransactionsActivity extends LockableActivity {
         super.onResume();
     }
 
+    private void redirectToMain(String errorMessage) {
+        final Intent intent = new Intent(this, MainActivity.class);
+        ((BankdroidApplication) getApplicationContext())
+                .setApplicationMessage(getString(R.string.error_bank_not_found));
+        startActivity(intent);
+    }
+
     private class TransactionsAdapter extends BaseAdapter {
+
         private LayoutInflater inflater;
+
         private ArrayList<Object> items = new ArrayList<Object>();
 
         public TransactionsAdapter(List<Transaction> transactions) {
@@ -106,16 +119,21 @@ public class TransactionsActivity extends LockableActivity {
             }
         }
 
-        public View newTransactionView(Transaction transaction, ViewGroup parent, View convertView) {
+        public View newTransactionView(Transaction transaction, ViewGroup parent,
+                View convertView) {
             if (convertView == null) {
                 convertView = inflater.inflate(R.layout.transaction_item, parent, false);
             }
-            ((TextView) convertView.findViewById(R.id.txtTransaction)).setText(transaction.getTransaction());
-            ((TextView) convertView.findViewById(R.id.txtAmount)).setText(Helpers.formatBalance(transaction.getAmount(), transaction.getCurrency()));
+            ((TextView) convertView.findViewById(R.id.txtTransaction))
+                    .setText(transaction.getTransaction());
+            ((TextView) convertView.findViewById(R.id.txtAmount)).setText(
+                    Helpers.formatBalance(transaction.getAmount(), transaction.getCurrency()));
             if (transaction.getAmount().signum() == 1) {
-                ((ImageView) convertView.findViewById(R.id.imgColor)).setBackgroundResource(R.drawable.transaction_positive);
+                ((ImageView) convertView.findViewById(R.id.imgColor))
+                        .setBackgroundResource(R.drawable.transaction_positive);
             } else {
-                ((ImageView) convertView.findViewById(R.id.imgColor)).setBackgroundResource(R.drawable.transaction_negative);
+                ((ImageView) convertView.findViewById(R.id.imgColor))
+                        .setBackgroundResource(R.drawable.transaction_negative);
             }
             return convertView;
         }
@@ -181,12 +199,6 @@ public class TransactionsActivity extends LockableActivity {
             return 1;
         }
 
-    }
-
-    private void redirectToMain(String errorMessage) {
-        final Intent intent = new Intent(this, MainActivity.class);
-        ((BankdroidApplication) getApplicationContext()).setApplicationMessage(getString(R.string.error_bank_not_found));
-        startActivity(intent);
     }
 
 }

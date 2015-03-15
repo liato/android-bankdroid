@@ -46,9 +46,9 @@ public class Bank {
     }
 
     public List<CorporateProfile> getCorporateProfiles() {
-       if(corporateProfiles == null) {
-           corporateProfiles = new ArrayList<CorporateProfile>();
-       }
+        if (corporateProfiles == null) {
+            corporateProfiles = new ArrayList<CorporateProfile>();
+        }
         return corporateProfiles;
     }
 

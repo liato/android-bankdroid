@@ -51,65 +51,58 @@ import java.io.IOException;
 
 /**
  * Utils for LiveView plugin.
- * 
+ *
  * @author firetech
  */
 public final class PluginUtils {
-    
+
     private PluginUtils() {
-        
+
     }
-    
+
     /**
      * Stores icon to phone file system
-     * 
+     *
      * @param resources Reference to project resources
-     * @param resource Reference to specific resource
-     * @param fileName The icon file name
+     * @param resource  Reference to specific resource
+     * @param fileName  The icon file name
      */
-    public static String storeIconToFile(Context ctx, Resources resources, int resource, String fileName) {
+    public static String storeIconToFile(Context ctx, Resources resources, int resource,
+            String fileName) {
         Log.d(PluginConstants.LOG_TAG, "Store icon to file.");
-        
-        if(resources == null) {
+
+        if (resources == null) {
             return "";
         }
-        
+
         Bitmap bitmap = BitmapFactory.decodeStream(resources.openRawResource(resource));
-        
+
         try {
             FileOutputStream fos = ctx.openFileOutput(fileName, Context.MODE_WORLD_READABLE);
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
             fos.flush();
-            fos.close(); 
-        } 
-        catch (IOException e) { 
+            fos.close();
+        } catch (IOException e) {
             Log.e(PluginConstants.LOG_TAG, "Failed to store to device", e);
         }
-        
+
         File iconFile = ctx.getFileStreamPath(fileName);
         Log.d(PluginConstants.LOG_TAG, "Icon stored. " + iconFile.getAbsolutePath());
-        
+
         return iconFile.getAbsolutePath();
     }
-    
+
     /**
      * Gets resource id dynamically
-     * 
-     * @param context
-     * @param resourceName
-     * @param resourceType
-     * @return
      */
-    public static int getDynamicResourceId(Context context, String resourceName, String resourceType) {
-        return context.getResources().getIdentifier(resourceName, resourceType, context.getPackageName());
+    public static int getDynamicResourceId(Context context, String resourceName,
+            String resourceType) {
+        return context.getResources()
+                .getIdentifier(resourceName, resourceType, context.getPackageName());
     }
-    
+
     /**
      * Gets resource string dynamically
-     * 
-     * @param context
-     * @param resourceName
-     * @return
      */
     public static String getDynamicResourceString(Context context, String resourceName) {
         int resourceId = getDynamicResourceId(context, resourceName, "string");

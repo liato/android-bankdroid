@@ -15,21 +15,26 @@
  */
 package com.liato.bankdroid.banking.banks;
 
-import android.content.Context;
-
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
+import android.content.Context;
+
 import java.io.IOException;
 
 
 public class Shell extends AbsIkanoPartner {
+
     private static final String TAG = "Shell";
+
     private static final String NAME = "Shell MasterCard";
+
     private static final String NAME_SHORT = "shell";
+
     private static final String URL = "https://partner.ikanobank.se/web/ShellCustomerLogin";
+
     private static final int BANKTYPE_ID = Bank.SHELL;
 
     public Shell(Context context) {

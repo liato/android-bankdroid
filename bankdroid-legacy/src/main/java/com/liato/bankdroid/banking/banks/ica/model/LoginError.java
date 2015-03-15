@@ -8,10 +8,13 @@ public class LoginError {
 
     @JsonProperty("Title")
     private String title;
+
     @JsonProperty("MessageCode")
     private String messageCode;
+
     @JsonProperty("PhoneNumber")
     private String phoneNumber;
+
     @JsonProperty("Message")
     private String message;
 

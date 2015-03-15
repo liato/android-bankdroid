@@ -16,15 +16,9 @@
 
 package com.liato.bankdroid.banking.banks.sebkort;
 
-import android.content.Context;
-import android.text.Html;
-import android.text.InputType;
-import android.text.TextUtils;
-
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.liato.bankdroid.Helpers;
-import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
@@ -38,10 +32,15 @@ import com.liato.bankdroid.banking.banks.sebkort.model.response.UserResponse;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
+
+import android.content.Context;
+import android.text.Html;
+import android.text.InputType;
+import android.text.TextUtils;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -55,17 +54,29 @@ import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public abstract class SEBKortBase extends Bank {
+
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
+
     private static final boolean STATIC_BALANCE = true;
+
     private ObjectMapper mObjectMapper = new ObjectMapper();
+
     private String response = null;
+
     private String mProviderPart;
+
     private String mProdgroup;
+
     private String mApiBase;
+
     private int[] mCertificates;
+
     private BasicNameValuePair mParamsTarget;
+
     private BasicNameValuePair mParamsErrorTarget;
+
     private Map<Account, String> mBillingUnitIds = new HashMap<Account, String>();
 
 
@@ -73,12 +84,14 @@ public abstract class SEBKortBase extends Bank {
         this(context, providerPart, prodgroup, "secure.sebkort.com", new int[]{R.raw.cert_sebkort});
     }
 
-    public SEBKortBase(Context context, String providerPart, String prodgroup, String apiBase, int[] certificates) {
+    public SEBKortBase(Context context, String providerPart, String prodgroup, String apiBase,
+            int[] certificates) {
         super(context);
         super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
         super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
         super.STATIC_BALANCE = STATIC_BALANCE;
-        super.URL = String.format("https://%s/nis/m/%s/external/t/login/index", apiBase, providerPart);
+        super.URL = String
+                .format("https://%s/nis/m/%s/external/t/login/index", apiBase, providerPart);
         mProviderPart = providerPart;
         mProdgroup = prodgroup;
         mApiBase = apiBase;
@@ -89,13 +102,15 @@ public abstract class SEBKortBase extends Bank {
         mParamsErrorTarget = new BasicNameValuePair("errorTarget", URL);
     }
 
-    public SEBKortBase(String username, String password, Context context, String url, String prodgroup)
+    public SEBKortBase(String username, String password, Context context, String url,
+            String prodgroup)
             throws BankException, LoginException, BankChoiceException, IOException {
         this(context, url, prodgroup);
         this.update(username, password);
     }
 
-    public SEBKortBase(String username, String password, Context context, String url, String prodgroup, String apiBase, int[] certificates)
+    public SEBKortBase(String username, String password, Context context, String url,
+            String prodgroup, String apiBase, int[] certificates)
             throws BankException, LoginException, BankChoiceException, IOException {
         this(context, url, prodgroup, apiBase, certificates);
         this.update(username, password);
@@ -105,7 +120,8 @@ public abstract class SEBKortBase extends Bank {
     protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, mCertificates));
         //Get required cookies
-        response = urlopen.open(String.format("https://%s/nis/m/%s/external/t/login/index", mApiBase, mProviderPart));
+        response = urlopen.open(String
+                .format("https://%s/nis/m/%s/external/t/login/index", mApiBase, mProviderPart));
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.clear();
         postData.add(new BasicNameValuePair("SEB_Referer", "/nis"));
@@ -117,25 +133,33 @@ public abstract class SEBKortBase extends Bank {
         postData.add(new BasicNameValuePair("mProdgroup", mProdgroup));
         postData.add(mParamsTarget);
         postData.add(mParamsErrorTarget);
-        return new LoginPackage(urlopen, postData, response, String.format("https://%s/auth4/Authentication/select.jsp", mApiBase));
+        return new LoginPackage(urlopen, postData, response,
+                String.format("https://%s/auth4/Authentication/select.jsp", mApiBase));
     }
 
     @Override
     public Urllib login() throws LoginException, BankException, IOException {
         LoginPackage lp = preLogin();
         urlopen.addHeader("Origin", String.format("https://%s", mApiBase));
-        urlopen.addHeader("Referer", String.format("https://%s/nis/m/%s/external/t/login/index", mApiBase, mProviderPart));
+        urlopen.addHeader("Referer",
+                String.format("https://%s/nis/m/%s/external/t/login/index", mApiBase,
+                        mProviderPart));
         urlopen.addHeader("X-Requested-With", "XMLHttpRequest");
         List<NameValuePair> postData = lp.getPostData();
         postData.remove(mParamsTarget);
         postData.remove(mParamsErrorTarget);
-        postData.add(new BasicNameValuePair("target", String.format("/nis/m/%s/login/loginSuccess", mProviderPart)));
-        postData.add(new BasicNameValuePair("errorTarget", String.format("/nis/m/%s/external/login/loginError", mProviderPart)));
+        postData.add(new BasicNameValuePair("target",
+                String.format("/nis/m/%s/login/loginSuccess", mProviderPart)));
+        postData.add(new BasicNameValuePair("errorTarget",
+                String.format("/nis/m/%s/external/login/loginError", mProviderPart)));
 
-        LoginResponse r = mObjectMapper.readValue(urlopen.openStream(lp.getLoginTarget(), postData, true),
-                LoginResponse.class);
+        LoginResponse r = mObjectMapper
+                .readValue(urlopen.openStream(lp.getLoginTarget(), postData, true),
+                        LoginResponse.class);
         if ("Failure".equalsIgnoreCase(r.getReturnCode())) {
-            throw new LoginException(!TextUtils.isEmpty(r.getMessage()) ? Html.fromHtml(r.getMessage()).toString() : res.getText(R.string.invalid_username_password).toString());
+            throw new LoginException(
+                    !TextUtils.isEmpty(r.getMessage()) ? Html.fromHtml(r.getMessage()).toString()
+                            : res.getText(R.string.invalid_username_password).toString());
         }
         return urlopen;
     }
@@ -143,27 +167,40 @@ public abstract class SEBKortBase extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0 || password.length() == 0) {
+        if (username == null || password == null || username.length() == 0
+                || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();
-        UserResponse ur = mObjectMapper.readValue(urlopen.openStream(String.format("https://%s/nis/m/%s/a/user", mApiBase, mProviderPart)), UserResponse.class);
-        BillingUnitsResponse br = mObjectMapper.readValue(urlopen.openStream(String.format("https://%s/nis/m/%s/a/billingUnits", mApiBase, mProviderPart)), BillingUnitsResponse.class);
+        UserResponse ur = mObjectMapper.readValue(urlopen.openStream(
+                String.format("https://%s/nis/m/%s/a/user", mApiBase, mProviderPart)),
+                UserResponse.class);
+        BillingUnitsResponse br = mObjectMapper.readValue(urlopen.openStream(
+                String.format("https://%s/nis/m/%s/a/billingUnits", mApiBase, mProviderPart)),
+                BillingUnitsResponse.class);
 
         boolean multipleAccounts = br.getBody().size() > 1;
         for (BillingUnit bu : br.getBody()) {
-            Account account = new Account(formatAccountName(bu.getArrangementNumber(), "Disponibelt belopp", multipleAccounts), Helpers.parseBalance(bu.getDisposableAmount()), bu.getArrangementNumber());
+            Account account = new Account(
+                    formatAccountName(bu.getArrangementNumber(), "Disponibelt belopp",
+                            multipleAccounts), Helpers.parseBalance(bu.getDisposableAmount()),
+                    bu.getArrangementNumber());
             account.setType(Account.CCARD);
             account.setCurrency(currency);
             mBillingUnitIds.put(account, bu.getBillingUnitId());
             accounts.add(account);
             balance = balance.add(account.getBalance());
-            account = new Account(formatAccountName(bu.getArrangementNumber(), "Saldo", multipleAccounts), Helpers.parseBalance(bu.getBalance()), bu.getArrangementNumber() + "_2");
+            account = new Account(
+                    formatAccountName(bu.getArrangementNumber(), "Saldo", multipleAccounts),
+                    Helpers.parseBalance(bu.getBalance()), bu.getArrangementNumber() + "_2");
             account.setType(Account.OTHER);
             account.setAliasfor(bu.getArrangementNumber());
             account.setCurrency(currency);
             accounts.add(account);
-            account = new Account(formatAccountName(bu.getArrangementNumber(), "Köpgräns", multipleAccounts), Helpers.parseBalance(bu.getCreditAmountNumber()), bu.getArrangementNumber() + "_3");
+            account = new Account(
+                    formatAccountName(bu.getArrangementNumber(), "Köpgräns", multipleAccounts),
+                    Helpers.parseBalance(bu.getCreditAmountNumber()),
+                    bu.getArrangementNumber() + "_3");
             account.setType(Account.OTHER);
             account.setAliasfor(bu.getArrangementNumber());
             account.setCurrency(currency);
@@ -176,7 +213,8 @@ public abstract class SEBKortBase extends Bank {
         super.updateComplete();
     }
 
-    private String formatAccountName(String accountNumber, String name, boolean includeAccountNnumber) {
+    private String formatAccountName(String accountNumber, String name,
+            boolean includeAccountNnumber) {
         return includeAccountNnumber ? String.format("%s (%s)", accountNumber, name) : name;
     }
 
@@ -184,14 +222,23 @@ public abstract class SEBKortBase extends Bank {
     public void updateTransactions(Account account, Urllib urlopen) throws LoginException,
             BankException, IOException {
         super.updateTransactions(account, urlopen);
-        if (account.getType() != Account.CCARD) return;
+        if (account.getType() != Account.CCARD) {
+            return;
+        }
 
-        PendingTransactionsResponse r = mObjectMapper.readValue(urlopen.openStream(String.format("https://%s/nis/m/%s/a/pendingTransactions/%s", mApiBase, mProviderPart, mBillingUnitIds.get(account))), PendingTransactionsResponse.class);
+        PendingTransactionsResponse r = mObjectMapper.readValue(urlopen.openStream(
+                String.format("https://%s/nis/m/%s/a/pendingTransactions/%s", mApiBase,
+                        mProviderPart, mBillingUnitIds.get(account))),
+                PendingTransactionsResponse.class);
         ArrayList<Transaction> transactions = new ArrayList<Transaction>();
         for (CardGroup cg : r.getBody().getCardGroups()) {
             for (TransactionGroup tg : cg.getTransactionGroups()) {
-                for (com.liato.bankdroid.banking.banks.sebkort.model.Transaction t : tg.getTransactions()) {
-                    transactions.add(new Transaction(Helpers.formatDate(new Date(t.getOriginalAmountDateDate())), t.getDescription(), BigDecimal.valueOf(t.getAmountNumber()).negate(), account.getCurrency()));
+                for (com.liato.bankdroid.banking.banks.sebkort.model.Transaction t : tg
+                        .getTransactions()) {
+                    transactions.add(new Transaction(
+                            Helpers.formatDate(new Date(t.getOriginalAmountDateDate())),
+                            t.getDescription(), BigDecimal.valueOf(t.getAmountNumber()).negate(),
+                            account.getCurrency()));
                 }
             }
         }

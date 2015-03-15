@@ -20,7 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 
 public class ErrorMessage implements Serializable {
+
     private static final long serialVersionUID = 7228754028321179052L;
+
     @JsonProperty
     String title;
 

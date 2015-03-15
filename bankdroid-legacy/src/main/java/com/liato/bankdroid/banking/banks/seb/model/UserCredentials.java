@@ -6,14 +6,19 @@ public class UserCredentials {
 
     @JsonProperty("ApplicationName")
     private String applicationName;
+
     @JsonProperty("WorkstationID")
     private String workstationID;
+
     @JsonProperty("LoggedOnUser")
     private String loggedOnUser;
+
     @JsonProperty("AuthMethod")
     private String authMethod;
+
     @JsonProperty("UserId")
     private String userId;
+
     @JsonProperty("Password")
     private String password;
 

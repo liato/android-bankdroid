@@ -22,35 +22,40 @@ import org.simpleframework.xml.Root;
 
 @Root
 public class Envelope {
+
+    @Element(name = "Body")
+    public Body body;
+
     public static class Body {
+
+        @Element(required = false)
+        public GetBalanceResponse getBalanceResponse;
+
+        @Element(name = "Fault", required = false)
+        public Fault fault;
+
         public static class GetBalanceResponse {
+
+            @Element(name = "return")
+            public Return responseReturn;
+
             public static class Return {
+
                 @Element
                 public String amount;
 
                 @Element
                 public String lastTopUpDate;
             }
-
-            @Element(name="return")
-            public Return responseReturn;
         }
 
         public static class Fault {
+
             @Element
             public String faultcode;
 
             @Element
             public String faultstring;
         }
-
-        @Element(required=false)
-        public GetBalanceResponse getBalanceResponse;
-
-        @Element(name="Fault", required=false)
-        public Fault fault;
     }
-
-    @Element(name="Body")
-    public Body body;
 }

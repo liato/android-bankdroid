@@ -7,45 +7,66 @@ import java.util.Collections;
 import java.util.List;
 
 public class Account implements Serializable {
+
     private static final long serialVersionUID = -5718585872348469144L;
+
     @JsonProperty("balance")
     private double mBalance;
+
     @JsonProperty("totalProfit")
     private double mTotalProfit;
+
     @JsonProperty("accountName")
     private String mAccountName;
+
     @JsonProperty("totalAccruedInterest")
     private double mTotalAccruedInterest;
+
     @JsonProperty("adjustedForwardAmount")
     private double mAdjustedForwardAmount;
+
     @JsonProperty("unUsedCredit")
     private double mUnUsedCredit;
+
     @JsonProperty("superInterest")
     private double mSuperInterest;
+
     @JsonProperty("totalMarginRequirement")
     private double mTotalMarginRequirement;
+
     @JsonProperty("tradingPower")
     private double mTradingPower;
+
     @JsonProperty("resAmount")
     private double mResAmount;
+
     @JsonProperty("loanAmount")
     private double mLoanAmount;
+
     @JsonProperty("accountId")
     private String mAccountId;
+
     @JsonProperty("currencyAccounts")
     private List<CurrencyAccount> mCurrencyAccounts = Collections.emptyList();
+
     @JsonProperty("creditLimit")
     private double mCreditLimit;
+
     @JsonProperty("totalProfitPercent")
     private double mTotalProfitPercent;
+
     @JsonProperty("ownCapital")
     private double mOwnCapital;
+
     @JsonProperty("totalValue")
     private double mTotalValue;
+
     @JsonProperty("interestAmount")
     private double mInterestAmount;
+
     @JsonProperty("secAmount")
     private double mSecAmount;
+
     @JsonProperty("positionAggregations")
     private List<PositionAggregation> mPositionAggregations = Collections.emptyList();
 

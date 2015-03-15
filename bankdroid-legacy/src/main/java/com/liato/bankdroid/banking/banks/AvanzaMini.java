@@ -16,12 +16,13 @@
 
 package com.liato.bankdroid.banking.banks;
 
-import android.content.Context;
-
 import com.liato.bankdroid.banking.banks.avanza.Avanza;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import android.content.Context;
+
 public class AvanzaMini extends Avanza {
+
     public AvanzaMini(Context context) {
         super(context);
         TAG = "AvanzaMini";

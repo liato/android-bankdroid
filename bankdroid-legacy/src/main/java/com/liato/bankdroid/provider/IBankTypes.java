@@ -17,31 +17,32 @@ package com.liato.bankdroid.provider;
 
 /**
  * Defines what types banks are supported.
- * 
+ *
  * @since 8 jan 2011
  */
 public interface IBankTypes {
-	public final static int TESTBANK = 0;
-	public final static int SWEDBANK = 1;
-	public final static int NORDEA = 2;
-	public final static int ICABANKEN = 3;
-	public final static int LANSFORSAKRINGAR = 4;
-	public final static int HANDELSBANKEN = 5;
-	public final static int COOP = 6;
-	public final static int ICA = 7;
-	public final static int STATOIL = 8;
-	public final static int AVANZA = 9;
-	public final static int VILLABANKEN = 10;
-	public final static int AVANZAMINI = 11;
-	public final static int OKQ8 = 12;
-	public final static int EUROCARD = 13;
-	public final static int FIRSTCARD = 14;
-	public final static int PAYPAL = 15;
-	public final static int PAYSON = 16;
-	public final static int JOJO = 17;
-	public final static int IKANOBANK = 18;
-	public final static int STEAM = 19;
-	public final static int DINERSCLUB = 20;
+
+    public final static int TESTBANK = 0;
+    public final static int SWEDBANK = 1;
+    public final static int NORDEA = 2;
+    public final static int ICABANKEN = 3;
+    public final static int LANSFORSAKRINGAR = 4;
+    public final static int HANDELSBANKEN = 5;
+    public final static int COOP = 6;
+    public final static int ICA = 7;
+    public final static int STATOIL = 8;
+    public final static int AVANZA = 9;
+    public final static int VILLABANKEN = 10;
+    public final static int AVANZAMINI = 11;
+    public final static int OKQ8 = 12;
+    public final static int EUROCARD = 13;
+    public final static int FIRSTCARD = 14;
+    public final static int PAYPAL = 15;
+    public final static int PAYSON = 16;
+    public final static int JOJO = 17;
+    public final static int IKANOBANK = 18;
+    public final static int STEAM = 19;
+    public final static int DINERSCLUB = 20;
     public final static int SASEUROBONUSMASTERCARD = 21;
     public final static int RIKSLUNCHEN = 22;
     public final static int HEMKOP = 23;
@@ -77,7 +78,7 @@ public interface IBankTypes {
     public final static int NORDEA_DK = 53;
     public final static int VASTTRAFIK = 54;
     public final static int EVERYDAYCARD = 55;
-	public static final int AKELIUSINVEST = 56;
+    public static final int AKELIUSINVEST = 56;
     public static final int MENIGA = 57;
     public static final int RIKSKORTET = 58;
     public static final int BIOKLUBBEN = 59;
@@ -87,7 +88,7 @@ public interface IBankTypes {
     public static final int SVENSKASPEL = 63;
     public static final int EASYCARD = 64;
     public static final int APPEAKPOKER = 65;
-    public static final int TRUSTBUDDY = 66;    
+    public static final int TRUSTBUDDY = 66;
     public static final int BRUMMER_KF = 67;
     public static final int ZIDISHA = 68;
     public static final int BETTERGLOBE = 69;
@@ -95,8 +96,8 @@ public interface IBankTypes {
     public final static int SASEUROBONUSMASTERCARD_NO = 71;
     public final static int BITCOIN = 72;
     public final static int SASEUROBONUSMASTERCARD_DK = 73;
-    public final static int SVEADIREKT  = 74;
-    public final static int SUPREMECARD  = 75;
+    public final static int SVEADIREKT = 74;
+    public final static int SUPREMECARD = 75;
     public final static int SPARBANKERNA = 76;
     public final static int BLEKINGETRAFIKEN = 77;
     public final static int OSTGOTATRAFIKEN = 78;

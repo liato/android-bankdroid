@@ -16,9 +16,6 @@
 
 package com.liato.bankdroid.banking.banks;
 
-import android.content.Context;
-import android.text.InputType;
-
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
@@ -33,6 +30,9 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
+import android.text.InputType;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,15 +43,26 @@ import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Payson extends Bank {
-    private static final String TAG = "Payson";
-    private static final String NAME = "Payson";
-    private static final String NAME_SHORT = "payson";
-    private static final String URL = "https://www.payson.se/signin/";
-    private static final int BANKTYPE_ID = IBankTypes.PAYSON;
-    private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT | +InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
 
-    private Pattern reVerificationToken = Pattern.compile("<input[^>]+name=\"__RequestVerificationToken\"[^>]+value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+    private static final String TAG = "Payson";
+
+    private static final String NAME = "Payson";
+
+    private static final String NAME_SHORT = "payson";
+
+    private static final String URL = "https://www.payson.se/signin/";
+
+    private static final int BANKTYPE_ID = IBankTypes.PAYSON;
+
+    private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT
+            | +InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
+
+    private Pattern reVerificationToken = Pattern.compile(
+            "<input[^>]+name=\"__RequestVerificationToken\"[^>]+value=\"([^\"]+)\"",
+            Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+
     private String response = null;
+
     private JSONObject userInfo = null;
 
     public Payson(Context context) {
@@ -72,11 +83,13 @@ public class Payson extends Bank {
 
     @Override
     protected LoginPackage preLogin() throws BankException, IOException {
-        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_payson));
+        urlopen = new Urllib(context,
+                CertificateReader.getCertificates(context, R.raw.cert_payson));
         response = urlopen.open(URL);
         Matcher matcher = reVerificationToken.matcher(response);
         if (!matcher.find()) {
-            throw new BankException(res.getText(R.string.unable_to_find).toString() + " RequestVerificationToken");
+            throw new BankException(
+                    res.getText(R.string.unable_to_find).toString() + " RequestVerificationToken");
         }
         String verificationToken = matcher.group(1);
 
@@ -85,7 +98,8 @@ public class Payson extends Bank {
         postData.add(new BasicNameValuePair("Username", username));
         postData.add(new BasicNameValuePair("Password", password));
         postData.add(new BasicNameValuePair("RedirectAfterLogin", ""));
-        return new LoginPackage(urlopen, postData, response, "https://www.payson.se/myaccount/account/SignIn/");
+        return new LoginPackage(urlopen, postData, response,
+                "https://www.payson.se/myaccount/account/SignIn/");
     }
 
     @Override
@@ -93,7 +107,8 @@ public class Payson extends Bank {
         try {
             LoginPackage lp = preLogin();
             response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-            userInfo = new JSONObject(urlopen.open("https://www.payson.se/myaccount/user/getuserinfo"));
+            userInfo = new JSONObject(
+                    urlopen.open("https://www.payson.se/myaccount/user/getuserinfo"));
         } catch (JSONException e) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
@@ -103,7 +118,8 @@ public class Payson extends Bank {
     @Override
     public void update() throws BankChoiceException, BankException, LoginException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0 || password.length() == 0) {
+        if (username == null || password == null || username.length() == 0
+                || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();

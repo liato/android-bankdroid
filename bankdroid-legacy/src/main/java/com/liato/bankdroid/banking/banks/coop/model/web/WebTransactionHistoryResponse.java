@@ -1,4 +1,3 @@
-
 package com.liato.bankdroid.banking.banks.coop.model.web;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

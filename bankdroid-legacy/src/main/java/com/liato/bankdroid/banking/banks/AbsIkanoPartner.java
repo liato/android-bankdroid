@@ -16,12 +16,16 @@
 
 package com.liato.bankdroid.banking.banks;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import com.liato.bankdroid.Helpers;
+import com.liato.bankdroid.banking.Account;
+import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.Transaction;
+import com.liato.bankdroid.banking.exceptions.BankChoiceException;
+import com.liato.bankdroid.banking.exceptions.BankException;
+import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -32,25 +36,24 @@ import android.content.Context;
 import android.text.InputType;
 import android.text.TextUtils;
 
-import com.liato.bankdroid.Helpers;
-import com.liato.bankdroid.banking.Account;
-import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.Transaction;
-import com.liato.bankdroid.banking.exceptions.BankChoiceException;
-import com.liato.bankdroid.banking.exceptions.BankException;
-import com.liato.bankdroid.banking.exceptions.LoginException;
-import com.liato.bankdroid.legacy.R;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public abstract class AbsIkanoPartner extends Bank {
+
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+
     private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
+
     private static final String INPUT_HINT_USERNAME = "ÅÅÅÅMMDDXXXX";
 
-    private String response = null;
     protected String structId;
+
+    private String response = null;
 
     public AbsIkanoPartner(Context context) {
         super(context);
@@ -60,7 +63,8 @@ public abstract class AbsIkanoPartner extends Bank {
         super.STATIC_BALANCE = true;
     }
 
-    public AbsIkanoPartner(String username, String password, Context context) throws BankException, LoginException,
+    public AbsIkanoPartner(String username, String password, Context context)
+            throws BankException, LoginException,
             BankChoiceException, IOException {
         this(context);
         this.update(username, password);
@@ -68,18 +72,22 @@ public abstract class AbsIkanoPartner extends Bank {
 
     @Override
     protected LoginPackage preLogin() throws BankException, IOException {
-        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_ikanopartner));
-        response = urlopen.open("https://partner.ikanobank.se/web/engines/page.aspx?structid=" + structId);
+        urlopen = new Urllib(context,
+                CertificateReader.getCertificates(context, R.raw.cert_ikanopartner));
+        response = urlopen
+                .open("https://partner.ikanobank.se/web/engines/page.aspx?structid=" + structId);
 
         Document d = Jsoup.parse(response);
         Element viewstate = d.getElementById("__VIEWSTATE");
         if (viewstate == null || TextUtils.isEmpty(viewstate.val())) {
-            throw new BankException(res.getText(R.string.unable_to_find).toString() + " ViewState.");
+            throw new BankException(
+                    res.getText(R.string.unable_to_find).toString() + " ViewState.");
         }
 
         Element eventvalidation = d.getElementById("__EVENTVALIDATION");
         if (eventvalidation == null || TextUtils.isEmpty(eventvalidation.val())) {
-            throw new BankException(res.getText(R.string.unable_to_find).toString() + " EventValidation.");
+            throw new BankException(
+                    res.getText(R.string.unable_to_find).toString() + " EventValidation.");
         }
 
         Element userField = d.select("#LoginSpan input[type=text]").first();
@@ -87,7 +95,8 @@ public abstract class AbsIkanoPartner extends Bank {
         Element submitField = d.select("#LoginCustomerDiv input[type=submit]").first();
 
         if (userField == null || passField == null || submitField == null) {
-            throw new BankException(res.getText(R.string.unable_to_find).toString() + " login fields.");
+            throw new BankException(
+                    res.getText(R.string.unable_to_find).toString() + " login fields.");
         }
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("__VIEWSTATE", viewstate.val()));
@@ -95,7 +104,8 @@ public abstract class AbsIkanoPartner extends Bank {
         postData.add(new BasicNameValuePair(userField.attr("name"), username));
         postData.add(new BasicNameValuePair(passField.attr("name"), password));
         postData.add(new BasicNameValuePair(submitField.attr("name"), submitField.val()));
-        return new LoginPackage(urlopen, postData, response, "https://partner.ikanobank.se/web/engines/page.aspx?structid=" + structId);
+        return new LoginPackage(urlopen, postData, response,
+                "https://partner.ikanobank.se/web/engines/page.aspx?structid=" + structId);
 
     }
 
@@ -103,18 +113,20 @@ public abstract class AbsIkanoPartner extends Bank {
     public Urllib login() throws LoginException, BankException, IOException {
         LoginPackage lp = preLogin();
         response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-            if (response.contains("eller personnumme") || response.contains("elaktigt personnummer")
-                    || response.contains("ontrollera personnummer") || response.contains("elaktig inloggningskod")
-                    || response.contains("elaktig självbetjäningskod")) {
-                throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-            }
+        if (response.contains("eller personnumme") || response.contains("elaktigt personnummer")
+                || response.contains("ontrollera personnummer") || response
+                .contains("elaktig inloggningskod")
+                || response.contains("elaktig självbetjäningskod")) {
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+        }
         return urlopen;
     }
 
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0 || password.length() == 0) {
+        if (username == null || password == null || username.length() == 0
+                || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 
@@ -133,7 +145,8 @@ public abstract class AbsIkanoPartner extends Bank {
                 Element currency = el.select("> span:eq(2)").first();
                 Element balance = el.select("> span:eq(1)").first();
                 if (name != null && balance != null && currency != null) {
-                    Account account = new Account(name.text().trim(), Helpers.parseBalance(balance.text()),
+                    Account account = new Account(name.text().trim(),
+                            Helpers.parseBalance(balance.text()),
                             Integer.toString(accId));
                     account.setCurrency(Helpers.parseCurrency(currency.text(), "SEK"));
                     if (accId > 0) {
@@ -153,9 +166,11 @@ public abstract class AbsIkanoPartner extends Bank {
             es = d.select("#ShowCustomerTransactionPurchasesInformationDiv table tr:has(td)");
             for (Element el : es) {
                 if (el.childNodeSize() == 6) {
-                    Transaction transaction = new Transaction(el.child(0).text().trim(), el.child(1).text().trim(),
+                    Transaction transaction = new Transaction(el.child(0).text().trim(),
+                            el.child(1).text().trim(),
                             Helpers.parseBalance(el.child(2).text()));
-                    transaction.setCurrency(Helpers.parseCurrency(el.child(3).text().trim(), "SEK"));
+                    transaction
+                            .setCurrency(Helpers.parseCurrency(el.child(3).text().trim(), "SEK"));
                     transactions.add(transaction);
                 }
             }

@@ -16,12 +16,12 @@
 
 package com.liato.bankdroid.banking;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import com.liato.bankdroid.Helpers;
+import com.liato.bankdroid.banking.exceptions.BankChoiceException;
+import com.liato.bankdroid.banking.exceptions.BankException;
+import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
+import com.liato.bankdroid.provider.IBankTypes;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.NameValuePair;
@@ -34,54 +34,96 @@ import android.content.res.Resources.NotFoundException;
 import android.text.InputType;
 import android.util.Log;
 
-import com.liato.bankdroid.Helpers;
-import com.liato.bankdroid.banking.exceptions.BankChoiceException;
-import com.liato.bankdroid.banking.exceptions.BankException;
-import com.liato.bankdroid.banking.exceptions.LoginException;
-import com.liato.bankdroid.legacy.R;
-import com.liato.bankdroid.provider.IBankTypes;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import eu.nullbyte.android.urllib.Urllib;
 
 public abstract class Bank implements Comparable<Bank>, IBankTypes {
+
     protected String TAG = "Bank";
-	protected String NAME = "Bank";
-	protected String NAME_SHORT = "bank";
-	protected int BANKTYPE_ID = 0;
-	protected String URL;
+
+    protected String NAME = "Bank";
+
+    protected String NAME_SHORT = "bank";
+
+    protected int BANKTYPE_ID = 0;
+
+    protected String URL;
+
     protected int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT;
-    protected int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD;
+
+    protected int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_TEXT
+            | InputType.TYPE_TEXT_VARIATION_PASSWORD;
+
     protected int INPUT_TYPE_EXTRAS = InputType.TYPE_CLASS_TEXT;
+
     protected String INPUT_HINT_USERNAME = null;
+
     protected boolean INPUT_HIDDEN_USERNAME = false;
+
     protected boolean INPUT_HIDDEN_PASSWORD = false;
+
     protected boolean INPUT_HIDDEN_EXTRAS = true;
+
     protected int INPUT_TITLETEXT_USERNAME = R.string.username;
+
     protected int INPUT_TITLETEXT_PASSWORD = R.string.password;
+
     protected int INPUT_TITLETEXT_EXTRAS = R.string.extras_field;
+
     protected boolean STATIC_BALANCE = false;
+
     protected boolean BROKEN = false;
+
     protected boolean DISPLAY_DECIMALS = true;
+
     protected boolean WEB_VIEW_ENABLED = true;
+
     protected Context context;
+
     protected Resources res;
 
     protected String username;
+
     protected String password;
+
     protected String customName;
+
     protected String extras;
+
     protected String currency = "SEK";
+
     protected ArrayList<Account> accounts = new ArrayList<Account>();
+
     protected HashMap<String, Account> oldAccounts;
+
     protected BigDecimal balance = new BigDecimal(0);
+
     protected boolean disabled = false;
+
     protected long dbid = -1;
+
     protected Urllib urlopen = null;
+
     protected boolean hideAccounts = false;
 
-    public boolean toggleHideAccounts() { return hideAccounts = !hideAccounts; }
+    public Bank(Context context) {
+        this.context = context;
+        this.res = this.context.getResources();
+    }
 
-    public boolean getHideAccounts() { return hideAccounts; }
+    public boolean toggleHideAccounts() {
+        return hideAccounts = !hideAccounts;
+    }
+
+    public boolean getHideAccounts() {
+        return hideAccounts;
+    }
 
     public Urllib getUrlopen() {
         return urlopen;
@@ -95,11 +137,6 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         this.dbid = dbid;
     }
 
-    public Bank(Context context) {
-        this.context = context;
-        this.res = this.context.getResources();
-    }
-
     public void update(String username, String password) throws BankException, LoginException,
             BankChoiceException, IOException {
         this.username = username;
@@ -110,7 +147,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         balance = new BigDecimal(0);
         oldAccounts = new HashMap<String, Account>();
-        for(Account account: accounts) {
+        for (Account account : accounts) {
             oldAccounts.put(account.getId(), account);
         }
         accounts = new ArrayList<Account>();
@@ -124,7 +161,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         if (urlopen == null) {
             urlopen = login();
         }
-        for (Account account: accounts) {
+        for (Account account : accounts) {
             updateTransactions(account, urlopen);
         }
     }
@@ -138,6 +175,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
             urlopen.close();
         }
     }
+
     public ArrayList<Account> getAccounts() {
         return this.accounts;
     }
@@ -153,19 +191,28 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         return password;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public String getUsername() {
         return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public BigDecimal getBalance() {
         if (STATIC_BALANCE) {
             return balance;
-        }
-        else {
-            BigDecimal bal = new BigDecimal(0); 
+        } else {
+            BigDecimal bal = new BigDecimal(0);
             for (Account account : accounts) {
                 if (account.getType() == Account.REGULAR || account.getType() == Account.CCARD) {
-                    if (!account.isHidden() && (account.getAliasfor() == null || account.getAliasfor().length() == 0) && account.getBalance() != null) {
+                    if (!account.isHidden() && (account.getAliasfor() == null
+                            || account.getAliasfor().length() == 0)
+                            && account.getBalance() != null) {
                         bal = bal.add(account.getBalance());
                     }
                 }
@@ -183,10 +230,11 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     }
 
     public String getDisplayName() {
-        if (customName != null && customName.length() > 0) return customName;
+        if (customName != null && customName.length() > 0) {
+            return customName;
+        }
         return username;
     }
-
 
     public String getCustomName() {
         return customName;
@@ -195,21 +243,22 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     public void setCustomName(String customName) {
         this.customName = customName;
     }
-    
+
     public String getExtras() {
         return this.extras;
     }
 
     public void setExtras(String extras) {
         this.extras = extras;
-    }    
+    }
 
     public String getShortName() {
         return NAME_SHORT;
     }
 
     public void setData(String username, String password, BigDecimal balance,
-            boolean disabled, long dbid, String currency, String customName, String extras, int hideAccounts) {
+            boolean disabled, long dbid, String currency, String customName, String extras,
+            int hideAccounts) {
         this.username = username;
         this.password = password;
         this.balance = balance;
@@ -218,7 +267,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         this.currency = currency;
         this.customName = customName;
         this.extras = extras;
-        this.hideAccounts = hideAccounts==1 ? true : false;
+        this.hideAccounts = hideAccounts == 1 ? true : false;
     }
 
     public String getCurrency() {
@@ -237,18 +286,8 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         return disabled;
     }
 
-
     public void setDisabled(boolean disabled) {
         this.disabled = disabled;
-    }
-
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getURL() {
@@ -266,7 +305,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     public int getInputTypeExtras() {
         return INPUT_TYPE_EXTRAS;
     }
-    
+
     public String getInputHintUsername() {
         return INPUT_HINT_USERNAME;
     }
@@ -278,10 +317,10 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     public boolean isInputPasswordHidden() {
         return INPUT_HIDDEN_PASSWORD;
     }
-    
+
     public boolean isInputExtrasHidden() {
         return INPUT_HIDDEN_EXTRAS;
-    }    
+    }
 
     public int getInputTitleUsername() {
         return INPUT_TITLETEXT_USERNAME;
@@ -305,7 +344,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     }
 
     public int getImageResource() {
-        return res.getIdentifier("logo_"+NAME_SHORT, "drawable", context.getPackageName());	
+        return res.getIdentifier("logo_" + NAME_SHORT, "drawable", context.getPackageName());
     }
 
     public int compareTo(Bank another) {
@@ -331,12 +370,10 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         String preloader = "Error...";
         try {
             preloader = IOUtils.toString(context.getResources().openRawResource(R.raw.loading));
-        }
-        catch (NotFoundException e1) {
+        } catch (NotFoundException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
-        }
-        catch (IOException e1) {
+        } catch (IOException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
@@ -344,39 +381,42 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         try {
             LoginPackage lp = preLogin();
             if (lp == null) {
-                throw new BankException("No automatic login for this bank. preLogin() is not implemented or has failed.");
+                throw new BankException(
+                        "No automatic login for this bank. preLogin() is not implemented or has failed.");
             }
             //TODO: Skip the form submission. Login using Bank.login(...) and transfer cookies to webview. The user is now logged in
             //      and can me directed to any page.
             String html = "";
             if (!lp.isLoggedIn()) {
                 html = String.format(preloader,
-                        "function go(){document.getElementById('submitform').submit(); }", // Javascript function
-                        Helpers.renderForm(lp.getLoginTarget(), lp.getPostData())+"<script type=\"text/javascript\">setTimeout('go()', 1000);</script>" // HTML
+                        "function go(){document.getElementById('submitform').submit(); }",
+                        // Javascript function
+                        Helpers.renderForm(lp.getLoginTarget(), lp.getPostData())
+                                + "<script type=\"text/javascript\">setTimeout('go()', 1000);</script>"
+                        // HTML
                 );
             } else {
                 html = String.format(preloader,
-                        String.format("function go(){window.location=\"%s\" }", lp.getLoginTarget()), // Javascript function
+                        String.format("function go(){window.location=\"%s\" }",
+                                lp.getLoginTarget()), // Javascript function
                         "<script type=\"text/javascript\">setTimeout('go()', 100);</script>" // HTML
                 );
             }
 
             CookieStore cookies = urlopen.getHttpclient().getCookieStore();
             return new SessionPackage(html, cookies);
-        }
-        catch (ClientProtocolException e) {
+        } catch (ClientProtocolException e) {
             Log.e(TAG, e.getMessage());
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             Log.e(TAG, e.getMessage());
-        }
-        catch (BankException e) {
+        } catch (BankException e) {
             Log.e(TAG, e.getMessage());
         }
         String html = String.format(preloader,
-                String.format("function go(){window.location=\"%s\" }", this.URL), // Javascript function
+                String.format("function go(){window.location=\"%s\" }", this.URL),
+                // Javascript function
                 "<script type=\"text/javascript\">setTimeout('go()', 1000);</script>" // HTML
-        );          
+        );
         return new SessionPackage(html, null);
     }
 
@@ -384,28 +424,52 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         return null;
     }
 
+    public boolean getDisplayDecimals() {
+        return DISPLAY_DECIMALS;
+    }
+
+    protected Context getContext() {
+        return context;
+    }
+
+    public DecimalFormat getDecimalFormatter() {
+        return null;
+    }
+
     public static class SessionPackage {
+
         private String html;
+
         private CookieStore cookiestore;
+
         public SessionPackage(String html, CookieStore cookiestore) {
             this.html = html;
             this.cookiestore = cookiestore;
         }
+
         public String getHtml() {
             return html;
         }
+
         public CookieStore getCookiestore() {
             return cookiestore;
         }
-    }    
+    }
 
     public static class LoginPackage {
+
         private String response;
+
         private Urllib urllib;
+
         private List<NameValuePair> postData;
+
         private String loginTarget;
+
         private boolean isLoggedIn = false;
-        public LoginPackage(Urllib urllib, List<NameValuePair> postData, String response, String loginTarget) {
+
+        public LoginPackage(Urllib urllib, List<NameValuePair> postData, String response,
+                String loginTarget) {
             this.urllib = urllib;
             this.postData = postData;
             this.response = response;
@@ -415,33 +479,26 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         public void setIsLoggedIn(boolean loggedIn) {
             this.isLoggedIn = loggedIn;
         }
+
         public String getResponse() {
             return response;
         }
+
         public Urllib getUrllib() {
             return urllib;
         }
+
         public List<NameValuePair> getPostData() {
             return postData;
         }
+
         public String getLoginTarget() {
             return loginTarget;
         }
+
         public boolean isLoggedIn() {
             return this.isLoggedIn;
         }
-    }    
-    
-    public boolean getDisplayDecimals() {
-        return DISPLAY_DECIMALS;
-    }
-    
-    protected Context getContext() {
-    	return context;
-    }
-    
-    public DecimalFormat getDecimalFormatter() {
-    	return null;
     }
 
 }

@@ -41,25 +41,33 @@ package com.liato.bankdroid.liveview;
 
 /**
  * Plugin common constants.
- * 
+ *
  * @author firetech
  */
 public final class PluginConstants {
-    private PluginConstants() {}
 
     // Broadcast receiver constants
     public static final String BROADCAST_COMMAND = "CMD";
+
     public static final String BROADCAST_COMMAND_PREFERENCES = "preferences";
+
     public static final String BROADCAST_COMMAND_START = "start";
+
     public static final String BROADCAST_COMMAND_PLUGIN_NAME = "pluginName";
 
     // Resource string constants
     public static final String RESOURCE_STRING_PLUGIN_NAME = "app_name";
 
     // LiveView Plugin interface intents
-    public static final String LIVEVIEW_SERVICE_BIND_INTENT = "com.sonyericsson.extras.liveview.PLUGIN_SERVICE_V1";
-    public static final String LIVEVIEW_BROADCAST_LAUNCH_EVENT = "com.sonyericsson.extras.liveview.LAUNCH_PLUGIN";
+    public static final String LIVEVIEW_SERVICE_BIND_INTENT
+            = "com.sonyericsson.extras.liveview.PLUGIN_SERVICE_V1";
+
+    public static final String LIVEVIEW_BROADCAST_LAUNCH_EVENT
+            = "com.sonyericsson.extras.liveview.LAUNCH_PLUGIN";
 
     // Log tag
     public static final String LOG_TAG = "BankDroidLiveViewPlugin";
+
+    private PluginConstants() {
+    }
 }

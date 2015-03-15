@@ -6,32 +6,35 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import java.io.Serializable;
 
 public class User implements Serializable {
+
     private static final long serialVersionUID = -6588506336066035322L;
 
     private String mSurName;
+
     private String mFirstName;
+
     private boolean mPasswordAuthentication;
+
     private boolean mCoBrowse;
+
     private int mAuthenticationTypeId;
+
     private String mPhone;
+
     private boolean mHsu;
+
     private String mEmail;
+
     private boolean mOtpAuthentication;
-
-
-    @JsonSetter("surName")
-    public void setSurName(String s) {
-        mSurName = s;
-    }
 
     @JsonProperty("surName")
     public String getSurName() {
         return mSurName;
     }
 
-    @JsonSetter("firstName")
-    public void setFirstName(String f) {
-        mFirstName = f;
+    @JsonSetter("surName")
+    public void setSurName(String s) {
+        mSurName = s;
     }
 
     @JsonProperty("firstName")
@@ -39,9 +42,9 @@ public class User implements Serializable {
         return mFirstName;
     }
 
-    @JsonSetter("passwordAuthentication")
-    public void setPasswordAuthentication(boolean p) {
-        mPasswordAuthentication = p;
+    @JsonSetter("firstName")
+    public void setFirstName(String f) {
+        mFirstName = f;
     }
 
     @JsonProperty("passwordAuthentication")
@@ -49,9 +52,9 @@ public class User implements Serializable {
         return mPasswordAuthentication;
     }
 
-    @JsonSetter("coBrowse")
-    public void setCoBrowse(boolean c) {
-        mCoBrowse = c;
+    @JsonSetter("passwordAuthentication")
+    public void setPasswordAuthentication(boolean p) {
+        mPasswordAuthentication = p;
     }
 
     @JsonProperty("coBrowse")
@@ -59,9 +62,9 @@ public class User implements Serializable {
         return mCoBrowse;
     }
 
-    @JsonSetter("authenticationTypeId")
-    public void setAuthenticationTypeId(int a) {
-        mAuthenticationTypeId = a;
+    @JsonSetter("coBrowse")
+    public void setCoBrowse(boolean c) {
+        mCoBrowse = c;
     }
 
     @JsonProperty("authenticationTypeId")
@@ -69,9 +72,9 @@ public class User implements Serializable {
         return mAuthenticationTypeId;
     }
 
-    @JsonSetter("phone")
-    public void setPhone(String p) {
-        mPhone = p;
+    @JsonSetter("authenticationTypeId")
+    public void setAuthenticationTypeId(int a) {
+        mAuthenticationTypeId = a;
     }
 
     @JsonProperty("phone")
@@ -79,9 +82,9 @@ public class User implements Serializable {
         return mPhone;
     }
 
-    @JsonSetter("hsu")
-    public void setHsu(boolean h) {
-        mHsu = h;
+    @JsonSetter("phone")
+    public void setPhone(String p) {
+        mPhone = p;
     }
 
     @JsonProperty("hsu")
@@ -89,9 +92,9 @@ public class User implements Serializable {
         return mHsu;
     }
 
-    @JsonSetter("email")
-    public void setEmail(String e) {
-        mEmail = e;
+    @JsonSetter("hsu")
+    public void setHsu(boolean h) {
+        mHsu = h;
     }
 
     @JsonProperty("email")
@@ -99,14 +102,19 @@ public class User implements Serializable {
         return mEmail;
     }
 
-    @JsonSetter("otpAuthentication")
-    public void setOtpAuthentication(boolean o) {
-        mOtpAuthentication = o;
+    @JsonSetter("email")
+    public void setEmail(String e) {
+        mEmail = e;
     }
 
     @JsonProperty("otpAuthentication")
     public boolean getOtpAuthentication() {
         return mOtpAuthentication;
+    }
+
+    @JsonSetter("otpAuthentication")
+    public void setOtpAuthentication(boolean o) {
+        mOtpAuthentication = o;
     }
 
 }

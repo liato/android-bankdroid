@@ -19,8 +19,8 @@ package com.liato.bankdroid.lockpattern;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.view.View;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.LinearLayout;
 
 
@@ -34,6 +34,7 @@ import android.widget.LinearLayout;
 public class LinearLayoutWithDefaultTouchRecepient extends LinearLayout {
 
     private final Rect mTempRect = new Rect();
+
     private View mDefaultTouchRecepient;
 
     public LinearLayoutWithDefaultTouchRecepient(Context context) {

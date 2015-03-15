@@ -1,12 +1,12 @@
 package com.liato.bankdroid.banking.banks;
 
-import android.content.Context;
-
-import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.provider.IBankTypes;
+
+import android.content.Context;
 
 import java.io.IOException;
 

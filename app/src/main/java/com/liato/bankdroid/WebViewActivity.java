@@ -16,6 +16,14 @@
 
 package com.liato.bankdroid;
 
+import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.Bank.SessionPackage;
+import com.liato.bankdroid.banking.BankFactory;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.http.client.CookieStore;
+import org.apache.http.cookie.Cookie;
+
 import android.content.res.Resources.NotFoundException;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,14 +38,6 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.Bank.SessionPackage;
-import com.liato.bankdroid.banking.BankFactory;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.http.client.CookieStore;
-import org.apache.http.cookie.Cookie;
-
 import java.io.IOException;
 
 import eu.nullbyte.android.urllib.Urllib;
@@ -45,13 +45,18 @@ import eu.nullbyte.android.urllib.Urllib;
 import static android.graphics.Color.WHITE;
 
 public class WebViewActivity extends LockableActivity implements OnClickListener {
+
     private final static String TAG = "WebViewActivity";
+
     private static WebView mWebView;
-    private boolean mFirstPageLoaded = false;
+
     private final LockableActivity activity = this;
+
+    private boolean mFirstPageLoaded = false;
+
     private Handler mMainThreadhandler = new Handler(Looper.getMainLooper());
 
-    
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,13 +70,13 @@ public class WebViewActivity extends LockableActivity implements OnClickListener
 //        this.setTitleButtonEnabled("refresh", false);
 
         final CookieSyncManager csm = CookieSyncManager.createInstance(this);
-        mWebView = (WebView)findViewById(R.id.wvBank);
+        mWebView = (WebView) findViewById(R.id.wvBank);
         mWebView.setBackgroundColor(0);
         mWebView.getSettings().setJavaScriptEnabled(true);
-        mWebView.getSettings().setBuiltInZoomControls(true); 
+        mWebView.getSettings().setBuiltInZoomControls(true);
         mWebView.getSettings().setUserAgentString(Urllib.DEFAULT_USER_AGENT);
         mWebView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
-        
+
         mWebView.setWebChromeClient(new WebChromeClient() {
             public void onProgressChanged(WebView view, int progress) {
 //                activity.setProgressBar(progress);
@@ -80,36 +85,36 @@ public class WebViewActivity extends LockableActivity implements OnClickListener
                     Runnable runnable = new Runnable() {
                         public void run() {
 //                            activity.hideProgressBar();
-                            if (mFirstPageLoaded) mWebView.setBackgroundColor(WHITE);
+                            if (mFirstPageLoaded) {
+                                mWebView.setBackgroundColor(WHITE);
+                            }
                         }
                     };
                     // Let the progress bar hit 100% before we hide it.
                     handler.postDelayed(runnable, 100);
-                    
-                }
-                else if (mFirstPageLoaded) {
+
+                } else if (mFirstPageLoaded) {
 //                    activity.showProgressBar();
                 }
             }
-          });
+        });
         mWebView.setWebViewClient(new BankWebViewClient());
         String preloader = "Error...";
         try {
             preloader = IOUtils.toString(getResources().openRawResource(R.raw.loading));
             preloader = String.format(preloader,
-                                    "", // Javascript function
-                                    "" // HTML
-                                    );
-        }
-        catch (NotFoundException e) {
+                    "", // Javascript function
+                    "" // HTML
+            );
+        } catch (NotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        mWebView.loadDataWithBaseURL("what://is/this/i/dont/even", preloader, "text/html", "utf-8", null);
+        mWebView.loadDataWithBaseURL("what://is/this/i/dont/even", preloader, "text/html", "utf-8",
+                null);
         Bundle extras = getIntent().getExtras();
         final long bankId = extras.getLong("bankid", -1);
         //final long bankId = -1;
@@ -117,7 +122,8 @@ public class WebViewActivity extends LockableActivity implements OnClickListener
             Runnable generateLoginPage = new Runnable() {
                 public void run() {
                     Bank bank = BankFactory.bankFromDb(bankId, WebViewActivity.this, false);
-                    final SessionPackage loginPackage = bank.getSessionPackage(WebViewActivity.this);
+                    final SessionPackage loginPackage = bank
+                            .getSessionPackage(WebViewActivity.this);
                     final CookieStore cookieStore = loginPackage.getCookiestore();
                     mMainThreadhandler.post(new Runnable() {
                         @Override
@@ -129,72 +135,27 @@ public class WebViewActivity extends LockableActivity implements OnClickListener
                                 for (Cookie cookie : cookieStore.getCookies()) {
                                     cookieString = String.format("%s=%s;%spath=%s; domain=%s;",
                                             cookie.getName(), cookie.getValue(),
-                                            cookie.getExpiryDate() == null ? "" : "expires="+cookie.getExpiryDate()+"; ",
+                                            cookie.getExpiryDate() == null ? ""
+                                                    : "expires=" + cookie.getExpiryDate() + "; ",
                                             cookie.getPath() == null ? "/" : cookie.getPath(),
                                             cookie.getDomain());
                                     cookieManager.setCookie(cookie.getDomain(), cookieString);
                                 }
                                 csm.sync();
                             }
-                            mWebView.loadDataWithBaseURL("what://is/this/i/dont/even", loginPackage.getHtml(), "text/html", "utf-8", null);
+                            mWebView.loadDataWithBaseURL("what://is/this/i/dont/even",
+                                    loginPackage.getHtml(), "text/html", "utf-8", null);
                         }
                     });
                 }
-              };
-              new Thread(generateLoginPage).start();
+            };
+            new Thread(generateLoginPage).start();
         }
     }
 
     public void onResume() {
         super.onResume();
     }
-
-    // Make sure clicked links are loaded in our webview.
-    private class BankWebViewClient extends WebViewClient {
-
-        @Override
-        public void onLoadResource(WebView view, String url) {
-            super.onLoadResource(view, url);
-            if (mFirstPageLoaded) handleHistoryChange();
-        }
-
-
-        @Override
-        public void onPageFinished(WebView view, String url) {
-            super.onPageFinished(view, url);
-            if (!mFirstPageLoaded) {
-                //This is the generated POST page.
-                if (url.startsWith("what:")) return;
-                
-                //This is the first real page.
-                //Remove the generated page from history.
-                mWebView.clearHistory();
-                mFirstPageLoaded = true;
-//                activity.setTitleButtonEnabled("refresh", true);
-                return;
-            }
-        }
-        
-
-        @Override
-        public void onFormResubmission(WebView view, Message dontResend,
-                Message resend) {
-            // TODO Auto-generated method stub
-            //super.onFormResubmission(view, dontResend, resend);
-            resend.sendToTarget();
-        }
-
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            view.loadUrl(url);
-            return true;
-        }
-        
-        public void handleHistoryChange() {
-//            activity.setTitleButtonEnabled("back", mWebView.canGoBack());
-//            activity.setTitleButtonEnabled("forward", mWebView.canGoForward());
-        }
-    }	
 
     //Handle the back key
     @Override
@@ -210,15 +171,64 @@ public class WebViewActivity extends LockableActivity implements OnClickListener
 
     @Override
     public void onClick(View v) {
-        String tag = (String)v.getTag();
+        String tag = (String) v.getTag();
         if ("refresh".equals(tag)) {
             mWebView.reload();
-        }
-        else if ("back".equals(tag)) {
+        } else if ("back".equals(tag)) {
             mWebView.goBack();
-        }
-        else if ("forward".equals(tag)) {
+        } else if ("forward".equals(tag)) {
             mWebView.goForward();
+        }
+    }
+
+    // Make sure clicked links are loaded in our webview.
+    private class BankWebViewClient extends WebViewClient {
+
+        @Override
+        public void onLoadResource(WebView view, String url) {
+            super.onLoadResource(view, url);
+            if (mFirstPageLoaded) {
+                handleHistoryChange();
+            }
+        }
+
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            super.onPageFinished(view, url);
+            if (!mFirstPageLoaded) {
+                //This is the generated POST page.
+                if (url.startsWith("what:")) {
+                    return;
+                }
+
+                //This is the first real page.
+                //Remove the generated page from history.
+                mWebView.clearHistory();
+                mFirstPageLoaded = true;
+//                activity.setTitleButtonEnabled("refresh", true);
+                return;
+            }
+        }
+
+
+        @Override
+        public void onFormResubmission(WebView view, Message dontResend,
+                Message resend) {
+            // TODO Auto-generated method stub
+            //super.onFormResubmission(view, dontResend, resend);
+            resend.sendToTarget();
+        }
+
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            view.loadUrl(url);
+            return true;
+        }
+
+        public void handleHistoryChange() {
+//            activity.setTitleButtonEnabled("back", mWebView.canGoBack());
+//            activity.setTitleButtonEnabled("forward", mWebView.canGoForward());
         }
     }
 }

@@ -1,4 +1,3 @@
-
 package com.liato.bankdroid.banking.banks.coop.model.web;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -12,16 +11,22 @@ public class Model {
 
     @JsonProperty("results")
     private List<Result> results = new ArrayList<Result>();
+
     @JsonProperty("from")
     private String from;
+
     @JsonProperty("to")
     private String to;
+
     @JsonProperty("id")
     private String id;
+
     @JsonProperty("page")
     private int page;
+
     @JsonProperty("pageCount")
     private int pageCount;
+
     @JsonProperty("pageSize")
     private int pageSize;
 

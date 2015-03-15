@@ -8,8 +8,10 @@ public class Transaction {
 
     @JsonProperty("TransactionDate")
     private String transactionDate;
+
     @JsonProperty("Amount")
     private double amount;
+
     @JsonProperty("Description")
     private String description;
 

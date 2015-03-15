@@ -17,13 +17,14 @@ package com.liato.bankdroid.provider;
 
 /**
  * Defines what types of accounts are supported.
- * 
+ *
  * @since 8 jan 2011
  */
 public interface IAccountTypes {
-	public final static int REGULAR = 1;
-	public final static int FUNDS = 2;
-	public final static int LOANS = 3;
-	public final static int CCARD = 4;
-	public final static int OTHER = 5;
+
+    public final static int REGULAR = 1;
+    public final static int FUNDS = 2;
+    public final static int LOANS = 3;
+    public final static int CCARD = 4;
+    public final static int OTHER = 5;
 }

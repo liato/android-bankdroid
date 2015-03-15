@@ -16,25 +16,6 @@
 
 package com.liato.bankdroid.banking.banks;
 
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
-
-import android.content.Context;
-import android.text.Html;
-import android.util.Log;
-
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
@@ -45,18 +26,46 @@ import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.provider.IBankTypes;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
+
+import android.content.Context;
+import android.text.Html;
+import android.util.Log;
+
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class AmericanExpress extends Bank {
+
     private static final String TAG = "AmericanExpress";
+
     private static final String NAME = "American Express";
+
     private static final String NAME_SHORT = "americanexpress";
+
     private static final String URL = "https://www.americanexpress.com/home/se/home_c.shtml";
+
     private static final int BANKTYPE_ID = IBankTypes.AMERICANEXPRESS;
 
-    private Pattern reAccounts = Pattern.compile("leftnav'\\)\">([^<]+)</a>\\r*\\s*</div>\\r*\\s*</td>\\r*\\s*<td\\s*id=\"headerSectionLeft\"\\s*colspan=\"6\">\\r*\\s*<span\\s*class=\"cardTitle\">.*?sorted_index=(\\d{1,})&?[^>]+>([^<]+)</a>.*?Utest[\\&aring;|å]ende skuld\\s*</div>\\r*\\s*<div[^>]+>[^<]+</div>\\r*\\s*<div[^>]+>([^<]+)</div>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-    private Pattern reTransactions = Pattern.compile("id=\"Roc\\d{1,}\"\\s* class='tableStandardText'>\\r*\\s*<td[^>]+>\\r*\\s*(\\d{1,2}\\s[a-z]{3}\\s\\d{4}).*?</a>\\r*\\s*([^<]*).*?amountPadding'>&nbsp;</td>\\r*\\s*<td\\s*class='amountPadding'>.*?([0-9.,\\s]*kr)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private Pattern reAccounts = Pattern.compile(
+            "leftnav'\\)\">([^<]+)</a>\\r*\\s*</div>\\r*\\s*</td>\\r*\\s*<td\\s*id=\"headerSectionLeft\"\\s*colspan=\"6\">\\r*\\s*<span\\s*class=\"cardTitle\">.*?sorted_index=(\\d{1,})&?[^>]+>([^<]+)</a>.*?Utest[\\&aring;|å]ende skuld\\s*</div>\\r*\\s*<div[^>]+>[^<]+</div>\\r*\\s*<div[^>]+>([^<]+)</div>",
+            Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+
+    private Pattern reTransactions = Pattern.compile(
+            "id=\"Roc\\d{1,}\"\\s* class='tableStandardText'>\\r*\\s*<td[^>]+>\\r*\\s*(\\d{1,2}\\s[a-z]{3}\\s\\d{4}).*?</a>\\r*\\s*([^<]*).*?amountPadding'>&nbsp;</td>\\r*\\s*<td\\s*class='amountPadding'>.*?([0-9.,\\s]*kr)",
+            Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     private String response = null;
 
@@ -77,20 +86,25 @@ public class AmericanExpress extends Bank {
 
     @Override
     protected LoginPackage preLogin() throws BankException, IOException {
-        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_americanexpress, R.raw.cert_americanexpress2, R.raw.cert_americanexpress_global));
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context,
+                R.raw.cert_americanexpress, R.raw.cert_americanexpress2,
+                R.raw.cert_americanexpress_global));
         urlopen.setAllowCircularRedirects(true);
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         response = urlopen.open("https://www.americanexpress.com/home/se/home_c.shtml");
-        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+        List<NameValuePair> postData = new ArrayList<NameValuePair>();
 
         postData.add(new BasicNameValuePair("request_type", "LogLogonHandler"));
-        postData.add(new BasicNameValuePair("DestPage", "https://global.americanexpress.com/myca/intl/acctsumm/emea/accountSummary.do?request_type=&Face=sv_SE"));
+        postData.add(new BasicNameValuePair("DestPage",
+                "https://global.americanexpress.com/myca/intl/acctsumm/emea/accountSummary.do?request_type=&Face=sv_SE"));
         postData.add(new BasicNameValuePair("Face", "sv_SE"));
         postData.add(new BasicNameValuePair("brandname", ""));
-        postData.add(new BasicNameValuePair("TARGET", "https://global.americanexpress.com/myca/intl/acctsumm/emea/accountSummary.do?request_type=&Face=sv_SE"));
+        postData.add(new BasicNameValuePair("TARGET",
+                "https://global.americanexpress.com/myca/intl/acctsumm/emea/accountSummary.do?request_type=&Face=sv_SE"));
         postData.add(new BasicNameValuePair("CHECKBOXSTATUS", "1"));
         postData.add(new BasicNameValuePair("Logon", "Continue..."));
-        postData.add(new BasicNameValuePair("devicePrint", "version%3D1%26pm%5Ffpua%3Dmozilla%2F5%2E0%20%28windows%3B%20u%3B%20windows%20nt%206%2E1%3B%20en%2Dus%3B%20rv%3A1%2E9%2E2%2E7%29%20gecko%2F20100713%20firefox%2F3%2E6%2E7%20%28%20%2Enet%20clr%203%2E5%2E30729%3B%20%2Enet4%2E0c%29%7C5%2E0%20%28Windows%3B%20en%2DUS%29%7CWin32%26pm%5Ffpsc%3D24%7C1680%7C1050%7C988%26pm%5Ffpsw%3Dswf%7Cdef%7Cqt1%7Cqt2%7Cqt3%7Cqt4%7Cqt5%7Cqt6%26pm%5Ffptz%3D1%26pm%5Ffpln%3Dlang%3Den%2DUS%7Csyslang%3D%7Cuserlang%3D%26pm%5Ffpjv%3D1%26pm%5Ffpco%3D1"));
+        postData.add(new BasicNameValuePair("devicePrint",
+                "version%3D1%26pm%5Ffpua%3Dmozilla%2F5%2E0%20%28windows%3B%20u%3B%20windows%20nt%206%2E1%3B%20en%2Dus%3B%20rv%3A1%2E9%2E2%2E7%29%20gecko%2F20100713%20firefox%2F3%2E6%2E7%20%28%20%2Enet%20clr%203%2E5%2E30729%3B%20%2Enet4%2E0c%29%7C5%2E0%20%28Windows%3B%20en%2DUS%29%7CWin32%26pm%5Ffpsc%3D24%7C1680%7C1050%7C988%26pm%5Ffpsw%3Dswf%7Cdef%7Cqt1%7Cqt2%7Cqt3%7Cqt4%7Cqt5%7Cqt6%26pm%5Ffptz%3D1%26pm%5Ffpln%3Dlang%3Den%2DUS%7Csyslang%3D%7Cuserlang%3D%26pm%5Ffpjv%3D1%26pm%5Ffpco%3D1"));
         postData.add(new BasicNameValuePair("REMEMBERME", "on"));
         postData.add(new BasicNameValuePair("manage", "option1"));
         postData.add(new BasicNameValuePair("UserID", username));
@@ -98,7 +112,8 @@ public class AmericanExpress extends Bank {
         postData.add(new BasicNameValuePair("Password", password));
         postData.add(new BasicNameValuePair("PWD", password));
 
-        return new LoginPackage(urlopen, postData, response, "https://global.americanexpress.com/myca/logon/emea/action?request_type=LogLogonHandler&Face=sv_SE");
+        return new LoginPackage(urlopen, postData, response,
+                "https://global.americanexpress.com/myca/logon/emea/action?request_type=LogLogonHandler&Face=sv_SE");
     }
 
     @Override
@@ -113,9 +128,10 @@ public class AmericanExpress extends Bank {
     }
 
     @Override
-    public void update() throws BankException, LoginException, BankChoiceException,IOException {
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0 || password.length() == 0) {
+        if (username == null || password == null || username.length() == 0
+                || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 
@@ -131,7 +147,7 @@ public class AmericanExpress extends Bank {
              * 3: Name                  SAS EuroBonus American Express&reg; Card
              * 4: Amount                1.111,11 kr
              * 
-             */   			    
+             */
             accounts.add(new Account(Html.fromHtml(matcher.group(3)).toString().trim(),
                     Helpers.parseBalance(matcher.group(4)).negate(),
                     matcher.group(2).trim()));
@@ -149,7 +165,9 @@ public class AmericanExpress extends Bank {
             BankException, IOException {
         super.updateTransactions(account, urlopen);
 
-        response = urlopen.open("https://global.americanexpress.com/myca/intl/estatement/emea/statement.do?request_type=&Face=sv_SE&BPIndex=0&sorted_index=" + account.getId());
+        response = urlopen.open(
+                "https://global.americanexpress.com/myca/intl/estatement/emea/statement.do?request_type=&Face=sv_SE&BPIndex=0&sorted_index="
+                        + account.getId());
         Matcher matcher = reTransactions.matcher(response);
         ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 
@@ -170,10 +188,9 @@ public class AmericanExpress extends Bank {
                 transactionDate = sdfFrom.parse(matcher.group(1).trim());
                 String strDate = sdfTo.format(transactionDate);
                 transactions.add(new Transaction(strDate,
-                                                 Html.fromHtml(matcher.group(2)).toString().trim(),
-                                                 Helpers.parseBalance(matcher.group(3).trim()).negate()));
-            }
-            catch (ParseException e) {
+                        Html.fromHtml(matcher.group(2)).toString().trim(),
+                        Helpers.parseBalance(matcher.group(3).trim()).negate()));
+            } catch (ParseException e) {
                 Log.w(TAG, "Unable to parse date: " + matcher.group(1).trim());
             }
         }

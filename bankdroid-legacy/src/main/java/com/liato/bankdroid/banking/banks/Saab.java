@@ -15,34 +15,38 @@
  */
 package com.liato.bankdroid.banking.banks;
 
-import android.content.Context;
-
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.banks.sebkort.SEBKortBase;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 
+import android.content.Context;
+
 import java.io.IOException;
 
 
 public class Saab extends SEBKortBase {
-	private static final String TAG = "SAAB";
-	private static final String NAME = "SaabKortet";
-	private static final String NAME_SHORT = "saab";
-	private static final int BANKTYPE_ID = Bank.SAAB;
 
-	public Saab(Context context) {
-		super(context, "sbse", "0106");
-		super.TAG = TAG;
-		super.NAME = NAME;
-		super.NAME_SHORT = NAME_SHORT;
-		super.BANKTYPE_ID = BANKTYPE_ID;
-	}
-	
-	public Saab(String username, String password, Context context) throws BankException,
+    private static final String TAG = "SAAB";
+
+    private static final String NAME = "SaabKortet";
+
+    private static final String NAME_SHORT = "saab";
+
+    private static final int BANKTYPE_ID = Bank.SAAB;
+
+    public Saab(Context context) {
+        super(context, "sbse", "0106");
+        super.TAG = TAG;
+        super.NAME = NAME;
+        super.NAME_SHORT = NAME_SHORT;
+        super.BANKTYPE_ID = BANKTYPE_ID;
+    }
+
+    public Saab(String username, String password, Context context) throws BankException,
             LoginException, BankChoiceException, IOException {
-		super(username, password, context, "sbse", "0106");
-	}
+        super(username, password, context, "sbse", "0106");
+    }
 
 }

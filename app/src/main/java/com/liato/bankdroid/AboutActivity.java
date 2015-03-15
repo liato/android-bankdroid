@@ -36,12 +36,14 @@ public class AboutActivity extends LockableActivity {
         PackageInfo pInfo;
         String version = "v1.x.x";
         try {
-            pInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA);
+            pInfo = getPackageManager().getPackageInfo(getPackageName(),
+                    PackageManager.GET_META_DATA);
             version = pInfo.versionName;
         } catch (final NameNotFoundException e) {
             e.printStackTrace();
         }
-        ((TextView) findViewById(R.id.txtVersion)).setText(getText(R.string.version).toString().replace("$version", version));
+        ((TextView) findViewById(R.id.txtVersion)).setText(
+                getText(R.string.version).toString().replace("$version", version));
 
     }
 

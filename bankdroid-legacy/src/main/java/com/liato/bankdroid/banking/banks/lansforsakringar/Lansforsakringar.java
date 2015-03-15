@@ -16,32 +16,10 @@
 
 package com.liato.bankdroid.banking.banks.lansforsakringar;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.message.BasicNameValuePair;
-
-import android.content.Context;
-import android.text.InputType;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.liato.bankdroid.Helpers;
-import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
@@ -57,26 +35,62 @@ import com.liato.bankdroid.banking.banks.lansforsakringar.model.response.Transac
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.provider.IBankTypes;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
+import android.content.Context;
+import android.text.InputType;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Lansforsakringar extends Bank {
+
     private static final String TAG = "Lansforsakringar";
+
     private static final String NAME = "Länsförsäkringar";
+
     private static final String NAME_SHORT = "lansforsakringar";
-    private static final String URL = "https://mobil.lansforsakringar.se/lf-mobile/pages/login.faces";
+
+    private static final String URL
+            = "https://mobil.lansforsakringar.se/lf-mobile/pages/login.faces";
+
     private static final int BANKTYPE_ID = IBankTypes.LANSFORSAKRINGAR;
+
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+
     private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
+
     private static final String INPUT_HINT_USERNAME = "ÅÅÅÅMMDDXXXX";
-    
+
     private static final String API_BASEURL = "https://mobil.lansforsakringar.se/appoutlet/";
 
-    private Pattern reViewState = Pattern.compile("(?:__|javax\\.faces\\.)VIEWSTATE\"\\s+.*?value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
-    private Pattern reLoginToken = Pattern.compile("login:loginToken\"\\s+.*?value=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE);
+    private Pattern reViewState = Pattern.compile(
+            "(?:__|javax\\.faces\\.)VIEWSTATE\"\\s+.*?value=\"([^\"]+)\"",
+            Pattern.CASE_INSENSITIVE);
+
+    private Pattern reLoginToken = Pattern.compile("login:loginToken\"\\s+.*?value=\"([^\"]+)\"",
+            Pattern.CASE_INSENSITIVE);
+
     private ObjectMapper mObjectMapper = new ObjectMapper();
+
     private HashMap<String, String> mAccountLedger = new HashMap<String, String>();
 
     public Lansforsakringar(Context context) {
@@ -102,122 +116,144 @@ public class Lansforsakringar extends Bank {
 
     @Override
     protected LoginPackage preLogin() throws BankException, IOException {
-        Urllib weblogin = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_lansforsakringar));
+        Urllib weblogin = new Urllib(context,
+                CertificateReader.getCertificates(context, R.raw.cert_lansforsakringar));
         weblogin.setAllowCircularRedirects(true);
 
-        String response = weblogin.open("https://mobil.lansforsakringar.se/lf-mobile/pages/login.faces");
+        String response = weblogin.open(
+                "https://mobil.lansforsakringar.se/lf-mobile/pages/login.faces");
         Matcher matcher = reViewState.matcher(response);
         if (!matcher.find()) {
-            throw new BankException(res.getText(R.string.unable_to_find).toString()+" ViewState.");
+            throw new BankException(
+                    res.getText(R.string.unable_to_find).toString() + " ViewState.");
         }
         String viewState = matcher.group(1);
         matcher = reLoginToken.matcher(response);
         if (!matcher.find()) {
-            throw new BankException(res.getText(R.string.unable_to_find).toString()+" LoginToken.");
+            throw new BankException(
+                    res.getText(R.string.unable_to_find).toString() + " LoginToken.");
         }
         String loginToken = matcher.group(1);
 
-        List <NameValuePair> postData = new ArrayList <NameValuePair>();
+        List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("login:userId", username));
         postData.add(new BasicNameValuePair("login:pin", password));
         postData.add(new BasicNameValuePair("login", "login"));
         postData.add(new BasicNameValuePair("javax.faces.ViewState", viewState));
-        postData.add(new BasicNameValuePair("login:time", Long.toString(System.currentTimeMillis())));
+        postData.add(
+                new BasicNameValuePair("login:time", Long.toString(System.currentTimeMillis())));
         postData.add(new BasicNameValuePair("login:loginToken", loginToken));
         postData.add(new BasicNameValuePair("login:loginButton", "login:loginButton"));
         return new LoginPackage(weblogin, postData, response, weblogin.getCurrentURI());
     }
 
     public Urllib login() throws LoginException, BankException {
-        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_lansforsakringar));
+        urlopen = new Urllib(context,
+                CertificateReader.getCertificates(context, R.raw.cert_lansforsakringar));
         urlopen.addHeader("Content-Type", "application/json; charset=UTF-8");
         urlopen.addHeader("DeviceId", UUID.randomUUID().toString());
         urlopen.addHeader("deviceInfo", "Galaxy Nexus;4.1.1;1.8;Portrait");
         //TODO: Change user-agent to "lf-android-app" if they block Bankdroid
         //urlopen.setUserAgent("lf-android-app");
 
-        NumberResponse nr = readJsonValue(API_BASEURL + "security/client", null, NumberResponse.class);
-        ChallengeResponse cr = readJsonValue(API_BASEURL + "security/client", objectAsJson(new ChallengeRequest(nr.getNumber(), nr.getNumberPair(), generateChallenge(nr.getNumber()))), ChallengeResponse.class);
+        NumberResponse nr = readJsonValue(API_BASEURL + "security/client", null,
+                NumberResponse.class);
+        ChallengeResponse cr = readJsonValue(API_BASEURL + "security/client", objectAsJson(
+                new ChallengeRequest(nr.getNumber(), nr.getNumberPair(),
+                        generateChallenge(nr.getNumber()))), ChallengeResponse.class);
         urlopen.addHeader("Ctoken", cr.getToken());
         try {
-        	LoginResponse lr = readJsonValue(API_BASEURL + "security/user", objectAsJson(new LoginRequest(username, password)), LoginResponse.class);
-        	urlopen.addHeader("Utoken", lr.getTicket());
-		} catch (Exception e) {
-			throw new LoginException(res.getText(R.string.invalid_username_password).toString());
-		}
+            LoginResponse lr = readJsonValue(API_BASEURL + "security/user",
+                    objectAsJson(new LoginRequest(username, password)), LoginResponse.class);
+            urlopen.addHeader("Utoken", lr.getTicket());
+        } catch (Exception e) {
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+        }
         return urlopen;
     }
-    
-    
+
+
     private <T> T readJsonValue(InputStream is, Class<T> valueType) throws BankException {
         try {
-			return mObjectMapper.readValue(is, valueType);
-		} catch (Exception e) {
-			throw new BankException(e.getMessage(), e);
-		}
+            return mObjectMapper.readValue(is, valueType);
+        } catch (Exception e) {
+            throw new BankException(e.getMessage(), e);
+        }
     }
 
-    private <T> T readJsonValue(String url, String postData, Class<T> valueType) throws BankException {
-    	try {
-			return readJsonValue(urlopen.openStream(url, postData, false), valueType);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new BankException(e.getMessage(), e);
-		}
+    private <T> T readJsonValue(String url, String postData, Class<T> valueType)
+            throws BankException {
+        try {
+            return readJsonValue(urlopen.openStream(url, postData, false), valueType);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BankException(e.getMessage(), e);
+        }
     }
-    
+
     public String objectAsJson(Object value) {
-    	try {
-			return mObjectMapper.writeValueAsString(value);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-    	return null;
+        try {
+            return mObjectMapper.writeValueAsString(value);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
-    
+
     private String generateChallenge(int originalChallenge) {
-		try {
-			String h = Integer.toHexString(originalChallenge + (1000 * 20 / 4) + 100 * (18 / 3) + 10 * (2 / 2) + 6);
-			MessageDigest md = MessageDigest.getInstance("SHA-1");
-			byte[] messageDigest = md.digest(h.getBytes());
-			BigInteger number = new BigInteger(1,messageDigest);
-			String md5 = number.toString(16);
-			while(md5.length() < 40)
-				md5 = "0" + md5;        
-			return md5;
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return "";
-    		
+        try {
+            String h = Integer.toHexString(
+                    originalChallenge + (1000 * 20 / 4) + 100 * (18 / 3) + 10 * (2 / 2) + 6);
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+            byte[] messageDigest = md.digest(h.getBytes());
+            BigInteger number = new BigInteger(1, messageDigest);
+            String md5 = number.toString(16);
+            while (md5.length() < 40) {
+                md5 = "0" + md5;
+            }
+            return md5;
+        } catch (NoSuchAlgorithmException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return "";
+
     }
-    
+
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0 || password.length() == 0) {
+        if (username == null || password == null || username.length() == 0
+                || password.length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 
         urlopen = login();
 
         mAccountLedger.clear();
-        AccountsResponse ar = readJsonValue(API_BASEURL + "account/bytype", objectAsJson(new AccountsRequest(AccountsRequest.Type.CHECKING)), AccountsResponse.class);
-        for (com.liato.bankdroid.banking.banks.lansforsakringar.model.response.Account a : ar.getAccounts()) {
-        	accounts.add(new Account(a.getAccountName(), new BigDecimal(a.getBalance()), a.getAccountNumber()));
-        	//a.getLedger() should be saved to database, used when fetching transactions
-        	mAccountLedger.put(a.getAccountNumber(), a.getLedger());
-        	balance = balance.add(new BigDecimal(a.getBalance()));
-        }
-        ar = readJsonValue(API_BASEURL + "account/bytype", objectAsJson(new AccountsRequest(AccountsRequest.Type.SAVING)), AccountsResponse.class);
-        for (com.liato.bankdroid.banking.banks.lansforsakringar.model.response.Account a : ar.getAccounts()) {
-        	accounts.add(new Account(a.getAccountName(), new BigDecimal(a.getBalance()), a.getAccountNumber()));
+        AccountsResponse ar = readJsonValue(API_BASEURL + "account/bytype",
+                objectAsJson(new AccountsRequest(AccountsRequest.Type.CHECKING)),
+                AccountsResponse.class);
+        for (com.liato.bankdroid.banking.banks.lansforsakringar.model.response.Account a : ar
+                .getAccounts()) {
+            accounts.add(new Account(a.getAccountName(), new BigDecimal(a.getBalance()),
+                    a.getAccountNumber()));
+            //a.getLedger() should be saved to database, used when fetching transactions
             mAccountLedger.put(a.getAccountNumber(), a.getLedger());
-        	balance = balance.add(new BigDecimal(a.getBalance()));
-        }        
+            balance = balance.add(new BigDecimal(a.getBalance()));
+        }
+        ar = readJsonValue(API_BASEURL + "account/bytype",
+                objectAsJson(new AccountsRequest(AccountsRequest.Type.SAVING)),
+                AccountsResponse.class);
+        for (com.liato.bankdroid.banking.banks.lansforsakringar.model.response.Account a : ar
+                .getAccounts()) {
+            accounts.add(new Account(a.getAccountName(), new BigDecimal(a.getBalance()),
+                    a.getAccountNumber()));
+            mAccountLedger.put(a.getAccountNumber(), a.getLedger());
+            balance = balance.add(new BigDecimal(a.getBalance()));
+        }
         if (accounts.isEmpty()) {
-        	throw new BankException(res.getText(R.string.no_accounts_found).toString());
+            throw new BankException(res.getText(R.string.no_accounts_found).toString());
         }
         super.updateComplete();
     }
@@ -227,25 +263,33 @@ public class Lansforsakringar extends Bank {
             BankException, IOException {
         super.updateTransactions(account, urlopen);
         // No transaction history for funds and loans
-        if (account.getType() != Account.REGULAR) return;
-        
+        if (account.getType() != Account.REGULAR) {
+            return;
+        }
+
         ArrayList<Transaction> transactions = new ArrayList<Transaction>();
         //TODO: Get upcoming transactions?
         //TransactionsResponse tr = readJsonValue(API_BASEURL + "account/upcoming", objectAsJson(new UpcomingTransactionsRequest(account.getId())), TransactionsResponse.class);
-        
+
         try {
-            TransactionsResponse tr = readJsonValue(API_BASEURL + "account/transaction", objectAsJson(new TransactionsRequest(0, mAccountLedger.containsKey(account.getId()) ? mAccountLedger.get(account.getId()) : "DEPIOSIT", account.getId())), TransactionsResponse.class);
-            for (com.liato.bankdroid.banking.banks.lansforsakringar.model.response.Transaction t : tr.getTransactions()) {
+            TransactionsResponse tr = readJsonValue(API_BASEURL + "account/transaction",
+                    objectAsJson(new TransactionsRequest(0,
+                            mAccountLedger.containsKey(account.getId()) ? mAccountLedger
+                                    .get(account.getId()) : "DEPIOSIT", account.getId())),
+                    TransactionsResponse.class);
+            for (com.liato.bankdroid.banking.banks.lansforsakringar.model.response.Transaction t : tr
+                    .getTransactions()) {
                 //TODO: Set locale to Europe/Stockholm on date?
-                transactions.add(new Transaction(Helpers.formatDate(new Date(t.getTransactiondate())), t.getText(), new BigDecimal(t.getAmmount())));
+                transactions
+                        .add(new Transaction(Helpers.formatDate(new Date(t.getTransactiondate())),
+                                t.getText(), new BigDecimal(t.getAmmount())));
             }
-            account.setTransactions(transactions);        
+            account.setTransactions(transactions);
         } catch (BankException e) {
             // No transactions for account if this fails.
             // readJsonValue will print the stack trace
         }
-        
-        
+
         super.updateComplete();
-    }       	
+    }
 }

@@ -35,6 +35,7 @@ import java.util.Map;
  */
 //@JsonIgnoreProperties(ignoreUnknown = true)
 public class ErrorResponse implements Serializable {
+
     private static final long serialVersionUID = 1971937841087070779L;
 
     @JsonProperty

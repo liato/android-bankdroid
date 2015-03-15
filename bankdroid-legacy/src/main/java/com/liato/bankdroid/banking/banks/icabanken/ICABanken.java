@@ -16,20 +16,7 @@
 
 package com.liato.bankdroid.banking.banks.icabanken;
 
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Locale;
-
-import org.apache.http.client.ClientProtocolException;
-
-import android.content.Context;
-import android.os.Build;
-import android.text.InputType;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.Transaction;
@@ -40,24 +27,46 @@ import com.liato.bankdroid.banking.banks.icabanken.model.response.LoginResponse;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.provider.IBankTypes;
+
+import android.content.Context;
+import android.os.Build;
+import android.text.InputType;
+
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Locale;
 
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class ICABanken extends Bank {
+
     private static final String TAG = "ICABanken";
+
     private static final String NAME = "ICA Banken";
+
     private static final String NAME_SHORT = "icabanken";
+
     private static final String URL = "https://mobil.icabanken.se/";
+
     private static final int BANKTYPE_ID = IBankTypes.ICABANKEN;
+
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
+
     private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
+
     private static final String INPUT_HINT_USERNAME = "ÅÅÅÅMMDD-XXXX";
+
     private static final boolean STATIC_BALANCE = false;
 
     private static final String API_KEY = "8987B80B-A708-4C61-B8CF-350D4BA289F0";
+
     private static final String API_URL = "https://appserver.icabanken.se";
+
     private static final String API_VERSION = "1.0";
 
     public ICABanken(Context context) {
@@ -80,7 +89,8 @@ public class ICABanken extends Bank {
     }
 
     public Urllib login() throws LoginException, BankException, IOException {
-        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_icabanken));
+        urlopen = new Urllib(context,
+                CertificateReader.getCertificates(context, R.raw.cert_icabanken));
         urlopen.addHeader("ApiVersion", API_VERSION);
         urlopen.addHeader("Accept", "application/json");
         urlopen.addHeader("ApiKey", API_KEY);
@@ -89,10 +99,11 @@ public class ICABanken extends Bank {
         urlopen.addHeader("ClientOSVersion", Integer.toString(Build.VERSION.SDK_INT));
         urlopen.addHeader("ClientAppVersion", "777");
 
-        String response = urlopen.open(String.format("%s/login/passwordlogin?customerId=%s&password=%s", API_URL, username, password));
-        if(response == null || "".equals(response)) {
+        String response = urlopen.open(String.format(
+                "%s/login/passwordlogin?customerId=%s&password=%s", API_URL, username, password));
+        if (response == null || "".equals(response)) {
             throw new LoginException(res.getText(
-                        R.string.invalid_username_password).toString());
+                    R.string.invalid_username_password).toString());
         }
         ObjectMapper vObjectMapper = new ObjectMapper();
         vObjectMapper.setDateFormat(new SimpleDateFormat(
@@ -132,7 +143,7 @@ public class ICABanken extends Bank {
             account.setTransactions(mapTransactions(icaAccount));
             Account alias = new Account(icaAccount.getName() + " (Saldo)",
                     icaAccount.getCurrentAmount(), "a:"
-                            + icaAccount.getAccountId());
+                    + icaAccount.getAccountId());
             alias.setAliasfor(icaAccount.getAccountId());
             accounts.add(account);
             accounts.add(alias);

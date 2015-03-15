@@ -46,7 +46,7 @@ public class CreditCard {
     }
 
     public List<String> getCardNumbers() {
-        if(cardNumbers == null) {
+        if (cardNumbers == null) {
             cardNumbers = new ArrayList<String>();
         }
         return cardNumbers;

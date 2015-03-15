@@ -8,7 +8,9 @@ import java.util.Arrays;
 import javax.net.ssl.X509TrustManager;
 
 public class CertPinningTrustManager implements X509TrustManager {
+
     private Certificate[] certificates;
+
     private String host;
 
     public CertPinningTrustManager(Certificate[] certificates, String host) {
@@ -37,7 +39,8 @@ public class CertPinningTrustManager implements X509TrustManager {
                 }
             }
         }
-        throw new CertificateException(host == null ? "Server certificate not trusted." : String.format("Server certificate not trusted for host: %s.", host));
+        throw new CertificateException(host == null ? "Server certificate not trusted."
+                : String.format("Server certificate not trusted for host: %s.", host));
     }
 
     public void setHost(String host) {

@@ -8,11 +8,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TransactionGroup implements Serializable {
+
     private static final long serialVersionUID = 5011424262690542196L;
+
     private String mTotal;
+
     private String mType;
+
     private double mTotalNumber;
+
     private List<Transaction> mTransactions = new ArrayList<Transaction>();
+
     private String mTitle;
 
     @JsonProperty("total")

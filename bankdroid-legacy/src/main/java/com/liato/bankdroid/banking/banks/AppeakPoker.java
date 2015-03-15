@@ -16,12 +16,15 @@
  */
 package com.liato.bankdroid.banking.banks;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import com.liato.bankdroid.Helpers;
+import com.liato.bankdroid.banking.Account;
+import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.exceptions.BankChoiceException;
+import com.liato.bankdroid.banking.exceptions.BankException;
+import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -29,55 +32,59 @@ import org.jsoup.nodes.Element;
 import android.content.Context;
 import android.text.InputType;
 
-import com.liato.bankdroid.Helpers;
-import com.liato.bankdroid.legacy.R;
-import com.liato.bankdroid.banking.Account;
-import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.exceptions.BankChoiceException;
-import com.liato.bankdroid.banking.exceptions.BankException;
-import com.liato.bankdroid.banking.exceptions.LoginException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import eu.nullbyte.android.urllib.Urllib;
 
 public class AppeakPoker extends Bank {
 
-	private static final String TAG = "AppeakPoker";
-	private static final String NAME = "Appeak Poker";
-	private static final String NAME_SHORT = "appeakpoker";
-	private static final String URL = "http://poker.appeak.se/";
-	private static final int BANKTYPE_ID = Bank.APPEAKPOKER;
-	private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT;
-	private static final boolean INPUT_HIDDEN_PASSWORD = true;
-	private String mChips = null;
+    private static final String TAG = "AppeakPoker";
 
-	public AppeakPoker(Context context) {
-		super(context);
-		super.TAG = TAG;
-		super.NAME = NAME;
-		super.NAME_SHORT = NAME_SHORT;
-		super.BANKTYPE_ID = BANKTYPE_ID;
-		super.URL = URL;
-		super.INPUT_TYPE_USERNAME= INPUT_TYPE_USERNAME;
-		super.INPUT_HIDDEN_PASSWORD = INPUT_HIDDEN_PASSWORD;
+    private static final String NAME = "Appeak Poker";
+
+    private static final String NAME_SHORT = "appeakpoker";
+
+    private static final String URL = "http://poker.appeak.se/";
+
+    private static final int BANKTYPE_ID = Bank.APPEAKPOKER;
+
+    private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT;
+
+    private static final boolean INPUT_HIDDEN_PASSWORD = true;
+
+    private String mChips = null;
+
+    public AppeakPoker(Context context) {
+        super(context);
+        super.TAG = TAG;
+        super.NAME = NAME;
+        super.NAME_SHORT = NAME_SHORT;
+        super.BANKTYPE_ID = BANKTYPE_ID;
+        super.URL = URL;
+        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
+        super.INPUT_HIDDEN_PASSWORD = INPUT_HIDDEN_PASSWORD;
         super.DISPLAY_DECIMALS = false;
         currency = "chips";
-	}
+    }
 
-	public AppeakPoker(String username, String password, Context context) throws BankException,
+    public AppeakPoker(String username, String password, Context context) throws BankException,
             LoginException, BankChoiceException, IOException {
-		this(context);
-		this.update(username, password);
-	}
+        this(context);
+        this.update(username, password);
+    }
 
-	@Override
-	protected LoginPackage preLogin() throws BankException, IOException {
-		urlopen = new Urllib(context);
-		List<NameValuePair> postData = new ArrayList<NameValuePair>();
-		return new LoginPackage(urlopen, postData, "", String.format("http://poker.appeak.se/playerInfo/?username=%s", username));
-	}
+    @Override
+    protected LoginPackage preLogin() throws BankException, IOException {
+        urlopen = new Urllib(context);
+        List<NameValuePair> postData = new ArrayList<NameValuePair>();
+        return new LoginPackage(urlopen, postData, "",
+                String.format("http://poker.appeak.se/playerInfo/?username=%s", username));
+    }
 
-	@Override
-	public Urllib login() throws LoginException, BankException, IOException {
+    @Override
+    public Urllib login() throws LoginException, BankException, IOException {
         LoginPackage lp = preLogin();
         String response = urlopen.open(lp.getLoginTarget());
         Document d = Jsoup.parse(response);
@@ -85,27 +92,28 @@ public class AppeakPoker extends Bank {
         if (e == null) {
             throw new LoginException(res.getText(R.string.invalid_username).toString());
         } else {
-        	mChips = e.html();
+            mChips = e.html();
         }
-        return urlopen;		
-	}
+        return urlopen;
+    }
 
-	@Override
-	public void update() throws BankException, LoginException, BankChoiceException, IOException {
-		super.update();
-		if (username == null) {
-			throw new LoginException(res.getText(R.string.invalid_card_number).toString());
-		}
-		login();
-		if (mChips != null) {
-			Account account = new Account("Chips", Helpers.parseBalance(mChips.replaceAll("\\D", "")), "1");
-			account.setCurrency("chips");
+    @Override
+    public void update() throws BankException, LoginException, BankChoiceException, IOException {
+        super.update();
+        if (username == null) {
+            throw new LoginException(res.getText(R.string.invalid_card_number).toString());
+        }
+        login();
+        if (mChips != null) {
+            Account account = new Account("Chips",
+                    Helpers.parseBalance(mChips.replaceAll("\\D", "")), "1");
+            account.setCurrency("chips");
             balance = account.getBalance();
             accounts.add(account);
-		}
+        }
         if (accounts.isEmpty()) {
             throw new BankException(res.getText(R.string.no_accounts_found).toString());
         }
         super.updateComplete();
-	}
+    }
 }

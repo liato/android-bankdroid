@@ -16,32 +16,40 @@
 
 package com.liato.bankdroid.banking.banks;
 
-import android.content.Context;
-import android.text.InputType;
-
 import com.liato.bankdroid.Helpers;
-import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.provider.IBankTypes;
+
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.content.Context;
+import android.text.InputType;
+
 import java.io.IOException;
+
 import eu.nullbyte.android.urllib.Urllib;
 
 public class BlekingeTrafiken extends Bank {
+
     private static final String TAG = "Blekingetrafiken";
+
     private static final String NAME = "Blekingetrafiken";
+
     private static final String NAME_SHORT = "blekingetrafiken";
+
     private static final String URL = "https://www.blekingetrafiken.se";
+
     private static final int BANKTYPE_ID = IBankTypes.BLEKINGETRAFIKEN;
+
     private String response = null;
 
     public BlekingeTrafiken(Context context) {
@@ -75,11 +83,11 @@ public class BlekingeTrafiken extends Bank {
 
     public Urllib login() throws LoginException, BankException, IOException {
         LoginPackage lp = preLogin();
-        urlopen.addHeader("Content-Type","application/json;charset=UTF-8");
-        urlopen.addHeader("Accept","application/json");
+        urlopen.addHeader("Content-Type", "application/json;charset=UTF-8");
+        urlopen.addHeader("Accept", "application/json");
         HttpResponse httpResponse = urlopen.openAsHttpResponse(URL + "/webshop/card/balance/",
                 new StringEntity("{\"cardnr\":\"" + username + "\"}"), true);
-        if(httpResponse.getStatusLine().getStatusCode() != 200) {
+        if (httpResponse.getStatusLine().getStatusCode() != 200) {
             throw new BankException(res.getText(R.string.invalid_card_number).toString());
         }
         response = EntityUtils.toString(httpResponse.getEntity());
@@ -104,7 +112,7 @@ public class BlekingeTrafiken extends Bank {
             balance = balance.add(a.getBalance());
 
             accountJSONObject = accountJSONObject.optJSONObject("Autoload");
-            if (accountJSONObject !=  null) {
+            if (accountJSONObject != null) {
                 a = new Account(" - Kommande -",
                         Helpers.parseBalance(accountJSONObject.getString("Value")),
                         "1");
