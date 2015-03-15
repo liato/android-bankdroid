@@ -40,7 +40,7 @@
         <module name="IllegalImport" />
         <module name="RedundantImport" />
         <module name="UnusedImports" />
-        <module name="MethodLength" />
+       <!-- <module name="MethodLength" /> -->
         <module name="ParameterNumber" />
         <module name="EmptyForIteratorPad" />
         <module name="MethodParamPad" />
@@ -58,7 +58,7 @@
         <module name="ModifierOrder" />
         <module name="RedundantModifier" />
         <module name="AvoidNestedBlocks" />
-        <module name="EmptyBlock" />
+        <!--<module name="EmptyBlock" />-->
         <module name="LeftCurly" />
         <module name="NeedBraces" />
         <module name="RightCurly" />
@@ -66,8 +66,8 @@
         <module name="EqualsHashCode" />
         <module name="IllegalInstantiation" />
         <module name="InnerAssignment" />
-        <module name="MagicNumber" />
-        <module name="MissingSwitchDefault" />
+        <!-- <module name="MagicNumber" /> -->
+        <!--<module name="MissingSwitchDefault" />-->
         <module name="SimplifyBooleanExpression" />
         <module name="SimplifyBooleanReturn" />
         <module name="FinalClass" />
@@ -76,12 +76,12 @@
         <module name="ArrayTypeStyle" />
 
         <module name="UpperEll" />
-        <module name="MethodLength">
+      <!--  <module name="MethodLength">
             <property name="max" value="40" />
-        </module>
+        </module> -->
         <module name="LineLength">
             <property name="max" value="100" />
-             <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+             <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://|content://"/>
         </module>
         <module name="InnerTypeLast" />
     </module>
