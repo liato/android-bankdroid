@@ -21,6 +21,11 @@ checkstyle {
 android {
     lintOptions {
         abortOnError false // TODO Set to true when project has been cleaned.
+        lintConfig file("${project.rootDir}/config/quality/lint/lint.xml")
+
+        htmlReport true
+        // optional path to report (default will be lint-results.html in the builddir)
+        htmlOutput file("$project.buildDir/reports/lint/lint.html")
     }
 }
 
