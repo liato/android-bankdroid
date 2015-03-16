@@ -10,7 +10,7 @@ android:
     - extra-android-m2repository
     - android-22
 
-script: ./gradlew check
+script: ./gradlew assembleDebug check
 
 notifications:
   email: false
