@@ -1,7 +1,8 @@
 apply plugin: 'checkstyle'
+apply plugin: 'findbugs'
 
-// Add checkstyle and lint to the check task.
-check.dependsOn 'checkstyle', 'lint'
+// Add checkstyle, findbugs and lint to the check task.
+check.dependsOn 'checkstyle', 'lint', 'findbugs'
 
 task checkstyle(type: Checkstyle) {
     configFile file("${project.rootDir}/config/quality/checkstyle/checkstyle.xml")
@@ -21,4 +22,29 @@ android {
     lintOptions {
         abortOnError false // TODO Set to true when project has been cleaned.
     }
+}
+
+task findbugs(type: FindBugs) {
+    ignoreFailures = true // TODO Set to false when project has been cleaned.
+    effort = "max"
+    reportLevel = "high"
+    excludeFilter = new File("${project.rootDir}/config/quality/findbugs/findbugs-filter.xml")
+    classes = files("${project.rootDir}/app/build/intermediates/classes")
+
+    source 'src'
+    include '**/*.java'
+    exclude '**/generated/**'
+
+    reports {
+        xml.enabled = false
+        html.enabled = true
+        xml {
+            destination "$project.buildDir/reports/findbugs/findbugs.xml"
+        }
+        html {
+            destination "$project.buildDir/reports/findbugs/findbugs.html"
+        }
+    }
+
+    classpath = files()
 }
