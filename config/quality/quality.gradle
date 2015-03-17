@@ -1,8 +1,9 @@
 apply plugin: 'checkstyle'
 apply plugin: 'findbugs'
+apply plugin: 'pmd'
 
 // Add checkstyle, findbugs and lint to the check task.
-check.dependsOn 'checkstyle', 'lint', 'findbugs'
+check.dependsOn 'checkstyle', 'findbugs', 'pmd', 'lint'
 
 task checkstyle(type: Checkstyle) {
     configFile file("${project.rootDir}/config/quality/checkstyle/checkstyle.xml")
@@ -47,4 +48,25 @@ task findbugs(type: FindBugs) {
     }
 
     classpath = files()
+}
+
+task pmd(type: Pmd) {
+    ruleSetFiles = files("${project.rootDir}/config/quality/pmd/pmd-ruleset.xml")
+    ignoreFailures = true // TODO Set to false when project has been cleaned.
+    ruleSets = []
+
+    source 'src'
+    include '**/*.java'
+    exclude '**/generated/**'
+
+    reports {
+        xml.enabled = false
+        html.enabled = true
+        xml {
+            destination "$project.buildDir/reports/pmd/pmd.xml"
+        }
+        html {
+            destination "$project.buildDir/reports/pmd/pmd.html"
+        }
+    }
 }
