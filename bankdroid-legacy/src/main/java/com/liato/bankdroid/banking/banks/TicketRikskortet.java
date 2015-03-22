@@ -25,7 +25,6 @@ import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.legacy.R;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
@@ -140,13 +139,7 @@ public class TicketRikskortet extends Bank {
         urlopen = login();
         if (!"https://www.edenred.se/sv/Apps/Employee/Start/".equalsIgnoreCase(
                 urlopen.getCurrentURI())) {
-            try {
-                response = urlopen.open("https://www.edenred.se/sv/Apps/Employee/Start/");
-            } catch (ClientProtocolException e) {
-                throw new BankException(e.getMessage(), e);
-            } catch (IOException e) {
-                throw new BankException(e.getMessage(), e);
-            }
+            response = urlopen.open("https://www.edenred.se/sv/Apps/Employee/Start/");
         }
 
         Matcher matcher = reBalance.matcher(response);
