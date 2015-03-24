@@ -214,17 +214,13 @@ public class Coop extends Bank {
             }
         }
 
-        try {
-            response = urlopen
-                    .open("https://www.coop.se/Mina-sidor/Oversikt/Information-om-aterbaringen/");
-            dResponse = Jsoup.parse(response);
-            Account a = new Account("Återbäring",
-                    Helpers.parseBalance(dResponse.select(".Heading--coopNew").text()),
-                    "refound", Account.OTHER, "SEK");
-            accounts.add(a);
-        } catch (Exception e) {
-            throw new BankException(e.getMessage(), e);
-        }
+        response = urlopen
+                .open("https://www.coop.se/Mina-sidor/Oversikt/Information-om-aterbaringen/");
+        dResponse = Jsoup.parse(response);
+        Account a = new Account("Återbäring",
+                Helpers.parseBalance(dResponse.select(".Heading--coopNew").text()),
+                "refound", Account.OTHER, "SEK");
+        accounts.add(a);
 
         if (accounts.isEmpty()) {
             throw new BankException(res.getText(R.string.no_accounts_found).toString());
@@ -243,38 +239,35 @@ public class Coop extends Bank {
 
     @Override
     public void updateTransactions(Account account, Urllib urlopen)
-            throws LoginException, BankException {
+            throws LoginException, BankException, IOException {
         AccountType at = getAccuntType(account.getId());
         TransactionParams tp = mTransactionParams.get(at);
         if (at == null || tp == null || !tp.isValid() || !isFirstAccountForType(account.getId())) {
             return;
         }
-        try {
-            String data = URLEncoder.encode(String
-                    .format("{\"page\":1,\"pageSize\":15,\"from\":\"%s\",\"to\":\"%s\"}",
-                            tp.getMinDate(), tp.getMaxDate()), "utf-8");
-            String url = String
-                    .format("https://www.coop.se/Services/PlainService.svc/JsonExecuteGet?pageGuid=%s&method=GetTransactions&data=%s&_=%s",
-                            tp.getPageGuid(), data, System.currentTimeMillis());
-            WebTransactionHistoryResponse transactionsResponse = getObjectmapper()
-                    .readValue(urlopen.openStream(url), WebTransactionHistoryResponse.class);
-            if (transactionsResponse != null && transactionsResponse.getModel() != null) {
-                List<Transaction> transactions = new ArrayList<>();
-                account.setTransactions(transactions);
-                for (Result r : transactionsResponse.getModel().getResults()) {
-                    StringBuilder title = new StringBuilder(
-                            !TextUtils.isEmpty(r.getLocation()) ? r.getLocation() : r.getTitle());
-                    if (!TextUtils.isEmpty(r.getCardholder())) {
-                        title.append(" (").append(r.getCardholder()).append(")");
-                    }
-                    if (r.getDate() != null) {
-                        transactions.add(new Transaction(formatDate(r.getDate()), title.toString(),
-                                BigDecimal.valueOf(r.getSum())));
-                    }
+
+        String data = URLEncoder.encode(String
+                .format("{\"page\":1,\"pageSize\":15,\"from\":\"%s\",\"to\":\"%s\"}",
+                        tp.getMinDate(), tp.getMaxDate()), "utf-8");
+        String url = String
+                .format("https://www.coop.se/Services/PlainService.svc/JsonExecuteGet?pageGuid=%s&method=GetTransactions&data=%s&_=%s",
+                        tp.getPageGuid(), data, System.currentTimeMillis());
+        WebTransactionHistoryResponse transactionsResponse = getObjectmapper()
+                .readValue(urlopen.openStream(url), WebTransactionHistoryResponse.class);
+        if (transactionsResponse != null && transactionsResponse.getModel() != null) {
+            List<Transaction> transactions = new ArrayList<>();
+            account.setTransactions(transactions);
+            for (Result r : transactionsResponse.getModel().getResults()) {
+                StringBuilder title = new StringBuilder(
+                        !TextUtils.isEmpty(r.getLocation()) ? r.getLocation() : r.getTitle());
+                if (!TextUtils.isEmpty(r.getCardholder())) {
+                    title.append(" (").append(r.getCardholder()).append(")");
+                }
+                if (r.getDate() != null) {
+                    transactions.add(new Transaction(formatDate(r.getDate()), title.toString(),
+                            BigDecimal.valueOf(r.getSum())));
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
