@@ -38,7 +38,9 @@ import android.text.InputType;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
@@ -110,16 +112,14 @@ public class Jojo extends Bank {
         }
         urlopen = login();
 
-        Document d = Jsoup.parse(response);
-        Elements cards = d.select(".my_cards_allinfo table tbody");
-        if (!cards.isEmpty()) {
-            for (Element card : cards) {
-                String cardNumber = card.select("tr:first-child td").text().trim();
-                BigDecimal saldo = getSaldo(cardNumber);
-                String name = card.select("tr:nth-child(2) td").text().trim();
-                String displayName = NAME_NOT_SET.equals(name) ? cardNumber : name;
-                accounts.add(new Account(displayName, saldo, cardNumber));
-                balance = balance.add(saldo);
+        Iterator<Account> it = new AccountIterator(response);
+        while (it.hasNext()) {
+            try {
+                Account account = it.next();
+                accounts.add(account);
+                balance.add(account.getBalance());
+            } catch (NoSuchElementException e) {
+                throw new BankException(res.getText(R.string.server_error_try_again).toString(), e);
             }
         }
 
@@ -146,5 +146,71 @@ public class Jojo extends Bank {
             // Ignore and defaults to zero
         }
         return BigDecimal.ZERO;
+    }
+
+    private class AccountIterator implements Iterator<Account> {
+
+        private Document mDocument;
+
+        private Iterator<Element> mCards;
+
+        private String mNextUrl;
+
+        public AccountIterator(String response) {
+            setDocument(response);
+        }
+
+        @Override
+        public boolean hasNext() {
+            return mCards.hasNext() || mNextUrl != null;
+        }
+
+        @Override
+        public Account next() {
+            if (!mCards.hasNext()) {
+                fetchNextPage();
+            }
+            return toAccount(mCards.next());
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException("Remove not supported");
+        }
+
+        private Elements parseCardElements() {
+            return mDocument.select(".my_cards_allinfo table tbody");
+        }
+
+        private String parseNextUrl() {
+            Element elem = mDocument.select("div.pageselector_pagenr a").last();
+            if (elem.select("span.pageselect_prevnext_selected").isEmpty()) {
+                return null;
+            }
+            return elem.attr("href");
+        }
+
+        private void fetchNextPage() {
+            try {
+                String response = urlopen.open(URL + mNextUrl);
+                setDocument(response);
+            } catch (IOException e) {
+                throw new NoSuchElementException();
+            }
+        }
+
+        private void setDocument(String response) {
+            mDocument = Jsoup.parse(response);
+            mCards = parseCardElements().iterator();
+            mNextUrl = parseNextUrl();
+        }
+
+        private Account toAccount(Element card) {
+            String cardNumber = card.select("tr:first-child td").text().trim();
+            BigDecimal saldo = getSaldo(cardNumber);
+            String name = card.select("tr:nth-child(2) td").text().trim();
+            String displayName = NAME_NOT_SET.equals(name) ? cardNumber : name;
+            return new Account(displayName, saldo, cardNumber);
+        }
     }
 }
