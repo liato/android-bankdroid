@@ -59,52 +59,49 @@ public class Chalmrest extends Bank {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 
-        try {
-            String cardNr = username;
+        String cardNr = username;
 
-            HttpClient httpclient = new DefaultHttpClient();
-            HttpGet httpget = new HttpGet(
-                    "http://kortladdning.chalmerskonferens.se/bgw.aspx?type=getCardAndArticles&card="
-                            + cardNr);
-            HttpResponse response = httpclient.execute(httpget);
-            HttpEntity entity = response.getEntity();
-            if (entity == null) {
-                throw new BankException("Couldn't connect!");
-            }
-
-            String s1 = EntityUtils.toString(entity);
-            Pattern pattern = Pattern.compile(
-                    "<ExtendedInfo Name=\"Kortvarde\" Type=\"System.Double\" >(.*?)</ExtendedInfo>");
-            Matcher matcher = pattern.matcher(s1);
-
-            if (!matcher.find()) {
-                throw new BankException("Couldn't parse value!");
-            }
-
-            String value = matcher.group(1);
-
-            StringBuilder sb = new StringBuilder();
-            int last = 0;
-            Matcher match = Pattern.compile("_x([0-9A-Fa-f]{4})_").matcher(value);
-            while (match.find()) {
-                sb.append(value.substring(last, match.start()));
-                int i = Integer.parseInt(match.group(1), 16);
-                sb.append((char) i);
-                last = match.end();
-            }
-            sb.append(value.substring(last));
-            value = sb.toString().replace(',', '.');
-
-            matcher = Pattern.compile("<CardInfo id=\"" + cardNr + "\" Name=\"(.*?)\"").matcher(s1);
-            if (!matcher.find()) {
-                throw new BankException("Coldn't parse name!");
-            }
-            String name = matcher.group(1);
-
-            accounts.add(new Account(name, BigDecimal.valueOf(Double.parseDouble(value)), "1"));
-        } catch (Exception e) {
-            throw new BankException(e.getMessage(), e);
+        HttpClient httpclient = new DefaultHttpClient();
+        HttpGet httpget = new HttpGet(
+                "http://kortladdning.chalmerskonferens.se/bgw.aspx?type=getCardAndArticles&card="
+                        + cardNr);
+        HttpResponse response = httpclient.execute(httpget);
+        HttpEntity entity = response.getEntity();
+        if (entity == null) {
+            throw new BankException("Couldn't connect!");
         }
+
+        String s1 = EntityUtils.toString(entity);
+        Pattern pattern = Pattern.compile(
+                "<ExtendedInfo Name=\"Kortvarde\" Type=\"System.Double\" >(.*?)</ExtendedInfo>");
+        Matcher matcher = pattern.matcher(s1);
+
+        if (!matcher.find()) {
+            throw new BankException("Couldn't parse value!");
+        }
+
+        String value = matcher.group(1);
+
+        StringBuilder sb = new StringBuilder();
+        int last = 0;
+        Matcher match = Pattern.compile("_x([0-9A-Fa-f]{4})_").matcher(value);
+        while (match.find()) {
+            sb.append(value.substring(last, match.start()));
+            int i = Integer.parseInt(match.group(1), 16);
+            sb.append((char) i);
+            last = match.end();
+        }
+        sb.append(value.substring(last));
+        value = sb.toString().replace(',', '.');
+
+        matcher = Pattern.compile("<CardInfo id=\"" + cardNr + "\" Name=\"(.*?)\"").matcher(s1);
+        if (!matcher.find()) {
+            throw new BankException("Coldn't parse name!");
+        }
+        String name = matcher.group(1);
+
+        accounts.add(new Account(name, BigDecimal.valueOf(Double.parseDouble(value)), "1"));
+
         super.updateComplete();
     }
 }

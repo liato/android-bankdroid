@@ -110,22 +110,19 @@ public class Bredband2VoIP extends Bank {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();
-        try {
-            response = urlopen.open(API_URL + "services/");
-            Matcher mSaldoUrl = reSaldoUrl.matcher(response);
-            while (mSaldoUrl.find()) {
-                String account = mSaldoUrl.group(1);
-                String r = urlopen.open(
-                        API_URL + "voip/digisipbalance/iPhoneProviderID/" + account + "/");
-                Matcher mSaldo = reSaldo.matcher(r);
-                if (mSaldo.find()) {
-                    accounts.add(new Account(account,
-                            Helpers.parseBalance(mSaldo.group(1)),
-                            account));
-                }
+
+        response = urlopen.open(API_URL + "services/");
+        Matcher mSaldoUrl = reSaldoUrl.matcher(response);
+        while (mSaldoUrl.find()) {
+            String account = mSaldoUrl.group(1);
+            String r = urlopen.open(
+                    API_URL + "voip/digisipbalance/iPhoneProviderID/" + account + "/");
+            Matcher mSaldo = reSaldo.matcher(r);
+            if (mSaldo.find()) {
+                accounts.add(new Account(account,
+                        Helpers.parseBalance(mSaldo.group(1)),
+                        account));
             }
-        } catch (Exception e) {
-            throw new BankException(e.getMessage(), e);
         }
         super.updateComplete();
     }

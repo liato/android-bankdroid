@@ -92,7 +92,7 @@ public class Avanza extends Bank {
         return lp;
     }
 
-    public Urllib login() throws LoginException, BankException {
+    public Urllib login() throws LoginException, BankException, IOException {
         urlopen = new Urllib(context,
                 CertificateReader.getCertificates(context, R.raw.cert_avanza));
         urlopen.addHeader("ctag", "1122334455");
@@ -186,8 +186,6 @@ public class Avanza extends Bank {
                 }
             }
         } catch (JsonParseException e) {
-            throw new BankException(e.getMessage(), e);
-        } catch (Exception e) {
             throw new BankException(e.getMessage(), e);
         }
         return urlopen;
