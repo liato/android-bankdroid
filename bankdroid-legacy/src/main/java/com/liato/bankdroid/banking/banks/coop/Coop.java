@@ -217,10 +217,14 @@ public class Coop extends Bank {
         response = urlopen
                 .open("https://www.coop.se/Mina-sidor/Oversikt/Information-om-aterbaringen/");
         dResponse = Jsoup.parse(response);
-        Account a = new Account("Återbäring",
-                Helpers.parseBalance(dResponse.select(".Heading--coopNew").text()),
-                "refound", Account.OTHER, "SEK");
-        accounts.add(a);
+        Elements refound = dResponse.select(".Heading--coopNew");
+        if (refound.hasText()) {
+            BigDecimal balance = Helpers.parseBalance(refound.text());
+            if (balance.compareTo(BigDecimal.ZERO) >= 0) {
+                Account a = new Account("Återbäring", balance, "refound", Account.OTHER, "SEK");
+                accounts.add(a);
+            }
+        }
 
         if (accounts.isEmpty()) {
             throw new BankException(res.getText(R.string.no_accounts_found).toString());
