@@ -26,6 +26,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
+import org.apache.http.NoHttpResponseException;
 import org.apache.http.ProtocolException;
 import org.apache.http.client.AuthenticationHandler;
 import org.apache.http.client.ClientProtocolException;
@@ -85,6 +86,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Urllib {
+
+    private static int MAX_RETRIES = 5;
 
     public static String DEFAULT_USER_AGENT
             = "Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17";
@@ -225,6 +228,24 @@ public class Urllib {
         for (int i = 0; i < headerKeys.length; i++) {
             request.addHeader(headerKeys[i], headerVals[i]);
         }
+
+        HttpRequestRetryHandler retryHandler = new HttpRequestRetryHandler() {
+
+            public boolean retryRequest(IOException exception, int executionCount,
+                                        HttpContext context) {
+                // retry a max of 5 times
+                if (executionCount >= MAX_RETRIES) {
+                    return false;
+                }
+                if (exception instanceof NoHttpResponseException) {
+                    return true;
+                } else if (exception instanceof ClientProtocolException) {
+                    return true;
+                }
+                return false;
+            }
+        };
+        httpclient.setHttpRequestRetryHandler(retryHandler);
 
         response = httpclient.execute(request, mHttpContext);
 
