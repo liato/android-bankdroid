@@ -16,9 +16,13 @@
 
 package com.liato.bankdroid.banking.banks;
 
+import android.content.Context;
+import android.text.InputType;
+
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
@@ -27,52 +31,36 @@ import com.liato.bankdroid.provider.IBankTypes;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-import android.content.Context;
-import android.text.Html;
-import android.text.InputType;
-import android.text.TextUtils;
-
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class PayPal extends Bank {
-
     private static final String TAG = "PayPal";
-
     private static final String NAME = "PayPal";
-
     private static final String NAME_SHORT = "paypal";
-
-    private static final String URL = "https://www.paypal.com/";
+    private static final String ORIGIN_URL =  "https://www.paypal.com";
+    private static final String REFERER_URL ="https://www.paypal.com/se/webapps/mpp/home";
+    private static final String OVERVIEW_URL = "https://www.paypal.com/myaccount/home";
+    private static final String LOGIN_URL = "https://www.paypal.com/signin/intent/";
+    private static final String BALANCE_URL = "https://www.paypal.com/myaccount/wallet/balance";
 
     private static final int BANKTYPE_ID = IBankTypes.PAYPAL;
-
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT
             | +InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
-
     private static final boolean STATIC_BALANCE = true;
-
-    private Pattern reFormAction = Pattern.compile("<form.*?action=\"([^\"]+)\".*?login_form.*?>",
-            Pattern.CASE_INSENSITIVE);
-
-    private Pattern reBalance = Pattern.compile(
-            "PayPal\\s*balance:\\s*(?:</strong>)?<span\\s*class=\"balance\">[^<]+<[^<]+>\\s*(?:<strong>)?[^0-9,.-]*([0-9,. ]+)([A-Z]+)\\s*(?:</strong>)?\\s*<[^<]+>\\s*</span>",
-            Pattern.CASE_INSENSITIVE);
-
-    private Pattern reAccounts = Pattern.compile(
-            "row\">([^>]+)</td>\\s*<td\\s*class=\"textright\">\\s*<[^>]+>\\s*[^0-9,.-]*([0-9,. ]+)([A-Z]+)\\s*<[^>]+>\\s*</td>",
-            Pattern.CASE_INSENSITIVE);
-
     private String response = null;
 
     public PayPal(Context context) {
@@ -95,53 +83,33 @@ public class PayPal extends Bank {
 
     @Override
     protected LoginPackage preLogin() throws BankException, IOException {
-        urlopen = new Urllib(context,
-                CertificateReader.getCertificates(context, R.raw.cert_paypal));
-        urlopen.setUserAgent(
-                "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1468.0 Safari/537.36");
-        //Get cookies and url to post to
-        response = urlopen.open("https://www.paypal.com/en");
-        Document d = Jsoup.parse(response);
-        Element e = d.select("form[name=login_form]").first();
-
-        String strPostUrl;
-        if (e != null && !TextUtils.isEmpty(e.attr("action"))) {
-            strPostUrl = e.attr("action").trim();
-        } else {
-            throw new BankException(res.getText(R.string.unable_to_find).toString() + " post url.");
+        try {
+            urlopen = login();
+            LoginPackage lp = new LoginPackage(urlopen, null,
+                    response, OVERVIEW_URL);
+            lp.setIsLoggedIn(true);
+            return lp;
+        } catch (LoginException e) {
+            return null;
         }
-        List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("login_email", username));
-        postData.add(new BasicNameValuePair("login_password", password));
-        postData.add(new BasicNameValuePair("target_page", "0"));
-        postData.add(new BasicNameValuePair("submit.x", "Log In"));
-        postData.add(new BasicNameValuePair("form_charset", "UTF-8"));
-        postData.add(new BasicNameValuePair("browser_name", "undefined"));
-        postData.add(new BasicNameValuePair("browser_version", "undefined"));
-        postData.add(new BasicNameValuePair("operating_system", "Windows"));
-        postData.add(new BasicNameValuePair("bp_mid",
-                "v=1;a1=na~a2=na~a3=na~a4=Mozilla~a5=Netscape~a6=5.0 (Windows; en-US)~a7=20100713~a8=na~a9=true~a10=Windows NT 6.1~a11=true~a12=Win32~a13=na~a14=Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.7) Gecko/20100713 Firefox/3.6.7 ( .NET CLR 3.5.30729; .NET4.0C)~a15=true~a16=en-US~a17=na~a18=www.paypal.com~a19=na~a20=na~a21=na~a22=na~a23=1280~a24=720~a25=24~a26=658~a27=na~a28=Sun Oct 31 2010 18:41:07 GMT 0100~a29=1~a30=def|qt1|qt2|qt3|qt4|qt5|qt6|swf|~a31=yes~a32=na~a33=na~a34=no~a35=no~a36=yes~a37=no~a38=online~a39=no~a40=Windows NT 6.1~a41=no~a42=no~"));
-        postData.add(new BasicNameValuePair("bp_ks1",
-                "v=1;l=16;Di0:2663Di1:48Ui0:15Ui1:81Di2:176Di3:48Ui2:32Ui3:96Di4:384Ui4:48Di5:352Ui5:48Di6:128Ui6:80Di7:112Ui7:48Di8:113Ui8:79Di9:125Ui9:51Di10:98Ui10:72Di11:227Ui11:51Di12:80Ui12:80Di13:128Ui13:64Di14:48Ui14:80Di15:416Ui15:80"));
-        postData.add(new BasicNameValuePair("bp_ks2", ""));
-        postData.add(new BasicNameValuePair("bp_ks3", ""));
-        postData.add(new BasicNameValuePair("flow_name",
-                "xpt/Marketing_CommandDriven/homepage/IndividualsHome"));
-        postData.add(new BasicNameValuePair("fso",
-                "k2TDENTlxEJnhbuYDYFmKMyVq0kUZPsdK6j3V1gPUwuZvyAmzzpRs4Cmjet0z19AwlxXfW"));
-        return new LoginPackage(urlopen, postData, response, strPostUrl);
     }
 
     @Override
     public Urllib login() throws LoginException, BankException, IOException {
-        LoginPackage lp = preLogin();
-        response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-        if (response.contains("If you still can't log in") || response.contains(
-                "both your email address and password")) {
+        urlopen = new Urllib(context,
+                CertificateReader.getCertificates(context, R.raw.cert_paypal));
+        List<NameValuePair> postData = new ArrayList<NameValuePair>();
+        postData.add(new BasicNameValuePair("email", username));
+        postData.add(new BasicNameValuePair("password", password));
+        postData.add(new BasicNameValuePair("ul-submit-cookied", "Logga in"));
+        urlopen.addHeader("Origin",ORIGIN_URL);
+        urlopen.addHeader("Referer", REFERER_URL);
+        response = urlopen.open(LOGIN_URL, postData, true);
+        if (response.contains("Some information you entered isn't right.")) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
-        if (response.contains("your last action could not be completed")) {
-            throw new BankException("Error: PPL92");
+        if (!response.contains("<title>PayPal: Summary</title>")) {
+            throw new BankException("Error logging in to PayPal");
         }
         return urlopen;
     }
@@ -155,47 +123,66 @@ public class PayPal extends Bank {
         }
         urlopen = login();
 
-        response = urlopen.open(
-                "https://www.paypal.com/en/cgi-bin/webscr?cmd=_login-done&login_access=" + ((int) (
-                        System.currentTimeMillis() / 1000L)));
-        Matcher matcher = reAccounts.matcher(response);
-        int accId = 1;
-        while (matcher.find()) {
-            /*
-             * Capture groups:
-             * GROUP                EXAMPLE DATA
-             * 1: name              SEK (Primary)
-             * 2: amount            554.70
-             * 3: currency          SEK
-             *
-             */
-            Account account = new Account(Html.fromHtml(matcher.group(1)).toString().trim(),
-                    Helpers.parseBalance(matcher.group(2)), "" + accId);
-            account.setCurrency(matcher.group(3).trim());
-            accounts.add(account);
-            accId++;
-        }
-        matcher = reBalance.matcher(response);
-        if (matcher.find()) {
-            /*
-             * Capture groups:
-             * GROUP                EXAMPLE DATA
-             * 1: balance           554.70
-             * 2: currency          SEK
-             *
-             */
-            balance = Helpers.parseBalance(matcher.group(1));
-            currency = matcher.group(2).trim();
-            if (accounts.isEmpty()) {
-                // Probably a premier account.
-                Account account = new Account(currency, balance, "1");
-                account.setCurrency(currency);
-                accounts.add(account);
+        /* Start by parsing the data in "response" (containing transactions) */
+        List<Transaction> transactions = new ArrayList<>();
+        Document trans = Jsoup.parse(response);
+        try {
+            for (Element e : trans.select(".transactionItem .row")) {
+                String date = e.select(".dateParts").first().text(); //"Mar 17 2015"
+                date = new SimpleDateFormat("yyyy-MM-dd").format(
+                        new SimpleDateFormat("MMM dd yyyy").parse(date));
+                String description = e.select(".transactionDescription").first().text(); //"Unovation Inc."
+                String type = e.select(".transactionType").first().text(); //"Recurring Payment "
+                String amount = e.select(".transactionAmount").first().text(); //"-negative $3.00 USD"
+                Transaction t = new Transaction(date,
+                        description + "\n— " + type, Helpers.parseBalance(amount));
+                t.setCurrency(amount.substring(amount.length() - 3));
+                transactions.add(t);
             }
+        } catch (ParseException | NullPointerException e) {
+            //Ignore parsing errors of transactions (for now).
+            //TODO handle parsing errors gracefully.
         }
 
-        if (accounts.isEmpty()) {
-            throw new BankException(res.getText(R.string.no_accounts_found).toString());
+        try {
+            //Set bank balance from first page balance.
+            String bal = trans.select(".balanceNumeral.nemo_balanceNumeral .h2").text();
+            this.balance = Helpers.parseBalance(bal);
+            this.setCurrency(bal.substring(bal.length() - 3));
+
+            //Get all currencies and create separate accounts for each.
+            response = urlopen.open(BALANCE_URL);
+            Document doc = Jsoup.parse(response);
+            Element wallet = doc.getElementById("wallet");
+            bal = wallet.attr("data-balance").replace("&quot;", "\"");
+            JSONObject acc = new JSONObject(bal);
+            this.balance = Helpers.parseBalance(
+                    acc.getJSONObject("totalAvailable").getString("unformattedAmount"));
+            this.setCurrency(acc.getString("primaryCurrency"));
+
+            JSONArray accArr = acc.getJSONArray("balanceDetails");
+            for (int i = 0; i < accArr.length(); i++) {
+                try {
+                    JSONObject a = accArr.getJSONObject(i);
+                    String accountName = a.getString("currency");
+                    String displayName = accountName;
+                    if (accountName.equals(this.getCurrency()))
+                        displayName = accountName + " (Primary)";
+                    Double amount = a.getJSONObject("available")
+                            .getDouble("unformattedAmount");
+                    Account account = new Account(displayName,
+                            Helpers.parseBalance(amount.toString()),
+                            accountName,
+                            Account.REGULAR,
+                            accountName);
+                    account.setTransactions(transactions);
+                    accounts.add(account);
+                } catch (JSONException e) {
+                    //Ignore if we can't add a new account..
+                }
+            }
+        } catch (JSONException e) {
+            throw new BankException(res.getText(R.string.no_accounts_found).toString(), e);
         }
         super.updateComplete();
     }

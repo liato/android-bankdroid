@@ -9,6 +9,7 @@ v1.9.9.0 (2015-03-21)
 * Fixes transaction issues for EspressoHouse.
 * Fixes Payson balance. NOTE: Transactions not supported yet (thanks to robho).
 * Fixes LockPattern crashes for Samsung Galaxy devices.
+* Fixes issue with PayPal (now even supporting WWW login and transactions).
 v1.9.8.0 (2015-02-27)
 * Adds support for Bredband2's VoIP service (thanks to fredrike)
 * Adds support for EspressoHouse (thanks to fredrike)
