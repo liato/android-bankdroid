@@ -1,5 +1,4 @@
 v1.9.9.0 (2015-03-21)
-* Adds support for Swedbank/Sparbankerna Corporate and Youth profiles.
 * Adds support for minpension.se.
 * Adds option to disable auto updates while roaming.
 * Removes Skandiabanken due to their new BankId requirement.
