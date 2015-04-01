@@ -1,9 +1,12 @@
 .. image:: https://travis-ci.org/liato/android-bankdroid.svg?branch=master
     :target: https://travis-ci.org/liato/android-bankdroid
 
+.. image:: https://badges.gitter.im/Join%20Chat.svg
+    :alt: Join the chat at https://gitter.im/liato/android-bankdroid
+    :target: https://gitter.im/liato/android-bankdroid?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
 Bankdroid
 =========
-
 
 Bankdroid is an Android app for Swedish banks, payment cards and similar services. Key features include:
 
@@ -37,10 +40,6 @@ Bankdroid is written for Android Studio 0.8.2 and Gradle 1.12. Here's how to get
 running on your computer:
 
 1. Make sure you have `Android Studio 0.8.2 or later <https://developer.android.com/sdk/installing/studio.html>`_
-
-.. image:: https://badges.gitter.im/Join%20Chat.svg
-   :alt: Join the chat at https://gitter.im/liato/android-bankdroid
-   :target: https://gitter.im/liato/android-bankdroid?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 2. `Clone <https://help.github.com/articles/which-remote-url-should-i-use>`_ the project (if you want to contribute you should `fork <https://help.github.com/articles/fork-a-repo>`_ the project first and then clone your fork)
 3. Open the project's settings.gradle file in Android Studio and select "Use default gradle wrapper (recommended)"
 4. Select "Make project" from the Build menu
