@@ -247,14 +247,14 @@ public class LegacyBankFactory {
                 return new EspressoHouse(context);
             case IBankTypes.MINPENSION:
                 return new MinPension(context);
-            case IBankTypes.SPARBANKERNA_CORPORATE:
-                return new SparbankernaCorporate(context);
-            case IBankTypes.SPARBANKERNA_YOUTH:
-                return new SparbankernaYouth(context);
-            case IBankTypes.SWEDBANK_CORPORATE:
-                return new SwedbankCorporate(context);
-            case IBankTypes.SWEDBANK_YOUTH:
-                return new SwedbankYouth(context);
+            // case IBankTypes.SPARBANKERNA_CORPORATE:
+            //    return new SparbankernaCorporate(context);
+            // case IBankTypes.SPARBANKERNA_YOUTH:
+            //    return new SparbankernaYouth(context);
+            // case IBankTypes.SWEDBANK_CORPORATE:
+            //    return new SwedbankCorporate(context);
+            // case IBankTypes.SWEDBANK_YOUTH:
+            //    return new SwedbankYouth(context);
             default:
                 throw new BankException("BankType id not found.");
         }
@@ -343,10 +343,10 @@ public class LegacyBankFactory {
         banks.add(new Bredband2VoIP(context));
         banks.add(new EspressoHouse(context));
         banks.add(new MinPension(context));
-        banks.add(new SparbankernaCorporate(context));
-        banks.add(new SparbankernaYouth(context));
-        banks.add(new SwedbankCorporate(context));
-        banks.add(new SwedbankYouth(context));
+        // banks.add(new SparbankernaCorporate(context));
+        // banks.add(new SparbankernaYouth(context));
+        // banks.add(new SwedbankCorporate(context));
+        // banks.add(new SwedbankYouth(context));
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) {
