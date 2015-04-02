@@ -43,7 +43,6 @@ import com.liato.bankdroid.banking.banks.Seat;
 import com.liato.bankdroid.banking.banks.SevenDay;
 import com.liato.bankdroid.banking.banks.Shell;
 import com.liato.bankdroid.banking.banks.Skoda;
-import com.liato.bankdroid.banking.banks.SparbankenOresund;
 import com.liato.bankdroid.banking.banks.SparbankenSyd;
 import com.liato.bankdroid.banking.banks.SupremeCard;
 import com.liato.bankdroid.banking.banks.SveaDirekt;
@@ -189,8 +188,8 @@ public class LegacyBankFactory {
                 return new IKEA(context);
             case IBankTypes.SPARBANKEN_SYD:
                 return new SparbankenSyd(context);
-            case IBankTypes.SPARBANKEN_ORESUND:
-                return new SparbankenOresund(context);
+            // case IBankTypes.SPARBANKEN_ORESUND:
+            //    return new SparbankenOresund(context);
             case IBankTypes.NORDNETDIREKT:
                 return new Nordnetdirekt(context);
             // case IBankTypes.SKANDIABANKEN:
