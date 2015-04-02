@@ -10,6 +10,7 @@ v1.9.9.0 (2015-04-01)
 * Fixes LockPattern crashes for Samsung Galaxy devices.
 * Fixes issue with PayPal (now even supporting WWW login and transactions).
 * Updates certificates for IkanoPartners
+* Removes support for Sparbanken Öresund due to BankId requirement.
 v1.9.8.0 (2015-02-27)
 * Adds support for Bredband2's VoIP service (thanks to fredrike)
 * Adds support for EspressoHouse (thanks to fredrike)
