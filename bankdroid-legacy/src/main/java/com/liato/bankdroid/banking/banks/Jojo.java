@@ -184,7 +184,7 @@ public class Jojo extends Bank {
 
         private String parseNextUrl() {
             Element elem = mDocument.select("div.pageselector_pagenr a").last();
-            if (elem.select("span.pageselect_prevnext_selected").isEmpty()) {
+            if (elem == null || elem.select("span.pageselect_prevnext_selected").isEmpty()) {
                 return null;
             }
             return elem.attr("href");

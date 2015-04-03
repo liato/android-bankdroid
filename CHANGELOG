@@ -1,3 +1,6 @@
+v1.9.9.1 (2015-04-03)
+* Fix application crash for Jojo accounts.
+
 v1.9.9.0 (2015-04-02)
 * Adds support for minpension.se.
 * Adds option to disable auto updates while roaming.
