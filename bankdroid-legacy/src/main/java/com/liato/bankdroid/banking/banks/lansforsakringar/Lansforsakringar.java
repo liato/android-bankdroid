@@ -16,8 +16,10 @@
 
 package com.liato.bankdroid.banking.banks.lansforsakringar;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.banking.Account;
@@ -147,7 +149,7 @@ public class Lansforsakringar extends Bank {
         return new LoginPackage(weblogin, postData, response, weblogin.getCurrentURI());
     }
 
-    public Urllib login() throws LoginException, BankException {
+    public Urllib login() throws LoginException, BankException, IOException {
         urlopen = new Urllib(context,
                 CertificateReader.getCertificates(context, R.raw.cert_lansforsakringar));
         urlopen.addHeader("Content-Type", "application/json; charset=UTF-8");
@@ -173,22 +175,24 @@ public class Lansforsakringar extends Bank {
     }
 
 
-    private <T> T readJsonValue(InputStream is, Class<T> valueType) throws BankException {
+    private <T> T readJsonValue(InputStream is, Class<T> valueType) throws BankException, IOException {
         try {
             return mObjectMapper.readValue(is, valueType);
-        } catch (Exception e) {
+        } catch (JsonParseException | JsonMappingException e) {
             throw new BankException(e.getMessage(), e);
+        } finally {
+            try {
+                is.close();
+            } catch(IOException e) {
+                // Ignore
+            }
         }
+
     }
 
     private <T> T readJsonValue(String url, String postData, Class<T> valueType)
-            throws BankException {
-        try {
-            return readJsonValue(urlopen.openStream(url, postData, false), valueType);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BankException(e.getMessage(), e);
-        }
+            throws BankException, IOException {
+        return readJsonValue(urlopen.openStream(url, postData, false), valueType);
     }
 
     public String objectAsJson(Object value) {
