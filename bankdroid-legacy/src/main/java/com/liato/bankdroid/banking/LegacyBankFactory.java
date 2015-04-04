@@ -14,7 +14,6 @@ import com.liato.bankdroid.banking.banks.BrummerKF;
 import com.liato.bankdroid.banking.banks.CSN;
 import com.liato.bankdroid.banking.banks.Chalmrest;
 import com.liato.bankdroid.banking.banks.DanskeBank;
-import com.liato.bankdroid.banking.banks.DinersClub;
 import com.liato.bankdroid.banking.banks.EasyCard;
 import com.liato.bankdroid.banking.banks.EspressoHouse;
 import com.liato.bankdroid.banking.banks.Everydaycard;
@@ -124,8 +123,8 @@ public class LegacyBankFactory {
                 return new Jojo(context);
             // case IBankTypes.STEAM:
             //    return new Steam(context);
-            case IBankTypes.DINERSCLUB:
-                return new DinersClub(context);
+            // case IBankTypes.DINERSCLUB:
+            //    return new DinersClub(context);
             case IBankTypes.IKANOBANK:
                 return new IkanoBank(context);
             //  case IBankTypes.SASEUROBONUSMASTERCARD:
@@ -283,7 +282,7 @@ public class LegacyBankFactory {
         banks.add(new Payson(context));
         banks.add(new Jojo(context));
         // banks.add(new Steam(context));
-        banks.add(new DinersClub(context));
+        // banks.add(new DinersClub(context));
         banks.add(new IkanoBank(context));
         // banks.add(new EurobonusMastercard(context));
         banks.add(new Rikslunchen(context));
