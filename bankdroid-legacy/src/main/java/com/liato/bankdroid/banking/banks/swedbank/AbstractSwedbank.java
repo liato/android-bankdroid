@@ -1,6 +1,8 @@
 package com.liato.bankdroid.banking.banks.swedbank;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.liato.bankdroid.banking.Account;
@@ -333,10 +335,10 @@ public abstract class AbstractSwedbank extends Bank {
         return API_BASE + resource + '?' + dsid;
     }
 
-    private <T> T readJsonValue(InputStream is, Class<T> valueType) throws BankException {
+    private <T> T readJsonValue(InputStream is, Class<T> valueType) throws BankException, IOException {
         try {
             return mObjectMapper.readValue(is, valueType);
-        } catch (Exception e) {
+        } catch(JsonParseException | JsonMappingException e) {
             throw new BankException(e.getMessage(), e);
         } finally {
             try {
