@@ -29,8 +29,8 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
     private static DatabaseHelper instance;
 
     private DatabaseHelper(final Context context) {
-        super(context, DBAdapter.DATABASE_NAME, null,
-                DBAdapter.DATABASE_VERSION);
+        super(context, LegacyDatabase.DATABASE_NAME, null,
+                LegacyDatabase.DATABASE_VERSION);
     }
 
     public static synchronized DatabaseHelper getHelper(Context context) {
@@ -42,33 +42,9 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(final SQLiteDatabase db) {
-        db.execSQL("create table banks (_id integer primary key autoincrement, "
-                + "balance text not null, "
-                + "banktype integer not null, "
-                + "username text not null, "
-                + "password text not null, "
-                + "custname text, "
-                + "updated text, "
-                + "sortorder real, "
-                + "currency text, "
-                + "disabled integer, "
-                + "hideAccounts integer,"
-                + "extras text);");
-        db.execSQL("create table accounts (bankid integer not null, "
-                + "id text not null, "
-                + "balance text not null, "
-                + "acctype integer not null, "
-                + "hidden integer not null, "
-                + "notify integer not null, "
-                + "currency text, "
-                + "name text not null, "
-                + "aliasfor text);");
-        db.execSQL("create table transactions (_id integer primary key autoincrement, "
-                + "transdate text not null, "
-                + "btransaction text not null, "
-                + "amount text not null, "
-                + "currency text, "
-                + "account text not null);");
+        db.execSQL(LegacyDatabase.TABLE_BANKS);
+        db.execSQL(LegacyDatabase.TABLE_ACCOUNTS);
+        db.execSQL(LegacyDatabase.TABLE_TRANSACTIONS);
     }
 
     @Override
@@ -79,11 +55,14 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
         // Version <= 1.7.2 
         if (oldVersion <= 9) {
             // Add an "extras" field to the bank and and "alias for" field to the account.
-            db.execSQL("ALTER TABLE banks ADD extras text;");
-            db.execSQL("ALTER TABLE accounts ADD aliasfor text;");
+            db.execSQL("ALTER TABLE " + LegacyDatabase.BANK_TABLE_NAME + " ADD " +
+                    LegacyDatabase.BANK_EXTRAS + " text;");
+            db.execSQL("ALTER TABLE " + LegacyDatabase.ACCOUNT_TABLE_NAME + " ADD " +
+                    LegacyDatabase.ACCOUNT_ALIAS_FOR + " text;");
         }
         if (oldVersion <= 10) {
-            db.execSQL("ALTER TABLE banks ADD hideAccounts interger;");
+            db.execSQL("ALTER TABLE " + LegacyDatabase.BANK_TABLE_NAME + " ADD " +
+                    LegacyDatabase.BANK_HIDE_ACCOUNTS + " integer;");
         }
     }
 }
