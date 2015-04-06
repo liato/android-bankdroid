@@ -38,10 +38,6 @@ public class DBAdapter {
 
     static final String TAG = "DBAdapter";
 
-    static final String DATABASE_NAME = "data";
-
-    static final int DATABASE_VERSION = 11;
-
     private DatabaseHelper mDbHelper;
 
     private SQLiteDatabase mDb;
