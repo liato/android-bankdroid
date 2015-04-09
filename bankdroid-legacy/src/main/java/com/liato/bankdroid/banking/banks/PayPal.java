@@ -108,9 +108,11 @@ public class PayPal extends Bank {
         if (response.contains("Some information you entered isn't right.")) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
+        /* TODO find a reliable way to verify that the user has logged in successfully.
         if (!response.contains("cgi-bin/webscr?cmd=_logout\" class=\"btn btn-small btn-secondary logout\">")) {
             throw new BankException("Error logging in to PayPal");
         }
+        */
         return urlopen;
     }
 

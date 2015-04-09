@@ -1,8 +1,9 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
 v1.9.9.1 (unreleased)
-* Fix application crash for Jojo accounts.
-* Removes support for DinersClub due to BankId requirement
+* Fixes application crash for Jojo accounts.
+* Removes support for DinersClub due to BankId requirement.
+* Fixes login issues with some PayPal accounts.
 
 v1.9.9.0 (2015-04-02)
 * Adds support for minpension.se.
