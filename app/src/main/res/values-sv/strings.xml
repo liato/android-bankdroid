@@ -100,7 +100,7 @@
 	<string name="liveview_help_title">Vad är LiveView?</string>
 	<string name="liveview_help_summary">Läs mer om LiveView på Sony Ericssons webbsida</string>
 	<string name="share_data_title">Dela ut data</string>
-	<string name="share_data_enable_title">Aktivera utdelninga av data</string>
+	<string name="share_data_enable_title">Aktivera utdelning av data</string>
 	<string name="share_data_enable_summary">Medge andra installerade applikationer åtkomst till kontoutdrag</string>
 	<string name="api_key_title">API-nyckel</string>
 	<string name="api_key_summary">Använd denna nyckel för för att komma åt kontoutdrag från andra applikationer</string>

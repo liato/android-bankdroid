@@ -255,7 +255,7 @@
 					android:key="debug_refreshrate_in_seconds"
 					android:defaultValue="false"
 					android:title="Update freq. in sec."
-					android:summary="Update frequenzy is given in seconds instead of minutes"
+					android:summary="Update frequency is given in seconds instead of minutes"
 					android:dependency="debug_mode" />
                 <CheckBoxPreference
                     android:key="debug_only_testbank"
