@@ -48,7 +48,11 @@ public class TicketRikskortet extends Bank {
 
     private static final String NAME_SHORT = "rikskortet";
 
-    private static final String URL = "https://www.edenred.se/sv/System/Logga-in/";
+    private static final String URL = "https://www.edenred.se/rikskuponger/mina-sidor/logga-in/";
+
+    private static final String URL_OVERVIEW = "https://www.edenred.se/rikskuponger/mina-sidor/employee/start/";
+
+    private static final String URL_TRANSACTIONS = "https://www.edenred.se/rikskuponger/mina-sidor/employee/start/transaktioner/";
 
     private static final int BANKTYPE_ID = Bank.RIKSKORTET;
 
@@ -86,7 +90,7 @@ public class TicketRikskortet extends Bank {
     protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context,
                 CertificateReader.getCertificates(context, R.raw.cert_ticketrikskortet));
-        response = urlopen.open("https://www.edenred.se/sv/System/Logga-in/");
+        response = urlopen.open(URL);
         Matcher matcher = reViewState.matcher(response);
         if (!matcher.find()) {
             throw new BankException(
@@ -116,8 +120,7 @@ public class TicketRikskortet extends Bank {
                         password));
         postData.add(new BasicNameValuePair(
                 "ctl00$StartpageArea$ApplicationArea$LoginControl$LoginButton", "Logga in"));
-        return new LoginPackage(urlopen, postData, response,
-                "https://www.edenred.se/sv/System/Logga-in/");
+        return new LoginPackage(urlopen, postData, response, URL);
     }
 
     public Urllib login() throws LoginException, BankException, IOException {
@@ -137,9 +140,8 @@ public class TicketRikskortet extends Bank {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();
-        if (!"https://www.edenred.se/sv/Apps/Employee/Start/".equalsIgnoreCase(
-                urlopen.getCurrentURI())) {
-            response = urlopen.open("https://www.edenred.se/sv/Apps/Employee/Start/");
+        if (!urlopen.getCurrentURI().equalsIgnoreCase(URL_OVERVIEW)) {
+            response = urlopen.open(URL_OVERVIEW);
         }
 
         Matcher matcher = reBalance.matcher(response);
@@ -166,8 +168,7 @@ public class TicketRikskortet extends Bank {
         super.updateTransactions(account, urlopen);
 
         Matcher matcher;
-        String response = urlopen.open(
-                "https://www.edenred.se/sv/Apps/Employee/Start/Transaktioner/");
+        String response = urlopen.open(URL_TRANSACTIONS);
         matcher = reTransactions.matcher(response);
         ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 
