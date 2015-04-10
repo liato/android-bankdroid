@@ -39,10 +39,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
-
-//import com.liato.bankdroid.banking.Transaction;
 
 public class Everydaycard extends Bank {
 
@@ -68,8 +65,6 @@ public class Everydaycard extends Bank {
             "Aktuell bonus \\(sek\\)</td>\\s*<td>.*</td>\\s*<td>([^<]+)<",
             Pattern.CASE_INSENSITIVE);
 
-    //	private Pattern reAccountTransactions = Pattern.compile("<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>.*</td>\\s*<td>.*</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
-//	private Pattern reBonusTransactions = Pattern.compile("<td>(\\d{4}-\\d{2}-\\d{2})</td>\\s*<td>.*</td>\\s*<td>.*</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]+)</td>\\s*<td>([^<]+)</td>", Pattern.CASE_INSENSITIVE);
     private String response = null;
 
     public Everydaycard(Context context) {
@@ -94,14 +89,8 @@ public class Everydaycard extends Bank {
         return preLoginInternal("http://valuta.g2solutions.se/mobil/web/logonSubmit.do");
     }
 
-//    private LoginPackage preLoginNonMobile() throws BankException,
-//            ClientProtocolException, IOException {
-//    	return preLoginInternal("https://valuta.g2solutions.se/valuta/web/logonSubmit.do");
-//    }
-
     private LoginPackage preLoginInternal(String url) throws BankException, IOException {
-        urlopen = new Urllib(context,
-                CertificateReader.getCertificates(context, R.raw.cert_everydaycard));
+        urlopen = new Urllib(context);
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("nextPage", "firstPage"));
         postData.add(new BasicNameValuePair("username", username));
@@ -111,7 +100,6 @@ public class Everydaycard extends Bank {
 
     @Override
     public Urllib login() throws LoginException, BankException, IOException {
-        //LoginPackage lp = preLoginNonMobile();
         LoginPackage lp = preLogin();
         response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
         if (response.contains("Felaktigt Login")) {
@@ -149,48 +137,4 @@ public class Everydaycard extends Bank {
         }
         super.updateComplete();
     }
-
-//	@Override
-//    public void updateAllTransactions() throws LoginException, BankException {
-//		if (urlopen == null) {
-//			urlopen = login();
-//        }
-//		try {
-//			response = urlopen.open("https://valuta.g2solutions.se/valuta/web/manageCustomer.do?action=account");
-//			for (Account account: accounts) {
-//				Matcher matcher;
-//				ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-//            
-//				switch (account.getType()) {
-//				case Account.CCARD:
-//					matcher = reAccountTransactions.matcher(response);
-//					while (matcher.find()) {
-//						transactions.add(new Transaction(matcher.group(1), matcher.group(2), Helpers.parseBalance(matcher.group(3)).negate()));
-//					}
-//					break;
-//				// Bonus account
-//				case Account.OTHER:
-//					matcher = reBonusTransactions.matcher(response);
-//					while (matcher.find()) {
-//						if (!matcher.group(4).equals("0,00")) {
-//							transactions.add(new Transaction(matcher.group(1), matcher.group(2) + " (-" + matcher.group(3) + ")", Helpers.parseBalance(matcher.group(4))));
-//						}
-//					}
-//					break;
-//				default:
-//					return;
-//				}
-//
-//				account.setTransactions(transactions);
-//			}
-//		} catch (ClientProtocolException e) {
-//			throw new BankException(e.getMessage());
-//		} catch (IOException e) {
-//			throw new BankException(e.getMessage());
-//		} finally {
-//			if (urlopen != null) {
-//				urlopen.close();
-//			}
-//        }
-//	}
 }
