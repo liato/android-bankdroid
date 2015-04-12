@@ -114,11 +114,11 @@ public class SvenskaSpel extends Bank {
         Matcher matcher = reBalance.matcher(response);
         if (matcher.find()) {
                         /*
-			 * Capture groups:
-			 * GROUP                    EXAMPLE DATA
-			 * 1: balance               845
-			 *
-			 */
+             * Capture groups:
+             * GROUP                    EXAMPLE DATA
+             * 1: balance               845
+             *
+             */
             Account account = new Account("Saldo", Helpers.parseBalance(matcher.group(1)), "1");
             balance = Helpers.parseBalance(matcher.group(1));
             balance = balance.add(Helpers.parseBalance(matcher.group(1)));

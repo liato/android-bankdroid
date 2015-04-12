@@ -156,18 +156,18 @@ public class AkeliusInvest extends Bank {
         while (matcher.find()) {
             /*
              * Capture groups:
-             * GROUP                ICA					AKELIUSINVEST
-             * 1: ID                0000000000			Kontonamn
-             * 2: Name              ICA KONTO			KontoID
-             * 3: Disponibelt       00.000,00			Kontonummer
-             * 4: Saldo             1.655,71			Valuta
-             * 5: 										Tillgängligt belopp
-             * 6: 										Saldo
+             * GROUP                ICA                    AKELIUSINVEST
+             * 1: ID                0000000000            Kontonamn
+             * 2: Name              ICA KONTO            KontoID
+             * 3: Disponibelt       00.000,00            Kontonummer
+             * 4: Saldo             1.655,71            Valuta
+             * 5:                                         Tillgängligt belopp
+             * 6:                                         Saldo
              */
-//			Försök att lösa problemet med för långa, icke radbrytande kontonamn:
-//				if (matcher.group(1).length() > 24)  {
-//					matcher.group(1).replaceFirst("(", "(\n");
-//				}
+//            Försök att lösa problemet med för långa, icke radbrytande kontonamn:
+//                if (matcher.group(1).length() > 24)  {
+//                    matcher.group(1).replaceFirst("(", "(\n");
+//                }
 
             mIdMappings.put(Integer.toString(accId), matcher.group(2).trim());
             accounts.add(new Account(
@@ -202,11 +202,11 @@ public class AkeliusInvest extends Bank {
                 .open("https://online.akeliusinvest.com/AccountStatement.mws?selectedaccount="
                         + accountId);
         matcher = reTransactions.matcher(response);
-                /* 				ICA-banken	Akelius Invest
-		 * Beskrivning	1			2
-		 * Datum		2			1
-		 * Belopp		3			3
-		 */
+                /*                 ICA-banken    Akelius Invest
+         * Beskrivning    1            2
+         * Datum        2            1
+         * Belopp        3            3
+         */
 
         ArrayList<Transaction> transactions = new ArrayList<Transaction>();
         while (matcher.find()) {

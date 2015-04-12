@@ -13,14 +13,14 @@ public class Crypto {
     public final static String getKey() {
                 /*
                  * Manipulate the key before returning it.
-		 * 
-		 * ...
-		 * 
-		 * Code omitted.
-		 * 
-		 * ...
-		 * 
-		 */
+         *
+         * ...
+         *
+         * Code omitted.
+         *
+         * ...
+         *
+         */
 
         return KEY;
     }

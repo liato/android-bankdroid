@@ -186,13 +186,13 @@ public class Marginalen extends Bank {
         matcher = reTransactions.matcher(response);
         while (matcher.find()) {
                 /*
-        	 * Capture groups:
-        	 * GROUP                    EXAMPLE DATA
-        	 * 1: Date                  2011-04-06
-        	 * 2: Specification         Pressbyran
-        	 * 3: Amount                -20
-        	 *
-        	 */
+             * Capture groups:
+             * GROUP                    EXAMPLE DATA
+             * 1: Date                  2011-04-06
+             * 2: Specification         Pressbyran
+             * 3: Amount                -20
+             *
+             */
             transactions.add(new Transaction(matcher.group(1).trim(),
                     Html.fromHtml(matcher.group(2)).toString().trim(),
                     Helpers.parseBalance(matcher.group(3))));

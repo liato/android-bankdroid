@@ -189,7 +189,7 @@ public class DinersClub extends Bank {
         String response = null;
         Matcher matcher;
 
-		/* We're going to look at all the pages until we find one that has transactions on it */
+        /* We're going to look at all the pages until we find one that has transactions on it */
         response = urlopen.open(
                 String.format("https://secure.dinersclub.se/dcs/eSaldo/%s", invoiceUrl));
         matcher = reTransactions.matcher(response);
@@ -197,13 +197,13 @@ public class DinersClub extends Bank {
 
         while (matcher.find()) {
                         /*
-			 * Capture groups:
-			 * GROUP				EXAMPLE DATA
-			 * 1: Trans. date		2010-10-06
-			 * 2: Specifications	Skyways Express Ab
-			 * 3: Foreign amount	30,30 EUR
-			 * 4: Amount			2.462,00 kr
-			 */
+             * Capture groups:
+             * GROUP                EXAMPLE DATA
+             * 1: Trans. date        2010-10-06
+             * 2: Specifications    Skyways Express Ab
+             * 3: Foreign amount    30,30 EUR
+             * 4: Amount            2.462,00 kr
+             */
 
             transactions.add(new Transaction(matcher.group(1), matcher.group(2),
                     Helpers.parseBalance(matcher.group(4))));

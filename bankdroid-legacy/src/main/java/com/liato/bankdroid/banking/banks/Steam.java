@@ -137,15 +137,15 @@ public class Steam extends Bank {
             matcher = reTransactions.matcher(response);
             while (matcher.find()) {
                     /*
-	             * Capture groups:
-	             * GROUP                EXAMPLE DATA
-	             * 1: Date              18 Oct 2007
-	             * 2: Amount            0,99&#8364;
-	             * 3: Event             Purchase
-	             * 4: Item              Team Fortress 2&nbsp;
-	             * 5: Sub item          Mann Co. Supply Crate Key
-	             * 
-	             */
+                 * Capture groups:
+                 * GROUP                EXAMPLE DATA
+                 * 1: Date              18 Oct 2007
+                 * 2: Amount            0,99&#8364;
+                 * 3: Event             Purchase
+                 * 4: Item              Team Fortress 2&nbsp;
+                 * 5: Sub item          Mann Co. Supply Crate Key
+                 *
+                 */
                 SimpleDateFormat sdfFrom = new SimpleDateFormat("d MMM yyyy");
                 SimpleDateFormat sdfTo = new SimpleDateFormat("yyyy-MM-dd");
                 Date transactionDate;
