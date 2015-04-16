@@ -53,9 +53,9 @@ public class LockableActivity extends ActionBarActivity {
 
     private boolean mHasLoaded = false;
 
-    //	private LinearLayout mTitlebarButtons;
+    //    private LinearLayout mTitlebarButtons;
     private LayoutInflater mInflater;
-//	private ProgressBar mProgressBar;
+//    private ProgressBar mProgressBar;
 
 //    private ImageView mHomeButton;
 //    private View mHomeButtonCont;
@@ -117,7 +117,7 @@ public class LockableActivity extends ActionBarActivity {
 //        child.setTag("item_"+tag);
 //        button.setOnClickListener(listener);
 //        mTitlebarButtons.addView(child);
-//	}
+//    }
 //
 //    protected void hideTitleButton(String tag) {
 //        View v = mTitlebarButtons.findViewWithTag("item_"+tag);
@@ -188,15 +188,15 @@ public class LockableActivity extends ActionBarActivity {
         }
         /*
                 Save the current time If a lock pattern has been set
-		If this activity never loaded set the lock time to
-		10 seconds ago.
-		This is to prevent the following scenario:
-		    1. Activity Starts 
-		    2. Lock screen is displayed
+        If this activity never loaded set the lock time to
+        10 seconds ago.
+        This is to prevent the following scenario:
+            1. Activity Starts
+            2. Lock screen is displayed
             3. User presses the home button
             4. "lock time" is set in onPause to when the home button was pressed
             5. Activity is started again within 2 seconds and no lock screen is shown this time.
-	    */
+        */
         if (mHasLoaded) {
             writeLockTime();
         } else {

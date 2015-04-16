@@ -90,11 +90,11 @@ public class ColorPickerDialog
 
         mNewColor.setColor(color);
 
-		/*
+        /*
                 if (mListener != null) {
-			mListener.onColorChanged(color);
-		}
-		*/
+            mListener.onColorChanged(color);
+        }
+        */
 
     }
 

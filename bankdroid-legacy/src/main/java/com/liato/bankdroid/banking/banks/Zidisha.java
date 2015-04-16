@@ -133,11 +133,11 @@ public class Zidisha extends Bank {
 
         while (matcher.find()) {
                         /*
-			 * 1: Funds uploaded
-			 * 2: Available for withdrawal
-			 * 3: Lent by me
-			 * 4: Total Impact
-			 */
+             * 1: Funds uploaded
+             * 2: Available for withdrawal
+             * 3: Lent by me
+             * 4: Total Impact
+             */
             Account insattningar = new Account("Insättningar",
                     Helpers.parseBalance(matcher.group(1)), "insattningar");
             Account tillgangligt = new Account("Tillgängligt",

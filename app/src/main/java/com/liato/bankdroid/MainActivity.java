@@ -147,11 +147,11 @@ public class MainActivity extends LockableActivity {
         final ArrayList<Bank> banks = BankFactory.banksFromDb(this, true);
         if (banks.size() > 0) {
             findViewById(R.id.txtAccountsDesc).setVisibility(View.GONE);
-//			showTitleButton("refresh");
+//            showTitleButton("refresh");
             //findViewById(R.id.btnAccountsRefresh).setClickable(true);
         } else {
             findViewById(R.id.txtAccountsDesc).setVisibility(View.VISIBLE);
-//			hideTitleButton("refresh");
+//            hideTitleButton("refresh");
             //findViewById(R.id.btnAccountsRefresh).setClickable(false);
         }
 

@@ -197,23 +197,23 @@ public class Hemkop extends Bank {
         try {
             response = urlopen.open("https://www.hemkop.se/Mina-sidor/Kontoutdrag/");
             Document d = Jsoup.parse(response);
-        	Elements es = d.select(".transactions tbody tr");
+            Elements es = d.select(".transactions tbody tr");
             ArrayList<Transaction> transactions = new ArrayList<Transaction>();
             for (Element e : es) {
                 Transaction t = new Transaction(e.child(1).ownText().trim(),
-                					e.child(0).ownText().trim(),
+                                    e.child(0).ownText().trim(),
                         Helpers.parseBalance(e.child(3).ownText()));
                 if (!TextUtils.isEmpty(e.child(2).ownText())) {
                     t.setCurrency(Helpers.parseCurrency(e.child(2).ownText().trim(), "SEK"));
                 }
                 transactions.add(t);
-        	}
+            }
             account.setTransactions(transactions);
         } catch (ClientProtocolException e) {
-        	e.printStackTrace();
+            e.printStackTrace();
             Log.e(TAG, e.getMessage() != null ? e.getMessage() : "");
         } catch (IOException e) {
-        	e.printStackTrace();
+            e.printStackTrace();
             Log.e(TAG,  e.getMessage() != null ? e.getMessage() : "");
         }
         finally {

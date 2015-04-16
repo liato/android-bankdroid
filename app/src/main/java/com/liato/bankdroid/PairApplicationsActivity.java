@@ -65,7 +65,7 @@ public class PairApplicationsActivity extends LockableActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pair_applications_layout);
-//		setHomeButtonEnabled(false);
+//        setHomeButtonEnabled(false);
 
         Bundle bundle = getIntent().getExtras();
 

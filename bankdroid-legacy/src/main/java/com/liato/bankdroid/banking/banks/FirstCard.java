@@ -121,14 +121,14 @@ public class FirstCard extends Bank {
         response = urlopen.open("https://www.firstcard.se/mkol/index.jsp");
         Matcher matcher = reAccounts.matcher(response);
         while (matcher.find()) {
-                        /*
-			 * Capture groups:
-			 * GROUP				EXAMPLE DATA
-			 * 1: id				kdKPq4ghlcy9wpXymSzzS46wWQcS_0OT
-			 * 2: account number	1111 3333 7777 9999
-			 * 3: amount 			9 824,08
-			 *
-			 */
+            /*
+             * Capture groups:
+             * GROUP                EXAMPLE DATA
+             * 1: id                kdKPq4ghlcy9wpXymSzzS46wWQcS_0OT
+             * 2: account number    1111 3333 7777 9999
+             * 3: amount            9 824,08
+             *
+             */
             accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(),
                     Helpers.parseBalance(matcher.group(3)), matcher.group(1).trim()));
             balance = balance.add(Helpers.parseBalance(matcher.group(3)));
@@ -151,16 +151,16 @@ public class FirstCard extends Bank {
         Matcher matcher = reTransactions.matcher(response);
         ArrayList<Transaction> transactions = new ArrayList<Transaction>();
         while (matcher.find()) {
-			/*
-			 * Capture groups:
-			 * GROUP						EXAMPLE DATA
-			 * 1: date						101006
-			 * 2: specification				GOOGLE *RealArcade
-			 * 3: currency					USD
-			 * 4: amount					3,49
-			 * 5: amount in local currency	24,08
-			 *
-			 */
+            /*
+             * Capture groups:
+             * GROUP                        EXAMPLE DATA
+             * 1: date                      101006
+             * 2: specification             GOOGLE *RealArcade
+             * 3: currency                  USD
+             * 4: amount                    3,49
+             * 5: amount in local currency  24,08
+             *
+             */
             String strDate = Html.fromHtml(matcher.group(1)).toString().trim();
             strDate = "20" + strDate.charAt(0) + strDate.charAt(1) + "-" + strDate.charAt(2)
                     + strDate.charAt(3) + "-" + strDate.charAt(4) + strDate.charAt(5);

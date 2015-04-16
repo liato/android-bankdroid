@@ -157,13 +157,13 @@ public class NordeaDK extends Bank {
         matcher.reset();
         while (matcher.find()) {
                         /*
-			 * Capture groups:
-			 * GROUP 		EXAMPLE DATA
-			 * 1: Link		https://www.netbank.nordea.dk/mnetbank/servlet/AccountTransactions
-			 * 2: ID 		0
-			 * 3: Name 		Check-in-konto
-			 * 4: Amount	1.234,56
-			 */
+             * Capture groups:
+             * GROUP         EXAMPLE DATA
+             * 1: Link        https://www.netbank.nordea.dk/mnetbank/servlet/AccountTransactions
+             * 2: ID         0
+             * 3: Name         Check-in-konto
+             * 4: Amount    1.234,56
+             */
             String name = Html.fromHtml(matcher.group(3)).toString().trim();
             String id = matcher.group(2).toString().trim();
             BigDecimal amount = Helpers.parseBalance(matcher.group(4));
@@ -223,13 +223,13 @@ public class NordeaDK extends Bank {
         }
 
         matcher = reTransactions.matcher(response);
-		/*
-		 * Capture groups:
-		 * GROUP 	EXAMPLE 	DATA
-		 * 1: 		Date 		29.07
-		 * 2: 		Transaction	Bgs Check-in-konto
-		 * 3: 		Amount 		906.56
-		 */
+        /*
+         * Capture groups:
+         * GROUP     EXAMPLE     DATA
+         * 1:         Date         29.07
+         * 2:         Transaction    Bgs Check-in-konto
+         * 3:         Amount         906.56
+         */
 
         while (matcher.find()) {
             String monthDate = Html.fromHtml(matcher.group(1)).toString().trim();

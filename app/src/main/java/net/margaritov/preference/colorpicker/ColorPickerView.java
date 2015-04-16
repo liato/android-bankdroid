@@ -889,11 +889,11 @@ public class ColorPickerView extends View {
         if (mShowAlphaPanel != visible) {
             mShowAlphaPanel = visible;
 
-			/*
+            /*
                          * Reset all shader to force a recreation.
-			 * Otherwise they will not look right after
-			 * the size of the view has changed.
-			 */
+             * Otherwise they will not look right after
+             * the size of the view has changed.
+             */
             mValShader = null;
             mSatShader = null;
             mHueShader = null;

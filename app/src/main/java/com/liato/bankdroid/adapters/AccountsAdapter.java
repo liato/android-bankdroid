@@ -68,13 +68,13 @@ public class AccountsAdapter extends BaseAdapter {
         this.banks = banks;
                 /*for (Bank b : this.banks) {
                     ArrayList<Account> as = b.getAccounts();
-		    for (Account a : as) {
-		        if (a.isHidden() && !showHidden) {
-		            as.remove(a);
-		        }
-		            
-		    }
-		}*/
+            for (Account a : as) {
+                if (a.isHidden() && !showHidden) {
+                    as.remove(a);
+                }
+
+            }
+        }*/
     }
 
     public boolean isShowHidden() {

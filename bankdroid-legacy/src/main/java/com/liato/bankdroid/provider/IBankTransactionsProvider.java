@@ -39,7 +39,7 @@ import java.math.BigDecimal;
  *
  * <pre>
  * final Uri uri = Uri.parse(&quot;content://&quot; + AUTHORITY + &quot;/&quot; + TRANSACTIONS_CAT
- * 		+ &quot;/&quot; + API_KEY + apiKey);
+ *         + &quot;/&quot; + API_KEY + apiKey);
  * final Cursor cur = managedQuery(uri, TRANSACTIONS_PROJECTION, ACCOUNT_SELECTION_FILTER, new
  * String[] { currentAccountId }, null);
  * startManagingCursor(cur);
