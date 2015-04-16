@@ -1,6 +1,6 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
-v1.9.9.2 (unreleased)
+v1.9.9.2 (2015-04-16)
 * Updates certificates for AmericanExpress, MinPension, Swedbank and Sparbankerna
 * Adapt to new URLs used by Ticket Rikskortet
 * Fixes application crash for Samsung devices running Android 4.2
