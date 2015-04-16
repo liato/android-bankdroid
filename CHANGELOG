@@ -3,6 +3,7 @@ Please view this file on the master branch, on stable branches it's out of date.
 v1.9.9.2 (unreleased)
 * Updates certificates for AmericanExpress, MinPension
 * Adapt to new URLs used by Ticket Rikskortet
+* Fixes application crash for Samsung devices running Android 4.2
 
 v1.9.9.1 (2015-04-09)
 * Fixes application crash for Jojo accounts.
