@@ -100,7 +100,7 @@ public class AppeakPoker extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (getUsername() == null) {
+        if (getUsername().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_card_number).toString());
         }
         login();

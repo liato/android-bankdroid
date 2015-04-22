@@ -109,7 +109,7 @@ public class Bitcoin extends Bank {
     public void update() throws BankException, LoginException,
             BankChoiceException, IOException {
         super.update();
-        if (TextUtils.isEmpty(getUsername())) {
+        if (getUsername().isEmpty()) {
             throw new LoginException(res.getText(
                     R.string.invalid_bitcoin_address).toString());
         }

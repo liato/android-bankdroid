@@ -109,7 +109,7 @@ public class McDonalds extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (getUsername() == null || getUsername().length() != 19) {
+        if (getUsername().length() != 19) {
             throw new LoginException(res.getText(R.string.invalid_card_number).toString());
         }
         login();

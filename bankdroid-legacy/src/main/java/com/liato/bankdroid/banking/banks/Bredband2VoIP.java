@@ -105,8 +105,7 @@ public class Bredband2VoIP extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (getUsername() == null || getPassword() == null || getUsername().length() == 0
-                || getPassword().length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();

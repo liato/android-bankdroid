@@ -126,8 +126,7 @@ public class EasyCard extends Bank {
 
         super.update();
 
-        if (getUsername() == null || getPassword() == null || getUsername().length() != 9
-                || getPassword().length() == 0) {
+        if (getPassword().isEmpty() || getUsername().length() != 9) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 

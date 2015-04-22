@@ -195,7 +195,7 @@ public class Avanza extends Bank {
     public void update() throws BankException, LoginException,
             BankChoiceException, IOException {
         super.update();
-        if (TextUtils.isEmpty(getUsername()) || TextUtils.isEmpty(getPassword())) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(
                     R.string.invalid_username_password).toString());
         }

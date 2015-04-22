@@ -81,7 +81,7 @@ public class Rikslunchen extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (TextUtils.isEmpty(getUsername())) {
+        if (getUsername().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_card_number).toString());
         }
         try {
