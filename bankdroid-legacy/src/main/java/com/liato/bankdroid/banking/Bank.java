@@ -88,13 +88,13 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
 
     protected Resources res;
 
-    protected String username;
+    private String username;
 
-    protected String password;
+    private String password;
 
     protected String customName;
 
-    protected String extras;
+    private String extras;
 
     protected String currency = "SEK";
 
