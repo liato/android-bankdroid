@@ -129,8 +129,8 @@ public class DanskeBank extends Bank {
         postData.add(new BasicNameValuePair("hidStatusTid", sdf.format(new Date())));
         postData.add(new BasicNameValuePair("gsSikSystem", "KO"));
         postData.add(new BasicNameValuePair("gsLand", "SE"));
-        postData.add(new BasicNameValuePair("gsAftlnr", username));
-        postData.add(new BasicNameValuePair("gsLogon", password));
+        postData.add(new BasicNameValuePair("gsAftlnr", getUsername()));
+        postData.add(new BasicNameValuePair("gsLogon", getPassword()));
 
         return new LoginPackage(urlopen, postData, response, "https://mobil.danskebank.se/XI");
     }
@@ -148,8 +148,8 @@ public class DanskeBank extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername() == null || getPassword() == null || getUsername().length() == 0
+                || getPassword().length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 

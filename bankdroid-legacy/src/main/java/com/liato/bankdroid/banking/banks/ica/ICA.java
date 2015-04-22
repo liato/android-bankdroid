@@ -89,7 +89,7 @@ public class ICA extends Bank {
         urlopen.addHeader("Accept", "application/json;charset=UTF-8");
         urlopen.addHeader("Content-Type", "application/json;charset=UTF-8");
         urlopen.addHeader("Authorization", "Basic " + Base64.encodeToString(
-                new String(username + ":" + password).getBytes(), Base64.NO_WRAP));
+                new String(getUsername() + ":" + getPassword()).getBytes(), Base64.NO_WRAP));
 
         try {
             HttpResponse httpResponse = urlopen.openAsHttpResponse(API_URL + "login",
@@ -183,7 +183,7 @@ public class ICA extends Bank {
     public void update() throws BankException, LoginException,
             BankChoiceException, IOException {
         super.update();
-        if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
+        if (TextUtils.isEmpty(getUsername()) || TextUtils.isEmpty(getPassword())) {
             throw new LoginException(res.getText(
                     R.string.invalid_username_password).toString());
         }

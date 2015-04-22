@@ -88,8 +88,8 @@ public class Jojo extends Bank {
 
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("GOTO", "/mobile/minakort.html"));
-        postData.add(new BasicNameValuePair("login", username));
-        postData.add(new BasicNameValuePair("password", password));
+        postData.add(new BasicNameValuePair("login", getUsername()));
+        postData.add(new BasicNameValuePair("password", getPassword()));
         postData.add(new BasicNameValuePair("CUSTOMER_LOGIN", "LOGGA IN"));
         return new LoginPackage(urlopen, postData, response, URL + "/mobile/customer.html");
     }
@@ -106,8 +106,8 @@ public class Jojo extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername() == null || getPassword() == null || getUsername().length() == 0
+                || getPassword().length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();

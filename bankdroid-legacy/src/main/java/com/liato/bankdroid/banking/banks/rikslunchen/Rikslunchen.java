@@ -81,7 +81,7 @@ public class Rikslunchen extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (TextUtils.isEmpty(username)) {
+        if (TextUtils.isEmpty(getUsername())) {
             throw new LoginException(res.getText(R.string.invalid_card_number).toString());
         }
         try {
@@ -92,7 +92,7 @@ public class Rikslunchen extends Bank {
             urlopen.addHeader("Content-Type", "text/xml;charset=UTF-8");
             StringEntity body = new StringEntity(String.format(
                     "<v:Envelope xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:d=\"http://www.w3.org/2001/XMLSchema\" xmlns:c=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:v=\"http://schemas.xmlsoap.org/soap/envelope/\"><v:Header /><v:Body><n0:getBalance id=\"o0\" c:root=\"1\" xmlns:n0=\"urn:PhoneService\"><cardNo i:type=\"d:string\">%s</cardNo></n0:getBalance></v:Body></v:Envelope>",
-                    username), "UTF-8");
+                    getUsername()), "UTF-8");
             InputStream is = urlopen.openStream("https://www.rikslunchen.se/rkchws/PhoneService",
                     body, true);
 

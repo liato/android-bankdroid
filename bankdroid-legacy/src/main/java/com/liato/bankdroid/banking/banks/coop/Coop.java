@@ -107,8 +107,8 @@ public class Coop extends Bank {
         urlopen.addHeader("X-Requested-With", "XMLHttpRequest");
         HttpResponse httpResponse = urlopen
                 .openAsHttpResponse("https://www.coop.se/Personliga-Baren/Logga-in/?method=Login",
-                        new StringEntity("{\"isBar\":\"true\",\"username\":\"" + username
-                                + "\",\"password\":\"" + password + "\"}"),
+                        new StringEntity("{\"isBar\":\"true\",\"username\":\"" + getUsername()
+                                + "\",\"password\":\"" + getPassword() + "\"}"),
                         true);
         urlopen.removeHeader("X-Requested-With");
         LoginPackage lp = new LoginPackage(urlopen, null, response,
@@ -131,8 +131,8 @@ public class Coop extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername() == null || getPassword() == null || getUsername().length() == 0
+                || getPassword().length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 

@@ -117,8 +117,8 @@ public class NordeaDK extends Bank {
         String strLoginUrl = "https://www.netbank.nordea.dk/mnetbank/servlet/Logon";
         this.referer = strLoginUrl;
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("user_id", username));
-        postData.add(new BasicNameValuePair("logon_code", password));
+        postData.add(new BasicNameValuePair("user_id", getUsername()));
+        postData.add(new BasicNameValuePair("logon_code", getPassword()));
         postData.add(new BasicNameValuePair("command", "1"));
         this.prefix = matcher.group(1);
         postData.add(new BasicNameValuePair("prefix", matcher.group(1)));
@@ -141,8 +141,8 @@ public class NordeaDK extends Bank {
     public void update() throws BankException, LoginException,
             BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername() == null || getPassword() == null || getUsername().length() == 0
+                || getPassword().length() == 0) {
             throw new LoginException(res.getText(
                     R.string.invalid_username_password).toString());
         }

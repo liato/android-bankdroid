@@ -100,8 +100,8 @@ public abstract class MobilbankenBase extends Bank {
 
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("msisdn", msisdn));
-        postData.add(new BasicNameValuePair("user" + timestamp, username));
-        postData.add(new BasicNameValuePair("password" + timestamp, password));
+        postData.add(new BasicNameValuePair("user" + timestamp, getUsername()));
+        postData.add(new BasicNameValuePair("password" + timestamp, getPassword()));
         return new LoginPackage(urlopen, postData, response, postUrl);
     }
 
@@ -119,8 +119,8 @@ public abstract class MobilbankenBase extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername() == null || getPassword() == null || getUsername().length() == 0
+                || getPassword().length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 

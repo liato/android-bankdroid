@@ -93,8 +93,8 @@ public class Everydaycard extends Bank {
         urlopen = new Urllib(context);
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("nextPage", "firstPage"));
-        postData.add(new BasicNameValuePair("username", username));
-        postData.add(new BasicNameValuePair("password", password));
+        postData.add(new BasicNameValuePair("username", getUsername()));
+        postData.add(new BasicNameValuePair("password", getPassword()));
         return new LoginPackage(urlopen, postData, response, url);
     }
 
@@ -111,8 +111,8 @@ public class Everydaycard extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername() == null || getPassword() == null || getUsername().length() == 0
+                || getPassword().length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();

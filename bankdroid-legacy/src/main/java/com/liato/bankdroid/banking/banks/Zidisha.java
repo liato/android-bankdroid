@@ -104,9 +104,9 @@ public class Zidisha extends Bank {
         String user_guess = mUserGuess.group(1);
 
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("username", username));
-        postData.add(new BasicNameValuePair("password", password));
-        postData.add(new BasicNameValuePair("textpassword", username));
+        postData.add(new BasicNameValuePair("username", getUsername()));
+        postData.add(new BasicNameValuePair("password", getPassword()));
+        postData.add(new BasicNameValuePair("textpassword", getUsername()));
         postData.add(new BasicNameValuePair("userlogin", ""));
         postData.add(new BasicNameValuePair("user_guess", user_guess));
         return new LoginPackage(urlopen, postData, response, "https://www.zidisha.org/process.php");
@@ -121,8 +121,8 @@ public class Zidisha extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername() == null || getPassword() == null || getUsername().length() == 0
+                || getPassword().length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 

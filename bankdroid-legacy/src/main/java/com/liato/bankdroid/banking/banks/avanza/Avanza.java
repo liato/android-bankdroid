@@ -75,8 +75,8 @@ public class Avanza extends Bank {
                 CertificateReader.getCertificates(context, R.raw.cert_avanza));
         urlopen.addHeader("Referer", URL + "/start");
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("j_username", username));
-        postData.add(new BasicNameValuePair("j_password", password));
+        postData.add(new BasicNameValuePair("j_username", getUsername()));
+        postData.add(new BasicNameValuePair("j_password", getPassword()));
         postData.add(new BasicNameValuePair("url", URL + "/start"));
         String response = urlopen.open(URL + "/ab/handlelogin", postData);
         String homeUrl = "";
@@ -97,7 +97,7 @@ public class Avanza extends Bank {
                 CertificateReader.getCertificates(context, R.raw.cert_avanza));
         urlopen.addHeader("ctag", "1122334455");
         urlopen.addHeader("Authorization", "Basic " + Base64.encodeToString(
-                new String(username + ":" + password).getBytes(), Base64.NO_WRAP));
+                new String(getUsername() + ":" + getPassword()).getBytes(), Base64.NO_WRAP));
         balance = new BigDecimal(0);
 
         try {
@@ -195,7 +195,7 @@ public class Avanza extends Bank {
     public void update() throws BankException, LoginException,
             BankChoiceException, IOException {
         super.update();
-        if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
+        if (TextUtils.isEmpty(getUsername()) || TextUtils.isEmpty(getPassword())) {
             throw new LoginException(res.getText(
                     R.string.invalid_username_password).toString());
         }

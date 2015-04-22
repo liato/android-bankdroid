@@ -81,8 +81,8 @@ public class Bredband2VoIP extends Bank {
         urlopen = new Urllib(context,
                 CertificateReader.getCertificates(context, R.raw.cert_bredband2));
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("cUsername", username));
-        postData.add(new BasicNameValuePair("cPassword", password));
+        postData.add(new BasicNameValuePair("cUsername", getUsername()));
+        postData.add(new BasicNameValuePair("cPassword", getPassword()));
         postData.add(new BasicNameValuePair("bIsCompany", "0"));
         postData.add(new BasicNameValuePair("submit", "Logga in"));
         response = urlopen.open(API_URL + "index/", postData, true);
@@ -105,8 +105,8 @@ public class Bredband2VoIP extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername() == null || getPassword() == null || getUsername().length() == 0
+                || getPassword().length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();

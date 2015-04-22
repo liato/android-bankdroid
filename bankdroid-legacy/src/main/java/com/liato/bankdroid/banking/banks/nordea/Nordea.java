@@ -267,8 +267,8 @@ public class Nordea extends Bank {
             postData.add(new BasicNameValuePair(name, value));
         }
         // Login information
-        postData.add(new BasicNameValuePair("userid", username));
-        postData.add(new BasicNameValuePair("pin", password));
+        postData.add(new BasicNameValuePair("userid", getUsername()));
+        postData.add(new BasicNameValuePair("pin", getPassword()));
         // Submit button is not contained within the form and thus cannot (should not) be found with the InputField matcher
         postData.add(new BasicNameValuePair("commonlogin$loginLight", "Logga in"));
         return new LoginPackage(urlopen, postData, this.lastResponse, LOGIN_URL);
@@ -288,8 +288,8 @@ public class Nordea extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername() == null || getPassword() == null || getUsername().length() == 0
+                || getPassword().length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 

@@ -128,8 +128,8 @@ public abstract class SEBKortBase extends Bank {
         postData.add(new BasicNameValuePair("SEB_Auth_Mechanism", "5"));
         postData.add(new BasicNameValuePair("TYPE", "LOGIN"));
         postData.add(new BasicNameValuePair("CURRENT_METHOD", "PWD"));
-        postData.add(new BasicNameValuePair("UID", mProdgroup + username.toUpperCase()));
-        postData.add(new BasicNameValuePair("PASSWORD", password));
+        postData.add(new BasicNameValuePair("UID", mProdgroup + getUsername().toUpperCase()));
+        postData.add(new BasicNameValuePair("PASSWORD", getPassword()));
         postData.add(new BasicNameValuePair("mProdgroup", mProdgroup));
         postData.add(mParamsTarget);
         postData.add(mParamsErrorTarget);
@@ -167,8 +167,8 @@ public abstract class SEBKortBase extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername() == null || getPassword() == null || getUsername().length() == 0
+                || getPassword().length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();

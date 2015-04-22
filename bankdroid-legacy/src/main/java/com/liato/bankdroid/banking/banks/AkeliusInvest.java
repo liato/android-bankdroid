@@ -115,8 +115,8 @@ public class AkeliusInvest extends Bank {
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("action", "login"));
         postData.add(new BasicNameValuePair("logintoken", strLogintoken));
-        postData.add(new BasicNameValuePair("df_username", username));
-        postData.add(new BasicNameValuePair("df_password", password));
+        postData.add(new BasicNameValuePair("df_username", getUsername()));
+        postData.add(new BasicNameValuePair("df_password", getPassword()));
         postData.add(new BasicNameValuePair("Language", "SV"));
         postData.add(new BasicNameValuePair("IdleTime", "900"));
 
@@ -143,8 +143,8 @@ public class AkeliusInvest extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername() == null || getPassword() == null || getUsername().length() == 0
+                || getPassword().length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 

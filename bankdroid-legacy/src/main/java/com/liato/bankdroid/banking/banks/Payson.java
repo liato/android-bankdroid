@@ -95,8 +95,8 @@ public class Payson extends Bank {
 
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("__RequestVerificationToken", verificationToken));
-        postData.add(new BasicNameValuePair("Username", username));
-        postData.add(new BasicNameValuePair("Password", password));
+        postData.add(new BasicNameValuePair("Username", getUsername()));
+        postData.add(new BasicNameValuePair("Password", getPassword()));
         postData.add(new BasicNameValuePair("RedirectAfterLogin", ""));
         return new LoginPackage(urlopen, postData, response,
                 "https://www.payson.se/myaccount/account/SignIn/");
@@ -118,8 +118,8 @@ public class Payson extends Bank {
     @Override
     public void update() throws BankChoiceException, BankException, LoginException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername() == null || getPassword() == null || getUsername().length() == 0
+                || getPassword().length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();

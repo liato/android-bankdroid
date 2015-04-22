@@ -96,9 +96,9 @@ public class Nordnetdirekt extends Bank {
         postData.add(new BasicNameValuePair("a4", "sv"));
         postData.add(new BasicNameValuePair("a3", "ADSE"));
         postData.add(new BasicNameValuePair("usa", "7"));
-        postData.add(new BasicNameValuePair("a1", username));
-        postData.add(new BasicNameValuePair("a2", password));
-        postData.add(new BasicNameValuePair("nyckel", extras));
+        postData.add(new BasicNameValuePair("a1", getUsername()));
+        postData.add(new BasicNameValuePair("a2", getPassword()));
+        postData.add(new BasicNameValuePair("nyckel", getExtras()));
         return new LoginPackage(urlopen, postData, response,
                 "https://www.nordnetdirekt.se/mux/inloggad/lib/login.html");
     }
@@ -117,8 +117,8 @@ public class Nordnetdirekt extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername() == null || getPassword() == null || getUsername().length() == 0
+                || getPassword().length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();

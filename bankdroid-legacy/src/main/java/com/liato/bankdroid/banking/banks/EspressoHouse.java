@@ -75,10 +75,10 @@ public class EspressoHouse extends Bank {
                 "ctl00$ctl00$ctl00$ContentPlaceHolderDefault$ContentPlaceHolderDefault$LoginView1$LoginUser$LoginButton"));
         postData.add(new BasicNameValuePair(
                 "ctl00$ctl00$ctl00$ContentPlaceHolderDefault$ContentPlaceHolderDefault$LoginView1$LoginUser$UserName",
-                username));
+                getUsername()));
         postData.add(new BasicNameValuePair(
                 "ctl00$ctl00$ctl00$ContentPlaceHolderDefault$ContentPlaceHolderDefault$LoginView1$LoginUser$Password",
-                password));
+                getPassword()));
         HttpResponse httpResponse = urlopen.openAsHttpResponse(
                 "http://www.espressohouse.com/coffee-card/logga-inladda/", postData, true);
         LoginPackage lp = new LoginPackage(urlopen, postData, null, API_URL);
@@ -100,8 +100,8 @@ public class EspressoHouse extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername() == null || getPassword() == null || getUsername().length() == 0
+                || getPassword().length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();

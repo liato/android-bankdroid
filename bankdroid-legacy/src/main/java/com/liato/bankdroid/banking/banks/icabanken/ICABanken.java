@@ -100,7 +100,7 @@ public class ICABanken extends Bank {
         urlopen.addHeader("ClientAppVersion", "777");
 
         String response = urlopen.open(String.format(
-                "%s/login/passwordlogin?customerId=%s&password=%s", API_URL, username, password));
+                "%s/login/passwordlogin?customerId=%s&password=%s", API_URL, getUsername(), getPassword()));
         if (response == null || "".equals(response)) {
             throw new LoginException(res.getText(
                     R.string.invalid_username_password).toString());
@@ -120,8 +120,8 @@ public class ICABanken extends Bank {
     public void update() throws BankException, LoginException,
             BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername() == null || getPassword() == null || getUsername().length() == 0
+                || getPassword().length() == 0) {
             throw new LoginException(res.getText(
                     R.string.invalid_username_password).toString());
         }

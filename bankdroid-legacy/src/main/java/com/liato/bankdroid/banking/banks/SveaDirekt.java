@@ -97,8 +97,8 @@ public class SveaDirekt extends Bank {
         String strLoginUrl = LOGIN_URL;
 
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("j_username", username));
-        postData.add(new BasicNameValuePair("j_password", password));
+        postData.add(new BasicNameValuePair("j_username", getUsername()));
+        postData.add(new BasicNameValuePair("j_password", getPassword()));
         return new LoginPackage(urlopen, postData, response, strLoginUrl);
     }
 
@@ -116,8 +116,8 @@ public class SveaDirekt extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername() == null || getPassword() == null || getUsername().length() == 0
+                || getPassword().length() == 0) {
             throw new LoginException(res.getText(
                     R.string.invalid_username_password).toString());
         }

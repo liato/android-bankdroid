@@ -98,8 +98,8 @@ public class BetterGlobe extends Bank {
         HashMap<String, String> headers = urlopen.getHeaders();
         headers.put("Referer", "http://betterglobe.com/login.aspx?lang=sv-SE");
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("username", username));
-        postData.add(new BasicNameValuePair("password", password));
+        postData.add(new BasicNameValuePair("username", getUsername()));
+        postData.add(new BasicNameValuePair("password", getPassword()));
         postData.add(new BasicNameValuePair("btnLogin", ""));
         return new LoginPackage(urlopen, postData, "",
                 "http://betterglobe.com/Login.aspx?rememberMe=False");
@@ -115,8 +115,8 @@ public class BetterGlobe extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername() == null || getPassword() == null || getUsername().length() == 0
+                || getPassword().length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 

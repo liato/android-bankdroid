@@ -105,8 +105,8 @@ public class OKQ8 extends Bank {
         postData.add(new BasicNameValuePair("p_errorScreen", "LOGON_REPOST_ERROR"));
         postData.add(new BasicNameValuePair("n_bank", ""));
         postData.add(new BasicNameValuePair("empty_pwd", ""));
-        postData.add(new BasicNameValuePair("user_id", username.toUpperCase()));
-        postData.add(new BasicNameValuePair("password", password));
+        postData.add(new BasicNameValuePair("user_id", getUsername().toUpperCase()));
+        postData.add(new BasicNameValuePair("password", getPassword()));
         return new LoginPackage(urlopen, postData, response,
                 "https://nettbank.edb.com/Logon/logon/step1");
     }
@@ -168,8 +168,8 @@ public class OKQ8 extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername() == null || getPassword() == null || getUsername().length() == 0
+                || getPassword().length() == 0) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         if (response == null) {
