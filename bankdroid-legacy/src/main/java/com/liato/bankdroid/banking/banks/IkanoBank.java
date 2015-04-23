@@ -129,8 +129,8 @@ public class IkanoBank extends Bank {
         postData.add(new BasicNameValuePair("__EVENTTARGET", "ctl02$lbLogin"));
         postData.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
         postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
-        postData.add(new BasicNameValuePair("ctl02$txtSocialSecurityNumber", username));
-        postData.add(new BasicNameValuePair("ctl02$txtPinCode", password));
+        postData.add(new BasicNameValuePair("ctl02$txtSocialSecurityNumber", getUsername()));
+        postData.add(new BasicNameValuePair("ctl02$txtPinCode", getPassword()));
         postData.add(new BasicNameValuePair("__EVENTVALIDATION", strEventValidation));
         return new LoginPackage(urlopen, postData, response,
                 "https://secure.ikanobank.se/engines/page.aspx?structid=1895");
@@ -157,8 +157,7 @@ public class IkanoBank extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 

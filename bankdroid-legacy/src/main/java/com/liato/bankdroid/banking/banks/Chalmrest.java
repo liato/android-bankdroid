@@ -55,11 +55,11 @@ public class Chalmrest extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || username.length() == 0) {
+        if (getUsername().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 
-        String cardNr = username;
+        String cardNr = getUsername();
 
         HttpClient httpclient = new DefaultHttpClient();
         HttpGet httpget = new HttpGet(

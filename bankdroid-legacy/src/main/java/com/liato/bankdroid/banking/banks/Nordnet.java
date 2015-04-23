@@ -106,8 +106,8 @@ public class Nordnet extends Bank {
         postData.add(new BasicNameValuePair("checksum", ""));
         postData.add(new BasicNameValuePair("referer", ""));
         postData.add(new BasicNameValuePair("encryption", "0"));
-        postData.add(new BasicNameValuePair(loginFieldName, username));
-        postData.add(new BasicNameValuePair(loginFieldPassword, password));
+        postData.add(new BasicNameValuePair(loginFieldName, getUsername()));
+        postData.add(new BasicNameValuePair(loginFieldPassword, getPassword()));
 
         return new LoginPackage(urlopen, postData, response,
                 "https://www.nordnet.se/mux/login/login.html");
@@ -126,8 +126,7 @@ public class Nordnet extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();

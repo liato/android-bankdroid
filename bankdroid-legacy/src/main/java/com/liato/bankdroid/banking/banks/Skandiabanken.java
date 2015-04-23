@@ -109,8 +109,8 @@ public class Skandiabanken extends Bank {
 
         String loginUrl = getBaseUrlWithCustomerOwner() + "/login";
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("username", username));
-        postData.add(new BasicNameValuePair("password", password));
+        postData.add(new BasicNameValuePair("username", getUsername()));
+        postData.add(new BasicNameValuePair("password", getPassword()));
 
         try {
             String loginResponse = urlopen.open(loginUrl, postData);
@@ -151,8 +151,7 @@ public class Skandiabanken extends Bank {
             BankChoiceException, IOException {
         super.update();
 
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(
                     R.string.invalid_username_password).toString());
         }

@@ -97,10 +97,10 @@ public class EasyCard extends Bank {
 
         // Our data + button value
         postData.add(new BasicNameValuePair(
-                "ctl00$m$g_2e67c657_c88c_44e4_9e93_48efac2dab20$accountNumber", username));
+                "ctl00$m$g_2e67c657_c88c_44e4_9e93_48efac2dab20$accountNumber", getUsername()));
         postData.add(
                 new BasicNameValuePair("ctl00$m$g_2e67c657_c88c_44e4_9e93_48efac2dab20$password",
-                        password));
+                        getPassword()));
         postData.add(new BasicNameValuePair("ctl00$m$g_2e67c657_c88c_44e4_9e93_48efac2dab20$ctl00",
                 "Logga in"));
 
@@ -126,8 +126,7 @@ public class EasyCard extends Bank {
 
         super.update();
 
-        if (username == null || password == null || username.length() != 9
-                || password.length() == 0) {
+        if (getPassword().isEmpty() || getUsername().length() != 9) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 
@@ -140,7 +139,7 @@ public class EasyCard extends Bank {
             // Our data!
             String account_number = matcher.group(1).toString().trim(); // 123123123
 
-            if (!account_number.equalsIgnoreCase(this.username)) {
+            if (!account_number.equalsIgnoreCase(getUsername())) {
                 throw new BankException(res.getText(R.string.unable_to_login).toString());
             }
 
@@ -153,9 +152,9 @@ public class EasyCard extends Bank {
 
             // Construct accounts
             Account credit_spent = new Account("Saldo", credit_spent_amount,
-                    this.username + ":saldo", Account.CCARD);
+                    getUsername() + ":saldo", Account.CCARD);
             Account credit_left = new Account("Kredit", credit_left_amount,
-                    this.username + ":kredit", Account.OTHER);
+                    getUsername() + ":kredit", Account.OTHER);
 
             accounts.add(credit_spent);
             accounts.add(credit_left);

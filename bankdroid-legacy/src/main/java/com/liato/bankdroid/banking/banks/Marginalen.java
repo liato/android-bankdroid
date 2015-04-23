@@ -118,8 +118,8 @@ public class Marginalen extends Bank {
         postData.add(new BasicNameValuePair("commandorigin", "0.pin_logon_step1_view_handler"));
         postData.add(new BasicNameValuePair("guid", guid));
         postData.add(new BasicNameValuePair("hash", hash));
-        postData.add(new BasicNameValuePair("userId", username));
-        postData.add(new BasicNameValuePair("pin", password));
+        postData.add(new BasicNameValuePair("userId", getUsername()));
+        postData.add(new BasicNameValuePair("pin", getPassword()));
 
         return new LoginPackage(urlopen, postData, response, BASE_URL + "engine");
     }
@@ -147,8 +147,7 @@ public class Marginalen extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();

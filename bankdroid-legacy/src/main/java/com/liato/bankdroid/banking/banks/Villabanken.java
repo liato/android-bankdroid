@@ -154,8 +154,8 @@ public class Villabanken extends Bank {
         postData.add(new BasicNameValuePair("__LASTFOCUS", ""));
         postData.add(new BasicNameValuePair("__VIEWSTATE", viewState));
         postData.add(new BasicNameValuePair("__EVENTVALIDATION", eventValidation));
-        postData.add(new BasicNameValuePair(ctl00.replaceAll("ctl00$", "accountNumber"), username));
-        postData.add(new BasicNameValuePair(ctl00.replaceAll("ctl00$", "password"), password));
+        postData.add(new BasicNameValuePair(ctl00.replaceAll("ctl00$", "accountNumber"), getUsername()));
+        postData.add(new BasicNameValuePair(ctl00.replaceAll("ctl00$", "password"), getPassword()));
         postData.add(new BasicNameValuePair(ctl00, "Logga in"));
         postData.add(new BasicNameValuePair("__spDummyText1", ""));
         postData.add(new BasicNameValuePair("__spDummyText2", ""));
@@ -180,8 +180,7 @@ public class Villabanken extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();

@@ -77,8 +77,8 @@ public class MinPension extends Bank {
             throw new BankException(res.getText(R.string.unable_to_find).toString() + " token.");
         }
         postData.add(new BasicNameValuePair("__RequestVerificationToken", el.val()));
-        postData.add(new BasicNameValuePair("viewModel.Personnummer", username));
-        postData.add(new BasicNameValuePair("viewModel.Kod", password));
+        postData.add(new BasicNameValuePair("viewModel.Personnummer", getUsername()));
+        postData.add(new BasicNameValuePair("viewModel.Kod", getPassword()));
         LoginPackage lp = new LoginPackage(urlopen, postData, null,
                 "https://www.minpension.se/inloggning/personlig-kod");
         return lp;
@@ -109,8 +109,7 @@ public class MinPension extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();

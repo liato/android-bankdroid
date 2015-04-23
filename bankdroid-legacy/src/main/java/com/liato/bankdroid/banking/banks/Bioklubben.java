@@ -108,10 +108,10 @@ public class Bioklubben extends Bank {
         postData.add(new BasicNameValuePair("ctl00$toolkitscriptmanager",
                 "ctl00$UpdatePanel|ctl00$ContentPlaceHolder1$LoginUserControl$LogonButton"));
         postData.add(new BasicNameValuePair(
-                "ctl00$ContentPlaceHolder1$LoginUserControl$LoginNameTextBox", username));
+                "ctl00$ContentPlaceHolder1$LoginUserControl$LoginNameTextBox", getUsername()));
         postData.add(
                 new BasicNameValuePair("ctl00$ContentPlaceHolder1$LoginUserControl$PasswordTextBox",
-                        password));
+                        getPassword()));
         return new LoginPackage(urlopen, postData, response, "http://bioklubben.sf.se/Start.aspx");
     }
 
@@ -127,8 +127,7 @@ public class Bioklubben extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();

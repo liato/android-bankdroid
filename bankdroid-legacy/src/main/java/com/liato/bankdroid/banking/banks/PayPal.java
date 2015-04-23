@@ -99,8 +99,8 @@ public class PayPal extends Bank {
         urlopen = new Urllib(context,
                 CertificateReader.getCertificates(context, R.raw.cert_paypal));
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("email", username));
-        postData.add(new BasicNameValuePair("password", password));
+        postData.add(new BasicNameValuePair("email", getUsername()));
+        postData.add(new BasicNameValuePair("password", getPassword()));
         postData.add(new BasicNameValuePair("ul-submit-cookied", "Logga in"));
         urlopen.addHeader("Origin",ORIGIN_URL);
         urlopen.addHeader("Referer", REFERER_URL);
@@ -119,8 +119,7 @@ public class PayPal extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();

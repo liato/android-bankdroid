@@ -80,7 +80,7 @@ public class AppeakPoker extends Bank {
         urlopen = new Urllib(context);
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
         return new LoginPackage(urlopen, postData, "",
-                String.format("http://poker.appeak.se/playerInfo/?username=%s", username));
+                String.format("http://poker.appeak.se/playerInfo/?username=%s", getUsername()));
     }
 
     @Override
@@ -100,7 +100,7 @@ public class AppeakPoker extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null) {
+        if (getUsername().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_card_number).toString());
         }
         login();

@@ -130,8 +130,8 @@ public class ForexBank extends Bank {
         // Assemble param table
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("p_tranid", tranId));
-        postData.add(new BasicNameValuePair("user_id", username));
-        postData.add(new BasicNameValuePair("password", password));
+        postData.add(new BasicNameValuePair("user_id", getUsername()));
+        postData.add(new BasicNameValuePair("password", getPassword()));
         postData.add(new BasicNameValuePair("submitButton", "Logga in"));
         postData.add(new BasicNameValuePair("forcelayout", "touch"));
         postData.add(new BasicNameValuePair("fallbackQuery", fallbackQuery));
@@ -158,8 +158,7 @@ public class ForexBank extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         /*

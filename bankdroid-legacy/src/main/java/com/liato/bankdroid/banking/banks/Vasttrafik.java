@@ -96,10 +96,10 @@ public class Vasttrafik extends Bank {
         postData.add(new BasicNameValuePair("__VIEWSTATE", strViewState));
         postData.add(new BasicNameValuePair(
                 "ctl00$ctl00$SiteRegion$SiteRegion$ContentRegion$MainContentRegion$AddContentRegion$ctl00$TextBoxUserName",
-                username));
+                getUsername()));
         postData.add(new BasicNameValuePair(
                 "ctl00$ctl00$SiteRegion$SiteRegion$ContentRegion$MainContentRegion$AddContentRegion$ctl00$TextBoxPassword",
-                password));
+                getPassword()));
         postData.add(new BasicNameValuePair(
                 "ctl00$ctl00$SiteRegion$SiteRegion$ContentRegion$MainContentRegion$AddContentRegion$ctl00$CheckBoxPersistent",
                 "on"));
@@ -124,8 +124,7 @@ public class Vasttrafik extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();

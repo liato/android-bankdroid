@@ -86,7 +86,7 @@ public class BlekingeTrafiken extends Bank {
         urlopen.addHeader("Content-Type", "application/json;charset=UTF-8");
         urlopen.addHeader("Accept", "application/json");
         HttpResponse httpResponse = urlopen.openAsHttpResponse(URL + "/webshop/card/balance/",
-                new StringEntity("{\"cardnr\":\"" + username + "\"}"), true);
+                new StringEntity("{\"cardnr\":\"" + getUsername() + "\"}"), true);
         if (httpResponse.getStatusLine().getStatusCode() != 200) {
             throw new BankException(res.getText(R.string.invalid_card_number).toString());
         }
@@ -97,7 +97,7 @@ public class BlekingeTrafiken extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || username.length() == 0) {
+        if (getUsername().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();

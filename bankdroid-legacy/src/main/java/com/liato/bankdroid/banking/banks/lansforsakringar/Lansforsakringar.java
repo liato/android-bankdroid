@@ -138,8 +138,8 @@ public class Lansforsakringar extends Bank {
         String loginToken = matcher.group(1);
 
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("login:userId", username));
-        postData.add(new BasicNameValuePair("login:pin", password));
+        postData.add(new BasicNameValuePair("login:userId", getUsername()));
+        postData.add(new BasicNameValuePair("login:pin", getPassword()));
         postData.add(new BasicNameValuePair("login", "login"));
         postData.add(new BasicNameValuePair("javax.faces.ViewState", viewState));
         postData.add(
@@ -166,7 +166,7 @@ public class Lansforsakringar extends Bank {
         urlopen.addHeader("Ctoken", cr.getToken());
         try {
             LoginResponse lr = readJsonValue(API_BASEURL + "security/user",
-                    objectAsJson(new LoginRequest(username, password)), LoginResponse.class);
+                    objectAsJson(new LoginRequest(getUsername(), getPassword())), LoginResponse.class);
             urlopen.addHeader("Utoken", lr.getTicket());
         } catch (Exception e) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
@@ -227,8 +227,7 @@ public class Lansforsakringar extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 

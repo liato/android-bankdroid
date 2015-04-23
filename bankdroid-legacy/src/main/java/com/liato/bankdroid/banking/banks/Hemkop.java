@@ -112,8 +112,8 @@ public class Hemkop extends Bank {
         postData.add(new BasicNameValuePair("__SCROLLPOSITIONY", "266"));
         postData.add(new BasicNameValuePair("__EVENTVALIDATION", eventValidation));
         postData.add(new BasicNameValuePair("ctl00$uiTopMenu$Search", ""));
-        postData.add(new BasicNameValuePair("ctl00$MainContent$tbUsername", username));
-        postData.add(new BasicNameValuePair("ctl00$MainContent$tbPassword", password));
+        postData.add(new BasicNameValuePair("ctl00$MainContent$tbUsername", getUsername()));
+        postData.add(new BasicNameValuePair("ctl00$MainContent$tbPassword", getPassword()));
         return new LoginPackage(urlopen, postData, response,
                 "https://www.hemkop.se/Mina-sidor/Logga-in/");
     }
@@ -131,8 +131,7 @@ public class Hemkop extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 

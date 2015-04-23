@@ -99,7 +99,7 @@ public abstract class AbstractSwedbank extends Bank {
         try {
             LoginPackage lp = preLogin();
             httpResponse = urlopen.openAsHttpResponse(lp.getLoginTarget(),
-                    new StringEntity(objectAsJson(new PersonalCodeRequest(username, password)),
+                    new StringEntity(objectAsJson(new PersonalCodeRequest(getUsername(), getPassword())),
                             HTTP.UTF_8), true);
             int responseCode = httpResponse.getStatusLine().getStatusCode();
             if (responseCode == 201) {
@@ -144,8 +144,7 @@ public abstract class AbstractSwedbank extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();

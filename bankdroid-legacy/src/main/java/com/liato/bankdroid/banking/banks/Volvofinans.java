@@ -100,8 +100,8 @@ public class Volvofinans extends Bank {
                 R.raw.cert_volvofinans, R.raw.cert_volvofinans_logged_in));
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("username", username));
-        postData.add(new BasicNameValuePair("password", password));
+        postData.add(new BasicNameValuePair("username", getUsername()));
+        postData.add(new BasicNameValuePair("password", getPassword()));
         postData.add(new BasicNameValuePair("TARGET",
                 "https://inloggad.volvofinans.se/privat/inloggning/redirect.html"));
         postData.add(new BasicNameValuePair("REFERER",
@@ -129,8 +129,7 @@ public class Volvofinans extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();

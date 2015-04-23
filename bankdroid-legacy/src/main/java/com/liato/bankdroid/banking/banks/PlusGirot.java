@@ -87,8 +87,8 @@ public class PlusGirot extends Bank {
         response = urlopen.open("https://kontoutdrag.plusgirot.se/ku/html/epostllg.htm");
 
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("KONTO", username));
-        postData.add(new BasicNameValuePair("PIN_KOD", password));
+        postData.add(new BasicNameValuePair("KONTO", getUsername()));
+        postData.add(new BasicNameValuePair("PIN_KOD", getPassword()));
         return new LoginPackage(urlopen, postData, response,
                 "https://kontoutdrag.plusgirot.se/ku/bgya006/init");
     }
@@ -106,8 +106,7 @@ public class PlusGirot extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();

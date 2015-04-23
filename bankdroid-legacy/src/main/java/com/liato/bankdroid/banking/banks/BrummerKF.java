@@ -122,8 +122,8 @@ public class BrummerKF extends Bank {
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("__VIEWSTATE", viewstate));
         postData.add(new BasicNameValuePair("__EVENTVALIDATION", eventvalidation));
-        postData.add(new BasicNameValuePair("ctl00$cphMainRegion$txtUsername", username));
-        postData.add(new BasicNameValuePair("ctl00$cphMainRegion$txtPassword", password));
+        postData.add(new BasicNameValuePair("ctl00$cphMainRegion$txtUsername", getUsername()));
+        postData.add(new BasicNameValuePair("ctl00$cphMainRegion$txtPassword", getPassword()));
         postData.add(new BasicNameValuePair("ctl00$cphMainRegion$btnLogin", "Logga in"));
         postData.add(new BasicNameValuePair("ctl00$ctl08", "sv"));
         postData.add(
@@ -151,8 +151,7 @@ public class BrummerKF extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 

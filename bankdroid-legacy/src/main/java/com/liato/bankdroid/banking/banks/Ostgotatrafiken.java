@@ -92,8 +92,8 @@ public class Ostgotatrafiken extends Bank {
                 R.raw.cert_ostgotatrafiken_login, R.raw.cert_ostgotatrafiken_overview));
 
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("Username", username));
-        postData.add(new BasicNameValuePair("Password", password));
+        postData.add(new BasicNameValuePair("Username", getUsername()));
+        postData.add(new BasicNameValuePair("Password", getPassword()));
         postData.add(new BasicNameValuePair("Login", "Logga in"));
 
         return new LoginPackage(urlopen, postData, response, URL);
@@ -112,8 +112,7 @@ public class Ostgotatrafiken extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();

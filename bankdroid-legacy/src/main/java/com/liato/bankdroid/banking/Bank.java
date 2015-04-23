@@ -88,13 +88,13 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
 
     protected Resources res;
 
-    protected String username;
+    private String username;
 
-    protected String password;
+    private String password;
 
     protected String customName;
 
-    protected String extras;
+    private String extras;
 
     protected String currency = "SEK";
 
@@ -188,7 +188,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     }
 
     public String getPassword() {
-        return password;
+        return password == null ? "" : password;
     }
 
     public void setPassword(String password) {
@@ -196,7 +196,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     }
 
     public String getUsername() {
-        return username;
+        return username == null ? "" : username;
     }
 
     public void setUsername(String username) {
@@ -245,7 +245,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     }
 
     public String getExtras() {
-        return this.extras;
+        return extras == null ? "" : extras;
     }
 
     public void setExtras(String extras) {

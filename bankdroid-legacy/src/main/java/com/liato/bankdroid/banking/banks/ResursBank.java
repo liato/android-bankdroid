@@ -75,8 +75,8 @@ public class ResursBank extends Bank {
                 CertificateReader.getCertificates(context, R.raw.cert_resursbank));
         response = urlopen.open("https://secure.resurs.se/internetbank/default.jsp");
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("kontonummer", username));
-        postData.add(new BasicNameValuePair("password", password));
+        postData.add(new BasicNameValuePair("kontonummer", getUsername()));
+        postData.add(new BasicNameValuePair("password", getPassword()));
         postData.add(new BasicNameValuePair("page", "privat"));
         return new LoginPackage(urlopen, postData, response,
                 "https://secure.resurs.se/internetbank/login.jsp");
@@ -96,8 +96,7 @@ public class ResursBank extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 

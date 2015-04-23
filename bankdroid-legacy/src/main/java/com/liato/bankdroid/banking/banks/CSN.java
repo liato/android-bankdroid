@@ -117,8 +117,8 @@ public class CSN extends Bank {
         postData.clear();
 
         postData.add(new BasicNameValuePair("metod", "validerapinkod"));
-        postData.add(new BasicNameValuePair("pnr", username));
-        postData.add(new BasicNameValuePair("pinkod", password));
+        postData.add(new BasicNameValuePair("pnr", getUsername()));
+        postData.add(new BasicNameValuePair("pinkod", getPassword()));
         return new LoginPackage(urlopen, postData, response,
                 "https://www.csn.se/bas/inloggning/Pinkod.do");
     }
@@ -140,8 +140,7 @@ public class CSN extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();

@@ -77,8 +77,8 @@ public class Meniga extends Bank {
         urlopen.setContentCharset(HTTP.ISO_8859_1);
         response = urlopen.open("https://www.meniga.is/Mobile");
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("email", username));
-        postData.add(new BasicNameValuePair("password", password));
+        postData.add(new BasicNameValuePair("email", getUsername()));
+        postData.add(new BasicNameValuePair("password", getPassword()));
         return new LoginPackage(urlopen, postData, response, "https://www.meniga.is/Mobile");
     }
 
@@ -98,8 +98,7 @@ public class Meniga extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();

@@ -101,8 +101,8 @@ public class SevenDay extends Bank {
         postData.add(new BasicNameValuePair("loginForm", "loginForm"));
         postData.add(new BasicNameValuePair("login", "login"));
         postData.add(new BasicNameValuePair("javax.faces.ViewState", viewState));
-        postData.add(new BasicNameValuePair("ssn", username));
-        postData.add(new BasicNameValuePair("password", password));
+        postData.add(new BasicNameValuePair("ssn", getUsername()));
+        postData.add(new BasicNameValuePair("password", getPassword()));
 
         return new LoginPackage(urlopen, postData, response,
                 "https://www.sevenday.se/mina-sidor/mina-sidor.htm");
@@ -122,8 +122,7 @@ public class SevenDay extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();

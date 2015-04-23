@@ -87,8 +87,8 @@ public class Osuuspankki extends Bank {
         postData.add(new BasicNameValuePair("REQUEST_PREVIOUS_QUERYSTRING", ""));
         postData.add(new BasicNameValuePair("x", "24"));
         postData.add(new BasicNameValuePair("y", "5"));
-        postData.add(new BasicNameValuePair("USERNAME", username));
-        postData.add(new BasicNameValuePair("PWD", password));
+        postData.add(new BasicNameValuePair("USERNAME", getUsername()));
+        postData.add(new BasicNameValuePair("PWD", getPassword()));
 
         return new LoginPackage(urlopen, postData, response, "https://www.op.fi/op?kielikoodi=sv");
     }
@@ -107,8 +107,7 @@ public class Osuuspankki extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 

@@ -82,7 +82,7 @@ public class Bitcoin extends Bank {
         urlopen = new Urllib(context);
 
         try {
-            String response = urlopen.open(API_URL + username);
+            String response = urlopen.open(API_URL + getUsername());
             if (response == null || "".equals(response)) {
                 throw new LoginException(res.getText(
                         R.string.invalid_username_password).toString());
@@ -91,7 +91,7 @@ public class Bitcoin extends Bank {
             vObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             vObjectMapper.configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false);
             BlockchainResponse r = vObjectMapper.readValue(
-                    urlopen.open(API_URL + username), BlockchainResponse.class);
+                    urlopen.open(API_URL + getUsername()), BlockchainResponse.class);
             Account a = new Account("Bitcoin",
                     new BigDecimal(r.getFinalBalance()).divide(BigDecimal.valueOf(100000000)), "1");
             a.setCurrency("BTC");
@@ -109,7 +109,7 @@ public class Bitcoin extends Bank {
     public void update() throws BankException, LoginException,
             BankChoiceException, IOException {
         super.update();
-        if (TextUtils.isEmpty(username)) {
+        if (getUsername().isEmpty()) {
             throw new LoginException(res.getText(
                     R.string.invalid_bitcoin_address).toString());
         }

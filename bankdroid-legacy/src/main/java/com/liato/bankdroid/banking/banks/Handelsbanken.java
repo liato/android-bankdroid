@@ -111,8 +111,8 @@ public class Handelsbanken extends Bank {
         }
         String strLoginUrl = "https://m.handelsbanken.se/primary/_-" + matcher.group(1);
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("username", username));
-        postData.add(new BasicNameValuePair("pin", password));
+        postData.add(new BasicNameValuePair("username", getUsername()));
+        postData.add(new BasicNameValuePair("pin", getPassword()));
         postData.add(new BasicNameValuePair("execute", "true"));
         return new LoginPackage(urlopen, postData, response, strLoginUrl);
     }
@@ -130,8 +130,7 @@ public class Handelsbanken extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 

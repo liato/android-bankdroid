@@ -107,10 +107,10 @@ public class AmericanExpress extends Bank {
                 "version%3D1%26pm%5Ffpua%3Dmozilla%2F5%2E0%20%28windows%3B%20u%3B%20windows%20nt%206%2E1%3B%20en%2Dus%3B%20rv%3A1%2E9%2E2%2E7%29%20gecko%2F20100713%20firefox%2F3%2E6%2E7%20%28%20%2Enet%20clr%203%2E5%2E30729%3B%20%2Enet4%2E0c%29%7C5%2E0%20%28Windows%3B%20en%2DUS%29%7CWin32%26pm%5Ffpsc%3D24%7C1680%7C1050%7C988%26pm%5Ffpsw%3Dswf%7Cdef%7Cqt1%7Cqt2%7Cqt3%7Cqt4%7Cqt5%7Cqt6%26pm%5Ffptz%3D1%26pm%5Ffpln%3Dlang%3Den%2DUS%7Csyslang%3D%7Cuserlang%3D%26pm%5Ffpjv%3D1%26pm%5Ffpco%3D1"));
         postData.add(new BasicNameValuePair("REMEMBERME", "on"));
         postData.add(new BasicNameValuePair("manage", "option1"));
-        postData.add(new BasicNameValuePair("UserID", username));
-        postData.add(new BasicNameValuePair("USERID", username));
-        postData.add(new BasicNameValuePair("Password", password));
-        postData.add(new BasicNameValuePair("PWD", password));
+        postData.add(new BasicNameValuePair("UserID", getUsername()));
+        postData.add(new BasicNameValuePair("USERID", getUsername()));
+        postData.add(new BasicNameValuePair("Password", getPassword()));
+        postData.add(new BasicNameValuePair("PWD", getPassword()));
 
         return new LoginPackage(urlopen, postData, response,
                 "https://global.americanexpress.com/myca/logon/emea/action?request_type=LogLogonHandler&Face=sv_SE");
@@ -130,8 +130,7 @@ public class AmericanExpress extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 

@@ -90,7 +90,7 @@ public class McDonalds extends Bank {
 
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("__Click", "0"));
-        postData.add(new BasicNameValuePair("CardNumber", username));
+        postData.add(new BasicNameValuePair("CardNumber", getUsername()));
 
         return new LoginPackage(urlopen, postData, response,
                 "http://apps.mcdonalds.se/sweden/giftquer.nsf/egift?OpenForm&Seq=1");
@@ -109,7 +109,7 @@ public class McDonalds extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || username.length() != 19) {
+        if (getUsername().length() != 19) {
             throw new LoginException(res.getText(R.string.invalid_card_number).toString());
         }
         login();

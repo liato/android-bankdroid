@@ -114,10 +114,10 @@ public class TicketRikskortet extends Bank {
                 "ctl00$CorporateHeaderArea$CorporateHeaderID$QuickSearch$SearchText", "Sök här"));
         postData.add(
                 new BasicNameValuePair("ctl00$StartpageArea$ApplicationArea$LoginControl$UserName",
-                        username));
+                        getUsername()));
         postData.add(
                 new BasicNameValuePair("ctl00$StartpageArea$ApplicationArea$LoginControl$Password",
-                        password));
+                        getPassword()));
         postData.add(new BasicNameValuePair(
                 "ctl00$StartpageArea$ApplicationArea$LoginControl$LoginButton", "Logga in"));
         return new LoginPackage(urlopen, postData, response, URL);
@@ -135,8 +135,7 @@ public class TicketRikskortet extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();

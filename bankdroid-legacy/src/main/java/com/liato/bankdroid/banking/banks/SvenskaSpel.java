@@ -92,7 +92,7 @@ public class SvenskaSpel extends Bank {
         LoginPackage lp = preLogin();
 
         StringEntity postdata = new StringEntity(
-                "{\"userName\":\"" + username + "\",\"password\":\"" + password + "\"}");
+                "{\"userName\":\"" + getUsername() + "\",\"password\":\"" + getPassword() + "\"}");
         HttpResponse httpResponse = urlopen.openAsHttpResponse(lp.getLoginTarget(), postdata, true);
 
         if (httpResponse.getStatusLine().getStatusCode() != 200) {
@@ -105,8 +105,7 @@ public class SvenskaSpel extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();

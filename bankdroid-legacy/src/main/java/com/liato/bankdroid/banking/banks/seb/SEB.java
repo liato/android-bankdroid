@@ -109,8 +109,8 @@ public class SEB extends Bank {
         urlopen.setKeepAliveTimeout(5);
         //response = urlopen.open("https://m.seb.se/cgi-bin/pts3/mpo/9000/mpo9001.aspx?P1=logon.htm");
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("A1", username));
-        postData.add(new BasicNameValuePair("A2", password));
+        postData.add(new BasicNameValuePair("A1", getUsername()));
+        postData.add(new BasicNameValuePair("A2", getPassword()));
         postData.add(new BasicNameValuePair("A3", "4"));
         return new LoginPackage(urlopen, postData, response,
                 "https://m.seb.se/cgi-bin/pts3/mps/1000/mps1001bm.aspx");
@@ -123,8 +123,8 @@ public class SEB extends Bank {
                 CertificateReader.getCertificates(context, R.raw.cert_seb));
         urlopen.setFollowRedirects(false);
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("A1", username));
-        postData.add(new BasicNameValuePair("A2", password));
+        postData.add(new BasicNameValuePair("A1", getUsername()));
+        postData.add(new BasicNameValuePair("A2", getPassword()));
         HttpResponse hr = urlopen.openAsHttpResponse(
                 "https://mP.seb.se/nauth2/Authentication/Auth?SEB_Referer=/priv/ServiceFactory-pw",
                 postData, true);
@@ -141,8 +141,7 @@ public class SEB extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 
@@ -152,7 +151,7 @@ public class SEB extends Bank {
 
         SEBRequest sessionRequest = new SEBRequest();
         Request r = new Request();
-        r.setUserCredentials(new UserCredentials(username, password));
+        r.setUserCredentials(new UserCredentials(getUsername(), getPassword()));
         ServiceInput serviceInput = new ServiceInput();
         serviceInput.setCondition("EQ");
         serviceInput.setVariableName("CUSTOMERTYPE");

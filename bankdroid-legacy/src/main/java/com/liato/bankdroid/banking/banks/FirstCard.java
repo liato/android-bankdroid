@@ -94,8 +94,8 @@ public class FirstCard extends Bank {
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("op", "login"));
         postData.add(new BasicNameValuePair("errorpage", "login.jsp"));
-        postData.add(new BasicNameValuePair("pnr", username));
-        postData.add(new BasicNameValuePair("intpwd", password));
+        postData.add(new BasicNameValuePair("pnr", getUsername()));
+        postData.add(new BasicNameValuePair("intpwd", getPassword()));
         return new LoginPackage(urlopen, postData, null, "https://www.firstcard.se/login.jsp");
     }
 
@@ -112,8 +112,7 @@ public class FirstCard extends Bank {
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
-        if (username == null || password == null || username.length() == 0
-                || password.length() == 0) {
+        if (getUsername().isEmpty() || getPassword().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();
