@@ -52,7 +52,13 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 public class MainActivity extends LockableActivity {
+
+    @InjectView(R.id.txtAccountsDesc)
+    TextView mAccountsDescription;
 
     private final static String TAG = "MainActivity";
 
@@ -78,6 +84,8 @@ public class MainActivity extends LockableActivity {
         PairApplicationsActivity.initialSetupApiKey(this);
 
         setContentView(R.layout.main);
+        ButterKnife.inject(this);
+
         adapter = new AccountsAdapter(this, showHidden);
         final ArrayList<Bank> banks = new ArrayList<Bank>();//BankFactory.banksFromDb(this, true);
         adapter.setGroups(banks);
@@ -145,15 +153,7 @@ public class MainActivity extends LockableActivity {
 
     public void refreshView() {
         final ArrayList<Bank> banks = BankFactory.banksFromDb(this, true);
-        if (banks.size() > 0) {
-            findViewById(R.id.txtAccountsDesc).setVisibility(View.GONE);
-//            showTitleButton("refresh");
-            //findViewById(R.id.btnAccountsRefresh).setClickable(true);
-        } else {
-            findViewById(R.id.txtAccountsDesc).setVisibility(View.VISIBLE);
-//            hideTitleButton("refresh");
-            //findViewById(R.id.btnAccountsRefresh).setClickable(false);
-        }
+        mAccountsDescription.setVisibility(banks.isEmpty() ? View.VISIBLE : View.GONE);
 
         adapter.setShowHidden(showHidden);
         adapter.setGroups(banks);

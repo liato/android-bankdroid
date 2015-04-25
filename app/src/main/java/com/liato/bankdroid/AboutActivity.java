@@ -27,12 +27,19 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 public class AboutActivity extends LockableActivity {
+
+    @InjectView(R.id.txtVersion)
+    TextView mVersion;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.about);
+        ButterKnife.inject(this);
         PackageInfo pInfo;
         String version = "v1.x.x";
         try {
@@ -42,7 +49,7 @@ public class AboutActivity extends LockableActivity {
         } catch (final NameNotFoundException e) {
             e.printStackTrace();
         }
-        ((TextView) findViewById(R.id.txtVersion)).setText(
+        mVersion.setText(
                 getText(R.string.version).toString().replace("$version", version));
 
     }

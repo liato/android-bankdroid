@@ -45,6 +45,10 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
 
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+
     // Get signing keys for release
     gradle.taskGraph.whenReady { taskGraph ->
         if(taskGraph.hasTask(':app:assembleRelease')) {
@@ -80,6 +84,7 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':bankdroid-legacy')
+    compile 'com.jakewharton:butterknife:6.1.0'
     compile "com.android.support:appcompat-v7:22.0.+"
     compile 'com.google.collections:google-collections:1.0'
     compile('com.crashlytics.sdk.android:crashlytics:2.2.1@aar') {
