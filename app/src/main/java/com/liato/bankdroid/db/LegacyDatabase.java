@@ -2,10 +2,6 @@ package com.liato.bankdroid.db;
 
 class LegacyDatabase {
 
-    static final String DATABASE_NAME = "data";
-
-    static final int DATABASE_VERSION = 11;
-
     static final String BANK_TABLE_NAME = "banks";
 
     static final String BANK_ID = "_id";
@@ -77,10 +73,6 @@ class LegacyDatabase {
             .append(" text not null, ")
             .append(BANK_TYPE)
             .append(" integer not null, ")
-            .append(BANK_USERNAME)
-            .append(" text not null, ")
-            .append(BANK_PASSWORD)
-            .append(" text not null, ")
             .append(BANK_CUSTOM_NAME)
             .append(" text, ")
             .append(BANK_UPDATED)
@@ -92,9 +84,7 @@ class LegacyDatabase {
             .append(BANK_DISABLED)
             .append(" integer, ")
             .append(BANK_HIDE_ACCOUNTS)
-            .append(" integer,")
-            .append(BANK_EXTRAS)
-            .append(" text);").toString();
+            .append(" integer);").toString();
 
     static final String TABLE_ACCOUNTS = new StringBuilder("create table ")
             .append(ACCOUNT_TABLE_NAME)

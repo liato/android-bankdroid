@@ -40,6 +40,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import eu.nullbyte.android.urllib.Urllib;
 
@@ -88,13 +89,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
 
     protected Resources res;
 
-    private String username;
-
-    private String password;
-
     protected String customName;
-
-    private String extras;
 
     protected String currency = "SEK";
 
@@ -111,6 +106,8 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     protected Urllib urlopen = null;
 
     protected boolean hideAccounts = false;
+
+    private Map<String, String> properties;
 
     public Bank(Context context) {
         this.context = context;
@@ -139,8 +136,8 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
 
     public void update(String username, String password) throws BankException, LoginException,
             BankChoiceException, IOException {
-        this.username = username;
-        this.password = password;
+        setUsername(username);
+        setPassword(password);
         this.update();
     }
 
@@ -188,19 +185,21 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     }
 
     public String getPassword() {
+        String password = getProperty(LegacyProviderConfiguration.PASSWORD);
         return password == null ? "" : password;
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        getProperties().put(LegacyProviderConfiguration.PASSWORD, password);
     }
 
     public String getUsername() {
+        String username = getProperty(LegacyProviderConfiguration.USERNAME);
         return username == null ? "" : username;
     }
 
     public void setUsername(String username) {
-        this.username = username;
+        getProperties().put(LegacyProviderConfiguration.USERNAME, username);
     }
 
     public BigDecimal getBalance() {
@@ -233,7 +232,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         if (customName != null && customName.length() > 0) {
             return customName;
         }
-        return username;
+        return getUsername();
     }
 
     public String getCustomName() {
@@ -245,28 +244,26 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     }
 
     public String getExtras() {
+        String extras = getProperty(LegacyProviderConfiguration.EXTRAS);
         return extras == null ? "" : extras;
     }
 
     public void setExtras(String extras) {
-        this.extras = extras;
-    }
+        getProperties().put(LegacyProviderConfiguration.EXTRAS, extras);
+      }
 
     public String getShortName() {
         return NAME_SHORT;
     }
 
-    public void setData(String username, String password, BigDecimal balance,
-            boolean disabled, long dbid, String currency, String customName, String extras,
+    public void setData(BigDecimal balance,
+            boolean disabled, long dbid, String currency, String customName,
             int hideAccounts) {
-        this.username = username;
-        this.password = password;
         this.balance = balance;
         this.disabled = disabled;
         this.dbid = dbid;
         this.currency = currency;
         this.customName = customName;
-        this.extras = extras;
         this.hideAccounts = hideAccounts == 1 ? true : false;
     }
 
@@ -336,6 +333,21 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
 
     public boolean isWebViewEnabled() {
         return WEB_VIEW_ENABLED;
+    }
+
+    public Map<String, String> getProperties() {
+        if(this.properties == null) {
+            this.properties = new HashMap<>();
+        }
+        return this.properties;
+    }
+
+    public String getProperty(String name) {
+        return getProperties().get(name);
+    }
+
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
     }
 
     // Returns true if the current implementation of this bank is broken.
