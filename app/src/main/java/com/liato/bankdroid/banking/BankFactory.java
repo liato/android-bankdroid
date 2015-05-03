@@ -19,6 +19,7 @@ package com.liato.bankdroid.banking;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.db.Crypto;
 import com.liato.bankdroid.db.DBAdapter;
+import com.liato.bankdroid.db.Database;
 
 import net.sf.andhsli.hotspotlogin.SimpleCrypto;
 
@@ -27,6 +28,8 @@ import android.database.Cursor;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class BankFactory {
 
@@ -47,23 +50,13 @@ public class BankFactory {
         if (c != null && c.getCount() > 0) {
             try {
                 bank = fromBanktypeId(c.getInt(c.getColumnIndex("banktype")), context);
-                String password = "";
-                try {
-                    password = SimpleCrypto
-                            .decrypt(Crypto.getKey(), c.getString(c.getColumnIndex("password")));
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+                bank.setProperties(loadProperties(id, context));
 
-                bank.setData(c.getString(c.getColumnIndex("username")),
-                        password,
-                        new BigDecimal(c.getString(c.getColumnIndex("balance"))),
+                bank.setData(new BigDecimal(c.getString(c.getColumnIndex("balance"))),
                         (c.getInt(c.getColumnIndex("disabled")) == 0 ? false : true),
                         c.getLong(c.getColumnIndex("_id")),
                         c.getString(c.getColumnIndex("currency")),
                         c.getString(c.getColumnIndex("custname")),
-                        c.getString(c.getColumnIndex("extras")),
                         c.getInt(c.getColumnIndex("hideAccounts")));
                 if (loadAccounts) {
                     bank.setAccounts(accountsFromDb(context, bank.getDbId()));
@@ -89,23 +82,13 @@ public class BankFactory {
             c.moveToNext();
             try {
                 Bank bank = fromBanktypeId(c.getInt(c.getColumnIndex("banktype")), context);
-
-                String password = "";
-                try {
-                    password = SimpleCrypto
-                            .decrypt(Crypto.getKey(), c.getString(c.getColumnIndex("password")));
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                bank.setData(c.getString(c.getColumnIndex("username")),
-                        password,
-                        new BigDecimal(c.getString(c.getColumnIndex("balance"))),
+                long id = c.getLong(c.getColumnIndex("_id"));
+                bank.setProperties(loadProperties(id, context));
+                bank.setData(new BigDecimal(c.getString(c.getColumnIndex("balance"))),
                         (c.getInt(c.getColumnIndex("disabled")) == 0 ? false : true),
-                        c.getLong(c.getColumnIndex("_id")),
+                        id,
                         c.getString(c.getColumnIndex("currency")),
                         c.getString(c.getColumnIndex("custname")),
-                        c.getString(c.getColumnIndex("extras")),
                         c.getInt(c.getColumnIndex("hideAccounts")));
                 if (loadAccounts) {
                     bank.setAccounts(accountsFromDb(context, bank.getDbId()));
@@ -188,4 +171,28 @@ public class BankFactory {
         return accounts;
     }
 
+    private static Map<String, String> loadProperties(long id, Context context) {
+        Map<String, String> properties = new HashMap<>();
+        DBAdapter db = new DBAdapter(context);
+        Cursor c = db.fetchProperties(Long.toString(id));
+        if(c == null || c.getCount() == 0) {
+            return properties;
+        }
+        while(!c.isLast() && !c.isAfterLast()) {
+            c.moveToNext();
+            String key = c.getString(c.getColumnIndex(Database.PROPERTY_KEY));
+            String value = c.getString(c.getColumnIndex(Database.PROPERTY_VALUE));
+            if(LegacyProviderConfiguration.PASSWORD.equals(key)) {
+                try {
+                    value = SimpleCrypto.decrypt(Crypto.getKey(), value);
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+            properties.put(key, value);
+        }
+        c.close();
+        return properties;
+    }
 }

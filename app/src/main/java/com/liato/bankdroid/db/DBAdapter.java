@@ -18,6 +18,7 @@ package com.liato.bankdroid.db;
 
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.LegacyProviderConfiguration;
 import com.liato.bankdroid.banking.Transaction;
 
 import net.sf.andhsli.hotspotlogin.SimpleCrypto;
@@ -32,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 
 public class DBAdapter {
@@ -103,6 +105,11 @@ public class DBAdapter {
         return c;
     }
 
+    private int deleteProperties(long bankId) {
+        return mDb.delete(Database.PROPERTY_TABLE_NAME, Database.PROPERTY_CONNECTION_ID + "="
+                + bankId, null);
+    }
+
     /**
      * Return a Cursor over the list of all banks in the database
      *
@@ -110,8 +117,8 @@ public class DBAdapter {
      */
     public Cursor fetchBanks() {
         return mDb.query("banks",
-                new String[]{"_id", "balance", "banktype", "username", "password", "disabled",
-                        "custname", "updated", "sortorder", "currency", "extras", "hideAccounts"},
+                new String[]{"_id", "balance", "banktype", "disabled",
+                        "custname", "updated", "sortorder", "currency", "hideAccounts"},
                 null, null, null, null, "_id asc");
     }
 
@@ -132,25 +139,21 @@ public class DBAdapter {
                 "account='" + account + "'", null, null, null, null);
     }
 
+    public Cursor fetchProperties(String bankId) {
+        return mDb.query(Database.PROPERTY_TABLE_NAME, null,
+                Database.PROPERTY_CONNECTION_ID+"='"+bankId+"'", null, null, null, null);
+    }
+
     public long updateBank(Bank bank) {
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         ContentValues initialValues = new ContentValues();
         initialValues.put("banktype", bank.getBanktypeId());
-        initialValues.put("username", bank.getUsername());
-        String password = "";
-        try {
-            password = SimpleCrypto.encrypt(Crypto.getKey(), bank.getPassword());
-        } catch (Exception e) {
-            Log.w(TAG, "SimpleCrypto error: " + e.getMessage());
-        }
-        initialValues.put("password", password);
         initialValues.put("disabled", 0);
         initialValues.put("balance", bank.getBalance().toPlainString());
         initialValues.put("currency", bank.getCurrency());
         initialValues.put("custname", bank.getCustomName());
-        initialValues.put("extras", bank.getExtras());
         initialValues.put("updated", sdf.format(cal.getTime()));
         initialValues.put("hideAccounts", bank.getHideAccounts() ? 1 : 0);
 
@@ -160,8 +163,28 @@ public class DBAdapter {
         } else {
             mDb.update("banks", initialValues, "_id=" + bankId, null);
             deleteAccounts(bankId);
+            deleteProperties(bankId);
         }
         if (bankId != -1) {
+            Map<String, String> properties = bank.getProperties();
+            for(Map.Entry<String,String> property : properties.entrySet()) {
+                String value = property.getValue();
+                if(value != null && !value.isEmpty()) {
+                    if (LegacyProviderConfiguration.PASSWORD.equals(property.getKey())) {
+                        try {
+                            value = SimpleCrypto.encrypt(Crypto.getKey(), bank.getPassword());
+                        } catch (Exception e) {
+                            Log.w(TAG, "SimpleCrypto error: " + e.getMessage());
+                        }
+                    }
+                    ContentValues propertyValues = new ContentValues();
+                    propertyValues.put(Database.PROPERTY_KEY, property.getKey());
+                    propertyValues.put(Database.PROPERTY_VALUE, value);
+                    propertyValues.put(Database.PROPERTY_CONNECTION_ID, bankId);
+                    mDb.insert(Database.PROPERTY_TABLE_NAME, null, propertyValues);
+                }
+            }
+
             ArrayList<Account> accounts = bank.getAccounts();
             for (Account acc : accounts) {
                 ContentValues vals = new ContentValues();
@@ -207,8 +230,8 @@ public class DBAdapter {
 
     public Cursor getBank(String bankId) {
         Cursor c = mDb.query("banks",
-                new String[]{"_id", "balance", "banktype", "username", "password", "disabled",
-                        "custname", "updated", "sortorder", "currency", "extras", "hideAccounts"},
+                new String[]{"_id", "balance", "banktype", "disabled",
+                        "custname", "updated", "sortorder", "currency", "hideAccounts"},
                 "_id=" + bankId, null, null, null, null);
         if (c != null) {
             c.moveToFirst();
