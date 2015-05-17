@@ -206,11 +206,6 @@ public class BankEditActivity extends LockableActivity
     public void onNothingSelected(AdapterView<?> arg) {
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
     private class BankSpinnerAdapter<T> extends ArrayAdapter<T> {
 
         private LayoutInflater inflater;
