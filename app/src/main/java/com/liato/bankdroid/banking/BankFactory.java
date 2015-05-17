@@ -29,6 +29,7 @@ import android.database.Cursor;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class BankFactory {
@@ -38,7 +39,7 @@ public class BankFactory {
     }
 
 
-    public static ArrayList<Bank> listBanks(Context context) {
+    public static List<Bank> listBanks(Context context) {
         return LegacyBankFactory.listBanks(context);
     }
 

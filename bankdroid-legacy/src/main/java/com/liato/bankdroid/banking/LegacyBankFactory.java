@@ -76,6 +76,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class LegacyBankFactory {
 
@@ -258,8 +259,8 @@ public class LegacyBankFactory {
         }
     }
 
-    public static ArrayList<Bank> listBanks(Context context) {
-        ArrayList<Bank> banks = new ArrayList<Bank>();
+    public static List<Bank> listBanks(Context context) {
+        List<Bank> banks = new ArrayList<>();
         banks.add(new AkeliusInvest(context));
         banks.add(new AkeliusSpar(context));
         banks.add(new TrustBuddy(context));
