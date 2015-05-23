@@ -513,4 +513,20 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         }
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null || obj.getClass() != this.getClass()) {
+            return false;
+        }
+        Bank bank = (Bank) obj;
+        return bank.getBanktypeId() == this.getBanktypeId();
+    }
+
+    @Override
+    public int hashCode() {
+        return getBanktypeId();
+    }
 }

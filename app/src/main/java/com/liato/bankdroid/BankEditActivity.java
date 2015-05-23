@@ -104,10 +104,10 @@ public class BankEditActivity extends LockableActivity implements OnItemSelected
         ButterKnife.inject(this);
         this.getWindow()
                 .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        ArrayList<Bank> items = BankFactory.listBanks(this);
-        Collections.sort(items);
 
-        BankSpinnerAdapter<Bank> adapter = new BankSpinnerAdapter<Bank>(this, items);
+        List<Bank> items = BankFactory.listBanks(this);
+        Collections.sort(items);
+        BankSpinnerAdapter<Bank> adapter = new BankSpinnerAdapter<>(this, items);
         mBankSpinner.setAdapter(adapter);
         mBankSpinner.setOnItemSelectedListener(this);
 
@@ -125,14 +125,8 @@ public class BankEditActivity extends LockableActivity implements OnItemSelected
                     }
 
                     mErrorDescription.setVisibility(bank.isDisabled() ? View.VISIBLE : View.INVISIBLE);
-
+                    mBankSpinner.setSelection(adapter.getPosition(bank));
                     SELECTED_BANK = bank;
-                    for (int i = 0; i < items.size(); i++) {
-                        if (bank.getBanktypeId() == items.get(i).getBanktypeId()) {
-                            mBankSpinner.setSelection(i);
-                            break;
-                        }
-                    }
                 }
             }
         }
@@ -208,21 +202,6 @@ public class BankEditActivity extends LockableActivity implements OnItemSelected
 
     @Override
     public void onNothingSelected(AdapterView<?> arg) {
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
     }
 
     private class BankSpinnerAdapter<T> extends ArrayAdapter<T> {
