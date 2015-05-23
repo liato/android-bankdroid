@@ -62,8 +62,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
-public class BankEditActivity extends LockableActivity
-        implements OnClickListener, OnItemSelectedListener {
+public class BankEditActivity extends LockableActivity implements OnItemSelectedListener {
 
     @InjectView(R.id.spnBankeditBanklist)
     Spinner mBankSpinner;
@@ -139,27 +138,26 @@ public class BankEditActivity extends LockableActivity
         }
     }
 
-    @Override
-    @OnClick({R.id.btnSettingsCancel, R.id.btnSettingsOk})
-    public void onClick(View v) {
-        if (v.getId() == R.id.btnSettingsCancel) {
-            this.finish();
-        } else if (v.getId() == R.id.btnSettingsOk) {
-            SELECTED_BANK.setUsername(
-                    mUsernameField.getText().toString()
-                            .trim());
-            SELECTED_BANK.setPassword(
-                    mPasswordField.getText().toString()
-                            .trim());
-            SELECTED_BANK.setCustomName(
-                    mCustomNameField.getText().toString()
-                            .trim());
-            SELECTED_BANK.setExtras(
-                    mExtrasField.getText().toString().trim());
-            SELECTED_BANK.setDbid(BANKID);
-            new DataRetrieverTask(this, SELECTED_BANK).execute();
-        }
+    @OnClick(R.id.btnSettingsOk)
+    public void onSubmit(View v) {
+        SELECTED_BANK.setUsername(
+                mUsernameField.getText().toString()
+                        .trim());
+        SELECTED_BANK.setPassword(
+                mPasswordField.getText().toString()
+                        .trim());
+        SELECTED_BANK.setCustomName(
+                mCustomNameField.getText().toString()
+                        .trim());
+        SELECTED_BANK.setExtras(
+                mExtrasField.getText().toString().trim());
+        SELECTED_BANK.setDbid(BANKID);
+        new DataRetrieverTask(this, SELECTED_BANK).execute();
+    }
 
+    @OnClick(R.id.btnSettingsCancel)
+    public void onCancel(View v) {
+        this.finish();
     }
 
     @Override
