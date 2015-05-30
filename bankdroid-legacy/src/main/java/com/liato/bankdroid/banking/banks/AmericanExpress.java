@@ -35,6 +35,7 @@ import android.text.Html;
 import android.util.Log;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -64,7 +65,7 @@ public class AmericanExpress extends Bank {
             Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     private Pattern reTransactions = Pattern.compile(
-            "id=\"Roc\\d{1,}\"\\s* class='tableStandardText'>\\r*\\s*<td[^>]+>\\r*\\s*(\\d{1,2}\\s[a-z]{3}\\s\\d{4}).*?</a>\\r*\\s*([^<]*).*?amountPadding'>&nbsp;</td>\\r*\\s*<td\\s*class='amountPadding'>.*?([0-9.,\\s]*kr)",
+            "id=\"Roc\\d{1,}\"\\s* class='tableStandardText'>\\r*\\s*<td[^>]+>\\r*\\s*(\\d{1,2}\\s[a-z]{3}\\s\\d{4}).*?</a>\\r*\\s*([^<]*).*?amountPadding'>.*?([0-9.,\\s]*kr|&nbsp;)</td>\\r*\\s*<td\\s*class='amountPadding'>.*?([0-9.,\\s]*kr|&nbsp;)",
             Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     private String response = null;
@@ -180,15 +181,22 @@ public class AmericanExpress extends Bank {
              * GROUP                    EXAMPLE DATA
              * 1: Date                  17 jan 2011
              * 2: Specification         xx
-             * 3: Amount                1.582,00&nbsp;kr
+             * 3: Amount (if positive)  1.582,00 kr (else &nbsp)
+             * 4: Amount (if negative)  1.582,00 kr (else &nbsp)
              *
              */
             try {
                 transactionDate = sdfFrom.parse(matcher.group(1).trim());
                 String strDate = sdfTo.format(transactionDate);
+                BigDecimal amount;
+                if (matcher.group(3).trim().equals("&nbsp;"))
+                    amount = Helpers.parseBalance(matcher.group(4).trim()).negate();
+                else
+                    amount = Helpers.parseBalance(matcher.group(3).trim());
+
                 transactions.add(new Transaction(strDate,
                         Html.fromHtml(matcher.group(2)).toString().trim(),
-                        Helpers.parseBalance(matcher.group(3).trim()).negate()));
+                        amount));
             } catch (ParseException e) {
                 Log.w(TAG, "Unable to parse date: " + matcher.group(1).trim());
             }
