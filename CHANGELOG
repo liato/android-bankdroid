@@ -1,5 +1,9 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
+v1.9.9.4 (2015-06-12)
+* Fixes parsing of incoming payments for American Express (thanks to mhagander)
+* Updates certificates for Nordnet, Avanza, Länsförsäkringar, Forex Bank, OKQ8 and Volvo Finans
+
 v1.9.9.3 (2015-05-24)
 * Updates certificates for Paypal, AmericanExpress, Svenska spel
 
