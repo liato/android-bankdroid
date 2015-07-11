@@ -38,9 +38,7 @@ import android.text.InputType;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
@@ -53,7 +51,7 @@ public class Jojo extends Bank {
 
     private static final String NAME_SHORT = "jojo";
 
-    private static final String URL = "https://www.shop.skanetrafiken.se";
+    private static final String URL = "https://www.skanetrafiken.se";
 
     private static final int BANKTYPE_ID = IBankTypes.JOJO;
 
@@ -87,19 +85,19 @@ public class Jojo extends Bank {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_jojo));
 
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("GOTO", "/mobile/minakort.html"));
-        postData.add(new BasicNameValuePair("login", getUsername()));
-        postData.add(new BasicNameValuePair("password", getPassword()));
-        postData.add(new BasicNameValuePair("CUSTOMER_LOGIN", "LOGGA IN"));
-        return new LoginPackage(urlopen, postData, response, URL + "/mobile/customer.html");
+        postData.add(new BasicNameValuePair("loginInputModel.Email", getUsername()));
+        postData.add(new BasicNameValuePair("loginInputModel.Password", getPassword()));
+        postData.add(new BasicNameValuePair("loginInputModel.Role", "Private"));
+        return new LoginPackage(urlopen, postData, response, URL + "/inloggning/LoginPost/");
     }
 
     public Urllib login() throws LoginException, BankException, IOException {
         LoginPackage lp = preLogin();
         response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-        if (!response.contains("[Logga ut]")) {
+        if (!response.contains("window.location")) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
+
         return urlopen;
     }
 
@@ -111,15 +109,12 @@ public class Jojo extends Bank {
         }
         urlopen = login();
 
-        Iterator<Account> it = new AccountIterator(response);
-        while (it.hasNext()) {
-            try {
-                Account account = it.next();
-                accounts.add(account);
-                balance.add(account.getBalance());
-            } catch (NoSuchElementException e) {
-                throw new BankException(res.getText(R.string.server_error_try_again).toString(), e);
-            }
+        response = urlopen.open(URL + "/mitt-konto/se-saldo-och-ladda-kort/");
+
+        Document document = Jsoup.parse(response);
+        Elements elements = document.select(".card-content");
+        for (Element element : elements) {
+            accounts.add(toAccount(element));
         }
 
         if (accounts.isEmpty()) {
@@ -128,88 +123,27 @@ public class Jojo extends Bank {
         super.updateComplete();
     }
 
+    private Account toAccount(Element card) {
+        String cardNumber = card.select(".card-number").text().trim();
+        BigDecimal balance = getBalance(cardNumber);
+        String name = card.select(".title").text().trim();
+        String displayName = NAME_NOT_SET.equals(name) ? cardNumber : name;
+        return new Account(displayName, balance, cardNumber);
+    }
 
-    private BigDecimal getSaldo(String cardNumber) {
-        List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("cardno", cardNumber));
-        postData.add(new BasicNameValuePair("fromlist", "1"));
-        postData.add(new BasicNameValuePair("ST_CHECK_SALDO", "1"));
+    private BigDecimal getBalance(String cardNumber) {
         try {
-            String saldoData = urlopen.open(URL + "/saldodata.html", postData, true);
-            Document saldoDocument = Jsoup.parse(saldoData);
-            Elements saldo = saldoDocument.select("td.greenrow.right h3");
-            if (!saldo.isEmpty()) {
-                return Helpers.parseBalance(saldo.first().text().trim());
+            String balanceData = urlopen.open(URL +
+                    "/mitt-konto/se-saldo-och-ladda-kort/GetCardBalance/?cardId=" + cardNumber);
+            Document balanceDocument = Jsoup.parse(balanceData);
+            Elements balance = balanceDocument.select(".balance");
+
+            if (!balance.isEmpty()) {
+                return Helpers.parseBalance(balance.first().text().trim());
             }
         } catch (IOException e) {
             // Ignore and defaults to zero
         }
         return BigDecimal.ZERO;
-    }
-
-    private class AccountIterator implements Iterator<Account> {
-
-        private Document mDocument;
-
-        private Iterator<Element> mCards;
-
-        private String mNextUrl;
-
-        public AccountIterator(String response) {
-            setDocument(response);
-        }
-
-        @Override
-        public boolean hasNext() {
-            return mCards.hasNext() || mNextUrl != null;
-        }
-
-        @Override
-        public Account next() {
-            if (!mCards.hasNext()) {
-                fetchNextPage();
-            }
-            return toAccount(mCards.next());
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException("Remove not supported");
-        }
-
-        private Elements parseCardElements() {
-            return mDocument.select(".my_cards_allinfo table tbody");
-        }
-
-        private String parseNextUrl() {
-            Element elem = mDocument.select("div.pageselector_pagenr a").last();
-            if (elem == null || elem.select("span.pageselect_prevnext_selected").isEmpty()) {
-                return null;
-            }
-            return elem.attr("href");
-        }
-
-        private void fetchNextPage() {
-            try {
-                String response = urlopen.open(URL + mNextUrl);
-                setDocument(response);
-            } catch (IOException e) {
-                throw new NoSuchElementException();
-            }
-        }
-
-        private void setDocument(String response) {
-            mDocument = Jsoup.parse(response);
-            mCards = parseCardElements().iterator();
-            mNextUrl = parseNextUrl();
-        }
-
-        private Account toAccount(Element card) {
-            String cardNumber = card.select("tr:first-child td").text().trim();
-            BigDecimal saldo = getSaldo(cardNumber);
-            String name = card.select("tr:nth-child(2) td").text().trim();
-            String displayName = NAME_NOT_SET.equals(name) ? cardNumber : name;
-            return new Account(displayName, saldo, cardNumber);
-        }
     }
 }
