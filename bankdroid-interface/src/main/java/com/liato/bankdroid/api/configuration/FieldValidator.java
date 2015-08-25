@@ -5,9 +5,9 @@ public interface FieldValidator {
     /**
      * Validates a field value.
      *
-     * @param param the parameter to be validated.
+     * @param value the value to be validated.
      * @throws IllegalArgumentException if the validation fails.
      */
-    void validate(String param) throws IllegalArgumentException;
+    void validate(String value) throws IllegalArgumentException;
 
 }
