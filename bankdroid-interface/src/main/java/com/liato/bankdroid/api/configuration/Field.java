@@ -56,7 +56,8 @@ public interface Field {
 
     /**
      * Returns {@code true} if, and only if, the field value should be encrypted before it is
-     * stored.
+     * stored. An encrypted field should be treated as a sensitive field and hence be rendered as a
+     * password field.
      * @return {@code true} if the field value should be encrypted before it is stored. Otherwise
      * {@code false}.
      */
