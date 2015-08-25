@@ -2,6 +2,7 @@ package com.liato.bankdroid.api.configuration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -124,7 +125,7 @@ public class FieldBuilder {
         @Override
         public List<Entry> getValues() {
             if(values == null) {
-                values = new ArrayList<>();
+                values = Collections.emptyList();
             };
             return values;
         }
