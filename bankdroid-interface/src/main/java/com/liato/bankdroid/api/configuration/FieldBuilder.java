@@ -132,7 +132,7 @@ public class FieldBuilder {
         @Override
         public void validate(String value) throws IllegalArgumentException {
             if(isRequired()) {
-                if(value == null || value.isEmpty()) {
+                if(value == null || value.trim().isEmpty()) {
                     throw new IllegalArgumentException(String.format("%s is required", getLabel()));
                 }
                 if(validator != null) {
