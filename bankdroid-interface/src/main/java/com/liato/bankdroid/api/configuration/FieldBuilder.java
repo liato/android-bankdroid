@@ -48,8 +48,8 @@ public class FieldBuilder {
         return this;
     }
 
-    public FieldBuilder encrypted(boolean encrypted) {
-        field.encrypted = encrypted;
+    public FieldBuilder secret(boolean secret) {
+        field.secret = secret;
         return this;
     }
 
@@ -77,7 +77,7 @@ public class FieldBuilder {
 
         private boolean hidden;
 
-        private boolean encrypted;
+        private boolean secret;
 
         private List<Entry> values;
 
@@ -118,8 +118,8 @@ public class FieldBuilder {
         }
 
         @Override
-        public boolean isEncrypted() {
-            return encrypted;
+        public boolean isSecret() {
+            return secret;
         }
 
         @Override

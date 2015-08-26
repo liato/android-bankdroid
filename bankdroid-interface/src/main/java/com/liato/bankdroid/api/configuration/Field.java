@@ -55,13 +55,12 @@ public interface Field {
     boolean isHidden();
 
     /**
-     * Returns {@code true} if, and only if, the field value should be encrypted before it is
-     * stored. An encrypted field should be treated as a sensitive field and hence be rendered as a
-     * password field.
+     * Returns {@code true} if, and only if, the field value should be treated as a secret field.
+     * Secret fields should be rendered as a password field.
      * @return {@code true} if the field value should be encrypted before it is stored. Otherwise
      * {@code false}.
      */
-    boolean isEncrypted();
+    boolean isSecret();
 
     /**
      * Returns a list of available values for this field. If this list is not empty the field
