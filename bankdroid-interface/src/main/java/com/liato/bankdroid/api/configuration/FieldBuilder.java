@@ -12,10 +12,25 @@ public class FieldBuilder {
 
     private BasicField field;
 
+    /**
+     * Create a new {@link Field} builder without i18n support. 
+     */
     public FieldBuilder(String reference) {
       this(reference, null);
     }
 
+    /**
+     * Create a new {@link Field} builder with i18n support for {@link Field#getLabel()} and {@link Field#getPlaceholder()}.
+     * The following keys needs to be in the ResourceBundle:
+     * {@code field.{reference}.label} - Locale label value
+     * {@code field.{reference}.placeholder} - Locale placeholder value.
+     * 
+     * Setting {@link #placeholder(String)} or {@link #label(String) specifically will override the i18n values.
+     * Otherwise they will be set to the value specified in the Locale bundle or in the default bundle if not present.
+     * If a key is not present at all in the ResourceBundle the key will will be returned.
+     * @param reference Field reference
+     * @param bundle The ResourceBundle to be used for i18n support.
+     */
     public FieldBuilder(String reference, ResourceBundle bundle) {
         if(reference == null || reference.trim().isEmpty()) {
             throw new IllegalArgumentException("reference must be provided.");
