@@ -1,9 +1,9 @@
 package com.liato.bankdroid.api.configuration;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import java.util.ResourceBundle;
 
 /**
  * A builder for building {@link Field} objects.
@@ -13,10 +13,14 @@ public class FieldBuilder {
     private BasicField field;
 
     public FieldBuilder(String reference) {
+      this(reference, null);
+    }
+
+    public FieldBuilder(String reference, ResourceBundle bundle) {
         if(reference == null || reference.trim().isEmpty()) {
             throw new IllegalArgumentException("reference must be provided.");
         }
-        field = new BasicField(reference);
+        field = new BasicField(reference, bundle);
     }
 
     public Field build() {
@@ -65,6 +69,8 @@ public class FieldBuilder {
 
     private class BasicField implements Field {
 
+        private ResourceBundle resourceBundle;
+
         private String reference;
 
         private String placeholder;
@@ -83,8 +89,9 @@ public class FieldBuilder {
 
         private FieldValidator validator;
 
-        public BasicField(String reference) {
+        BasicField(String reference, ResourceBundle bundle) {
             this.reference = reference;
+            this.resourceBundle = bundle;
         }
 
         @Override
@@ -94,12 +101,12 @@ public class FieldBuilder {
 
         @Override
         public String getPlaceholder() {
-            return placeholder;
+            return placeholder == null ? getLocaleString("placeholder") : placeholder;
         }
 
         @Override
         public String getLabel() {
-            return label;
+            return label == null ? getLocaleString("label") : label;
         }
 
         @Override
@@ -140,6 +147,19 @@ public class FieldBuilder {
                     validator.validate(value);
                 }
             }
+        }
+
+        private String getLocaleString(String key) {
+            if(!isLocale()) {
+                return null;
+            }
+            String propertyKey = String.format("field.%s.%s", getReference(), key);
+            return resourceBundle.containsKey(propertyKey) ? resourceBundle.getString(propertyKey)
+                    : propertyKey;
+        }
+
+        private boolean isLocale() {
+            return resourceBundle != null;
         }
     }
 }
