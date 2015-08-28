@@ -16,16 +16,22 @@
 
 package com.liato.bankdroid;
 
+import com.google.common.collect.Iterators;
+
 import com.crashlytics.android.Crashlytics;
+import com.liato.bankdroid.api.configuration.Entry;
+import com.liato.bankdroid.api.configuration.Field;
 import com.liato.bankdroid.appwidget.AutoRefreshService;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.BankChoice;
 import com.liato.bankdroid.banking.BankFactory;
+import com.liato.bankdroid.banking.DefaultConnectionConfiguration;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.db.DBAdapter;
+import com.liato.bankdroid.utils.FieldTypeMapper;
 import com.liato.bankdroid.utils.NetworkUtils;
 
 import android.app.AlertDialog;
@@ -34,15 +40,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -50,13 +53,17 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -67,26 +74,8 @@ public class BankEditActivity extends LockableActivity implements OnItemSelected
     @InjectView(R.id.spnBankeditBanklist)
     Spinner mBankSpinner;
 
-    @InjectView(R.id.edtBankeditUsername)
-    EditText mUsernameField;
-
-    @InjectView(R.id.txtBankeditUsername)
-    TextView mUsernameLabel;
-
-    @InjectView(R.id.edtBankeditPassword)
-    EditText mPasswordField;
-
-    @InjectView(R.id.txtBankeditPassword)
-    TextView mPasswordLabel;
-
-    @InjectView(R.id.edtBankeditCustomName)
-    EditText mCustomNameField;
-
-    @InjectView(R.id.edtBankeditExtras)
-    EditText mExtrasField;
-
-    @InjectView(R.id.txtBankeditExtras)
-    TextView mExtrasLabel;
+    @InjectView(R.id.layoutBankConfiguration)
+    LinearLayout mFormContainer;
 
     @InjectView(R.id.txtErrorDesc)
     TextView mErrorDescription;
@@ -109,7 +98,7 @@ public class BankEditActivity extends LockableActivity implements OnItemSelected
         Collections.sort(items);
         BankSpinnerAdapter<Bank> adapter = new BankSpinnerAdapter<>(this, items);
         mBankSpinner.setAdapter(adapter);
-        mBankSpinner.setOnItemSelectedListener(this);
+
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -117,34 +106,28 @@ public class BankEditActivity extends LockableActivity implements OnItemSelected
             if (BANKID != -1) {
                 Bank bank = BankFactory.bankFromDb(BANKID, this, false);
                 if (bank != null) {
-                    mUsernameField.setText(bank.getUsername());
-                    mPasswordField.setText(bank.getPassword());
-                    mCustomNameField.setText(bank.getCustomName());
-                    if (bank.getExtras() != null) {
-                        mExtrasField.setText(bank.getExtras());
-                    }
-
-                    mErrorDescription.setVisibility(bank.isDisabled() ? View.VISIBLE : View.INVISIBLE);
+                    mErrorDescription.setVisibility(
+                            bank.isDisabled() ? View.VISIBLE : View.INVISIBLE);
+                    mBankSpinner.setEnabled(false);
                     mBankSpinner.setSelection(adapter.getPosition(bank));
                     SELECTED_BANK = bank;
+                    createForm(SELECTED_BANK.getConnectionConfiguration(),
+                            DefaultConnectionConfiguration.fields()
+                    );
+                    populateForm(bank);
                 }
             }
         }
+        mBankSpinner.setOnItemSelectedListener(this);
     }
 
     @OnClick(R.id.btnSettingsOk)
     public void onSubmit(View v) {
-        SELECTED_BANK.setUsername(
-                mUsernameField.getText().toString()
-                        .trim());
-        SELECTED_BANK.setPassword(
-                mPasswordField.getText().toString()
-                        .trim());
-        SELECTED_BANK.setCustomName(
-                mCustomNameField.getText().toString()
-                        .trim());
-        SELECTED_BANK.setExtras(
-                mExtrasField.getText().toString().trim());
+        if(!validate()) {
+            return;
+        }
+        SELECTED_BANK.setProperties(getFormParameters(SELECTED_BANK.getConnectionConfiguration()));
+        SELECTED_BANK.setCustomName(getFormParameter(DefaultConnectionConfiguration.NAME));
         SELECTED_BANK.setDbid(BANKID);
         new DataRetrieverTask(this, SELECTED_BANK).execute();
     }
@@ -156,52 +139,101 @@ public class BankEditActivity extends LockableActivity implements OnItemSelected
 
     @Override
     public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int pos, long id) {
-        SELECTED_BANK = (Bank) parentView.getItemAtPosition(pos);
-
-        mUsernameField.setInputType(SELECTED_BANK.getInputTypeUsername());
-        mUsernameField.setHint(SELECTED_BANK.getInputHintUsername());
-        mUsernameLabel.setText(SELECTED_BANK.getInputTitleUsername());
-
-        mPasswordField.setInputType(SELECTED_BANK.getInputTypePassword());
-        mPasswordField.setTransformationMethod(PasswordTransformationMethod.getInstance());
-        mPasswordField.setTypeface(Typeface.MONOSPACE);
-        mPasswordLabel.setText(SELECTED_BANK.getInputTitlePassword());
-
-        mExtrasField.setInputType(SELECTED_BANK.getInputTypeExtras());
-        if ((SELECTED_BANK.getInputTypeExtras() & InputType.TYPE_TEXT_VARIATION_PASSWORD)
-                == InputType.TYPE_TEXT_VARIATION_PASSWORD) {
-            mExtrasField.setTransformationMethod(PasswordTransformationMethod.getInstance());
-            mExtrasField.setTypeface(Typeface.MONOSPACE);
-        }
-        mExtrasLabel.setText(SELECTED_BANK.getInputTitleExtras());
-
-        if (SELECTED_BANK.isInputUsernameHidden()) {
-            mUsernameField.setVisibility(View.GONE);
-            mUsernameLabel.setVisibility(View.GONE);
-        } else {
-            mUsernameField.setVisibility(View.VISIBLE);
-            mUsernameLabel.setVisibility(View.VISIBLE);
-        }
-
-        if (SELECTED_BANK.isInputPasswordHidden()) {
-            mPasswordField.setVisibility(View.GONE);
-            mPasswordLabel.setVisibility(View.GONE);
-        } else {
-            mPasswordField.setVisibility(View.VISIBLE);
-            mPasswordLabel.setVisibility(View.VISIBLE);
-        }
-
-        if (SELECTED_BANK.isInputExtrasHidden()) {
-            mExtrasField.setVisibility(View.GONE);
-            mExtrasLabel.setVisibility(View.GONE);
-        } else {
-            mExtrasField.setVisibility(View.VISIBLE);
-            mExtrasLabel.setVisibility(View.VISIBLE);
+        Bank selectedBank = (Bank) parentView.getItemAtPosition(pos);
+        if(SELECTED_BANK == null || !SELECTED_BANK.equals(selectedBank)) {
+            SELECTED_BANK = selectedBank;
+                    mFormContainer.removeAllViewsInLayout();
+            createForm(SELECTED_BANK.getConnectionConfiguration(),
+                    DefaultConnectionConfiguration.fields()
+            );
         }
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> arg) {
+    }
+
+
+    private void createForm(List<Field>... configurations) {
+        for(List<Field> fields : configurations) {
+            for (Field field : fields) {
+                TextView fieldText = new TextView(this);
+                String label = field.getLabel() + (field.isRequired() ? "" : " " + getString(R.string.optional_field));
+                fieldText.setText(label);
+                fieldText.setVisibility(field.isHidden() ? View.GONE : View.VISIBLE);
+                mFormContainer.addView(fieldText);
+
+                if(field.getValues().isEmpty()) {
+                    EditText inputField = new EditText(this);
+                    inputField.setHint(field.getPlaceholder());
+                    if (field.isSecret()) {
+                        inputField.setTransformationMethod(
+                                PasswordTransformationMethod.getInstance());
+                    } else {
+                        inputField
+                                .setInputType(FieldTypeMapper.fromFieldType(field.getFieldType()));
+                    }
+                    inputField.setVisibility(field.isHidden() ? View.GONE : View.VISIBLE);
+                    inputField.setTag(field.getReference());
+
+                    mFormContainer.addView(inputField);
+                } else {
+                    Spinner spinner = new Spinner(this);
+                    spinner.setAdapter(new ArrayAdapter<Entry>(this, android.R.layout.simple_spinner_item , field.getValues()));
+                    spinner.setTag(field.getReference());
+                    mFormContainer.addView(spinner);
+                }
+            }
+        }
+    }
+
+    private void populateForm(Bank bank) {
+        EditText customName = (EditText) mFormContainer.findViewWithTag(
+                DefaultConnectionConfiguration.NAME);
+        customName.setText(bank.getCustomName());
+
+        for(Map.Entry<String, String> property : bank.getProperties().entrySet()) {
+            EditText propertyInput = (EditText) mFormContainer.findViewWithTag(property.getKey());
+            propertyInput.setText(property.getValue());
+        }
+    }
+
+    private Map<String, String> getFormParameters(List<Field> fields) {
+        Map<String, String> properties = new HashMap<>();
+        for(Field field : fields) {
+            properties.put(field.getReference(), getFormParameter(field.getReference()));
+        }
+        return properties;
+    }
+
+    private String getFormParameter(String property) {
+        View propertyView = mFormContainer.findViewWithTag(property);
+        if(propertyView instanceof EditText) {
+            EditText propertyInput = (EditText) propertyView;
+            return propertyInput.getText().toString().trim();
+        } else if(propertyView instanceof Spinner) {
+            Spinner spinnerProperty = (Spinner) propertyView;
+            Entry entry = (Entry) spinnerProperty.getSelectedItem();
+            return entry.getKey();
+        } else {
+            return null;
+        }
+    }
+
+    private boolean validate() {
+        boolean valid = true;
+        Iterator<Field> fields = Iterators.concat(SELECTED_BANK.getConnectionConfiguration().iterator(),
+                DefaultConnectionConfiguration.fields().iterator());
+        while(fields.hasNext()) {
+            Field field = fields.next();
+            try {
+                field.validate(getFormParameter(field.getReference()));
+            } catch (IllegalArgumentException e) {
+                valid = false;
+                ((EditText) mFormContainer.findViewWithTag(field.getReference())).setError(e.getMessage());
+            }
+        }
+        return valid;
     }
 
     private class BankSpinnerAdapter<T> extends ArrayAdapter<T> {
@@ -338,5 +370,4 @@ public class BankEditActivity extends LockableActivity implements OnItemSelected
             }
         }
     }
-
 }
