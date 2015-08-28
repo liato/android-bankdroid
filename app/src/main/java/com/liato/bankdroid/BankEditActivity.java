@@ -157,34 +157,46 @@ public class BankEditActivity extends LockableActivity implements OnItemSelected
     private void createForm(List<Field>... configurations) {
         for(List<Field> fields : configurations) {
             for (Field field : fields) {
-                TextView fieldText = new TextView(this);
-                String label = field.getLabel() + (field.isRequired() ? "" : " " + getString(R.string.optional_field));
-                fieldText.setText(label);
-                fieldText.setVisibility(field.isHidden() ? View.GONE : View.VISIBLE);
-                mFormContainer.addView(fieldText);
-
+                createLabel(field);
                 if(field.getValues().isEmpty()) {
-                    EditText inputField = new EditText(this);
-                    inputField.setHint(field.getPlaceholder());
-                    if (field.isSecret()) {
-                        inputField.setTransformationMethod(
-                                PasswordTransformationMethod.getInstance());
-                    } else {
-                        inputField
-                                .setInputType(FieldTypeMapper.fromFieldType(field.getFieldType()));
-                    }
-                    inputField.setVisibility(field.isHidden() ? View.GONE : View.VISIBLE);
-                    inputField.setTag(field.getReference());
-
-                    mFormContainer.addView(inputField);
+                    createField(field);
                 } else {
-                    Spinner spinner = new Spinner(this);
-                    spinner.setAdapter(new ArrayAdapter<Entry>(this, android.R.layout.simple_spinner_item , field.getValues()));
-                    spinner.setTag(field.getReference());
-                    mFormContainer.addView(spinner);
+                    createSpinner(field);
                 }
             }
         }
+    }
+
+    private void createLabel(Field field) {
+        TextView fieldText = new TextView(this);
+        String label = field.getLabel() + (field.isRequired() ? "" : " " + getString(R.string.optional_field));
+        fieldText.setText(label);
+        fieldText.setVisibility(field.isHidden() ? View.GONE : View.VISIBLE);
+        mFormContainer.addView(fieldText);
+    }
+
+    private void createField(Field field) {
+        EditText inputField = new EditText(this);
+        inputField.setHint(field.getPlaceholder());
+        if (field.isSecret()) {
+            inputField.setTransformationMethod(
+                    PasswordTransformationMethod.getInstance());
+        } else {
+            inputField
+                    .setInputType(FieldTypeMapper.fromFieldType(field.getFieldType()));
+        }
+        inputField.setVisibility(field.isHidden() ? View.GONE : View.VISIBLE);
+        inputField.setTag(field.getReference());
+
+        mFormContainer.addView(inputField);
+    }
+
+    private void createSpinner(Field field) {
+        Spinner spinner = new Spinner(this);
+        spinner.setAdapter(new ArrayAdapter<Entry>(this, android.R.layout.simple_spinner_item,
+                field.getValues()));
+        spinner.setTag(field.getReference());
+        mFormContainer.addView(spinner);
     }
 
     private void populateForm(Bank bank) {
