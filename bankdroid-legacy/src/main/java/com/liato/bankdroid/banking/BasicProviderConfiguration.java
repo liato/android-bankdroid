@@ -9,14 +9,15 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 public class BasicProviderConfiguration implements ProviderConfiguration {
 
     public static final String FIELD_USERNAME = "username";
     public static final String FIELD_PASSWORD = "password";
 
-    public static final String PROPERTY_USERNAME = "provider.default.config.label.username";
-    public static final String PROPERTY_PASSWORD = "provider.default.config.label.password";
+    private static final ResourceBundle LOCALE = ResourceBundle.getBundle("i18n.application");
+
     private final List<Field> mFields;
 
     public BasicProviderConfiguration() {
@@ -29,18 +30,19 @@ public class BasicProviderConfiguration implements ProviderConfiguration {
     }
 
     private List<Field> createConfiguration() {
+
         List<Field> fields = new LinkedList<>();
 
-        fields.add(new FieldBuilder(FIELD_USERNAME)
+        fields.add(new FieldBuilder(FIELD_USERNAME, LOCALE)
                 .fieldType(FieldType.TEXT)
-                .label(PROPERTY_USERNAME)
+                .placeholder("")
                 .required(true)
                 .build()
         );
 
-        fields.add(new FieldBuilder(FIELD_PASSWORD)
+        fields.add(new FieldBuilder(FIELD_PASSWORD, LOCALE)
                         .fieldType(FieldType.TEXT)
-                        .label(PROPERTY_PASSWORD)
+                        .placeholder("")
                         .secret(true)
                         .required(true)
                         .build()
