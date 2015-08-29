@@ -1,4 +1,4 @@
-package com.liato.bankdroid.banking;
+package com.liato.bankdroid.configuration;
 
 import com.liato.bankdroid.api.configuration.Field;
 import com.liato.bankdroid.api.configuration.FieldBuilder;
