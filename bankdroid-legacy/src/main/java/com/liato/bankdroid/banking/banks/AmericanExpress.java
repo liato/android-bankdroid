@@ -148,7 +148,10 @@ public class AmericanExpress extends Bank {
              * 4: Amount                1.111,11 kr
              * 
              */
-            accounts.add(new Account(Html.fromHtml(matcher.group(3)).toString().trim(),
+            accounts.add(new Account(Html.fromHtml(matcher.group(3)).toString()
+                    .replace("American Express", "Amex")
+                    .replace("EuroBonus", "EB")
+                    .trim(),
                     Helpers.parseBalance(matcher.group(4)).negate(),
                     matcher.group(2).trim()));
             balance = balance.add(Helpers.parseBalance(matcher.group(4)).negate());
