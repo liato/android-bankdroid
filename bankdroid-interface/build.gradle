@@ -4,5 +4,6 @@ sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
 
 dependencies {
+    compile 'joda-time:joda-time:2.8.2'
     testCompile 'junit:junit:4.12'
 }
