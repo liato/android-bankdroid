@@ -1,9 +1,6 @@
 package com.liato.bankdroid.api.domain.account.impl;
 
-import com.liato.bankdroid.api.domain.account.Account;
-
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 

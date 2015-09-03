@@ -3,9 +3,7 @@ package com.liato.bankdroid.api.domain.account.impl;
 import com.liato.bankdroid.api.domain.account.Account;
 
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 public class AccountBuilder extends AbstractAccountBuilder<AccountBuilder> {
@@ -21,7 +19,6 @@ public class AccountBuilder extends AbstractAccountBuilder<AccountBuilder> {
     public Account build() {
         return new BasicAccount(mId, mName, mCurrency, mBalance, mCustomAttributes);
     }
-
 
     static class BasicAccount implements Account {
 
@@ -52,10 +49,6 @@ public class AccountBuilder extends AbstractAccountBuilder<AccountBuilder> {
         @Override
         public BigDecimal getBalance() {
             return mBalance == null ? BigDecimal.ZERO : mBalance;
-        }
-
-        void setBalance(BigDecimal balance) {
-            mBalance = balance;
         }
 
         @Override
