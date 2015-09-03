@@ -6,7 +6,7 @@ import java.util.Set;
 
 /**
  * The service loader is responsible for loading all available {@link ProviderFactory} known to the
- * application. This is the single point of creating new {@link com.liato.bankdroid.api.Provider}s.
+ * application. This is the single point of creating new {@link com.liato.bankdroid.api.ProviderFactory}s.
  */
 public interface ServiceLoader {
 
