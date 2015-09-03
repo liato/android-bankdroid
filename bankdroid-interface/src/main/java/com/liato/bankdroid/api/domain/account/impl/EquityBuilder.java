@@ -14,12 +14,14 @@ public class EquityBuilder {
     /**
      *
      * @param balance Current balance of the equity.
-     * @param decimalRevenue The revenue in percentage as a decimal.
+     * @param revenue The revenue in percentage. A value less than 1 is a loss
+     *                       and a value greater than one is a profit. e.g. {@code 0.75} represents
+     *                       a 25 % loss, while {@code 1.5} is 50 % profit.
      * @param currency The currency of the equity.
      */
-    public EquityBuilder(BigDecimal balance, double decimalRevenue, String currency){
-        mEquity = new BasicEquity(costFromBalanceAndRevenue(balance, decimalRevenue),
-                revenueFromBalanceAndPercentageRevenue(balance, decimalRevenue),currency);
+    public EquityBuilder(BigDecimal balance, double revenue, String currency){
+        mEquity = new BasicEquity(costFromBalanceAndRevenue(balance, revenue),
+                revenueFromBalanceAndRevenueAsPerecntage(balance, revenue),currency);
     }
 
     public EquityBuilder name(String name) {
@@ -32,14 +34,16 @@ public class EquityBuilder {
         return this;
     }
 
-    private BigDecimal costFromBalanceAndRevenue(BigDecimal balance, double revenue) {
-        // TODO Implementation
-        return null;
+    public Equity build() {
+        return mEquity;
     }
 
-    private BigDecimal revenueFromBalanceAndPercentageRevenue(BigDecimal balance, double revenue) {
-        //TODO implementation
-        return null;
+    private BigDecimal costFromBalanceAndRevenue(BigDecimal balance, double revenue) {
+        return balance.divide(BigDecimal.valueOf(revenue));
+    }
+
+    private BigDecimal revenueFromBalanceAndRevenueAsPerecntage(BigDecimal balance, double revenue) {
+       return balance.subtract(balance.divide(BigDecimal.valueOf(revenue)));
     }
 
 
@@ -87,8 +91,8 @@ public class EquityBuilder {
         }
 
         @Override
-        public double getRevenueInPercent() {
-            return getRevenue().equals(BigDecimal.ZERO) ? 0 : getCost().doubleValue() / getRevenue().doubleValue();
+        public double getRevenueAsPercentage() {
+            return 1 + getRevenue().divide(getCost()).doubleValue();
         }
 
         @Override

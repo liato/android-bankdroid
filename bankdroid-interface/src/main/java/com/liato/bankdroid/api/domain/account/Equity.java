@@ -38,10 +38,12 @@ public interface Equity {
     BigDecimal getRevenue();
 
     /**
-     * Returns the total revenue for this equity, in percent.
-     * @return Total revenue in percent, in 1/100.
+     * Returns the total revenue for this equity, as percentage. A value less than {@code 1} is a
+     * loss and a value greater than one is a profit. e.g. {@code 0.75} represents a 25 % loss,
+     * while {@code 1.5} is 50 % profit.
+     * @return Total revenue as percentage.
      */
-    double getRevenueInPercent();
+    double getRevenueAsPercentage();
 
     /**
      * Returns the current balance for the equity.
