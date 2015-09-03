@@ -71,18 +71,26 @@ public class EquityAccountBuilder extends AbstractAccountBuilder<EquityAccountBu
         }
 
         @Override
+        public BigDecimal getBalance() {
+            //TODO calculate balance from getCost() and getRevenue()
+            return super.getBalance();
+        }
+
+        @Override
         public BigDecimal getCost() {
+            //TODO calculate cost by summarizing cost of equities collection.
             return mCost == null ? BigDecimal.ZERO : mCost;
         }
 
         @Override
         public BigDecimal getRevenue() {
+            //TODO calculate revenue by summarizing revenue of equities collection.
             return mRevenue == null ? BigDecimal.ZERO : mRevenue;
         }
 
         @Override
-        public double getRevenueInPercent() {
-            return getRevenue().equals(BigDecimal.ZERO) ? 0 : getCost().doubleValue() / getRevenue().doubleValue();
+        public double getRevenueAsPercentage() {
+            return 1 + getRevenue().divide(getCost()).doubleValue();
         }
 
         @Override

@@ -24,7 +24,7 @@ public interface EquityAccount extends Account {
      * Returns the total revenue for all equities in the account, in percent.
      * @return Total revenue in percent, in 1/100.
      */
-    double getRevenueInPercent();
+    double getRevenueAsPercentage();
 
     /**
      * Returns all equities for the account.
