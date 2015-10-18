@@ -1,7 +1,10 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
+Unreleased
+* Updates certificates for Bredband2, EasyCard, Nordea DK, Nordnet, Östgötatrafiken, Osuuspankki, PayPal, Villabanken
+
 v1.9.9.5 (2015-07-18)
-* Upates certificates for Akelius Spar, Akelius Invest, Hemköp and Resurs Bank
+* Updates certificates for Akelius Spar, Akelius Invest, Hemköp and Resurs Bank
 
 v1.9.9.4 (2015-06-12)
 * Fixes parsing of incoming payments for American Express (thanks to mhagander)
