@@ -1,6 +1,7 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
 Unreleased
+* Removes support for PayPal due to complex web-login.
 * Removes support for Swedbank, Sparbankerna, Marginalen and NordeaDK due to BankId requirement.
 * Updates certificates for Bredband2, EasyCard, Nordea DK, Nordnet, Östgötatrafiken, Osuuspankki, PayPal, Villabanken
 
