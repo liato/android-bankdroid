@@ -29,71 +29,18 @@
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/bank"
-                android:textSize="20sp"
-                android:typeface="sans" />
+                android:text="@string/bank"/>
 
             <Spinner
                 android:id="@+id/spnBankeditBanklist"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"></Spinner>
 
-            <TextView
-                android:id="@+id/txtBankeditUsername"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/username"
-                android:textSize="20sp"
-                android:typeface="sans" />
-
-            <EditText
-                android:id="@+id/edtBankeditUsername"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"></EditText>
-
-            <TextView
-                android:id="@+id/txtBankeditPassword"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/password"
-                android:textSize="20sp"
-                android:typeface="sans" />
-
-            <EditText
-                android:id="@+id/edtBankeditPassword"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword"></EditText>
-
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/custom_name"
-                android:textSize="20sp"
-                android:typeface="sans" />
-
-            <EditText
-                android:id="@+id/edtBankeditCustomName"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textCapWords"></EditText>
-
-            <TextView
-                android:id="@+id/txtBankeditExtras"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/extras_field"
-                android:textSize="20sp"
-                android:typeface="sans"
-                android:visibility="gone" />
-
-            <EditText
-                android:id="@+id/edtBankeditExtras"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textCapWords"
-                android:visibility="gone"></EditText>
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:id="@+id/layoutBankConfiguration"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"></LinearLayout>
 
             <TextView
                 android:id="@+id/txtErrorDesc"
