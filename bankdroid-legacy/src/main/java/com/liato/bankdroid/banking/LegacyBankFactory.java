@@ -23,11 +23,9 @@ import com.liato.bankdroid.banking.banks.Hemkop;
 import com.liato.bankdroid.banking.banks.IKEA;
 import com.liato.bankdroid.banking.banks.IkanoBank;
 import com.liato.bankdroid.banking.banks.Jojo;
-import com.liato.bankdroid.banking.banks.Marginalen;
 import com.liato.bankdroid.banking.banks.McDonalds;
 import com.liato.bankdroid.banking.banks.Meniga;
 import com.liato.bankdroid.banking.banks.MinPension;
-import com.liato.bankdroid.banking.banks.NordeaDK;
 import com.liato.bankdroid.banking.banks.Nordnet;
 import com.liato.bankdroid.banking.banks.Nordnetdirekt;
 import com.liato.bankdroid.banking.banks.OKQ8;
@@ -62,12 +60,6 @@ import com.liato.bankdroid.banking.banks.icabanken.ICABanken;
 import com.liato.bankdroid.banking.banks.lansforsakringar.Lansforsakringar;
 import com.liato.bankdroid.banking.banks.nordea.Nordea;
 import com.liato.bankdroid.banking.banks.rikslunchen.Rikslunchen;
-import com.liato.bankdroid.banking.banks.swedbank.Sparbankerna;
-import com.liato.bankdroid.banking.banks.swedbank.SparbankernaCorporate;
-import com.liato.bankdroid.banking.banks.swedbank.SparbankernaYouth;
-import com.liato.bankdroid.banking.banks.swedbank.Swedbank;
-import com.liato.bankdroid.banking.banks.swedbank.SwedbankCorporate;
-import com.liato.bankdroid.banking.banks.swedbank.SwedbankYouth;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.provider.IBankTypes;
 
@@ -88,8 +80,8 @@ public class LegacyBankFactory {
                 return new AkeliusInvest(context);
             case IBankTypes.AKELIUSSPAR:
                 return new AkeliusSpar(context);
-            case IBankTypes.SWEDBANK:
-                return new Swedbank(context);
+            // case IBankTypes.SWEDBANK:
+            //     return new Swedbank(context);
             case IBankTypes.NORDEA:
                 return new Nordea(context);
             case IBankTypes.LANSFORSAKRINGAR:
@@ -186,8 +178,8 @@ public class LegacyBankFactory {
                 return new Skoda(context);
             case IBankTypes.IKEA:
                 return new IKEA(context);
-            case IBankTypes.SPARBANKEN_SYD:
-                return new SparbankenSyd(context);
+            // case IBankTypes.SPARBANKEN_SYD:
+            //     return new SparbankenSyd(context);
             // case IBankTypes.SPARBANKEN_ORESUND:
             //    return new SparbankenOresund(context);
             case IBankTypes.NORDNETDIREKT:
@@ -196,8 +188,8 @@ public class LegacyBankFactory {
             //    return new Skandiabanken(context);
             case IBankTypes.DANSKEBANK:
                 return new DanskeBank(context);
-            case IBankTypes.NORDEA_DK:
-                return new NordeaDK(context);
+            // case IBankTypes.NORDEA_DK:
+            //     return new NordeaDK(context);
             case IBankTypes.VASTTRAFIK:
                 return new Vasttrafik(context);
             case IBankTypes.EVERYDAYCARD:
@@ -210,8 +202,8 @@ public class LegacyBankFactory {
                 return new Bioklubben(context);
             case IBankTypes.CHALMREST:
                 return new Chalmrest(context);
-            case IBankTypes.MARGINALEN:
-                return new Marginalen(context);
+            // case IBankTypes.MARGINALEN:
+            //     return new Marginalen(context);
             case IBankTypes.SVENSKASPEL:
                 return new SvenskaSpel(context);
             case IBankTypes.EASYCARD:
@@ -234,8 +226,8 @@ public class LegacyBankFactory {
                 return new SveaDirekt(context);
             case IBankTypes.SUPREMECARD:
                 return new SupremeCard(context);
-            case IBankTypes.SPARBANKERNA:
-                return new Sparbankerna(context);
+            // case IBankTypes.SPARBANKERNA:
+            //     return new Sparbankerna(context);
             case IBankTypes.BLEKINGETRAFIKEN:
                 return new BlekingeTrafiken(context);
             case IBankTypes.OSTGOTATRAFIKEN:
@@ -265,7 +257,7 @@ public class LegacyBankFactory {
         banks.add(new AkeliusSpar(context));
         banks.add(new TrustBuddy(context));
         banks.add(new BrummerKF(context));
-        banks.add(new Swedbank(context));
+        // banks.add(new Swedbank(context));
         banks.add(new Nordea(context));
         banks.add(new ICABanken(context));
         banks.add(new Lansforsakringar(context));
@@ -297,7 +289,7 @@ public class LegacyBankFactory {
         banks.add(new ResursBank(context));
         banks.add(new McDonalds(context));
         // banks.add(new SJPrio(context));
-        banks.add(new SparbankenSyd(context));
+        // banks.add(new SparbankenSyd(context));
         // banks.add(new SparbankenOresund(context));
         // banks.add(new Opel(context));
         // banks.add(new Skandiabanken(context));
@@ -317,14 +309,14 @@ public class LegacyBankFactory {
         banks.add(new Skoda(context));
         banks.add(new IKEA(context));
         // banks.add(new DanskeBank(context));
-        banks.add(new NordeaDK(context));
+        // banks.add(new NordeaDK(context));
         banks.add(new Vasttrafik(context));
         banks.add(new Everydaycard(context));
         banks.add(new Meniga(context));
         banks.add(new TicketRikskortet(context));
         banks.add(new Bioklubben(context));
         banks.add(new Chalmrest(context));
-        banks.add(new Marginalen(context));
+        // banks.add(new Marginalen(context));
         banks.add(new SvenskaSpel(context));
         banks.add(new EasyCard(context));
         banks.add(new AppeakPoker(context));
@@ -336,7 +328,7 @@ public class LegacyBankFactory {
         // banks.add(new EurobonusMastercardDk(context));
         banks.add(new SveaDirekt(context));
         banks.add(new SupremeCard(context));
-        banks.add(new Sparbankerna(context));
+        // banks.add(new Sparbankerna(context));
         banks.add(new BlekingeTrafiken(context));
         banks.add(new Ostgotatrafiken(context));
         banks.add(new Bredband2VoIP(context));
