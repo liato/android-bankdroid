@@ -170,7 +170,7 @@ public class AmericanExpress extends Bank {
         Matcher matcher = reTransactions.matcher(response);
         ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 
-        SimpleDateFormat sdfFrom = new SimpleDateFormat("d MMM yyyy", new Locale("sv-SE"));
+        SimpleDateFormat sdfFrom = new SimpleDateFormat("d MMM yyyy", new Locale("sv","SE"));
         SimpleDateFormat sdfTo = new SimpleDateFormat("yyyy-MM-dd");
         Date transactionDate;
 
@@ -198,6 +198,7 @@ public class AmericanExpress extends Bank {
                         amount));
             } catch (ParseException e) {
                 Log.w(TAG, "Unable to parse date: " + matcher.group(1).trim());
+                Log.w(TAG, e);
             }
         }
         account.setTransactions(transactions);
