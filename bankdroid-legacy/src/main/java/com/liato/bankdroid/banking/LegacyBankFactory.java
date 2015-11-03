@@ -31,7 +31,6 @@ import com.liato.bankdroid.banking.banks.Nordnetdirekt;
 import com.liato.bankdroid.banking.banks.OKQ8;
 import com.liato.bankdroid.banking.banks.Ostgotatrafiken;
 import com.liato.bankdroid.banking.banks.Osuuspankki;
-import com.liato.bankdroid.banking.banks.PayPal;
 import com.liato.bankdroid.banking.banks.Payson;
 import com.liato.bankdroid.banking.banks.PlusGirot;
 import com.liato.bankdroid.banking.banks.Preem;
@@ -108,8 +107,8 @@ public class LegacyBankFactory {
             //     return new Eurocard(context);
             case IBankTypes.FIRSTCARD:
                 return new FirstCard(context);
-            case IBankTypes.PAYPAL:
-                return new PayPal(context);
+            // case IBankTypes.PAYPAL:
+            //     return new PayPal(context);
             case IBankTypes.PAYSON:
                 return new Payson(context);
             case IBankTypes.JOJO:
@@ -271,7 +270,7 @@ public class LegacyBankFactory {
         banks.add(new OKQ8(context));
         // banks.add(new Eurocard(context));
         banks.add(new FirstCard(context));
-        banks.add(new PayPal(context));
+        // banks.add(new PayPal(context));
         banks.add(new Payson(context));
         banks.add(new Jojo(context));
         // banks.add(new Steam(context));
