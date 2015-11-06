@@ -1,9 +1,10 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
-Unreleased
+v1.9.10.0 (2015-11-06)
 * Removes support for PayPal due to complex web-login.
 * Removes support for Swedbank, Sparbankerna, Marginalen and NordeaDK due to BankId requirement.
 * Updates certificates for Bredband2, EasyCard, Nordea DK, Nordnet, Östgötatrafiken, Osuuspankki, PayPal, Villabanken
+* Adds support for custom properties for bank implementations.
 
 v1.9.9.5 (2015-07-18)
 * Updates certificates for Akelius Spar, Akelius Invest, Hemköp and Resurs Bank

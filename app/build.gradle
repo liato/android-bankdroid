@@ -27,8 +27,8 @@ android {
         applicationId "com.liato.bankdroid"
         minSdkVersion 9
         targetSdkVersion 22
-        versionCode 215
-        versionName "1.9.9.5"
+        versionCode 216
+        versionName "1.9.10.0"
     }
 
     signingConfigs {
