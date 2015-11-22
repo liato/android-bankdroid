@@ -45,7 +45,7 @@ public class LegacyProviderConfiguration implements ProviderConfiguration {
                 .label(mLegacyBank.getContext().getString(mLegacyBank.getInputTitlePassword()))
                 .hidden(mLegacyBank.isInputPasswordHidden())
                 .secret(true)
-                .required(true)
+                .required(!mLegacyBank.isInputPasswordHidden())
                 .fieldType(FieldTypeMapper.toFieldType(mLegacyBank.getInputTypePassword()))
                 .build());
 
