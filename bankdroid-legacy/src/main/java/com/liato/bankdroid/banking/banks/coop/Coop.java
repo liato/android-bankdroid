@@ -16,6 +16,9 @@
 
 package com.liato.bankdroid.banking.banks.coop;
 
+import android.content.Context;
+import android.text.TextUtils;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.liato.bankdroid.Helpers;
@@ -36,9 +39,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
-import android.content.Context;
-import android.text.TextUtils;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -104,10 +104,16 @@ public class Coop extends Bank {
     protected LoginPackage preLogin() throws BankException,
             IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_coop));
+
+        String response = urlopen.open("https://www.coop.se");
+        Document dResponse = Jsoup.parse(response);
+        String token = dResponse.select("[name=token]").attr("value");
+
         urlopen.addHeader("X-Requested-With", "XMLHttpRequest");
         HttpResponse httpResponse = urlopen
                 .openAsHttpResponse("https://www.coop.se/Personliga-Baren/Logga-in/?method=Login",
-                        new StringEntity("{\"isBar\":\"true\",\"username\":\"" + getUsername()
+                        new StringEntity("{\"isBar\":\"true\",\"token\":\"" + token
+                                 + "\",\"username\":\"" + getUsername()
                                 + "\",\"password\":\"" + getPassword() + "\"}"),
                         true);
         urlopen.removeHeader("X-Requested-With");

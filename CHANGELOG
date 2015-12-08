@@ -1,5 +1,8 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
+pending
+* Fixes for Coop login.
+
 v1.9.10.1 (2015-11-22)
 * Update certificate for ICA.
 * Fixes bug where banks without password could not be added.
