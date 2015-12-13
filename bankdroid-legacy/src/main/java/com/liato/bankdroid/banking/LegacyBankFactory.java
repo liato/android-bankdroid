@@ -18,7 +18,6 @@ import com.liato.bankdroid.banking.banks.EasyCard;
 import com.liato.bankdroid.banking.banks.EspressoHouse;
 import com.liato.bankdroid.banking.banks.Everydaycard;
 import com.liato.bankdroid.banking.banks.FirstCard;
-import com.liato.bankdroid.banking.banks.ForexBank;
 import com.liato.bankdroid.banking.banks.Hemkop;
 import com.liato.bankdroid.banking.banks.IKEA;
 import com.liato.bankdroid.banking.banks.IkanoBank;
@@ -39,7 +38,6 @@ import com.liato.bankdroid.banking.banks.Seat;
 import com.liato.bankdroid.banking.banks.SevenDay;
 import com.liato.bankdroid.banking.banks.Shell;
 import com.liato.bankdroid.banking.banks.Skoda;
-import com.liato.bankdroid.banking.banks.SparbankenSyd;
 import com.liato.bankdroid.banking.banks.SupremeCard;
 import com.liato.bankdroid.banking.banks.SveaDirekt;
 import com.liato.bankdroid.banking.banks.SvenskaSpel;
@@ -217,8 +215,8 @@ public class LegacyBankFactory {
                 return new Zidisha(context);
             case IBankTypes.BETTERGLOBE:
                 return new BetterGlobe(context);
-            case IBankTypes.FOREX:
-                return new ForexBank(context);
+           // case IBankTypes.FOREX:
+           //     return new ForexBank(context);
             case IBankTypes.BITCOIN:
                 return new Bitcoin(context);
             case IBankTypes.SVEADIREKT:
@@ -321,7 +319,7 @@ public class LegacyBankFactory {
         banks.add(new AppeakPoker(context));
         banks.add(new Zidisha(context));
         banks.add(new BetterGlobe(context));
-        banks.add(new ForexBank(context));
+        //banks.add(new ForexBank(context));
         // banks.add(new EurobonusMastercardNo(context));
         banks.add(new Bitcoin(context));
         // banks.add(new EurobonusMastercardDk(context));
