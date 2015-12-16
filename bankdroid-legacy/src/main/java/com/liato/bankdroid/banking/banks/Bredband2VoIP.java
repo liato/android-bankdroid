@@ -16,6 +16,10 @@
 
 package com.liato.bankdroid.banking.banks;
 
+import android.content.Context;
+import android.text.InputType;
+import android.util.Log;
+
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
@@ -28,10 +32,6 @@ import com.liato.bankdroid.provider.IBankTypes;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-
-import android.content.Context;
-import android.text.InputType;
-import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,17 +46,18 @@ public class Bredband2VoIP extends Bank {
 
     private static final String API_URL = "https://portal.bredband2.com/";
 
+    //<a href="/services/digisipbalance/iServiceID/~ID~/" class="digisipBalance" target="_blank">Saldo</a>
     private Pattern reSaldoUrl = Pattern.compile(
-            "<a href=\"/voip/digisipbalance/iPhoneProviderID/(\\d+)/\" class=\"digisipBalance\" target=\"_blank\">Saldo</a>",
+            "<a href=\"/services/digisipbalance/iServiceID/(\\d+)/\" class=\"digisipBalance\" target=\"_blank\">Saldo</a>",
             Pattern.CASE_INSENSITIVE);
 
-    private Pattern reSaldo = Pattern.compile("<td class=\"white\">(\\d+.\\d{2}) kr",
+    private Pattern reSaldo = Pattern.compile("<td class=\"white\">\\s+(\\d+.\\d{2}) kr",
             Pattern.CASE_INSENSITIVE);
 
-    private Pattern reInvoiceUrl = Pattern.compile("<a href=\"([^\"]+)\"/\" class=\"invoice\"");
+    private Pattern reInvoiceUrl = Pattern.compile("<a href=\"([^\"]+)\" class=\"invoice\"");
 
     private Pattern reTransactions = Pattern.compile(
-            "^\\s+([\\d-]+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)", Pattern.MULTILINE);
+            "^      ([\\d-]+)\\s+([\\S]+)\\s+([\\S]+)\\s+([\\d:]+)\\s+([\\d\\.]+)", Pattern.MULTILINE);
 
     private String response = null;
 
@@ -86,7 +87,7 @@ public class Bredband2VoIP extends Bank {
         postData.add(new BasicNameValuePair("bIsCompany", "0"));
         postData.add(new BasicNameValuePair("submit", "Logga in"));
         response = urlopen.open(API_URL + "index/", postData, true);
-        LoginPackage lp = new LoginPackage(urlopen, postData, response, API_URL + "index/");
+        LoginPackage lp = new LoginPackage(urlopen, postData, response, API_URL + "start");
         if (response.contains("Logga ut")) {
             lp.setIsLoggedIn(true);
         }
@@ -115,7 +116,7 @@ public class Bredband2VoIP extends Bank {
         while (mSaldoUrl.find()) {
             String account = mSaldoUrl.group(1);
             String r = urlopen.open(
-                    API_URL + "voip/digisipbalance/iPhoneProviderID/" + account + "/");
+                    API_URL + "/services/digisipbalance/iServiceID/" + account + "/");
             Matcher mSaldo = reSaldo.matcher(r);
             if (mSaldo.find()) {
                 accounts.add(new Account(account,
@@ -131,11 +132,12 @@ public class Bredband2VoIP extends Bank {
             BankException, IOException {
         super.updateTransactions(account, urlopen);
 
-        response = urlopen.open(API_URL + "voip/invoicelist/iPhoneProviderID/" + account.getId());
+        //<a href="/services/invoicelist/iServiceID/~ID~/">Samtal</a>
+        response = urlopen.open(API_URL + "services/invoicelist/iServiceID/" + account.getId());
         Matcher mInvoiceUrl = reInvoiceUrl.matcher(response);
         ArrayList<Transaction> transactions = new ArrayList<Transaction>();
         int i = 1;
-        while (mInvoiceUrl.find() && i++ <= 2) {
+        while (mInvoiceUrl.find() && (i++ <= 4 || transactions.size() <= 30)) {
             try {
                 String url = mInvoiceUrl.group(1);
                 String sInvoice = urlopen.open(API_URL + url);
