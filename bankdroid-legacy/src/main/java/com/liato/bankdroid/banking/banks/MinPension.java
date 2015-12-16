@@ -16,6 +16,9 @@
 
 package com.liato.bankdroid.banking.banks;
 
+import android.content.Context;
+import android.text.InputType;
+
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
@@ -32,9 +35,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
-import android.content.Context;
-import android.text.InputType;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -70,7 +70,7 @@ public class MinPension extends Bank {
         List<NameValuePair> postData = new ArrayList<>();
         urlopen = new Urllib(context,
                 CertificateReader.getCertificates(context, R.raw.cert_minpension));
-        String response = urlopen.open("https://www.minpension.se/AjaxifyContent/795");
+        String response = urlopen.open("https://www.minpension.se/inloggning");
         Document jDoc = Jsoup.parse(response);
         Element el = jDoc.select("input[name=__RequestVerificationToken]").first();
         if (el == null) {
