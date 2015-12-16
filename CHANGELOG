@@ -4,6 +4,7 @@ Pending
 * Fixes for Coop login.
 * Removes support for Forex Bank due to BankId requirement.
 * Fixes for MinPension login.
+* Update certificates for Coop, ICA, Osuuspankki, PlusGirot, SevenDay & Steam.
 
 v1.9.10.1 (2015-11-22)
 * Update certificate for ICA.
