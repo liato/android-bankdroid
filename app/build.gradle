@@ -20,13 +20,14 @@ repositories {
 
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.0"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.0"
 
+    useLibrary 'org.apache.http.legacy'
     defaultConfig {
         applicationId "com.liato.bankdroid"
         minSdkVersion 9
-        targetSdkVersion 22
+        targetSdkVersion 23
         versionCode 217
         versionName "1.9.10.1"
     }
@@ -91,7 +92,7 @@ dependencies {
     compile project(':bankdroid-legacy')
     compile project(':bankdroid-core')
     compile 'com.jakewharton:butterknife:6.1.0'
-    compile "com.android.support:appcompat-v7:22.0.+"
+    compile "com.android.support:appcompat-v7:23.1.1"
     compile 'com.google.collections:google-collections:1.0'
     compile('com.crashlytics.sdk.android:crashlytics:2.2.1@aar') {
         transitive = true;

@@ -2,13 +2,13 @@ language: android
 jdk: oraclejdk7
 env:
   matrix:
-    - ANDROID_TARGET=android-22  ANDROID_ABI=armeabi-v7a
+    - ANDROID_TARGET=android-23  ANDROID_ABI=armeabi-v7a
 
 android:
   components:
-    - build-tools-22.0.0
+    - build-tools-23.0.0
     - extra-android-m2repository
-    - android-22
+    - android-23
 
 script: ./gradlew assembleDebug check
 
