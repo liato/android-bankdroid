@@ -16,20 +16,6 @@
 
 package com.liato.bankdroid.appwidget;
 
-import com.crashlytics.android.Crashlytics;
-import com.liato.bankdroid.Helpers;
-import com.liato.bankdroid.MainActivity;
-import com.liato.bankdroid.R;
-import com.liato.bankdroid.banking.Account;
-import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.BankFactory;
-import com.liato.bankdroid.banking.exceptions.BankChoiceException;
-import com.liato.bankdroid.banking.exceptions.BankException;
-import com.liato.bankdroid.banking.exceptions.LoginException;
-import com.liato.bankdroid.db.DBAdapter;
-import com.liato.bankdroid.liveview.LiveViewService;
-
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
@@ -46,7 +32,21 @@ import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+
+import com.crashlytics.android.Crashlytics;
+import com.liato.bankdroid.Helpers;
+import com.liato.bankdroid.MainActivity;
+import com.liato.bankdroid.R;
+import com.liato.bankdroid.banking.Account;
+import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.BankFactory;
+import com.liato.bankdroid.banking.exceptions.BankChoiceException;
+import com.liato.bankdroid.banking.exceptions.BankException;
+import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.db.DBAdapter;
+import com.liato.bankdroid.liveview.LiveViewService;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -94,42 +94,40 @@ public class AutoRefreshService extends Service {
 
         final NotificationManager notificationManager = (NotificationManager) context
                 .getSystemService(NOTIFICATION_SERVICE);
-        final Notification notification = new Notification(bank.getImageResource(), text,
-                System.currentTimeMillis());
+        final NotificationCompat.Builder notification = new NotificationCompat.Builder(context)
+                .setSmallIcon(bank.getImageResource())
+                .setContentTitle(bank.getDisplayName())
+                .setContentText(text);
+
         // Remove notification from statusbar when clicked
-        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+        notification.setAutoCancel(true);
 
         // http://www.freesound.org/samplesViewSingle.php?id=75235
         // http://www.freesound.org/samplesViewSingle.php?id=91924
         if (prefs.getString("notification_sound", null) != null) {
-            notification.sound = Uri.parse(prefs.getString(
-                    "notification_sound", null));
+            notification.setSound(Uri.parse(prefs.getString(
+                    "notification_sound", null)));
         }
         if (prefs.getBoolean("notify_with_vibration", true)) {
             final long[] vib = {0, 90, 130, 80, 350, 190, 20, 380};
-            notification.vibrate = vib;
-            // notification.defaults |= Notification.DEFAULT_VIBRATE;
+            notification.setVibrate(vib);
         }
 
         if (prefs.getBoolean("notify_with_led", true)) {
-            notification.ledARGB = prefs.getInt("notify_with_led_color",
-                    context.getResources().getColor(R.color.default_led_color));
-            notification.flags |= Notification.FLAG_SHOW_LIGHTS;
-            notification.ledOnMS = 700;
-            notification.ledOffMS = 200;
+            notification.setLights(prefs.getInt("notify_with_led_color",
+                    context.getResources().getColor(R.color.default_led_color)), 700, 200);
         }
 
         final PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
                 new Intent(context, MainActivity.class), 0);
-
-        notification.setLatestEventInfo(context, bank.getDisplayName(), text, contentIntent);
+        notification.setContentIntent(contentIntent);
 
         String numNotifications = prefs.getString("num_notifications", "total");
         int notificationId = (int) (numNotifications.equals("total") ? 0
                 : numNotifications.equals("bank") ? bank.getDbId()
                         : numNotifications.equals("account") ? account.getId().hashCode()
                                 : SystemClock.elapsedRealtime());
-        notificationManager.notify(notificationId, notification);
+        notificationManager.notify(notificationId, notification.build());
 
         // Broadcast to Remote Notifier if enabled
         // http://code.google.com/p/android-notifier/
