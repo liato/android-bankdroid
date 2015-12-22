@@ -1,10 +1,10 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
-Pending
+v1.9.10.2 (2015-12-22)
 * Fixes for Coop login.
 * Removes support for Forex Bank due to BankId requirement.
 * Fixes for MinPension login.
-* Update certificates for Coop, ICA, Osuuspankki, PlusGirot, SevenDay & Steam.
+* Update certificates for Coop, ICA, Osuuspankki, PlusGirot, SevenDay, Meniga & Steam.
 * Fixes for Bredband2.
 * Added support for Android 6.0 Marshmallow.
 
