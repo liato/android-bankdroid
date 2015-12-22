@@ -6,6 +6,7 @@ Pending
 * Fixes for MinPension login.
 * Update certificates for Coop, ICA, Osuuspankki, PlusGirot, SevenDay & Steam.
 * Fixes for Bredband2.
+* Added support for Android 6.0 Marshmallow.
 
 v1.9.10.1 (2015-11-22)
 * Update certificate for ICA.
