@@ -155,6 +155,7 @@ public class Lansforsakringar extends Bank {
         urlopen.addHeader("Content-Type", "application/json; charset=UTF-8");
         urlopen.addHeader("DeviceId", UUID.randomUUID().toString());
         urlopen.addHeader("deviceInfo", "Galaxy Nexus;4.1.1;1.8;Portrait");
+        urlopen.addHeader("Accept", "application/json; charset=UTF-8");
         //TODO: Change user-agent to "lf-android-app" if they block Bankdroid
         //urlopen.setUserAgent("lf-android-app");
 
