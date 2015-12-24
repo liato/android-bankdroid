@@ -1,5 +1,8 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
+v1.9.10.3 (2015-12-24)
+* Fix for Länsförsäkringar
+
 v1.9.10.2 (2015-12-22)
 * Fixes for Coop login.
 * Removes support for Forex Bank due to BankId requirement.
