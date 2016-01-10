@@ -108,4 +108,5 @@ public interface IBankTypes {
     public final static int SWEDBANK_CORPORATE = 83;
     public final static int SPARBANKERNA_YOUTH = 84;
     public final static int SPARBANKERNA_CORPORATE = 85;
+    public final static int HORS = 86;
 }

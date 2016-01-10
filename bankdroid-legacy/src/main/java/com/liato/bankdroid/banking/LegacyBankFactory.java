@@ -1,5 +1,9 @@
 package com.liato.bankdroid.banking;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 import com.liato.bankdroid.banking.banks.AkeliusInvest;
 import com.liato.bankdroid.banking.banks.AkeliusSpar;
 import com.liato.bankdroid.banking.banks.AmericanExpress;
@@ -19,6 +23,7 @@ import com.liato.bankdroid.banking.banks.EspressoHouse;
 import com.liato.bankdroid.banking.banks.Everydaycard;
 import com.liato.bankdroid.banking.banks.FirstCard;
 import com.liato.bankdroid.banking.banks.Hemkop;
+import com.liato.bankdroid.banking.banks.Hors;
 import com.liato.bankdroid.banking.banks.IKEA;
 import com.liato.bankdroid.banking.banks.IkanoBank;
 import com.liato.bankdroid.banking.banks.Jojo;
@@ -59,10 +64,6 @@ import com.liato.bankdroid.banking.banks.nordea.Nordea;
 import com.liato.bankdroid.banking.banks.rikslunchen.Rikslunchen;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.provider.IBankTypes;
-
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -243,6 +244,8 @@ public class LegacyBankFactory {
             //    return new SwedbankCorporate(context);
             // case IBankTypes.SWEDBANK_YOUTH:
             //    return new SwedbankYouth(context);
+            case IBankTypes.HORS:
+                return new Hors(context);
             default:
                 throw new BankException("BankType id not found.");
         }
@@ -335,6 +338,7 @@ public class LegacyBankFactory {
         // banks.add(new SparbankernaYouth(context));
         // banks.add(new SwedbankCorporate(context));
         // banks.add(new SwedbankYouth(context));
+        banks.add(new Hors(context));
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (prefs.getBoolean("debug_mode", false)) {
