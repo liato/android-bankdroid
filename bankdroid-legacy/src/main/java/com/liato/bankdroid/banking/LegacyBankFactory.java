@@ -19,7 +19,6 @@ import com.liato.bankdroid.banking.banks.CSN;
 import com.liato.bankdroid.banking.banks.Chalmrest;
 import com.liato.bankdroid.banking.banks.DanskeBank;
 import com.liato.bankdroid.banking.banks.EasyCard;
-import com.liato.bankdroid.banking.banks.EspressoHouse;
 import com.liato.bankdroid.banking.banks.Everydaycard;
 import com.liato.bankdroid.banking.banks.FirstCard;
 import com.liato.bankdroid.banking.banks.Hemkop;
@@ -232,8 +231,8 @@ public class LegacyBankFactory {
                 return new Ostgotatrafiken(context);
             case IBankTypes.BREDBAND2VOIP:
                 return new Bredband2VoIP(context);
-            case IBankTypes.ESPRESSOHOUSE:
-                return new EspressoHouse(context);
+            // case IBankTypes.ESPRESSOHOUSE:
+            //    return new EspressoHouse(context);
             case IBankTypes.MINPENSION:
                 return new MinPension(context);
             // case IBankTypes.SPARBANKERNA_CORPORATE:
@@ -332,7 +331,7 @@ public class LegacyBankFactory {
         banks.add(new BlekingeTrafiken(context));
         banks.add(new Ostgotatrafiken(context));
         banks.add(new Bredband2VoIP(context));
-        banks.add(new EspressoHouse(context));
+        // banks.add(new EspressoHouse(context));
         banks.add(new MinPension(context));
         // banks.add(new SparbankernaCorporate(context));
         // banks.add(new SparbankernaYouth(context));

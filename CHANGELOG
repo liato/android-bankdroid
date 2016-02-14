@@ -1,6 +1,7 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
 pending
+* Removes support for EspressoHouse
 * Adds support Högskolerestaurangers kund-/studentkort
 * Update certificates for American Express, Marginalen, Östgötatrafiken, PayPal, Zidisha
 
