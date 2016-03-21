@@ -65,6 +65,8 @@ public class OKQ8 extends Bank {
 
     private Pattern reLoginRedir = Pattern.compile("value=\"([^\"]*)\"", Pattern.CASE_INSENSITIVE);
 
+    private Pattern reSessionId = Pattern.compile("action=\"([^\"]*)\"", Pattern.CASE_INSENSITIVE);
+
     private Pattern reBalance = Pattern
             .compile("<div class=\"numberpositive\">([^<]*)</div>", Pattern.CASE_INSENSITIVE);
 
@@ -99,16 +101,24 @@ public class OKQ8 extends Bank {
         Date d = new Date();
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
         response = urlopen
-                .open("https://nettbank.edb.com/Logon/index.jsp?domain=0066&from_page=http://www.okq8.se&to_page=https://nettbank.edb.com/cardpayment/transigo/logon/done/okq8");
+                .open("https://nettbank.edb.com/authenticate/login/basicauth?configKey=okq8");
         //p_tranid is the epoch time in milliseconds
-        postData.add(new BasicNameValuePair("p_tranid", Long.toString(d.getTime())));
-        postData.add(new BasicNameValuePair("p_errorScreen", "LOGON_REPOST_ERROR"));
-        postData.add(new BasicNameValuePair("n_bank", ""));
-        postData.add(new BasicNameValuePair("empty_pwd", ""));
-        postData.add(new BasicNameValuePair("user_id", getUsername().toUpperCase()));
+        Matcher matcher;
+        matcher = reSessionId.matcher(response);
+        if (!matcher.find()) {
+            throw new BankException("Could not find post action.");
+        }
+        String postAction = matcher.group(1);
+        postData.add(new BasicNameValuePair("javax.faces.ViewState",
+                postAction.substring(postAction.length()-5,postAction.length()-1)));
+        postData.add(new BasicNameValuePair("loginForm", "loginForm"));
+        postData.add(new BasicNameValuePair("button", "Logga in"));
+
+        postData.add(new BasicNameValuePair("userid", getUsername().toUpperCase()));
+        postData.add(new BasicNameValuePair("useridInput", getUsername().toUpperCase()));
         postData.add(new BasicNameValuePair("password", getPassword()));
         return new LoginPackage(urlopen, postData, response,
-                "https://nettbank.edb.com/Logon/logon/step1");
+                "https://nettbank.edb.com" + postAction);
     }
 
     public Urllib login() throws LoginException, BankException, IOException {
@@ -118,7 +128,7 @@ public class OKQ8 extends Bank {
         LoginPackage lp = preLogin();
         List<NameValuePair> postData = lp.getPostData();
         response = urlopen.open(lp.getLoginTarget(), postData);
-        if (!response.contains("LOGON_OK")) {
+        if (!response.contains("Please wait")) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
 
@@ -157,7 +167,7 @@ public class OKQ8 extends Bank {
         postData.add(new BasicNameValuePair("login_service_url", value));
 
         response = urlopen
-                .open("https://nettbank.edb.com/cardpayment/transigo/logon/done/okq8", postData);
+                .open("https://nettbank.edb.com/payment/transigo/logon/done/okq8", postData);
 
         if (response.contains("HTML REDIRECT")) {
             throw new LoginException("Login failed.");
@@ -204,7 +214,7 @@ public class OKQ8 extends Bank {
         }
 
         response = urlopen
-                .open("https://nettbank.edb.com/cardpayment/transigo/card/overview/lastTransactionsAccount");
+                .open("https://nettbank.edb.com/payment/transigo/card/overview/lastTransactionsAccount");
 
         matcher = reTransactions.matcher(response);
         ArrayList<Transaction> transactions = new ArrayList<Transaction>();
