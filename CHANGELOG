@@ -1,5 +1,9 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
+v1.9.10.5 (2016-04-03)
+* Fix for OKQ8
+* Update certificates for AmericanExpress, DankeBank, FirstCard, Rikslunchen and SveaDirekt.
+
 v1.9.10.4 (2016-02-25)
 * Removes support for EspressoHouse
 * Adds support Högskolerestaurangers kund-/studentkort
