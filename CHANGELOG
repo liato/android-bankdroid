@@ -1,5 +1,10 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
+v1.9.10.6 (2016-08-01)
+* Update outdated certificates
+* Upgrade to android-build-tools v.24
+* Upgrade to gradle 2.14
+
 v1.9.10.5 (2016-04-03)
 * Fix for OKQ8
 * Update certificates for AmericanExpress, DankeBank, FirstCard, Rikslunchen and SveaDirekt.
