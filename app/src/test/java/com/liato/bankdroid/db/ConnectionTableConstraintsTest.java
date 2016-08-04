@@ -17,7 +17,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 
-import java.io.File;
 import java.io.IOException;
 
 import static com.liato.bankdroid.db.Database.CONNECTION_ENABLED;
@@ -55,7 +54,7 @@ public class ConnectionTableConstraintsTest {
     @Before
     public void setUp() throws IOException {
         DatabaseHelper databaseHelper = DatabaseHelper.getHelper(RuntimeEnvironment.application);
-        db = SQLiteDatabase.openOrCreateDatabase(File.createTempFile("test", ".db"), null);
+        db = DatabaseTestHelper.emptyDatabase();
         databaseHelper.onCreate(db);
     }
 

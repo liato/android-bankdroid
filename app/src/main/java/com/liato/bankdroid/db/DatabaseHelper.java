@@ -54,7 +54,6 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(final SQLiteDatabase db) {
         db.execSQL(Database.TABLE_CONNECTION);
-        db.execSQL(LegacyDatabase.TABLE_BANKS);
         db.execSQL(LegacyDatabase.TABLE_ACCOUNTS);
         db.execSQL(LegacyDatabase.TABLE_TRANSACTIONS);
         db.execSQL(Database.TABLE_CONNECTION_PROPERTIES);

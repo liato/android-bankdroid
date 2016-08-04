@@ -48,4 +48,6 @@ public class Database {
             .append(" TEXT")
             .append(");")
             .toString();
+
+    static final String ACCOUNTS_TABLE_NAME = "accounts";
 }
