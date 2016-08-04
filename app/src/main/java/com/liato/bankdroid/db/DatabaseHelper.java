@@ -16,6 +16,7 @@
 
 package com.liato.bankdroid.db;
 
+import com.liato.bankdroid.banking.LegacyBankHelper;
 import com.liato.bankdroid.banking.LegacyProviderConfiguration;
 
 import android.content.ContentValues;
@@ -88,12 +89,44 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
         if(oldVersion <= 12) {
             try {
                 db.beginTransaction();
-                db.execSQL(Database.TABLE_CONNECTION);
+                migrateBanks(db);
                 db.setTransactionSuccessful();
             } finally {
                 db.endTransaction();
             }
         }
+    }
+
+    private void migrateBanks(SQLiteDatabase db) {
+        db.execSQL(Database.TABLE_CONNECTION);
+        Cursor c = db.query(LegacyDatabase.BANK_TABLE_NAME, null, null, null,null,null,null);
+        if (!(c == null || c.isClosed() || (c.isBeforeFirst() && c.isAfterLast()))) {
+            while (!c.isLast() && !c.isAfterLast()) {
+                c.moveToNext();
+                long id = c.getLong(c.getColumnIndex(LegacyDatabase.BANK_ID));
+                String name = c.getString(c.getColumnIndex(LegacyDatabase.BANK_CUSTOM_NAME));
+                int bankId = c.getInt(c.getColumnIndex(LegacyDatabase.BANK_TYPE));
+                int enabled = c.getInt(c.getColumnIndex(LegacyDatabase.BANK_DISABLED)) == 1 ? 0 : 1;
+                String lastUpdated = c.getString(c.getColumnIndex(LegacyDatabase.BANK_UPDATED));
+                int sortOrder = c.getInt(c.getColumnIndex(LegacyDatabase.BANK_SORT_ORDER));
+
+                if(LegacyBankHelper.legacyIdIsAvailable(bankId)) {
+                    ContentValues connection = new ContentValues();
+                    connection.put(Database.CONNECTION_ID, id);
+                    connection.put(Database.CONNECTION_NAME, name);
+                    connection.put(
+                            Database.CONNECTION_PROVIDER_ID,
+                            LegacyBankHelper.getReferenceFromLegacyId(bankId)
+                    );
+                    connection.put(Database.CONNECTION_ENABLED, enabled);
+                    connection.put(Database.CONNECTION_LAST_UPDATED, lastUpdated);
+                    connection.put(Database.CONNECTION_SORT_ORDER, sortOrder);
+                    db.insertOrThrow(CONNECTION_TABLE_NAME, null, connection);
+                }
+            }
+            c.close();
+        }
+        db.execSQL("DROP TABLE IF EXISTS " + LegacyDatabase.BANK_TABLE_NAME);
     }
 
     private void migrateProperties(final SQLiteDatabase db) {

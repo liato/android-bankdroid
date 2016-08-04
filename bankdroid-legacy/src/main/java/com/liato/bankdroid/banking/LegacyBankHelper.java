@@ -18,6 +18,10 @@ public class LegacyBankHelper {
         return providerReferences.get(legacyId);
     }
 
+    public static boolean legacyIdIsAvailable(int legacyId) {
+        return getReferenceFromLegacyId(legacyId) != null;
+    }
+
     // TODO Used during refactoring. Remove before 2.0
     public static int getLegacyIdFromReference(String reference) {
         if(legacyProviderReferences == null) {
