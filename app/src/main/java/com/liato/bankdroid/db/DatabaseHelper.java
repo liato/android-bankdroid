@@ -25,6 +25,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import android.os.Build;
 import timber.log.Timber;
 
 import static com.liato.bankdroid.db.Database.PROPERTY_CONNECTION_ID;
@@ -54,7 +55,7 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(final SQLiteDatabase db) {
         db.execSQL(Database.TABLE_CONNECTION);
-        db.execSQL(LegacyDatabase.TABLE_ACCOUNTS);
+        db.execSQL(Database.TABLE_ACCOUNTS);
         db.execSQL(LegacyDatabase.TABLE_TRANSACTIONS);
         db.execSQL(Database.TABLE_CONNECTION_PROPERTIES);
     }
@@ -89,11 +90,53 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
             try {
                 db.beginTransaction();
                 migrateBanks(db);
+                migrateAccounts(db);
                 db.setTransactionSuccessful();
             } finally {
                 db.endTransaction();
             }
         }
+    }
+
+    @Override
+    public void onConfigure(SQLiteDatabase db) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            db.setForeignKeyConstraintsEnabled(true);
+        }
+    }
+
+    private void migrateAccounts(SQLiteDatabase db) {
+        String tempTable = LegacyDatabase.ACCOUNT_TABLE_NAME + "_temp";
+        db.execSQL("ALTER TABLE " + LegacyDatabase.ACCOUNT_TABLE_NAME + " RENAME TO " + tempTable + ";");
+        db.execSQL(Database.TABLE_ACCOUNTS);
+
+        Cursor c = db.query(tempTable, null, null, null,null,null,null);
+        if (!(c == null || c.isClosed() || (c.isBeforeFirst() && c.isAfterLast()))) {
+            while (!c.isLast() && !c.isAfterLast()) {
+                c.moveToNext();
+                String id = c.getString(c.getColumnIndex(LegacyDatabase.ACCOUNT_ID));
+                int bankId = c.getInt(c.getColumnIndex(LegacyDatabase.ACCOUNT_BANK_ID));
+                int hidden = c.getInt(c.getColumnIndex(LegacyDatabase.ACCOUNT_HIDDEN));
+                String balance = c.getString(c.getColumnIndex(LegacyDatabase.ACCOUNT_BALANCE));
+                String currency = c.getString(c.getColumnIndex(LegacyDatabase.ACCOUNT_CURRENCY));
+                String name = c.getString(c.getColumnIndex(LegacyDatabase.ACCOUNT_NAME));
+                int type = c.getInt(c.getColumnIndex(LegacyDatabase.ACCOUNT_TYPE));
+                String notifications = c.getString(c.getColumnIndex(LegacyDatabase.ACCOUNT_NOTIFY));
+
+                ContentValues account = new ContentValues();
+                account.put(Database.ACCOUNT_ID, LegacyBankHelper.fromLegacyAccountId(id));
+                account.put(Database.ACCOUNT_CONNECTION_ID, LegacyBankHelper.getReferenceFromLegacyId(bankId));
+                account.put(Database.ACCOUNT_BALANCE, balance);
+                account.put(Database.ACCOUNT_CURRENCY, currency);
+                account.put(Database.ACCOUNT_NAME, name);
+                account.put(Database.ACCOUNT_NOTIFICATIONS_ENABLED, notifications);
+                account.put(Database.ACCOUNT_HIDDEN, hidden);
+                account.put(Database.ACCOUNT_TYPE, LegacyBankHelper.fromLegacyAccountType(type));
+                db.insert(ACCOUNTS_TABLE_NAME, null, account);
+            }
+            c.close();
+        }
+        db.execSQL("DROP TABLE " + tempTable);
     }
 
     private void migrateBanks(SQLiteDatabase db) {

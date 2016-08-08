@@ -19,6 +19,7 @@ package com.liato.bankdroid;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.BankFactory;
+import com.liato.bankdroid.banking.LegacyBankHelper;
 import com.liato.bankdroid.banking.Transaction;
 
 import android.content.Context;
@@ -36,6 +37,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static com.liato.bankdroid.banking.LegacyBankHelper.legacyAccountIdOf;
+
 public class TransactionsActivity extends LockableActivity {
 
     final static String TAG = "TransactionActivity";
@@ -52,7 +55,7 @@ public class TransactionsActivity extends LockableActivity {
             return;
         }
         Account account = BankFactory
-                .accountFromDb(this, extras.getLong("bank") + "_" + extras.getString("account"),
+                .accountFromDb(this, legacyAccountIdOf(extras.getLong("bank"), extras.getString("account")),
                         true);
         if (account == null) {
             redirectToMain(getString(R.string.error_account_not_found));

@@ -49,4 +49,16 @@ public class LegacyBankHelper {
         legacyProviderReferences = legacyIds;
         providerReferences = references;
     }
+
+    public static String fromLegacyAccountType(int legacyAccountType) {
+        return "not_relevant";
+    }
+
+    public static String legacyAccountIdOf(long bankId, String accountId) {
+        return new Long(bankId).toString() + "_" + accountId;
+    }
+
+    public static String fromLegacyAccountId(String legacyAccountId) {
+        return legacyAccountId.substring(legacyAccountId.indexOf("_") + 1);
+    }
 }

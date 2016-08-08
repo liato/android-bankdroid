@@ -19,6 +19,12 @@ import android.database.sqlite.SQLiteDatabase;
 
 import java.io.IOException;
 
+import static com.liato.bankdroid.db.Fixtures.VALID_CONNECTION_ID;
+import static com.liato.bankdroid.db.Fixtures.VALID_CONNECTION_NAME;
+import static com.liato.bankdroid.db.Fixtures.VALID_CONNECTION_LAST_UPDATED;
+import static com.liato.bankdroid.db.Fixtures.VALID_CONNECTION_PROVIDER_ID;
+import static com.liato.bankdroid.db.Fixtures.VALID_CONNECTION_SORT_ORDER;
+import static com.liato.bankdroid.db.Fixtures.createValidConnection;
 import static com.liato.bankdroid.db.Database.CONNECTION_ENABLED;
 import static com.liato.bankdroid.db.Database.CONNECTION_ID;
 import static com.liato.bankdroid.db.Database.CONNECTION_LAST_UPDATED;
@@ -34,15 +40,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @Config(manifest = Config.NONE)
 public class ConnectionTableConstraintsTest {
 
-    private static final long VALID_CONNECTION_ID = 1;
-
-    private static final String VALID_LAST_UPDATED = "not_important";
-
-    private static final String VALID_CONNECTION_NAME = "not_important";
-
-    private static final String VALID_PROVIDER_ID = "not_important";
-
-    private static final long VALID_SORT_ORDER = 2;
 
     private static final int ENABLED = 1;
 
@@ -73,9 +70,12 @@ public class ConnectionTableConstraintsTest {
 
         assertThat(actual.getLong(actual.getColumnIndex(CONNECTION_ID)), is(VALID_CONNECTION_ID));
         assertThat(actual.getString(actual.getColumnIndex(CONNECTION_NAME)), is(VALID_CONNECTION_NAME));
-        assertThat(actual.getString(actual.getColumnIndex(CONNECTION_PROVIDER_ID)), is(VALID_PROVIDER_ID));
-        assertThat(actual.getString(actual.getColumnIndex(CONNECTION_LAST_UPDATED)), is(VALID_LAST_UPDATED));
-        assertThat(actual.getLong(actual.getColumnIndex(CONNECTION_SORT_ORDER)), is(VALID_SORT_ORDER));
+        assertThat(actual.getString(actual.getColumnIndex(CONNECTION_PROVIDER_ID)), is(
+                VALID_CONNECTION_PROVIDER_ID));
+        assertThat(actual.getString(actual.getColumnIndex(CONNECTION_LAST_UPDATED)), is(
+                VALID_CONNECTION_LAST_UPDATED));
+        assertThat(actual.getLong(actual.getColumnIndex(CONNECTION_SORT_ORDER)), is(
+                VALID_CONNECTION_SORT_ORDER));
         assertThat(actual.getInt(actual.getColumnIndex(CONNECTION_ENABLED)), is(ENABLED));
     }
 
@@ -123,17 +123,6 @@ public class ConnectionTableConstraintsTest {
         exception.expect(columnIsNull(CONNECTION_ENABLED));
 
         db.insertOrThrow(CONNECTION_TABLE_NAME, null, connection);
-    }
-
-    private ContentValues createValidConnection() {
-        ContentValues values = new ContentValues();
-        values.put(CONNECTION_ENABLED, true);
-        values.put(CONNECTION_ID, VALID_CONNECTION_ID);
-        values.put(CONNECTION_LAST_UPDATED, VALID_LAST_UPDATED);
-        values.put(CONNECTION_NAME, VALID_CONNECTION_NAME);
-        values.put(CONNECTION_PROVIDER_ID, VALID_PROVIDER_ID);
-        values.put(CONNECTION_SORT_ORDER, VALID_SORT_ORDER);
-        return values;
     }
 
     private NullConstraintExceptionMatcher columnIsNull(String column) {

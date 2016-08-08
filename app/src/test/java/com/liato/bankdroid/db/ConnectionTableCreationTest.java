@@ -1,6 +1,7 @@
 package com.liato.bankdroid.db;
 
 import com.liato.bankdroid.banking.LegacyBankHelper;
+import com.liato.bankdroid.banking.LegacyProviderConfiguration;
 import com.liato.bankdroid.provider.IBankTypes;
 
 import org.junit.After;
@@ -16,11 +17,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 
 import static com.liato.bankdroid.db.Database.CONNECTION_PROVIDER_ID;
 import static com.liato.bankdroid.db.Database.CONNECTION_TABLE_NAME;
-import static com.liato.bankdroid.db.Database.DATABASE_VERSION;
 import static com.liato.bankdroid.db.DatabaseTestHelper.withDatabaseVersion;
 import static com.liato.bankdroid.db.DatabaseTestHelper.withEmptyDatabase;
 import static org.hamcrest.CoreMatchers.is;
@@ -30,27 +29,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @Config(manifest = Config.NONE)
 public class ConnectionTableCreationTest {
 
-    private static final long BANK_ID = 1;
-
-    private static final String BANK_CUSTOM_NAME = "not_relevant_name";
-
-    private static final int BANK_TYPE = IBankTypes.TESTBANK;
-
-    private static final String PROVIDER_ID = LegacyBankHelper.getReferenceFromLegacyId(BANK_TYPE);
-
-    private static final int BANK_DISABLED = 1;
-
-    private static final String BANK_UPDATED = "not_relevant_update_timestamp";
-
-    private static final int BANK_SORT_ORDER = 3;
-
-    private static final String BANK_BALANCE = new BigDecimal(10).toPlainString();
-
+    private static final String PROVIDER_ID = LegacyBankHelper.getReferenceFromLegacyId(LegacyFixtures.LEGACY_BANK_TYPE);
     private static final int DISABLED = 0;
-
     private static final int INVALID_BANK_TYPE = -1;
-
-
 
     private DatabaseHelper underTest;
     private DatabaseTestHelper dbTestHelper;
@@ -92,7 +73,7 @@ public class ConnectionTableCreationTest {
             throws IOException {
         prepareDatabase(withDatabaseVersion(12));
 
-        db.insertOrThrow(LegacyDatabase.BANK_TABLE_NAME, null, legacyBank());
+        db.insertOrThrow(LegacyDatabase.BANK_TABLE_NAME, null, LegacyFixtures.legacyBank());
 
         underTest.onUpgrade(db, 12, 13);
 
@@ -102,19 +83,19 @@ public class ConnectionTableCreationTest {
         assertThat(actual.getCount(), is(1));
 
         actual.moveToFirst();
-        assertThat(actual.getLong(actual.getColumnIndex(Database.CONNECTION_ID)), is(BANK_ID));
-        assertThat(actual.getString(actual.getColumnIndex(Database.CONNECTION_NAME)), is(BANK_CUSTOM_NAME));
+        assertThat(actual.getLong(actual.getColumnIndex(Database.CONNECTION_ID)), is(LegacyFixtures.LEGACY_BANK_ID));
+        assertThat(actual.getString(actual.getColumnIndex(Database.CONNECTION_NAME)), is(LegacyFixtures.LEGACY_BANK_CUSTOM_NAME));
         assertThat(actual.getString(actual.getColumnIndex(CONNECTION_PROVIDER_ID)), is(PROVIDER_ID));
         assertThat(actual.getInt(actual.getColumnIndex(Database.CONNECTION_ENABLED)), is(DISABLED));
-        assertThat(actual.getString(actual.getColumnIndex(Database.CONNECTION_LAST_UPDATED)), is(BANK_UPDATED));
-        assertThat(actual.getInt(actual.getColumnIndex(Database.CONNECTION_SORT_ORDER)), is(BANK_SORT_ORDER));
+        assertThat(actual.getString(actual.getColumnIndex(Database.CONNECTION_LAST_UPDATED)), is(LegacyFixtures.LEGACY_BANK_UPDATED));
+        assertThat(actual.getInt(actual.getColumnIndex(Database.CONNECTION_SORT_ORDER)), is(LegacyFixtures.LEGACY_BANK_SORT_ORDER));
     }
 
     @Test
     public void a_bank_that_is_not_available_anymore_is_ignored_during_migration_to_v13()
             throws IOException {
         prepareDatabase(withDatabaseVersion(12));
-        ContentValues legacyBankWithInvalidBankType = legacyBank();
+        ContentValues legacyBankWithInvalidBankType = LegacyFixtures.legacyBank();
         legacyBankWithInvalidBankType.put(LegacyDatabase.BANK_TYPE, INVALID_BANK_TYPE);
         db.insertOrThrow(LegacyDatabase.BANK_TABLE_NAME, null, legacyBankWithInvalidBankType);
 
@@ -123,18 +104,6 @@ public class ConnectionTableCreationTest {
         Cursor actual = db.query(Database.CONNECTION_TABLE_NAME, null, null, null, null, null, null);
         assertThat(actual.getCount(), is(0));
 
-    }
-
-    private ContentValues legacyBank() {
-        ContentValues values = new ContentValues();
-        values.put(LegacyDatabase.BANK_ID, BANK_ID);
-        values.put(LegacyDatabase.BANK_CUSTOM_NAME, BANK_CUSTOM_NAME);
-        values.put(LegacyDatabase.BANK_TYPE, BANK_TYPE);
-        values.put(LegacyDatabase.BANK_DISABLED, BANK_DISABLED);
-        values.put(LegacyDatabase.BANK_UPDATED, BANK_UPDATED);
-        values.put(LegacyDatabase.BANK_SORT_ORDER, BANK_SORT_ORDER);
-        values.put(LegacyDatabase.BANK_BALANCE, BANK_BALANCE);
-        return values;
     }
 
     private void prepareDatabase(DatabaseTestHelper dbTestHelper) {

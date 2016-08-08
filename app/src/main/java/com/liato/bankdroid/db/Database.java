@@ -50,4 +50,43 @@ public class Database {
             .toString();
 
     static final String ACCOUNTS_TABLE_NAME = "accounts";
+    static final String ACCOUNT_ID = "id";
+    static final String ACCOUNT_CONNECTION_ID = "connection_id";
+    static final String ACCOUNT_TYPE = "type";
+    static final String ACCOUNT_NAME = "name";
+    static final String ACCOUNT_BALANCE = "balance";
+    static final String ACCOUNT_CURRENCY = "currency";
+    static final String ACCOUNT_HIDDEN = "hidden";
+    static final String ACCOUNT_NOTIFICATIONS_ENABLED = "notifications";
+
+
+    static final String TABLE_ACCOUNTS = new StringBuilder("CREATE TABLE ")
+            .append(ACCOUNTS_TABLE_NAME)
+            .append(" (")
+            .append(ACCOUNT_ID)
+            .append(" TEXT NOT NULL, ")
+            .append(ACCOUNT_CONNECTION_ID)
+            .append(" INTEGER NOT NULL REFERENCES ")
+            .append(CONNECTION_TABLE_NAME)
+            .append(" (")
+            .append(CONNECTION_ID)
+            .append(") ON DELETE CASCADE, ")
+            .append(ACCOUNT_TYPE)
+            .append(" TEXT NOT NULL, ")
+            .append(ACCOUNT_NAME)
+            .append(" TEXT NOT NULL, ")
+            .append(ACCOUNT_BALANCE)
+            .append(" TEXT NOT NULL DEFAULT (0), ")
+            .append(ACCOUNT_CURRENCY)
+            .append(" TEXT NOT NULL, ")
+            .append(ACCOUNT_HIDDEN)
+            .append(" BOOLEAN NOT NULL DEFAULT 0, ")
+            .append(ACCOUNT_NOTIFICATIONS_ENABLED)
+            .append(" BOOLEAN NOT NULL DEFAULT 1, ")
+            .append("PRIMARY KEY (")
+            .append(ACCOUNT_CONNECTION_ID)
+            .append(",")
+            .append(ACCOUNT_ID)
+            .append("));")
+            .toString();
 }

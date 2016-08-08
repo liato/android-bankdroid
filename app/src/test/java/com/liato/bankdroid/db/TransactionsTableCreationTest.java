@@ -13,7 +13,6 @@ import static org.junit.Assert.fail;
 @Config(manifest = Config.NONE)
 public class TransactionsTableCreationTest {
 
-
     @Test
     public void transactions_table_is_created_when_onCreate_is_called() throws IOException {
         fail();
@@ -29,4 +28,3 @@ public class TransactionsTableCreationTest {
         fail();
     }
 }
-

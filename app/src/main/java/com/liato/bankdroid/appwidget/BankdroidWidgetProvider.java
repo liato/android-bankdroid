@@ -22,6 +22,7 @@ import com.liato.bankdroid.R;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.BankFactory;
+import com.liato.bankdroid.banking.LegacyBankHelper;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
@@ -48,6 +49,8 @@ import android.widget.RemoteViews;
 import java.io.IOException;
 
 import timber.log.Timber;
+import static com.liato.bankdroid.banking.LegacyBankHelper.legacyAccountIdOf;
+
 
 public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 
@@ -116,7 +119,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
             return disableAppWidget(context, appWidgetManager,
                     appWidgetId);
         }
-        Account account = BankFactory.accountFromDb(context, bankId + "_" + accountId, false);
+        Account account = BankFactory.accountFromDb(context, legacyAccountIdOf(bankId, accountId), false);
         if (account == null) {
             Timber.w("Account not found in database");
             return disableAppWidget(context, appWidgetManager,
