@@ -56,7 +56,7 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(final SQLiteDatabase db) {
         db.execSQL(Database.TABLE_CONNECTION);
         db.execSQL(Database.TABLE_ACCOUNTS);
-        db.execSQL(LegacyDatabase.TABLE_TRANSACTIONS);
+        db.execSQL(Database.TABLE_TRANSACTIONS);
         db.execSQL(Database.TABLE_CONNECTION_PROPERTIES);
     }
 
@@ -91,6 +91,7 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
                 db.beginTransaction();
                 migrateBanks(db);
                 migrateAccounts(db);
+                migrateTransactions(db);
                 db.setTransactionSuccessful();
             } finally {
                 db.endTransaction();
@@ -124,7 +125,7 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
                 String notifications = c.getString(c.getColumnIndex(LegacyDatabase.ACCOUNT_NOTIFY));
 
                 ContentValues account = new ContentValues();
-                account.put(Database.ACCOUNT_ID, LegacyBankHelper.fromLegacyAccountId(id));
+                account.put(Database.ACCOUNT_ID, LegacyBankHelper.accountIdOf(id));
                 account.put(Database.ACCOUNT_CONNECTION_ID, LegacyBankHelper.getReferenceFromLegacyId(bankId));
                 account.put(Database.ACCOUNT_BALANCE, balance);
                 account.put(Database.ACCOUNT_CURRENCY, currency);
@@ -169,6 +170,43 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
             c.close();
         }
         db.execSQL("DROP TABLE IF EXISTS " + LegacyDatabase.BANK_TABLE_NAME);
+    }
+
+    private void migrateTransactions(final SQLiteDatabase db) {
+        String tempTable = LegacyDatabase.TRANSACTION_TABLE_NAME + "_temp";
+        db.execSQL(
+                "ALTER TABLE " + LegacyDatabase.TRANSACTION_TABLE_NAME + " RENAME TO " + tempTable + ";");
+
+        db.execSQL(Database.TABLE_TRANSACTIONS);
+
+        Cursor c = db.query(tempTable, null, null, null,null,null,null);
+        if (!(c == null || c.isClosed() || (c.isBeforeFirst() && c.isAfterLast()))) {
+            while (!c.isLast() && !c.isAfterLast()) {
+                c.moveToNext();
+
+                int id = c.getInt(c.getColumnIndex(LegacyDatabase.TRANSACTION_ID));
+                String legacyAccountId = c.getString(c.getColumnIndex(LegacyDatabase.TRANSACTION_ACCOUNT_ID));
+                String accountId = LegacyBankHelper.accountIdOf(legacyAccountId);
+                long connectionId = LegacyBankHelper.connectionIdOf(legacyAccountId);
+                String amount = c.getString(c.getColumnIndex(LegacyDatabase.TRANSACTION_AMOUNT));
+                String currency = c.getString(c.getColumnIndex(LegacyDatabase.TRANSACTION_CURRENCY));
+                String date  = c.getString(c.getColumnIndex(LegacyDatabase.TRANSACTION_DATE));
+                String description = c.getString(c.getColumnIndex(LegacyDatabase.TRANSACTION_DESCRIPTION));
+
+                ContentValues transaction = new ContentValues();
+                transaction.put(Database.TRANSACTION_ID, Integer.toString(id));
+                transaction.put(Database.TRANSACTION_CONNECTION_ID, connectionId);
+                transaction.put(Database.TRANSACTION_ACCOUNT_ID, accountId);
+                transaction.put(Database.TRANSACTION_AMOUNT, amount);
+                transaction.put(Database.TRANSACTION_CURRENCY, currency);
+                transaction.put(Database.TRANSACTION_DESCRIPTION, description);
+                transaction.put(Database.TRANSACTION_DATE, date);
+                db.insert(TRANSACTIONS_TABLE_NAME, null, transaction);
+
+            }
+            c.close();
+        }
+        db.execSQL("DROP TABLE " + tempTable);
     }
 
     private void migrateProperties(final SQLiteDatabase db) {

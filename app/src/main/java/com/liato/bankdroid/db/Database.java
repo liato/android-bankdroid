@@ -89,4 +89,56 @@ public class Database {
             .append(ACCOUNT_ID)
             .append("));")
             .toString();
+
+    static final String TRANSACTIONS_TABLE_NAME = "transactions";
+    static final String TRANSACTION_ID = "_id";
+    static final String TRANSACTION_CONNECTION_ID = "connection_id";
+    static final String TRANSACTION_ACCOUNT_ID = "account_id";
+    static final String TRANSACTION_DESCRIPTION = "description";
+    static final String TRANSACTION_AMOUNT = "amount";
+    static final String TRANSACTION_CURRENCY = "currency";
+    static final String TRANSACTION_DATE = "transaction_date";
+    static final String TRANSACTION_PENDING = "pending";
+
+    static final String TABLE_TRANSACTIONS = new StringBuilder("CREATE TABLE ")
+            .append(TRANSACTIONS_TABLE_NAME)
+            .append(" (")
+            .append(TRANSACTION_ID)
+            .append(" TEXT NOT NULL, ")
+            .append(TRANSACTION_CONNECTION_ID)
+            .append(" INTEGER NOT NULL, ")
+            .append(TRANSACTION_ACCOUNT_ID)
+            .append(" TEXT NOT NULL, ")
+            .append(TRANSACTION_DESCRIPTION)
+            .append(" TEXT NOT NULL, ")
+            .append(TRANSACTION_AMOUNT)
+            .append(" TEXT NOT NULL DEFAULT (0), ")
+            .append(TRANSACTION_CURRENCY)
+            .append(" TEXT NOT NULL, ")
+            .append(TRANSACTION_DATE)
+            .append(" TEXT NOT NULL, ")
+            .append(TRANSACTION_PENDING)
+            .append(" BOOLEAN NOT NULL DEFAULT false, ")
+            .append("FOREIGN KEY (")
+            .append(TRANSACTION_ACCOUNT_ID)
+            .append(",")
+            .append(TRANSACTION_CONNECTION_ID)
+            .append(") REFERENCES ")
+            .append(ACCOUNTS_TABLE_NAME)
+            .append("(")
+            .append(ACCOUNT_ID)
+            .append( ",")
+            .append(ACCOUNT_CONNECTION_ID)
+            .append(") ON DELETE CASCADE, ")
+            .append("PRIMARY KEY (")
+            .append(TRANSACTION_ACCOUNT_ID)
+            .append(",")
+            .append(TRANSACTION_CONNECTION_ID)
+            .append(",")
+            .append(TRANSACTION_ID)
+            .append("));")
+            .toString();
+
+    private Database() {
+    }
 }

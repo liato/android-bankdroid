@@ -2,6 +2,7 @@ package com.liato.bankdroid.db;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -18,6 +19,7 @@ import static org.junit.Assert.fail;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@Ignore("Test placeholder for documentation")
 public class AccountPropertiesTableConstraintsTest {
 
     @Rule

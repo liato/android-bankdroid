@@ -58,7 +58,11 @@ public class LegacyBankHelper {
         return new Long(bankId).toString() + "_" + accountId;
     }
 
-    public static String fromLegacyAccountId(String legacyAccountId) {
+    public static String accountIdOf(String legacyAccountId) {
         return legacyAccountId.substring(legacyAccountId.indexOf("_") + 1);
+    }
+
+    public static long connectionIdOf(String legacyAccountId) {
+        return Long.valueOf(legacyAccountId.substring(0,legacyAccountId.indexOf("_")));
     }
 }

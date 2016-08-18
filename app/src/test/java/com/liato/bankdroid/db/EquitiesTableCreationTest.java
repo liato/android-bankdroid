@@ -1,5 +1,6 @@
 package com.liato.bankdroid.db;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -11,6 +12,7 @@ import static org.junit.Assert.fail;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@Ignore("Test placeholder for documentation")
 public class EquitiesTableCreationTest
 {
 
