@@ -93,7 +93,6 @@ public class AccountsTableConstraintsTest {
         exception.expect(new ForeignKeyConstraintExceptionMatcher());
 
         db.insertOrThrow(ACCOUNTS_TABLE_NAME, null, account);
-
     }
 
     @Test

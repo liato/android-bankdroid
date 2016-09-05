@@ -76,31 +76,48 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
             db.execSQL("ALTER TABLE " + LegacyDatabase.BANK_TABLE_NAME + " ADD " +
                     LegacyDatabase.BANK_HIDE_ACCOUNTS + " integer;");
         }
-        if(oldVersion <= 11) {
+        if(oldVersion <= 11 && newVersion >= 12) {
             try {
+                disableForeignKeyConstraints(db);
                 db.beginTransaction();
                 db.execSQL(Database.TABLE_CONNECTION_PROPERTIES);
                 migrateProperties(db);
                 db.setTransactionSuccessful();
             } finally {
                 db.endTransaction();
+                enableForeignKeyConstraints(db);
             }
         }
-        if(oldVersion <= 12) {
+        if(oldVersion <= 12 && newVersion >= 13) {
             try {
+                disableForeignKeyConstraints(db);
                 db.beginTransaction();
                 migrateBanks(db);
                 migrateAccounts(db);
                 migrateTransactions(db);
+                migratePropertiesWithNewTableReference(db);
                 db.setTransactionSuccessful();
             } finally {
                 db.endTransaction();
+                enableForeignKeyConstraints(db);
             }
         }
     }
 
+
+
     @Override
     public void onConfigure(SQLiteDatabase db) {
+        enableForeignKeyConstraints(db);
+    }
+
+    private void disableForeignKeyConstraints(SQLiteDatabase db) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            db.setForeignKeyConstraintsEnabled(false);
+        }
+    }
+
+    private void enableForeignKeyConstraints(SQLiteDatabase db) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             db.setForeignKeyConstraintsEnabled(true);
         }
@@ -237,13 +254,13 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
                 usernameProperty.put(PROPERTY_CONNECTION_ID, id);
                 usernameProperty.put(PROPERTY_KEY, LegacyProviderConfiguration.USERNAME);
                 usernameProperty.put(PROPERTY_VALUE, c.getString(c.getColumnIndex(LegacyDatabase.BANK_USERNAME)));
-                db.insert(PROPERTY_TABLE_NAME, null, usernameProperty);
+                db.insertOrThrow(PROPERTY_TABLE_NAME, null, usernameProperty);
 
                 ContentValues passwordProperty = new ContentValues();
                 passwordProperty.put(PROPERTY_CONNECTION_ID, id);
                 passwordProperty.put(PROPERTY_KEY, LegacyProviderConfiguration.PASSWORD);
                 passwordProperty.put(PROPERTY_VALUE, c.getString(c.getColumnIndex(LegacyDatabase.BANK_PASSWORD)));
-                db.insert(PROPERTY_TABLE_NAME, null, passwordProperty);
+                db.insertOrThrow(PROPERTY_TABLE_NAME, null, passwordProperty);
 
                 String extras = c.getString(c.getColumnIndex(LegacyDatabase.BANK_EXTRAS));
                 if(extras != null && !extras.isEmpty()) {
@@ -251,11 +268,26 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
                     extrasProperty.put(PROPERTY_CONNECTION_ID, id);
                     extrasProperty.put(PROPERTY_KEY, LegacyProviderConfiguration.EXTRAS);
                     extrasProperty.put(PROPERTY_VALUE, extras);
-                    db.insert(PROPERTY_TABLE_NAME, null, extrasProperty);
+                    db.insertOrThrow(PROPERTY_TABLE_NAME, null, extrasProperty);
                 }
             }
             c.close();
         }
+        db.execSQL("DROP TABLE " + tempTable);
+    }
+
+    private void migratePropertiesWithNewTableReference(SQLiteDatabase db) {
+        String tempTable = Database.PROPERTY_TABLE_NAME + "_temp";
+        db.execSQL(
+                "ALTER TABLE " + Database.PROPERTY_TABLE_NAME + " RENAME TO " + tempTable
+                        + ";");
+
+        db.execSQL(Database.TABLE_CONNECTION_PROPERTIES);
+        db.execSQL("INSERT INTO " + Database.PROPERTY_TABLE_NAME + " SELECT "
+                + PROPERTY_CONNECTION_ID + ","
+                + PROPERTY_KEY + ","
+                + PROPERTY_VALUE
+                + " FROM " + tempTable);
         db.execSQL("DROP TABLE " + tempTable);
     }
 }

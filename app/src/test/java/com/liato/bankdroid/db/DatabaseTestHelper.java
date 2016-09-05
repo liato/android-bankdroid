@@ -11,6 +11,7 @@ import static android.database.sqlite.SQLiteDatabase.OPEN_READWRITE;
 
 public class DatabaseTestHelper {
 
+    private static final String EMPTY_v11_DB = "db/empty_v11.db";
     private static final String EMPTY_v12_DB = "db/empty_v12.db";
 
     private final SQLiteDatabase db;
@@ -38,7 +39,10 @@ public class DatabaseTestHelper {
     }
 
     private static String getPathForVersion(int version) {
-        if(version == 12) {
+        if(version == 11) {
+            return EMPTY_v11_DB;
+        }
+        else if(version == 12) {
             return EMPTY_v12_DB;
         }
         return null;

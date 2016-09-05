@@ -34,6 +34,9 @@ final class LegacyFixtures {
     static final int LEGACY_ACCOUNT_TYPE = IAccountTypes.REGULAR;
 
     static final String LEGACY_ACCOUNT_NOTIFY = "irrelevant_notification";
+    static final String LEGACY_BANK_USERNAME = "irrelevant_username";
+    static final String LEGACY_BANK_PASSWORD = "irrelevant_password";
+    static final String LEGACY_BANK_EXTRAS = "irrelevant_extras";
 
     private LegacyFixtures() {
     }
@@ -47,6 +50,21 @@ final class LegacyFixtures {
         values.put(LegacyDatabase.BANK_UPDATED, LEGACY_BANK_UPDATED);
         values.put(LegacyDatabase.BANK_SORT_ORDER, LEGACY_BANK_SORT_ORDER);
         values.put(LegacyDatabase.BANK_BALANCE, LEGACY_BANK_BALANCE);
+        return values;
+    }
+
+    static ContentValues version11Bank() {
+        ContentValues values = new ContentValues();
+        values.put(LegacyDatabase.BANK_ID, LEGACY_BANK_ID);
+        values.put(LegacyDatabase.BANK_CUSTOM_NAME, LEGACY_BANK_CUSTOM_NAME);
+        values.put(LegacyDatabase.BANK_TYPE, LEGACY_BANK_TYPE);
+        values.put(LegacyDatabase.BANK_DISABLED, LEGACY_BANK_DISABLED);
+        values.put(LegacyDatabase.BANK_UPDATED, LEGACY_BANK_UPDATED);
+        values.put(LegacyDatabase.BANK_SORT_ORDER, LEGACY_BANK_SORT_ORDER);
+        values.put(LegacyDatabase.BANK_BALANCE, LEGACY_BANK_BALANCE);
+        values.put(LegacyDatabase.BANK_USERNAME, LEGACY_BANK_USERNAME);
+        values.put(LegacyDatabase.BANK_PASSWORD, LEGACY_BANK_PASSWORD);
+        values.put(LegacyDatabase.BANK_EXTRAS, LEGACY_BANK_EXTRAS);
         return values;
     }
 

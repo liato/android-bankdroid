@@ -11,12 +11,6 @@ public class Database {
     public static final String PROPERTY_KEY = "property";
     public static final String PROPERTY_VALUE = "value";
 
-    static final String TABLE_CONNECTION_PROPERTIES = "CREATE TABLE " + PROPERTY_TABLE_NAME + " (" +
-            PROPERTY_CONNECTION_ID + " INTEGER REFERENCES " + LegacyDatabase.BANK_TABLE_NAME + "(" + LegacyDatabase.BANK_ID + ") ON DELETE CASCADE, " +
-            PROPERTY_KEY + " TEXT NOT NULL, " +
-            PROPERTY_VALUE + " TEXT, " +
-            "PRIMARY KEY (" + PROPERTY_CONNECTION_ID + "," + PROPERTY_KEY + "));";
-
     static final String CONNECTION_TABLE_NAME = "connections";
 
     static final String CONNECTION_ID = "_id";
@@ -138,6 +132,25 @@ public class Database {
             .append(TRANSACTION_ID)
             .append("));")
             .toString();
+
+    static final String TABLE_CONNECTION_PROPERTIES = new StringBuilder("CREATE TABLE ")
+            .append(PROPERTY_TABLE_NAME)
+            .append(" (")
+            .append(PROPERTY_CONNECTION_ID)
+            .append(" INTEGER NOT NULL REFERENCES ")
+            .append(CONNECTION_TABLE_NAME)
+            .append("(")
+            .append(CONNECTION_ID)
+            .append(") ON DELETE CASCADE, ")
+            .append(PROPERTY_KEY)
+            .append(" TEXT NOT NULL, ")
+            .append(PROPERTY_VALUE)
+            .append(" TEXT, ")
+            .append("PRIMARY KEY (")
+            .append(PROPERTY_CONNECTION_ID)
+            .append(",")
+            .append(PROPERTY_KEY)
+            .append("));").toString();
 
     private Database() {
     }
