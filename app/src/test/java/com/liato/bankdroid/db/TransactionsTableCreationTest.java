@@ -33,12 +33,12 @@ public class TransactionsTableCreationTest {
 
     private static final String LEGACY_TRANSACTION_AMOUNT = new BigDecimal(152).toPlainString();
 
-    private static final String LEGACY_TRANSACTION_CURRENCY = "not_relevant_transaction_currency";
+    private static final String LEGACY_TRANSACTION_CURRENCY = "irrelevant_transaction_currency";
 
-    private static final String LEGACY_TRANSACTION_DATE = "not_relevant_transaction_date";
+    private static final String LEGACY_TRANSACTION_DATE = "irrelevant_transaction_date";
 
     private static final String LEGACY_TRANSACTION_DESCRIPTION
-            = "not_relevant_transaction_description";
+            = "irrelevant_transaction_description";
 
     private DatabaseHelper underTest;
     private DatabaseTestHelper dbTestHelper;
