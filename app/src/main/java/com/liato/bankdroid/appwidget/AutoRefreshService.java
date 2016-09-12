@@ -280,7 +280,7 @@ public class AutoRefreshService extends Service {
 
         @NonNull
         protected DBAdapter getDBAdapter() {
-            return new DBAdapter(autoRefreshService);
+            return DBAdapter.create(AutoRefreshService.this);
         }
 
         protected void sendWidgetRefresh() {
