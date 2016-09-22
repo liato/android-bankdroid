@@ -31,7 +31,9 @@ import android.text.Html;
 import android.text.InputType;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,6 +56,10 @@ public class TestBank extends Bank {
     private static final int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
 
     private static final String INPUT_HINT_USERNAME = "ÅÅMMDD-XXXX";
+
+    private static final String VOLATILE_ACCOUNT_NAME = "Volatile";
+
+    private final Random random = new Random();
 
     private Pattern reAccounts = Pattern.compile(
             "<div>\\s*<span>([^<]+)</span>\\s*<span>([^<]+)</span>\\s*<span>([^<]+)</span>\\s*<span>([^<]+)</",
@@ -87,6 +93,30 @@ public class TestBank extends Bank {
         return urlopen;
     }
 
+    /**
+     * Adds a new account to the accounts list.
+     * <p/>
+     * If the account is already there it will have its balance updated.
+     * <p/>
+     * The purpose of this account is to test updates and how they propagate in the UI.
+     */
+    private void addVolatileAccount() {
+        Account volatileAccount = null;
+        for (Account account: accounts) {
+            if (VOLATILE_ACCOUNT_NAME.equals(account.getName())) {
+                volatileAccount = account;
+            }
+        }
+
+        if (volatileAccount == null) {
+            volatileAccount =
+                new Account(VOLATILE_ACCOUNT_NAME, BigDecimal.ZERO, VOLATILE_ACCOUNT_NAME);
+            accounts.add(volatileAccount);
+        }
+        double balance = Math.round(random.nextDouble() * 1000000) / 100;
+        volatileAccount.setBalance(BigDecimal.valueOf(balance));
+    }
+
     @Override
     public void update() throws BankException, LoginException, BankChoiceException, IOException {
         super.update();
@@ -105,7 +135,6 @@ public class TestBank extends Bank {
              * 2: Amount            83553,70
              * 3: ID                1
              * 4: Type              trans|fund
-             *
              */
             Account acc = new Account(Html.fromHtml(matcher.group(1)).toString().trim(),
                     Helpers.parseBalance(matcher.group(2)),
@@ -117,6 +146,8 @@ public class TestBank extends Bank {
             }
             accounts.add(acc);
         }
+
+        addVolatileAccount();
 
         if (accounts.isEmpty()) {
             throw new BankException(res.getText(R.string.no_accounts_found).toString());

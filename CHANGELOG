@@ -1,5 +1,8 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
+v1.9.10.8
+* Add a Volatile account to the Test Bank that always changes its balance.
+
 v1.9.10.7 (2016-08-18)
 * Update certificates for AmericanExpress and Coop
 
@@ -86,7 +89,7 @@ v1.9.8.0 (2015-02-27)
 * Fixes support for Nordea accounts with number in the account name
 * Fixes Swedbank and Sparbankerna if you have corporate credit card
 * Fixes www login for Coop
-* Fixes application crash if SonyEricsson's LiveView integration is enabled 
+* Fixes application crash if SonyEricsson's LiveView integration is enabled
 * Fixes application crash if screen is rotated during a bank update
 * Improved error handling
 * Disabled www-button for Swedbank and Sparbankerna
@@ -105,7 +108,7 @@ v1.9.7.4: (2015-02-21)
 * Fix for null currency for credit cards for Swedbank and Sparbankerna. Defaults to SEK.
 * Fix Handshake failed errors for FirstCard and PostGirot
 * Fix for credit card currency error for Nordea (thanks to Ree)
-* Fix for Västtrafik (thanks to jonasgroth) 
+* Fix for Västtrafik (thanks to jonasgroth)
 * Fix balance for Avanza (thanks to fredrike)
 
 v1.9.7.3: (2014-11-21)
@@ -344,7 +347,7 @@ v1.8.7: (2012-01-29)
 
 
 v1.8.6: (2012-01-29)
-* Fix for SEB 
+* Fix for SEB
 * Fix for LED color picker on pre ICS devices
 
 
@@ -479,13 +482,13 @@ v1.6.0: (2010-12-29)
 
 v1.5.3: (2010-12-21)
 + Support for Ikano Bank
-+ MedMera Faktura for Coop 
++ MedMera Faktura for Coop
 * Multiple accounts for Eurocard
 
 
 v1.5.2: (2010-12-18)
 + Support for Diners Club
-+ Transactions for Länsförsäkringar 
++ Transactions for Länsförsäkringar
 
 
 v1.5.1: (2010-12-15)
@@ -542,7 +545,7 @@ v1.4.0: (2010-11-02)
 + Support for First Card with transactions
 * Avanza was split into Avanza and AvanzaMini
 + Nordea credit cards (Visa Gold and others)
-+ Transactions for Coop MedMera Visa 
++ Transactions for Coop MedMera Visa
 * Statoil Mastercard fixed
 * Transactions for Handelsbanken fixed
 * A bit faster updates by skipping an unnecessary login when fetching transactions (thanks to DEGE)
