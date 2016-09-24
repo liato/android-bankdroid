@@ -18,6 +18,9 @@ repositories {
     maven { url 'https://maven.fabric.io/public' }
 }
 
+def keystorePropertiesFile = project.file("keystore.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
     compileSdkVersion 24
@@ -34,10 +37,10 @@ android {
 
     signingConfigs {
         release {
-            storeFile file("release.keystore")
-            storePassword ""
-            keyAlias "andmrkt"
-            keyPassword ""
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
         }
     }
 
@@ -55,26 +58,6 @@ android {
         disable 'InvalidPackage'
     }
 
-    // Get signing keys for release
-    gradle.taskGraph.whenReady { taskGraph ->
-        if(taskGraph.hasTask(':app:assembleRelease')) {
-            if(System.console() != null) { 
-                def keystorePassword = System.console().readPassword("\nEnter keystore password: ")
-                keystorePassword = new String(keystorePassword)
-                if(keystorePassword.isEmpty()) {
-                    throw new InvalidUserDataException("You must enter a keystore password to proceed.")
-                }
-                def password = System.console().readPassword("Enter key password: ")
-                password = new String(password)
-                if(password.isEmpty()) {
-                    throw new InvalidUserDataException("You must enter a password to proceed.")
-                }
-                android.signingConfigs.release.storePassword keystorePassword
-                android.signingConfigs.release.keyPassword password
-            }
-        }
-    }
-        
     buildTypes {
         release {
             minifyEnabled false
