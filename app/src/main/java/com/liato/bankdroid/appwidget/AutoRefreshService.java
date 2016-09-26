@@ -16,6 +16,19 @@
 
 package com.liato.bankdroid.appwidget;
 
+import com.crashlytics.android.Crashlytics;
+import com.liato.bankdroid.Helpers;
+import com.liato.bankdroid.MainActivity;
+import com.liato.bankdroid.R;
+import com.liato.bankdroid.banking.Account;
+import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.BankFactory;
+import com.liato.bankdroid.banking.exceptions.BankChoiceException;
+import com.liato.bankdroid.banking.exceptions.BankException;
+import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.db.DBAdapter;
+import com.liato.bankdroid.liveview.LiveViewService;
+
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
@@ -32,26 +45,15 @@ import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-
-import com.crashlytics.android.Crashlytics;
-import com.liato.bankdroid.Helpers;
-import com.liato.bankdroid.MainActivity;
-import com.liato.bankdroid.R;
-import com.liato.bankdroid.banking.Account;
-import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.BankFactory;
-import com.liato.bankdroid.banking.exceptions.BankChoiceException;
-import com.liato.bankdroid.banking.exceptions.BankException;
-import com.liato.bankdroid.banking.exceptions.LoginException;
-import com.liato.bankdroid.db.DBAdapter;
-import com.liato.bankdroid.liveview.LiveViewService;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 public class AutoRefreshService extends Service {
 
@@ -208,7 +210,7 @@ public class AutoRefreshService extends Service {
                 ni.isConnected() &&
                 shouldUpdateOnRoaming(ni)) {
             if (InsideUpdatePeriod()) {
-                new DataRetrieverTask().execute();
+                new DataRetrieverTask(this).execute();
             } else {
                 Log.v(TAG, "Skipping update due to not in update period.");
                 stopSelf();
@@ -253,32 +255,54 @@ public class AutoRefreshService extends Service {
         return null;
     }
 
-    private class DataRetrieverTask extends AsyncTask<String, String, Void> {
+    static class DataRetrieverTask extends AsyncTask<String, String, Void> {
 
-        SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(AutoRefreshService.this);
+        private final SharedPreferences prefs;
 
         private ArrayList<String> errors;
+        protected final AutoRefreshService autoRefreshService;
 
         private Resources res;
 
-        public DataRetrieverTask() {
+        // This constructor is for unit testing only
+        protected DataRetrieverTask(AutoRefreshService autoRefreshService, SharedPreferences prefs) {
+            this.autoRefreshService = autoRefreshService;
+            this.prefs = prefs;
+        }
+
+        public DataRetrieverTask(AutoRefreshService autoRefreshService) {
+            this(autoRefreshService,
+                    PreferenceManager.getDefaultSharedPreferences(autoRefreshService));
         }
 
         @Override
         protected void onPreExecute() {
         }
 
+        protected List<Bank> getBanks() {
+            return BankFactory.banksFromDb(autoRefreshService, true);
+        }
+
+        @NonNull
+        protected DBAdapter getDBAdapter() {
+            return new DBAdapter(autoRefreshService);
+        }
+
+        protected void sendWidgetRefresh() {
+            final Intent updateIntent = new Intent(BROADCAST_MAIN_REFRESH);
+            autoRefreshService.sendBroadcast(updateIntent);
+            AutoRefreshService.sendWidgetRefresh(autoRefreshService);
+        }
+
         @Override
         protected Void doInBackground(final String... args) {
             errors = new ArrayList<String>();
             Boolean refreshWidgets = false;
-            final ArrayList<Bank> banks = BankFactory.banksFromDb(
-                    AutoRefreshService.this, true);
+            final List<Bank> banks = getBanks();
             if (banks.isEmpty()) {
                 return null;
             }
-            final DBAdapter db = new DBAdapter(AutoRefreshService.this);
+            final DBAdapter db = getDBAdapter();
             BigDecimal currentBalance;
             BigDecimal diff;
             BigDecimal minDelta = new BigDecimal(prefs.getString("notify_min_delta", "0"));
@@ -304,6 +328,11 @@ public class AutoRefreshService extends Service {
                     }
                     bank.update();
                     diff = currentBalance.subtract(bank.getBalance());
+
+                    if (diff.compareTo(BigDecimal.ZERO) != 0) {
+                        refreshWidgets = true;
+                    }
+
                     if (diff.compareTo(new BigDecimal(0)) != 0
                             && diff.abs().compareTo(minDelta) != -1) {
                         Account oldAccount;
@@ -343,10 +372,8 @@ public class AutoRefreshService extends Service {
                                         diff = account.getBalance().subtract(
                                                 oldAccount.getBalance());
                                         showNotification(bank, account, diff,
-                                                AutoRefreshService.this);
+                                                autoRefreshService);
                                     }
-
-                                    refreshWidgets = true;
                                 }
                             }
                         }
@@ -362,7 +389,7 @@ public class AutoRefreshService extends Service {
                     // database transaction history
                     if (prefs.getBoolean("content_provider_enabled", false)) {
                         for (final Account account : bank.getAccounts()) {
-                            broadcastTransactionUpdate(getBaseContext(),
+                            broadcastTransactionUpdate(autoRefreshService.getBaseContext(),
                                     bank.getDbId(), account.getId());
                         }
                     }
@@ -385,9 +412,7 @@ public class AutoRefreshService extends Service {
             }
 
             if (refreshWidgets) {
-                final Intent updateIntent = new Intent(BROADCAST_MAIN_REFRESH);
-                sendBroadcast(updateIntent);
-                sendWidgetRefresh(AutoRefreshService.this);
+                sendWidgetRefresh();
             }
             return null;
         }
@@ -410,7 +435,7 @@ public class AutoRefreshService extends Service {
             Editor edit = prefs.edit();
             edit.putLong("autoupdates_last_update", System.currentTimeMillis());
             edit.commit();
-            AutoRefreshService.this.stopSelf();
+            autoRefreshService.stopSelf();
         }
     }
 }

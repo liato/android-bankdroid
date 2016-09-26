@@ -42,11 +42,12 @@ Development
   Mikael Eriksson                   https://github.com/mikaeler
   Mikael Auno                       https://github.com/auno
   robho                             https://github.com/robho
+  Johan Walles                      https://github.com/walles
 
 
   Stats at:
   https://github.com/liato/android-bankdroid/graphs/contributors?type=a
- 
+
 --------------------------------------------------------------------------------
 Beta testing
 --------------------------------------------------------------------------------
