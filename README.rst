@@ -1,9 +1,9 @@
 .. image:: https://travis-ci.org/liato/android-bankdroid.svg?branch=master
     :target: https://travis-ci.org/liato/android-bankdroid
 
-.. image:: https://badges.gitter.im/Join%20Chat.svg
-    :alt: Join the chat at https://gitter.im/liato/android-bankdroid
-    :target: https://gitter.im/liato/android-bankdroid?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+.. image:: https://bankdroid.herokuapp.com/badge.svg
+    :alt: Join the chat at https://bankdroid.herokuapp.com/
+    :target: https://bankdroid.herokuapp.com/
 
 Bankdroid
 =========
