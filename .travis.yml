@@ -1,5 +1,13 @@
 language: android
 jdk: oraclejdk8
+
+before_cache:
+  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+
 env:
   matrix:
     - ANDROID_TARGET=android-24  ANDROID_ABI=armeabi-v7a
@@ -11,7 +19,7 @@ android:
     - build-tools-24.0.1
     - android-24
     - extra-android-m2repository
-    
+
 script: ./gradlew assembleDebug check
 
 notifications:
