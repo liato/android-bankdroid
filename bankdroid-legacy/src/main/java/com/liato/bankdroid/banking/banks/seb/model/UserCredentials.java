@@ -2,7 +2,9 @@ package com.liato.bankdroid.banking.banks.seb.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class UserCredentials {
+import java.io.Serializable;
+
+public class UserCredentials implements Serializable {
 
     @JsonProperty("ApplicationName")
     private String applicationName;

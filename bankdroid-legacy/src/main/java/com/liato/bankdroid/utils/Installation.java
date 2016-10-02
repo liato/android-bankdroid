@@ -50,13 +50,13 @@ public class Installation {
         byte[] bytes = new byte[(int) f.length()];
         f.readFully(bytes);
         f.close();
-        return new String(bytes);
+        return StringUtils.toString(bytes);
     }
 
     private static void writeInstallationFile(File installation) throws IOException {
         FileOutputStream out = new FileOutputStream(installation);
         String id = UUID.randomUUID().toString();
-        out.write(id.getBytes());
+        out.write(StringUtils.getBytes(id));
         out.close();
     }
 }

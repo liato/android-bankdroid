@@ -39,6 +39,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.provider.IBankTypes;
+import com.liato.bankdroid.utils.StringUtils;
 
 import android.content.Context;
 import android.text.InputType;
@@ -154,7 +155,7 @@ public class Lansforsakringar extends Bank {
             String h = Integer.toHexString(
                     originalChallenge + (1000 * 20 / 4) + 100 * (18 / 3) + 10 * (2 / 2) + 6);
             MessageDigest md = MessageDigest.getInstance("SHA-1");
-            byte[] messageDigest = md.digest(h.getBytes());
+            byte[] messageDigest = md.digest(StringUtils.getBytes(h));
             BigInteger number = new BigInteger(1, messageDigest);
             String md5 = number.toString(16);
             while (md5.length() < 40) {

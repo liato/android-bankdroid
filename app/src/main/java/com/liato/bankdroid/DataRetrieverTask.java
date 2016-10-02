@@ -137,7 +137,7 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
 
     @Override
     protected void onProgressUpdate(final String... args) {
-        this.dialog.setProgress(new Integer(args[0]));
+        this.dialog.setProgress(Integer.parseInt(args[0]));
         this.dialog.setMessage(res.getText(R.string.updating_account_balance)
                 + "\n" + args[1]);
     }

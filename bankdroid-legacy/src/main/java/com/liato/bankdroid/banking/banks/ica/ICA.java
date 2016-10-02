@@ -28,6 +28,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.provider.IBankTypes;
+import com.liato.bankdroid.utils.StringUtils;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -89,7 +90,7 @@ public class ICA extends Bank {
         urlopen.addHeader("Accept", "application/json;charset=UTF-8");
         urlopen.addHeader("Content-Type", "application/json;charset=UTF-8");
         urlopen.addHeader("Authorization", "Basic " + Base64.encodeToString(
-                new String(getUsername() + ":" + getPassword()).getBytes(), Base64.NO_WRAP));
+                StringUtils.getBytes(getUsername() + ":" + getPassword()), Base64.NO_WRAP));
 
         try {
             HttpResponse httpResponse = urlopen.openAsHttpResponse(API_URL + "login",

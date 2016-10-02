@@ -36,7 +36,6 @@ import android.text.InputType;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -98,7 +97,6 @@ public class OKQ8 extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_okq8));
-        Date d = new Date();
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
         response = urlopen
                 .open("https://nettbank.edb.com/authenticate/login/basicauth?configKey=okq8");
