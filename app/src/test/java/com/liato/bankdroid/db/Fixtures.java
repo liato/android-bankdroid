@@ -2,6 +2,8 @@ package com.liato.bankdroid.db;
 
 import android.content.ContentValues;
 
+import org.joda.time.DateTime;
+
 import java.math.BigDecimal;
 
 import static com.liato.bankdroid.db.Database.ACCOUNT_BALANCE;
@@ -22,10 +24,11 @@ import static com.liato.bankdroid.db.Database.CONNECTION_SORT_ORDER;
 final class Fixtures {
 
     static final long VALID_CONNECTION_ID = 1;
-    static final String VALID_CONNECTION_LAST_UPDATED = "not_important";
+    static final long VALID_CONNECTION_LAST_UPDATED = DateTime.now().getMillis();
     static final String VALID_CONNECTION_NAME = "not_important";
     static final String VALID_CONNECTION_PROVIDER_ID = "not_important";
     static final long VALID_CONNECTION_SORT_ORDER = 2;
+    static final int VALID_CONNECTION_DISABLED = 0;
 
     static final String VALID_ACCOUNT_ID = "not_relevant_account_id";
 
@@ -48,7 +51,7 @@ final class Fixtures {
 
     static ContentValues createValidConnection() {
         ContentValues values = new ContentValues();
-        values.put(CONNECTION_ENABLED, true);
+        values.put(CONNECTION_ENABLED, VALID_CONNECTION_DISABLED);
         values.put(CONNECTION_ID, VALID_CONNECTION_ID);
         values.put(CONNECTION_LAST_UPDATED, VALID_CONNECTION_LAST_UPDATED);
         values.put(CONNECTION_NAME, VALID_CONNECTION_NAME);

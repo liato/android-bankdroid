@@ -307,7 +307,7 @@ public class MainActivity extends LockableActivity {
                                         public void onClick(final DialogInterface dialog,
                                                 final int id) {
                                             final DBAdapter db = DBAdapter.create(context);
-                                            db.deleteBank(selected_bank.getDbId());
+                                            db.deleteConnection(selected_bank.getDbId());
                                             dialog.cancel();
                                             parent.refreshView();
                                         }

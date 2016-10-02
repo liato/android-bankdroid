@@ -19,6 +19,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import java.io.IOException;
 
+import static com.liato.bankdroid.db.Fixtures.VALID_CONNECTION_DISABLED;
 import static com.liato.bankdroid.db.Fixtures.VALID_CONNECTION_ID;
 import static com.liato.bankdroid.db.Fixtures.VALID_CONNECTION_NAME;
 import static com.liato.bankdroid.db.Fixtures.VALID_CONNECTION_LAST_UPDATED;
@@ -72,11 +73,11 @@ public class ConnectionTableConstraintsTest {
         assertThat(actual.getString(actual.getColumnIndex(CONNECTION_NAME)), is(VALID_CONNECTION_NAME));
         assertThat(actual.getString(actual.getColumnIndex(CONNECTION_PROVIDER_ID)), is(
                 VALID_CONNECTION_PROVIDER_ID));
-        assertThat(actual.getString(actual.getColumnIndex(CONNECTION_LAST_UPDATED)), is(
+        assertThat(actual.getLong(actual.getColumnIndex(CONNECTION_LAST_UPDATED)), is(
                 VALID_CONNECTION_LAST_UPDATED));
         assertThat(actual.getLong(actual.getColumnIndex(CONNECTION_SORT_ORDER)), is(
                 VALID_CONNECTION_SORT_ORDER));
-        assertThat(actual.getInt(actual.getColumnIndex(CONNECTION_ENABLED)), is(ENABLED));
+        assertThat(actual.getInt(actual.getColumnIndex(CONNECTION_ENABLED)), is(VALID_CONNECTION_DISABLED));
     }
 
     @Test

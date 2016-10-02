@@ -28,10 +28,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 import timber.log.Timber;
 
-import static com.liato.bankdroid.db.Database.PROPERTY_CONNECTION_ID;
-import static com.liato.bankdroid.db.Database.PROPERTY_KEY;
-import static com.liato.bankdroid.db.Database.PROPERTY_TABLE_NAME;
-import static com.liato.bankdroid.db.Database.PROPERTY_VALUE;
+import java.text.SimpleDateFormat;
+
+import static com.liato.bankdroid.db.Database.*;
 
 /**
  * @since 8 jan 2011
@@ -158,6 +157,9 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private void migrateBanks(SQLiteDatabase db) {
+        // TODO migrate lastUpdated to use timestamp
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
         db.execSQL(Database.TABLE_CONNECTION);
         Cursor c = db.query(LegacyDatabase.BANK_TABLE_NAME, null, null, null,null,null,null);
         if (!(c == null || c.isClosed() || (c.isBeforeFirst() && c.isAfterLast()))) {

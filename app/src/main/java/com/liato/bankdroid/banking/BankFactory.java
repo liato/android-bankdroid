@@ -49,60 +49,24 @@ public class BankFactory {
     @Nullable
     public static Bank bankFromDb(long id, Context context, boolean loadAccounts) {
         Bank bank = null;
-        Cursor c = db.getBank(id);
         DBAdapter db = DBAdapter.create(context);
-
-        if (c != null && c.getCount() > 0) {
-            try {
-                bank = fromBanktypeId(c.getInt(c.getColumnIndex("banktype")), context);
-                bank.setProperties(loadProperties(id, context));
-
-                bank.setData(new BigDecimal(c.getString(c.getColumnIndex("balance"))),
-                        (c.getInt(c.getColumnIndex("disabled")) == 0 ? false : true),
-                        c.getLong(c.getColumnIndex("_id")),
-                        c.getString(c.getColumnIndex("currency")),
-                        c.getString(c.getColumnIndex("custname")),
-                        c.getInt(c.getColumnIndex("hideAccounts")));
-                if (loadAccounts) {
-                    bank.setAccounts(accountsFromDb(context, bank.getDbId()));
-                }
-            } catch (BankException e) {
-                Timber.w(e, "Failed getting bank from database");
-            } finally {
-                c.close();
-            }
+        try {
+            bank = db.getBank(id);
+        } catch (BankException e) {
+            Timber.w(e, "Failed getting bank from database");
         }
         return bank;
     }
 
     public static ArrayList<Bank> banksFromDb(Context context, boolean loadAccounts) {
-        ArrayList<Bank> banks = new ArrayList<Bank>();
+        ArrayList<Bank> banks = new ArrayList<>();
         DBAdapter db = DBAdapter.create(context);
-        Cursor c = db.fetchBanks();
-        if (c == null || c.getCount() == 0) {
-            return banks;
+        try {
+            banks.addAll(db.fetchBanks());
+        } catch (BankException ex) {
+            Timber.w(ex, "Failed getting bank from database");
         }
-        while (!c.isLast() && !c.isAfterLast()) {
-            c.moveToNext();
-            try {
-                Bank bank = fromBanktypeId(c.getInt(c.getColumnIndex("banktype")), context);
-                long id = c.getLong(c.getColumnIndex("_id"));
-                bank.setProperties(loadProperties(id, context));
-                bank.setData(new BigDecimal(c.getString(c.getColumnIndex("balance"))),
-                        (c.getInt(c.getColumnIndex("disabled")) == 0 ? false : true),
-                        id,
-                        c.getString(c.getColumnIndex("currency")),
-                        c.getString(c.getColumnIndex("custname")),
-                        c.getInt(c.getColumnIndex("hideAccounts")));
-                if (loadAccounts) {
-                    bank.setAccounts(accountsFromDb(context, bank.getDbId()));
-                }
-                banks.add(bank);
-            } catch (BankException e) {
-                //e.printStackTrace();
-            }
-        }
-        c.close();
+
         return banks;
     }
 
@@ -145,57 +109,5 @@ public class BankFactory {
             account.setTransactions(transactions);
         }
         return account;
-    }
-
-    public static ArrayList<Account> accountsFromDb(Context context, long bankId) {
-        ArrayList<Account> accounts = new ArrayList<Account>();
-        DBAdapter db = DBAdapter.create(context);
-        Cursor c = db.fetchAccounts(bankId);
-        if (c == null || c.getCount() == 0) {
-            return accounts;
-        }
-        while (!c.isLast() && !c.isAfterLast()) {
-            c.moveToNext();
-            try {
-                Account account = new Account(c.getString(c.getColumnIndex("name")),
-                        new BigDecimal(c.getString(c.getColumnIndex("balance"))),
-                        c.getString(c.getColumnIndex("id")).split("_", 2)[1],
-                        c.getLong(c.getColumnIndex("bankid")),
-                        c.getInt(c.getColumnIndex("acctype")));
-                account.setHidden(c.getInt(c.getColumnIndex("hidden")) == 1 ? true : false);
-                account.setNotify(c.getInt(c.getColumnIndex("notify")) == 1 ? true : false);
-                account.setCurrency(c.getString(c.getColumnIndex("currency")));
-                account.setAliasfor(c.getString(c.getColumnIndex("aliasfor")));
-                accounts.add(account);
-            } catch (ArrayIndexOutOfBoundsException e) {
-                // Attempted to load an account without and ID, probably an old Avanza account.
-            }
-        }
-        c.close();
-        return accounts;
-    }
-
-    private static Map<String, String> loadProperties(long id, Context context) {
-        Map<String, String> properties = new HashMap<>();
-        DBAdapter db = DBAdapter.create(context);
-        Cursor c = db.fetchProperties(Long.toString(id));
-        if(c == null || c.getCount() == 0) {
-            return properties;
-        }
-        while(!c.isLast() && !c.isAfterLast()) {
-            c.moveToNext();
-            String key = c.getString(c.getColumnIndex(Database.PROPERTY_KEY));
-            String value = c.getString(c.getColumnIndex(Database.PROPERTY_VALUE));
-            if(LegacyProviderConfiguration.PASSWORD.equals(key)) {
-                try {
-                    value = SimpleCrypto.decrypt(Crypto.getKey(), value);
-                } catch (Exception e) {
-                    Timber.w(e, "Failed decrypting bank properties");
-                }
-            }
-            properties.put(key, value);
-        }
-        c.close();
-        return properties;
     }
 }
