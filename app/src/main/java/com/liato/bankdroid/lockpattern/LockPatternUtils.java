@@ -31,6 +31,7 @@ import android.util.Log;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -85,26 +86,21 @@ public class LockPatternUtils {
     private final static String LOCKOUT_ATTEMPT_DEADLINE = "lockscreen.lockoutattemptdeadline";
 
     private final static String PATTERN_EVER_CHOSEN = "lockscreen.patterneverchosen";
+    private static final String CHARSET = "UTF-8";
 
     private static String sLockPatternFilename;
-
-    private static Context mContext;
 
     private static SharedPreferences mPrefs;
 
     private final ContentResolver mContentResolver;
 
-    /**
-     * @param contentResolver Used to look up and save settings.
-     */
     public LockPatternUtils(Context context) {
-        mContext = context;
         mContentResolver = context.getContentResolver();
         mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         // Initialize the location of gesture lock file
         if (sLockPatternFilename == null) {
             sLockPatternFilename = context.getFilesDir() + LOCK_PATTERN_FILE;
-            //sLockPatternFilename = android.os.Environment.getDataDirectory() 
+            //sLockPatternFilename = android.os.Environment.getDataDirectory()
             //        .getAbsolutePath() + LOCK_PATTERN_FILE;
         }
     }
@@ -118,7 +114,12 @@ public class LockPatternUtils {
     public static List<LockPatternView.Cell> stringToPattern(String string) {
         List<LockPatternView.Cell> result = Lists.newArrayList();
 
-        final byte[] bytes = string.getBytes();
+        final byte[] bytes;
+        try {
+            bytes = string.getBytes(CHARSET);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Internal error", e);
+        }
         for (int i = 0; i < bytes.length; i++) {
             byte b = bytes[i];
             result.add(LockPatternView.Cell.of(b / 3, b % 3));
@@ -143,7 +144,11 @@ public class LockPatternUtils {
             LockPatternView.Cell cell = pattern.get(i);
             res[i] = (byte) (cell.getRow() * 3 + cell.getColumn());
         }
-        return new String(res);
+        try {
+            return new String(res, CHARSET);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Internal error", e);
+        }
     }
 
     /*

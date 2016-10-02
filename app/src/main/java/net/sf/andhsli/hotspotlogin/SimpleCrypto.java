@@ -5,6 +5,7 @@
 
 package net.sf.andhsli.hotspotlogin;
 
+import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
 
 import javax.crypto.Cipher;
@@ -24,19 +25,21 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class SimpleCrypto {
 
+    private final static String UTF8 = "UTF-8";
+
     private final static String HEX = "0123456789ABCDEF";
 
     public static String encrypt(String seed, String cleartext) throws Exception {
-        byte[] rawKey = getRawKey(seed.getBytes());
-        byte[] result = encrypt(rawKey, cleartext.getBytes());
+        byte[] rawKey = getRawKey(toUtf8Bytes(seed));
+        byte[] result = encrypt(rawKey, toUtf8Bytes(cleartext));
         return toHex(result);
     }
 
     public static String decrypt(String seed, String encrypted) throws Exception {
-        byte[] rawKey = getRawKey(seed.getBytes());
+        byte[] rawKey = getRawKey(toUtf8Bytes(seed));
         byte[] enc = toByte(encrypted);
         byte[] result = decrypt(rawKey, enc);
-        return new String(result);
+        return toUtf8String(result);
     }
 
     private static byte[] getRawKey(byte[] seed) throws Exception {
@@ -71,11 +74,11 @@ public class SimpleCrypto {
     }
 
     public static String toHex(String txt) {
-        return toHex(txt.getBytes());
+        return toHex(toUtf8Bytes(txt));
     }
 
     public static String fromHex(String hex) {
-        return new String(toByte(hex));
+        return toUtf8String(toByte(hex));
     }
 
     public static byte[] toByte(String hexString) {
@@ -102,4 +105,19 @@ public class SimpleCrypto {
         sb.append(HEX.charAt((b >> 4) & 0x0f)).append(HEX.charAt(b & 0x0f));
     }
 
+    private static byte[] toUtf8Bytes(String string) {
+        try {
+            return string.getBytes(UTF8);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Internal error", e);
+        }
+    }
+
+    private static String toUtf8String(byte[] bytes) {
+        try {
+            return new String(bytes, UTF8);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Internal error", e);
+        }
+    }
 }
