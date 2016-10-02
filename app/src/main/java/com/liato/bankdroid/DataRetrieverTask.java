@@ -29,15 +29,19 @@ import com.liato.bankdroid.utils.NetworkUtils;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class DataRetrieverTask extends AsyncTask<String, String, Void> {
 
@@ -50,8 +54,6 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
     private final Resources res;
 
     private ArrayList<String> errors;
-
-    private int bankcount;
 
     private long bankId = -1;
 
@@ -68,37 +70,68 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
 
     @Override
     protected void onPreExecute() {
-        this.dialog.setMessage(res.getText(R.string.updating_account_balance)
+        getDialog().setMessage(res.getText(R.string.updating_account_balance)
                 + "\n ");
-        this.dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        this.dialog.setCancelable(false);
-        this.dialog.show();
+        getDialog().setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        getDialog().setCancelable(false);
+        getDialog().show();
+    }
+
+    @NonNull
+    protected ProgressDialog getDialog() {
+        return this.dialog;
+    }
+
+    protected Bank getBankFromDb(long bankId, Context parent) {
+        return BankFactory.bankFromDb(bankId, parent, true);
+    }
+
+    protected List<Bank> getBanksFromDb(Context parent) {
+        return BankFactory.banksFromDb(parent, true);
+    }
+
+    protected void saveBank(Bank bank, Context context) {
+        DBAdapter.save(bank, parent);
+    }
+
+    protected void publishProgress(int zeroBasedBankNumber, @Nullable Bank bank) {
+        String text = "";
+        if (bank != null) {
+            text = bank.getName() + " (" + bank.getUsername() + ")";
+        }
+        publishProgress(Integer.toString(zeroBasedBankNumber), text);
+    }
+
+    protected boolean isContentProviderEnabled() {
+        final SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(parent);
+        return prefs.getBoolean("content_provider_enabled", false);
     }
 
     @Override
     protected Void doInBackground(final String... args) {
-        errors = new ArrayList<String>();
-        ArrayList<Bank> banks;
+        errors = new ArrayList<>();
+        List<Bank> banks;
         if (bankId != -1) {
-            banks = new ArrayList<Bank>();
-            banks.add(BankFactory.bankFromDb(bankId, parent, true));
+            banks = new ArrayList<>();
+            banks.add(getBankFromDb(bankId, parent));
         } else {
-            banks = BankFactory.banksFromDb(parent, true);
+            banks = getBanksFromDb(parent);
         }
-        bankcount = banks.size();
-        this.dialog.setMax(bankcount);
+        getDialog().setMax(banks.size());
         int i = 0;
         for (final Bank bank : banks) {
-            publishProgress(new String[]{new Integer(i).toString(),
-                    bank.getName() + " (" + bank.getUsername() + ")"});
-            if (bank.isDisabled()) {
+            publishProgress(i, bank);
+
+            if (isListingAllBanks() && bank.isDisabled()) {
                 continue;
             }
+
             try {
                 bank.update();
                 bank.updateAllTransactions();
                 bank.closeConnection();
-                DBAdapter.save(bank, parent);
+                saveBank(bank, parent);
                 i++;
             } catch (final BankException e) {
                 this.errors.add(bank.getName() + " (" + bank.getUsername()
@@ -121,9 +154,7 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
                 }
             }
 
-            final SharedPreferences prefs = PreferenceManager
-                    .getDefaultSharedPreferences(parent);
-            if (prefs.getBoolean("content_provider_enabled", false)) {
+            if (isContentProviderEnabled()) {
                 final ArrayList<Account> accounts = bank.getAccounts();
                 for (final Account account : accounts) {
                     AutoRefreshService.broadcastTransactionUpdate(parent,
@@ -131,14 +162,18 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
                 }
             }
         }
-        publishProgress(new String[]{new Integer(i).toString(), ""});
+        publishProgress(i, null);
         return null;
+    }
+
+    private boolean isListingAllBanks() {
+        return bankId == -1;
     }
 
     @Override
     protected void onProgressUpdate(final String... args) {
-        this.dialog.setProgress(Integer.parseInt(args[0]));
-        this.dialog.setMessage(res.getText(R.string.updating_account_balance)
+        getDialog().setProgress(Integer.parseInt(args[0]));
+        getDialog().setMessage(res.getText(R.string.updating_account_balance)
                 + "\n" + args[1]);
     }
 
@@ -146,12 +181,12 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
     protected void onPostExecute(final Void unused) {
         parent.refreshView();
         AutoRefreshService.sendWidgetRefresh(parent);
-        ActivityHelper.dismissDialog(this.dialog);
+        ActivityHelper.dismissDialog(getDialog());
 
         if ((this.errors != null) && !this.errors.isEmpty()) {
             final StringBuilder errormsg = new StringBuilder();
-            errormsg.append(res.getText(R.string.accounts_were_not_updated)
-                    + ":\n");
+            errormsg.append(res.getText(R.string.accounts_were_not_updated))
+                    .append(":\n");
             for (final String err : errors) {
                 errormsg.append(err);
                 errormsg.append("\n");
