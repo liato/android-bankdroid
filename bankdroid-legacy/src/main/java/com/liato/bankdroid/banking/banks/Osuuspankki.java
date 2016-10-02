@@ -123,7 +123,7 @@ public class Osuuspankki extends Bank {
              * 3: Account name          FI91 5553 5140 0165 27
              * 4: Amount                +882,35
              * 5: Currency              &nbsp;&euro;
-             * 
+             *
              */
             String currency = Helpers.parseCurrency(
                     Html.fromHtml(matcher.group(5)).toString().trim(), "EUR");
@@ -167,7 +167,7 @@ public class Osuuspankki extends Bank {
              * 5: Amount in EUR         -3,99
              *
              */
-            String[] date = Html.fromHtml(matcher.group(2)).toString().trim().split(".");
+            String[] date = Html.fromHtml(matcher.group(2)).toString().trim().split("\\.");
             Transaction transaction = new Transaction(Helpers.getTransactionDate(date[1], date[0]),
                     Html.fromHtml(matcher.group(3)).toString().trim(),
                     Helpers.parseBalance(matcher.group(5)));

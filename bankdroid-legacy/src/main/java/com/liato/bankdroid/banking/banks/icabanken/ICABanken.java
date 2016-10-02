@@ -146,7 +146,7 @@ public class ICABanken extends Bank {
             alias.setAliasfor(icaAccount.getAccountId());
             accounts.add(account);
             accounts.add(alias);
-            balance.add(account.getBalance());
+            balance = balance.add(account.getBalance());
         }
     }
 

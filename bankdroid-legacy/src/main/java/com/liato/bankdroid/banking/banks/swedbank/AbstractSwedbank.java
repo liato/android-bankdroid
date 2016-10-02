@@ -23,6 +23,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.utils.Installation;
+import com.liato.bankdroid.utils.StringUtils;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -38,7 +39,6 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -316,16 +316,10 @@ public abstract class AbstractSwedbank extends Bank {
     }
 
     private String getAuthenticationHeader() {
-        try {
-            byte[] data = new StringBuilder(getAppId())
-                    .append(':')
-                    .append(Installation.id(context))
-                    .toString().getBytes("UTF-8");
-            return Base64.encodeToString(data, Base64.NO_WRAP);
-        } catch (UnsupportedEncodingException e) {
-            // Ignore
-        }
-        return null;
+        byte[] data = StringUtils.getBytes(getAppId() +
+                ':' +
+                Installation.id(context));
+        return Base64.encodeToString(data, Base64.NO_WRAP);
     }
 
     private String getResourceUri(String resource) {

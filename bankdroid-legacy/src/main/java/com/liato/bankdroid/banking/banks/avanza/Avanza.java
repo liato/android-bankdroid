@@ -30,6 +30,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.provider.IBankTypes;
+import com.liato.bankdroid.utils.StringUtils;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -38,7 +39,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.Base64;
 
 import java.io.IOException;
@@ -97,7 +97,7 @@ public class Avanza extends Bank {
                 CertificateReader.getCertificates(context, R.raw.cert_avanza));
         urlopen.addHeader("ctag", "1122334455");
         urlopen.addHeader("Authorization", "Basic " + Base64.encodeToString(
-                new String(getUsername() + ":" + getPassword()).getBytes(), Base64.NO_WRAP));
+                StringUtils.getBytes(getUsername() + ":" + getPassword()), Base64.NO_WRAP));
         balance = new BigDecimal(0);
 
         try {

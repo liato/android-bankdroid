@@ -18,6 +18,8 @@ package com.liato.bankdroid.lockpattern;
 
 import com.google.common.collect.Lists;
 
+import com.liato.bankdroid.utils.StringUtils;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -88,23 +90,17 @@ public class LockPatternUtils {
 
     private static String sLockPatternFilename;
 
-    private static Context mContext;
-
     private static SharedPreferences mPrefs;
 
     private final ContentResolver mContentResolver;
 
-    /**
-     * @param contentResolver Used to look up and save settings.
-     */
     public LockPatternUtils(Context context) {
-        mContext = context;
         mContentResolver = context.getContentResolver();
         mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         // Initialize the location of gesture lock file
         if (sLockPatternFilename == null) {
             sLockPatternFilename = context.getFilesDir() + LOCK_PATTERN_FILE;
-            //sLockPatternFilename = android.os.Environment.getDataDirectory() 
+            //sLockPatternFilename = android.os.Environment.getDataDirectory()
             //        .getAbsolutePath() + LOCK_PATTERN_FILE;
         }
     }
@@ -118,7 +114,7 @@ public class LockPatternUtils {
     public static List<LockPatternView.Cell> stringToPattern(String string) {
         List<LockPatternView.Cell> result = Lists.newArrayList();
 
-        final byte[] bytes = string.getBytes();
+        final byte[] bytes = StringUtils.getBytes(string);
         for (int i = 0; i < bytes.length; i++) {
             byte b = bytes[i];
             result.add(LockPatternView.Cell.of(b / 3, b % 3));
@@ -143,7 +139,7 @@ public class LockPatternUtils {
             LockPatternView.Cell cell = pattern.get(i);
             res[i] = (byte) (cell.getRow() * 3 + cell.getColumn());
         }
-        return new String(res);
+        return StringUtils.toString(res);
     }
 
     /*
@@ -389,6 +385,4 @@ public class LockPatternUtils {
         editor.putLong(systemSettingKey, value);
         editor.commit();
     }
-
-
 }

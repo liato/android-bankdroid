@@ -168,7 +168,7 @@ public class ColorPickerView extends View {
     }
 
     private void init() {
-        if (Integer.valueOf(android.os.Build.VERSION.SDK) >= 11) {
+        if (Integer.parseInt(android.os.Build.VERSION.SDK) >= 11) {
             setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         }
         mDensity = getContext().getResources().getDisplayMetrics().density;

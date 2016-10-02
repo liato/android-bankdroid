@@ -5,6 +5,8 @@
 
 package net.sf.andhsli.hotspotlogin;
 
+import com.liato.bankdroid.utils.StringUtils;
+
 import java.security.SecureRandom;
 
 import javax.crypto.Cipher;
@@ -27,16 +29,16 @@ public class SimpleCrypto {
     private final static String HEX = "0123456789ABCDEF";
 
     public static String encrypt(String seed, String cleartext) throws Exception {
-        byte[] rawKey = getRawKey(seed.getBytes());
-        byte[] result = encrypt(rawKey, cleartext.getBytes());
+        byte[] rawKey = getRawKey(StringUtils.getBytes(seed));
+        byte[] result = encrypt(rawKey, StringUtils.getBytes(cleartext));
         return toHex(result);
     }
 
     public static String decrypt(String seed, String encrypted) throws Exception {
-        byte[] rawKey = getRawKey(seed.getBytes());
+        byte[] rawKey = getRawKey(StringUtils.getBytes(seed));
         byte[] enc = toByte(encrypted);
         byte[] result = decrypt(rawKey, enc);
-        return new String(result);
+        return StringUtils.toString(result);
     }
 
     private static byte[] getRawKey(byte[] seed) throws Exception {
@@ -70,14 +72,6 @@ public class SimpleCrypto {
         return decrypted;
     }
 
-    public static String toHex(String txt) {
-        return toHex(txt.getBytes());
-    }
-
-    public static String fromHex(String hex) {
-        return new String(toByte(hex));
-    }
-
     public static byte[] toByte(String hexString) {
         int len = hexString.length() / 2;
         byte[] result = new byte[len];
@@ -101,5 +95,4 @@ public class SimpleCrypto {
     private static void appendHex(StringBuffer sb, byte b) {
         sb.append(HEX.charAt((b >> 4) & 0x0f)).append(HEX.charAt(b & 0x0f));
     }
-
 }
