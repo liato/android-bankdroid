@@ -40,9 +40,6 @@ import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.provider.IBankTypes;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-
 import android.content.Context;
 import android.text.InputType;
 
@@ -55,10 +52,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
@@ -71,9 +65,6 @@ public class Lansforsakringar extends Bank {
 
     private static final String NAME_SHORT = "lansforsakringar";
 
-    private static final String URL
-            = "https://mobil.lansforsakringar.se/lf-mobile/pages/login.faces";
-
     private static final int BANKTYPE_ID = IBankTypes.LANSFORSAKRINGAR;
 
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
@@ -84,16 +75,9 @@ public class Lansforsakringar extends Bank {
 
     private static final String API_BASEURL = "https://mobil.lansforsakringar.se/appoutlet/";
 
-    private Pattern reViewState = Pattern.compile(
-            "(?:__|javax\\.faces\\.)VIEWSTATE\"\\s+.*?value=\"([^\"]+)\"",
-            Pattern.CASE_INSENSITIVE);
-
-    private Pattern reLoginToken = Pattern.compile("login:loginToken\"\\s+.*?value=\"([^\"]+)\"",
-            Pattern.CASE_INSENSITIVE);
-
     private ObjectMapper mObjectMapper = new ObjectMapper();
 
-    private HashMap<String, String> mAccountLedger = new HashMap<String, String>();
+    private HashMap<String, String> mAccountLedger = new HashMap<>();
 
     public Lansforsakringar(Context context) {
         super(context);
@@ -101,52 +85,12 @@ public class Lansforsakringar extends Bank {
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
         super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
         super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
         super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
         mObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mObjectMapper.configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false);
         mObjectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-    }
-
-    public Lansforsakringar(String username, String password, Context context) throws BankException,
-            LoginException, BankChoiceException, IOException {
-        this(context);
-        this.update(username, password);
-    }
-
-    @Override
-    protected LoginPackage preLogin() throws BankException, IOException {
-        Urllib weblogin = new Urllib(context,
-                CertificateReader.getCertificates(context, R.raw.cert_lansforsakringar));
-        weblogin.setAllowCircularRedirects(true);
-
-        String response = weblogin.open(
-                "https://mobil.lansforsakringar.se/lf-mobile/pages/login.faces");
-        Matcher matcher = reViewState.matcher(response);
-        if (!matcher.find()) {
-            throw new BankException(
-                    res.getText(R.string.unable_to_find).toString() + " ViewState.");
-        }
-        String viewState = matcher.group(1);
-        matcher = reLoginToken.matcher(response);
-        if (!matcher.find()) {
-            throw new BankException(
-                    res.getText(R.string.unable_to_find).toString() + " LoginToken.");
-        }
-        String loginToken = matcher.group(1);
-
-        List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("login:userId", getUsername()));
-        postData.add(new BasicNameValuePair("login:pin", getPassword()));
-        postData.add(new BasicNameValuePair("login", "login"));
-        postData.add(new BasicNameValuePair("javax.faces.ViewState", viewState));
-        postData.add(
-                new BasicNameValuePair("login:time", Long.toString(System.currentTimeMillis())));
-        postData.add(new BasicNameValuePair("login:loginToken", loginToken));
-        postData.add(new BasicNameValuePair("login:loginButton", "login:loginButton"));
-        return new LoginPackage(weblogin, postData, response, weblogin.getCurrentURI());
     }
 
     public Urllib login() throws LoginException, BankException, IOException {
@@ -196,7 +140,7 @@ public class Lansforsakringar extends Bank {
         return readJsonValue(urlopen.openStream(url, postData, false), valueType);
     }
 
-    public String objectAsJson(Object value) {
+    private String objectAsJson(Object value) {
         try {
             return mObjectMapper.writeValueAsString(value);
         } catch (JsonProcessingException e) {
@@ -271,7 +215,7 @@ public class Lansforsakringar extends Bank {
             return;
         }
 
-        ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+        ArrayList<Transaction> transactions = new ArrayList<>();
         //TODO: Get upcoming transactions?
         //TransactionsResponse tr = readJsonValue(API_BASEURL + "account/upcoming", objectAsJson(new UpcomingTransactionsRequest(account.getId())), TransactionsResponse.class);
 

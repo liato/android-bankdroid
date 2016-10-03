@@ -33,6 +33,7 @@ import org.apache.http.client.CookieStore;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
+import android.support.annotation.Nullable;
 import android.text.InputType;
 import android.util.Log;
 
@@ -58,6 +59,15 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
 
     protected int BANKTYPE_ID = 0;
 
+    /**
+     * URL for human-accessible web bank.
+     * <p/>
+     * Can be set to null to disable. Lots of banks don't have this any more, but have
+     * apps instead.
+     * <p/>
+     * @see #isWebViewEnabled()
+     */
+    @Nullable
     protected String URL;
 
     protected int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT;
@@ -87,6 +97,13 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
 
     protected boolean DISPLAY_DECIMALS = true;
 
+    /**
+     * Whether or not we support opening the web version of a bank.
+     * <p/>
+     * Lots of banks don't have this any more, but have apps instead.
+     * @see #isWebViewEnabled()
+     * @see #URL
+     */
     protected boolean WEB_VIEW_ENABLED = true;
 
     protected Context context;
@@ -335,8 +352,15 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         return INPUT_TITLETEXT_EXTRAS;
     }
 
+    /**
+     * Whether or not we support opening the web version of a bank.
+     * <p/>
+     * Lots of banks don't have this any more, but have apps instead.
+     * @see #WEB_VIEW_ENABLED
+     * @see #URL
+     */
     public boolean isWebViewEnabled() {
-        return WEB_VIEW_ENABLED;
+        return URL != null && WEB_VIEW_ENABLED;
     }
 
     public Map<String, String> getProperties() {

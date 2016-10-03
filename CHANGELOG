@@ -1,5 +1,9 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
+v1.9.10.9
+* Länsförsäkringar: Remove broken web links
+* Improve Javadocs in the Bank class
+
 v1.9.10.8 (2016-09-29)
 * Add a Volatile account to the Test Bank that always changes its balance.
 * Fix widget not updating when the balance change was lower than the notification threshold.
