@@ -48,7 +48,6 @@ import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultRedirectHandler;
 import org.apache.http.impl.client.DefaultRequestDirector;
@@ -204,7 +203,6 @@ public class Urllib {
         HttpResponse response;
         String[] headerKeys = (String[]) this.headers.keySet().toArray(new String[headers.size()]);
         String[] headerVals = (String[]) this.headers.values().toArray(new String[headers.size()]);
-        ResponseHandler<String> responseHandler = new BasicResponseHandler();
         HttpUriRequest request;
         switch (method) {
             case GET:

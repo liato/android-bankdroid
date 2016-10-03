@@ -114,7 +114,7 @@ public class Zidisha extends Bank {
 
     public Urllib login() throws LoginException, BankException, IOException {
         LoginPackage lp = preLogin();
-        String response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
+        response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
         return urlopen;
     }
 
