@@ -25,6 +25,7 @@ import android.content.SharedPreferences.Editor;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -114,12 +115,7 @@ public class LockPatternUtils {
     public static List<LockPatternView.Cell> stringToPattern(String string) {
         List<LockPatternView.Cell> result = Lists.newArrayList();
 
-        final byte[] bytes;
-        try {
-            bytes = string.getBytes(CHARSET);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("Internal error", e);
-        }
+        final byte[] bytes = getBytes(string);
         for (int i = 0; i < bytes.length; i++) {
             byte b = bytes[i];
             result.add(LockPatternView.Cell.of(b / 3, b % 3));
@@ -144,11 +140,7 @@ public class LockPatternUtils {
             LockPatternView.Cell cell = pattern.get(i);
             res[i] = (byte) (cell.getRow() * 3 + cell.getColumn());
         }
-        try {
-            return new String(res, CHARSET);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("Internal error", e);
-        }
+        return getString(res);
     }
 
     /*
@@ -395,5 +387,20 @@ public class LockPatternUtils {
         editor.commit();
     }
 
+    private static byte[] getBytes(String string) {
+        try {
+            return string.getBytes(CHARSET);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Internal error", e);
+        }
+    }
 
+    @NonNull
+    private static String getString(byte[] res) {
+        try {
+            return new String(res, CHARSET);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Internal error", e);
+        }
+    }
 }
