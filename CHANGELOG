@@ -5,6 +5,7 @@ v1.9.10.9
 * Improve Javadocs in the Bank class
 * Make successfully refreshing a disabled bank re-enable it
 * Östgötatrafiken: Update certificate
+* Östgötatrafiken: Adapt to changed web page
 * Skip Server Name Indication (SNI) when refreshing bank certificates to avoid certificate mismatches (bankdroid doesn't use SNI)
 
 v1.9.10.8 (2016-09-29)
