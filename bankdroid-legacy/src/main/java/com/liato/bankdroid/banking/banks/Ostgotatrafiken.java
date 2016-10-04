@@ -66,7 +66,7 @@ public class Ostgotatrafiken extends Bank {
     private Pattern reCardName = Pattern.compile("<li class=\"selected\">.*?>(\\w+?)</span>",
             Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
-    private Pattern reCardBalance = Pattern.compile(">Saldo<.*?>\\s*(\\d+)\\s*kr\\s*</span>",
+    private Pattern reCardBalance = Pattern.compile(">Saldo.*?>\\s*(\\d+)\\s*kr\\s*</span>",
             Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
     private String response = null;
