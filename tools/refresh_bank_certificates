@@ -50,9 +50,6 @@ def get_pem_certificate(host):
             s.connect(host)
             ssl_connection = ssl.Connection(ssl.Context(ssl_method), s)
             ssl_connection.set_connect_state()
-            # Some servers require "Server Name Indication" to be set
-            # in the client's TLS hello
-            ssl_connection.set_tlsext_host_name(host[0])
 
             handshake_start_time = time.time()
             while time.time() - handshake_start_time < CONNECTION_TIMEOUT:
