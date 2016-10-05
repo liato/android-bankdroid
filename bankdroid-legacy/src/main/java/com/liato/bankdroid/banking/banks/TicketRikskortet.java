@@ -65,7 +65,7 @@ public class TicketRikskortet extends Bank {
             Pattern.CASE_INSENSITIVE);
 
     private Pattern reTransactions = Pattern.compile(
-            "(\\d{4}-\\d{2}-\\d{2})\\s\\d{2}:\\d{2}:\\d{2}</td><td[^>]+>([^<]+)</td><td[^>]+>([^<]+)</td>",
+            "(\\d{4}-\\d{2}-\\d{2})</td><td[^>]+>([^<]+)</td><td[^>]+>([^<]+)</td>",
             Pattern.CASE_INSENSITIVE);
 
     private String response = null;

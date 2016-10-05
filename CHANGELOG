@@ -6,6 +6,7 @@ v1.9.10.9
 * Make successfully refreshing a disabled bank re-enable it
 * Östgötatrafiken: Update certificate
 * Skip Server Name Indication (SNI) when refreshing bank certificates to avoid certificate mismatches (bankdroid doesn't use SNI)
+* Ticket Rikskortet: Adapt to changed web page
 
 v1.9.10.8 (2016-09-29)
 * Add a Volatile account to the Test Bank that always changes its balance.
