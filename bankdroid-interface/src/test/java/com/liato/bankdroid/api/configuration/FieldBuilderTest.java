@@ -18,15 +18,6 @@ public class FieldBuilderTest {
     private static final String MISSING_KEY_BUNDLE = "com.liato.bankdroid.api.configuration.missingKeyFieldBuilderTest";
 
     @Test
-    public void testDefaultLocaleFieldBuilder() {
-        FieldBuilder builder = new FieldBuilder(REFERENCE, PropertyResourceBundle.getBundle(DEFAULT_BUNDLE));
-        Field field = builder.build();
-
-        assertEquals("defaultPlaceholder",field.getPlaceholder());
-        assertEquals("defaultLabel", field.getLabel());
-    }
-
-    @Test
     public void testMissingKeyLocaleFieldBuilder() {
         FieldBuilder builder = new FieldBuilder(REFERENCE, PropertyResourceBundle.getBundle(MISSING_KEY_BUNDLE));
         Field field = builder.build();
