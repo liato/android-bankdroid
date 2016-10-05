@@ -78,6 +78,11 @@ public class AndroidConnectionRepositoryTest {
 
     }
 
+    @Test
+    public void saving_a_connection_will_persist_it_to_the_database() {
+        fail();
+    }
+
     private ContentValues createValidProperty(long expectedConnectionId) {
         ContentValues values = new ContentValues();
         values.put(Database.PROPERTY_CONNECTION_ID, expectedConnectionId);

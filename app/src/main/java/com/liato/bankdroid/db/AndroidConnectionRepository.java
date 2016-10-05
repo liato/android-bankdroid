@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.bankdroid.core.repository.AccountEntity;
 import com.bankdroid.core.repository.ConnectionEntity;
 import com.bankdroid.core.repository.ConnectionRepository;
+import com.bankdroid.core.repository.TransactionEntity;
 import com.liato.bankdroid.banking.LegacyProviderConfiguration;
 
 import net.sf.andhsli.hotspotlogin.SimpleCrypto;
@@ -24,10 +25,12 @@ public class AndroidConnectionRepository implements ConnectionRepository {
 
     private final SQLiteDatabase db;
     private final ConnectionEntityTransformer connectionEntityTransformer;
+    private final AccountEntityTransformer accountEntityTransformer;
 
     public AndroidConnectionRepository(SQLiteDatabase db) {
         this.db = db;
         connectionEntityTransformer = new ConnectionEntityTransformer();
+        accountEntityTransformer = new AccountEntityTransformer();
     }
 
     @Override
@@ -51,8 +54,10 @@ public class AndroidConnectionRepository implements ConnectionRepository {
 
     private ConnectionEntity asConnectionEntity(Cursor cursor) {
         ContentValues values = asContentValues(cursor);
+        long connectionId = values.getAsLong(Database.CONNECTION_ID);
         return connectionEntityTransformer.transform(values)
-                .properties(propertiesFor(values.getAsLong(Database.CONNECTION_ID)))
+                .properties(propertiesFor(connectionId))
+                .accounts(accountsFor(connectionId))
                 .build();
     }
 
@@ -62,6 +67,7 @@ public class AndroidConnectionRepository implements ConnectionRepository {
         return values;
     }
 
+    // TODO decrypt password
     private Map<String, String> propertiesFor(long connectionId) {
         Cursor cursor = null;
         try {
@@ -72,10 +78,16 @@ public class AndroidConnectionRepository implements ConnectionRepository {
                 Map<String, String> properties = new HashMap<>();
                 while (!cursor.isLast() && !cursor.isAfterLast()) {
                     cursor.moveToNext();
-                    properties.put(
-                            cursor.getString(cursor.getColumnIndex(Database.PROPERTY_KEY)),
-                            cursor.getString(cursor.getColumnIndex(Database.PROPERTY_VALUE))
-                    );
+                    String key = cursor.getString(cursor.getColumnIndex(Database.PROPERTY_KEY));
+                    String value = cursor.getString(cursor.getColumnIndex(Database.PROPERTY_VALUE));
+                    try {
+                        properties.put(key,
+                                LegacyProviderConfiguration.PASSWORD.equals(key) ?
+                                        SimpleCrypto.decrypt(Crypto.getKey(), value) :
+                                        value);
+                    } catch (Exception e) {
+                        // TODO log exception
+                    }
                 }
                 return properties;
             }
@@ -85,6 +97,12 @@ public class AndroidConnectionRepository implements ConnectionRepository {
             }
         }
         return Collections.emptyMap();
+    }
+
+    private Collection<AccountEntity> accountsFor(long connectionId) {
+        Collection<AccountEntity> accounts = new ArrayList<>();
+
+        return accounts;
     }
 
     @Override
@@ -147,11 +165,15 @@ public class AndroidConnectionRepository implements ConnectionRepository {
         } finally {
             db.endTransaction();
         }
-        return 0;
+        return connectionId;
     }
 
     private void saveAccounts(long connectionId, Collection<AccountEntity> accounts) {
-        //TODO implementaiton
+        for(AccountEntity account : accounts) {
+            ContentValues values = accountEntityTransformer.transform(account);
+            values.put(Database.ACCOUNT_CONNECTION_ID, connectionId);
+            db.insert(Database.ACCOUNTS_TABLE_NAME, null, values);
+        }
     }
 
     private long saveConnection(ConnectionEntity connection) {
@@ -185,7 +207,11 @@ public class AndroidConnectionRepository implements ConnectionRepository {
                 propertyValues.put(Database.PROPERTY_KEY, property.getKey());
                 propertyValues.put(Database.PROPERTY_VALUE, value);
                 propertyValues.put(Database.PROPERTY_CONNECTION_ID, connectionId);
-                db.insertOrThrow(Database.PROPERTY_TABLE_NAME, null, propertyValues);
+                db.insertWithOnConflict(
+                        Database.PROPERTY_TABLE_NAME,
+                        null,
+                        propertyValues,
+                        SQLiteDatabase.CONFLICT_REPLACE);
             }
         }
     }

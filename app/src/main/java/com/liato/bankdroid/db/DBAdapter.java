@@ -16,35 +16,14 @@
 
 package com.liato.bankdroid.db;
 
-import com.bankdroid.core.repository.ConnectionEntity;
 import com.bankdroid.core.repository.ConnectionRepository;
-import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.LegacyBankFactory;
-import com.liato.bankdroid.banking.LegacyBankHelper;
-import com.liato.bankdroid.banking.LegacyProviderConfiguration;
-import com.liato.bankdroid.banking.Transaction;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.compatibility.ConnectionTransformer;
 
-import net.sf.andhsli.hotspotlogin.SimpleCrypto;
-
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import timber.log.Timber;
-import static com.liato.bankdroid.banking.LegacyBankHelper.legacyAccountIdOf;
 
 public class DBAdapter {
 
@@ -81,32 +60,13 @@ public class DBAdapter {
     }
 
     public Collection<Bank> fetchBanks() throws BankException {
-        Collection<ConnectionEntity> connections = repository.findAll();
-        return legacyTransformer.asBanks(connections);
-    }
-
-    /**
-     * Return a Cursor over the list of all accounts belonging to a bank
-     *
-     * @return Cursor over all accounts belonging to a bank
-     */
-    public Cursor fetchAccounts(long bankId) {
-        //return mDb.query("accounts",
-        //        new String[]{"bankid", "balance", "name", "id", "acctype", "hidden", "notify",
-        //                "currency", "aliasfor"}, "bankid=" + bankId, null, null, null, null);
-        return null;
+        return legacyTransformer.asBanks(repository.findAll());
     }
 
     public Cursor fetchTransactions(String account) {
         //return mDb.query("transactions",
         //        new String[]{"transdate", "btransaction", "amount", "currency"},
         //        "account='" + account + "'", null, null, null, null);
-        return null;
-    }
-
-    public Cursor fetchProperties(String bankId) {
-        //return mDb.query(Database.PROPERTY_TABLE_NAME, null,
-        //        Database.PROPERTY_CONNECTION_ID+"='"+bankId+"'", null, null, null, null);
         return null;
     }
 

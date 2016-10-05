@@ -23,7 +23,9 @@ class ConnectionEntityTransformer {
             values.put(Database.CONNECTION_ID, connection.id());
         }
         values.put(Database.CONNECTION_PROVIDER_ID, connection.providerId());
-        values.put(Database.CONNECTION_LAST_UPDATED, connection.lastUpdated().getMillis());
+        if(connection.lastUpdated() != null) {
+            values.put(Database.CONNECTION_LAST_UPDATED, connection.lastUpdated().getMillis());
+        }
         values.put(Database.CONNECTION_NAME, connection.name());
         values.put(Database.CONNECTION_ENABLED, connection.enabled() ? 1 : 0);
         return values;
