@@ -18,6 +18,17 @@ allprojects {
     }
 }
 
+subprojects {
+    // Workaround. See https://code.google.com/p/android/issues/detail?id=64887#c54
+    plugins.withType(JavaPlugin).whenPluginAdded {
+        task copyTestResources(type: Copy) {
+            from "${projectDir}/src/test/resources"
+            into "${buildDir}/classes/test"
+        }
+        processTestResources.dependsOn copyTestResources
+    }
+}
+
 task wrapper(type: Wrapper) {
     gradleVersion = '3.1'
 }
