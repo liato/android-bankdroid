@@ -83,8 +83,8 @@ public class LegacyBankFactory {
                 return new Nordea(context);
             case IBankTypes.LANSFORSAKRINGAR:
                 return new Lansforsakringar(context);
-            case IBankTypes.ICABANKEN:
-                return new ICABanken(context);
+            // case IBankTypes.ICABANKEN:
+            //    return new ICABanken(context);
             // case IBankTypes.HANDELSBANKEN:
             //     return new Handelsbanken(context);
             case IBankTypes.COOP:
@@ -258,7 +258,7 @@ public class LegacyBankFactory {
         banks.add(new BrummerKF(context));
         // banks.add(new Swedbank(context));
         banks.add(new Nordea(context));
-        banks.add(new ICABanken(context));
+        // banks.add(new ICABanken(context));
         banks.add(new Lansforsakringar(context));
         // banks.add(new Handelsbanken(context));
         banks.add(new Coop(context));
