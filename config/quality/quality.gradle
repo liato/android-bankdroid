@@ -30,7 +30,7 @@ android {
     }
 }
 
-task findbugs(type: FindBugs) {
+task findbugs(type: FindBugs, dependsOn: 'compileDebugSources') {
     effort = "max"
     reportLevel = "high"
     excludeFilter = new File("${project.rootDir}/config/quality/findbugs/findbugs-filter.xml")
