@@ -188,12 +188,8 @@ public class AutoRefreshService extends Service {
     }
 
     @Override
-    public void onCreate() {
-
-    }
-
-    @Override
     public void onStart(Intent intent, int startId) {
+        super.onStart(intent, startId);
         handleStart(intent, startId);
     }
 

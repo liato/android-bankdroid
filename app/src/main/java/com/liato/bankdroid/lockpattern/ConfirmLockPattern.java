@@ -172,15 +172,16 @@ public class ConfirmLockPattern extends Activity {
     protected void onSaveInstanceState(Bundle outState) {
         // deliberately not calling super since we are managing this in full
         outState.putInt(KEY_NUM_WRONG_ATTEMPTS, mNumWrongConfirmAttempts);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onPause() {
-        super.onPause();
-
         if (mCountdownTimer != null) {
             mCountdownTimer.cancel();
         }
+
+        super.onPause();
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -282,8 +283,8 @@ public class ConfirmLockPattern extends Activity {
 
     @Override
     public void finish() {
-        super.finish();
         Helpers.setActivityAnimation(this, R.anim.zoom_enter, R.anim.zoom_exit);
+        super.finish();
     }
 
     private enum Stage {

@@ -149,7 +149,6 @@ public class LiveViewService extends Service {
     }
 
     public void onDestroy() {
-        super.onDestroy();
         Log.d(PluginConstants.LOG_TAG, "Enter LiveViewService.onDestroy.");
 
         // Unbind from LiveView service
@@ -159,6 +158,8 @@ public class LiveViewService extends Service {
 
         // No longer a running service
         alreadyRunning = false;
+
+        super.onDestroy();
     }
 
     public void onStart(Intent intent, int startId) {

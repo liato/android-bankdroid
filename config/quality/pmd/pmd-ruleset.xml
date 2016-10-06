@@ -9,20 +9,24 @@
     <exclude-pattern>.*/R.java</exclude-pattern>
     <exclude-pattern>.*/gen/.*</exclude-pattern>
 
-    <rule ref="rulesets/java/android.xml"/>
+    <!--
+    FIXME: This file needs a lot more rules.
 
-    <rule ref="rulesets/java/clone.xml" />
-    <rule ref="rulesets/java/finalizers.xml" />
-    <rule ref="rulesets/java/imports.xml" />
-    <rule ref="rulesets/java/logging-java.xml" />
-    <rule ref="rulesets/java/braces.xml" />
-    <rule ref="rulesets/java/strings.xml" />
-    <rule ref="rulesets/java/basic.xml" />
-    <rule ref="rulesets/java/naming.xml">
-        <exclude name="AbstractNaming" />
-        <exclude name="LongVariable" />
-        <exclude name="ShortMethodName" />
-        <exclude name="ShortVariable" />
-        <exclude name="VariableNamingConventions" />
+    To add more, first decide on one from here:
+    https://github.com/pmd/pmd/tree/master/pmd-java/src/main/resources/rulesets/java
+
+    Then add it just like android.xml has been added (below).
+
+    Do "./gradlew check" to test your newly added rule. If there are violations, check
+    the console output or the HTML report and remedy them until the build passes.
+
+    If you can't / won't fix a specific violation, you can exclude rules like in the
+    logging-java.xml example below.
+    -->
+    <rule ref="rulesets/java/android.xml" />
+
+    <rule ref="rulesets/java/logging-java.xml">
+        <!-- FIXME: Re-enable this rule and fix all instances -->
+        <exclude name="AvoidPrintStackTrace" />
     </rule>
 </ruleset>

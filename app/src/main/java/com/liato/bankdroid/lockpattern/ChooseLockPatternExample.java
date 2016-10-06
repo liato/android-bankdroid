@@ -65,8 +65,8 @@ public class ChooseLockPatternExample extends Activity implements View.OnClickLi
 
     @Override
     protected void onPause() {
-        super.onPause();
         stopAnimation(mAnimation);
+        super.onPause();
     }
 
     public void onClick(View v) {
