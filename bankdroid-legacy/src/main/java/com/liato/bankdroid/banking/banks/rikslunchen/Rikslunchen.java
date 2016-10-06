@@ -16,26 +16,21 @@
  */
 package com.liato.bankdroid.banking.banks.rikslunchen;
 
-import com.liato.bankdroid.Helpers;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.banks.rikslunchen.model.Envelope;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.legacy.R;
 
-import org.apache.http.entity.StringEntity;
-import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.core.Persister;
-
+import org.apache.http.HttpResponse;
 import android.content.Context;
 import android.text.InputType;
-import android.text.TextUtils;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 
 import eu.nullbyte.android.urllib.CertificateReader;
@@ -53,7 +48,9 @@ public class Rikslunchen extends Bank {
 
     private static final int BANKTYPE_ID = Bank.RIKSLUNCHEN;
 
-    private String myResponse = "";
+    private static final String BASE_URL = "http://www.rikslunchen.se/isr/isr/services/bankdroid/getbalance";
+
+    private static final ObjectReader READER = new ObjectMapper().reader();
 
     public Rikslunchen(Context context) {
         super(context);
@@ -84,42 +81,23 @@ public class Rikslunchen extends Bank {
         if (getUsername().isEmpty()) {
             throw new LoginException(res.getText(R.string.invalid_card_number).toString());
         }
-        try {
-            urlopen = new Urllib(context,
-                    CertificateReader.getCertificates(context, R.raw.cert_rikslunchen));
-            urlopen.addHeader("Authorization", "basic Q0g6ODlAUHFqJGw4NyMjTVM=");
-            urlopen.addHeader("SOAPAction", "");
-            urlopen.addHeader("Content-Type", "text/xml;charset=UTF-8");
-            StringEntity body = new StringEntity(String.format(
-                    "<v:Envelope xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:d=\"http://www.w3.org/2001/XMLSchema\" xmlns:c=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:v=\"http://schemas.xmlsoap.org/soap/envelope/\"><v:Header /><v:Body><n0:getBalance id=\"o0\" c:root=\"1\" xmlns:n0=\"urn:PhoneService\"><cardNo i:type=\"d:string\">%s</cardNo></n0:getBalance></v:Body></v:Envelope>",
-                    getUsername()), "UTF-8");
-            InputStream is = urlopen.openStream("https://www.rikslunchen.se/rkchws/PhoneService",
-                    body, true);
 
-            Serializer serializer = new Persister();
-            Envelope resp = null;
-            try {
-                resp = serializer.read(Envelope.class, is, false);
-            } catch (Exception e) {
-                throw new BankException(e.getMessage(), e);
-            }
+        urlopen = new Urllib(context,
+                CertificateReader.getCertificates(context, R.raw.cert_rikslunchen));
 
-            if (resp != null && resp.body != null && resp.body.fault != null && !TextUtils.isEmpty(
-                    resp.body.fault.faultstring)) {
-                throw new LoginException(context.getString(R.string.invalid_card_number));
-                //faultString isn't always very descriptive
-                //throw new BankException(resp.body.fault.faultstring);
-            } else if (resp == null || resp.body == null || resp.body.getBalanceResponse == null
-                    || resp.body.getBalanceResponse.responseReturn == null
-                    || resp.body.getBalanceResponse.responseReturn.amount == null) {
-                throw new LoginException(context.getString(R.string.invalid_card_number));
-            }
-            BigDecimal balance = Helpers.parseBalance(
-                    resp.body.getBalanceResponse.responseReturn.amount);
-            accounts.add(new Account("Rikslunchen", balance, "1"));
-        } catch (UnsupportedEncodingException e) {
-            throw new BankException(e.getMessage(), e);
+        HttpResponse response = urlopen.openAsHttpResponse(
+                BASE_URL + "?cardid=" + getUsername(),
+                false);
+        if(response.getStatusLine().getStatusCode() != 200) {
+            response.getEntity().consumeContent();
+            throw new LoginException(context.getString(R.string.invalid_card_number));
         }
+
+        JsonNode node = READER.readTree(response.getEntity().getContent());
+
+        BigDecimal balance = new BigDecimal(node.get("balance").asDouble());
+            accounts.add(new Account("Rikslunchen", balance, "1"));
+
         if (accounts.isEmpty()) {
             throw new BankException(res.getText(R.string.no_accounts_found)
                     .toString());
