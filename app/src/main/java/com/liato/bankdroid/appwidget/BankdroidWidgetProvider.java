@@ -286,6 +286,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 
         @Override
         public void onStart(Intent intent, int startId) {
+            super.onStart(intent, startId);
             handleStart(intent, startId);
         }
 

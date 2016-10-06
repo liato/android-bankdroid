@@ -56,7 +56,8 @@ task findbugs(type: FindBugs, dependsOn: 'compileDebugSources') {
 
 task pmd(type: Pmd) {
     ruleSetFiles = files("${project.rootDir}/config/quality/pmd/pmd-ruleset.xml")
-    ignoreFailures = true // TODO Set to false when project has been cleaned.
+    ignoreFailures = false
+    consoleOutput = true
     ruleSets = []
 
     source 'src'

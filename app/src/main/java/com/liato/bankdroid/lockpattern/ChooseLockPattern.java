@@ -292,13 +292,13 @@ public class ChooseLockPattern extends Activity implements View.OnClickListener 
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
         outState.putInt(KEY_UI_STAGE, mUiStage.ordinal());
         if (mChosenPattern != null) {
             outState.putString(KEY_PATTERN_CHOICE,
                     LockPatternUtils.patternToString(mChosenPattern));
         }
+
+        super.onSaveInstanceState(outState);
     }
 
     /**
