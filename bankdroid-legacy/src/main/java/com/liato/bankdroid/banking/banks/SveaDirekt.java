@@ -158,7 +158,7 @@ public class SveaDirekt extends Bank {
                 description = amount.compareTo(BigDecimal.ZERO) > 0 ? "Insättning"
                         : "Uttag";
             }
-            String date = element.child(0).text();
+            String date = element.child(0).text().replaceAll("\\u2011", "-");
             vTransactions.add(new Transaction(date, description, amount));
         }
         return vTransactions;
