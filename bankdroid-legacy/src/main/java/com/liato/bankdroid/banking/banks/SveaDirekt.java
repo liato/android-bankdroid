@@ -53,10 +53,10 @@ public class SveaDirekt extends Bank {
             = "https://services.sveadirekt.se/mypages/sv/j_security_check";
 
     private static final String ACCOUNTS_URL
-            = "https://services.sveadirekt.se/faces/WEB-INF/britney_jsp_s/home.jsp";
+            = "https://services.sveadirekt.se/customerweb/mypages/save/index.page";
 
     private static final String TRANSACTIONS_URL
-            = "https://services.sveadirekt.se/faces/WEB-INF/britney_jsp_s/balance.jsp";
+            = "https://services.sveadirekt.se/customerweb/mypages/save/account-details.page";
 
     private String response;
 
@@ -96,7 +96,7 @@ public class SveaDirekt extends Bank {
         }
         String strLoginUrl = LOGIN_URL;
 
-        List<NameValuePair> postData = new ArrayList<NameValuePair>();
+        List<NameValuePair> postData = new ArrayList<>();
         postData.add(new BasicNameValuePair("j_username", getUsername()));
         postData.add(new BasicNameValuePair("j_password", getPassword()));
         return new LoginPackage(urlopen, postData, response, strLoginUrl);
@@ -123,26 +123,11 @@ public class SveaDirekt extends Bank {
 
         urlopen = login();
 
-        List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("homeForm:balance", "Saldo"));
-        postData.add(new BasicNameValuePair("homeForm", "homeForm"));
-        response = urlopen.open(ACCOUNTS_URL, postData);
+        response = urlopen.open(ACCOUNTS_URL);
         Document doc = Jsoup.parse(response);
         ArrayList<Account> accounts = parseAccounts(doc);
-
-        if (!accounts.isEmpty()) {
-            Account firstAccount = accounts.get(0);
-            // Get account details for first account
-            addAccountDetails(firstAccount, doc);
-            firstAccount.setTransactions(parseTransactions(response));
-
-        }
-
-        // Fetch additional accounts transaction pages to get their balance.
-        for (int i = 1; i < accounts.size(); i++) {
-            Account account = accounts.get(i);
-            response = urlopen.open(TRANSACTIONS_URL, createTransactionParams(account));
-            addAccountDetails(account, Jsoup.parse(response));
+        for(Account account : accounts) {
+            response = urlopen.open(TRANSACTIONS_URL + "?account=" + account.getId());
             account.setTransactions(parseTransactions(response));
         }
         this.setAccounts(accounts);
@@ -150,57 +135,40 @@ public class SveaDirekt extends Bank {
     }
 
     private ArrayList<Account> parseAccounts(Document pDocument) {
-        ArrayList<Account> accountList = new ArrayList<Account>();
-        Element element = pDocument.getElementById("balanceForm:accountsList");
-        Elements accounts = element.select("td a[href=#]");
-        for (int i = 0; i < accounts.size(); i++) {
-            Account account = new Account("", BigDecimal.ZERO, Integer.toString(i));
+        ArrayList<Account> accountList = new ArrayList<>();
+        Elements accounts = pDocument.select("table > tbody > tr");
+        for (Element accountElement : accounts) {
+            Account account = new Account(
+                    accountElement.child(1).text(),
+                    amountOf(accountElement.child(3).text()),
+                    accountElement.child(0).text());
             accountList.add(account);
         }
         return accountList;
     }
 
-    private Account addAccountDetails(Account pAccount, Document pDocument) {
-        Elements vAccountDetails = pDocument
-                .select("strong:contains(Saldo och transaktioner) ~ table")
-                .first().select("tr td:last-child");
-        String vAccountType = vAccountDetails.first().text();
-        String vBalance = vAccountDetails.last().text();
-        pAccount.setName(vAccountType);
-        pAccount.setCurrency("SEK");
-        BigDecimal balance = new BigDecimal(vBalance.replaceAll("[^\\d]", ""));
-        pAccount.setBalance(balance);
-        return pAccount;
-    }
-
     private List<Transaction> parseTransactions(String pResponse) {
-        List<Transaction> vTransactions = new ArrayList<Transaction>();
+        List<Transaction> vTransactions = new ArrayList<>();
         Document doc = Jsoup.parse(pResponse);
-        Elements vTransactionElements =
-                doc.getElementById("balanceForm:transactionPostList").select("tbody tr");
+        Elements transactionElements =
+                doc.select("table > tbody").get(1).children();
 
-        for (Element element : vTransactionElements) {
-
-            Elements vTransactionElement = element.select("td");
-
-            BigDecimal amount = new BigDecimal(vTransactionElement.get(1).text()
-                    .replaceAll("[^\\d-]", ""));
-            String description = vTransactionElement.get(2).text();
+        for (Element element : transactionElements) {
+            BigDecimal amount = amountOf(element.child(2).text());
+            String description = element.child(1).text();
             if (description == null || description.isEmpty()) {
                 description = amount.compareTo(BigDecimal.ZERO) > 0 ? "Insättning"
                         : "Uttag";
             }
-            String date = vTransactionElement.first().text();
+            String date = element.child(0).text();
             vTransactions.add(new Transaction(date, description, amount));
         }
         return vTransactions;
     }
 
-    List<NameValuePair> createTransactionParams(Account pAccount) {
-        List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("balanceForm", "balanceForm"));
-        postData.add(new BasicNameValuePair("balanceForm:_idcl",
-                "balanceForm:accountsList:" + pAccount.getId() + ":_id15"));
-        return postData;
+    private BigDecimal amountOf(String amount) {
+        return new BigDecimal(amount
+                .replaceAll("\\u2011", "-")
+                .replaceAll("[^\\d-]", ""));
     }
 }
