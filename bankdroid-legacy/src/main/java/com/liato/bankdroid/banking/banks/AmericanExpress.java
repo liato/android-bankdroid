@@ -145,7 +145,7 @@ public class AmericanExpress extends Bank {
              * 2: ID                    0
              * 3: Name                  SAS EuroBonus American Express&reg; Card
              * 4: Amount                1.111,11 kr
-             * 
+             *
              */
             accounts.add(new Account(Html.fromHtml(matcher.group(3)).toString()
                     .replace("American Express", "Amex")
@@ -191,10 +191,11 @@ public class AmericanExpress extends Bank {
                 transactionDate = sdfFrom.parse(matcher.group(1).trim());
                 String strDate = sdfTo.format(transactionDate);
                 BigDecimal amount;
-                if (matcher.group(3).trim().equals("&nbsp;"))
+                if (matcher.group(3).trim().equals("&nbsp;")) {
                     amount = Helpers.parseBalance(matcher.group(4).trim()).negate();
-                else
+                } else {
                     amount = Helpers.parseBalance(matcher.group(3).trim());
+                }
 
                 transactions.add(new Transaction(strDate,
                         Html.fromHtml(matcher.group(2)).toString().trim(),

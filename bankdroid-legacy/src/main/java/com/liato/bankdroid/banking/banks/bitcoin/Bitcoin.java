@@ -29,7 +29,6 @@ import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.provider.IBankTypes;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import java.io.IOException;
 import java.math.BigDecimal;

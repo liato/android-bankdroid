@@ -15,8 +15,6 @@
  */
 package com.liato.bankdroid.provider;
 
-import java.math.BigDecimal;
-
 /**
  * <p>
  * This interface provides constants that can conveniently be used with the

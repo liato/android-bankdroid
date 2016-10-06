@@ -22,9 +22,9 @@ package com.liato.bankdroid.provider;
  */
 public interface IAccountTypes {
 
-    public final static int REGULAR = 1;
-    public final static int FUNDS = 2;
-    public final static int LOANS = 3;
-    public final static int CCARD = 4;
-    public final static int OTHER = 5;
+    int REGULAR = 1;
+    int FUNDS = 2;
+    int LOANS = 3;
+    int CCARD = 4;
+    int OTHER = 5;
 }

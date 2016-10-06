@@ -251,8 +251,8 @@ public class Skandiabanken extends Bank {
         String test = Secure.getString(context.getContentResolver(),
                 Secure.ANDROID_ID);
 
-        if (test == null) // null for emulator
-        {
+        if (test == null) {
+            // null for emulator
             test = "0";
         }
 

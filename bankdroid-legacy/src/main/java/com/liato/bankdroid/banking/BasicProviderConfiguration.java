@@ -5,10 +5,8 @@ import com.liato.bankdroid.api.configuration.FieldBuilder;
 import com.liato.bankdroid.api.configuration.FieldType;
 import com.liato.bankdroid.api.configuration.ProviderConfiguration;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 public class BasicProviderConfiguration implements ProviderConfiguration {

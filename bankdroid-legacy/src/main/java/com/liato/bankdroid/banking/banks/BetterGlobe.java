@@ -148,7 +148,6 @@ public class BetterGlobe extends Bank {
             accounts.add(brutto);
             accounts.add(netto);
             balance = balance.add(Helpers.parseBalance(matcher.group(2)));
-            ;
         }
 
         response = urlopen.open("http://betterglobe.com/mytrees.aspx");

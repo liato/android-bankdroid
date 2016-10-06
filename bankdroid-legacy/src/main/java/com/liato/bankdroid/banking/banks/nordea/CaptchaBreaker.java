@@ -24,7 +24,8 @@ public class CaptchaBreaker {
                     if (!numberpart) {
                         segment.start = x;
                     }
-                    numberpart = numberpartcol = true;
+                    numberpartcol = true;
+                    numberpart = true;
                     break;
                 }
             }
@@ -50,7 +51,7 @@ public class CaptchaBreaker {
 
     }
 
-    private final static String extractNumber(Bitmap bitmap) {
+    private static String extractNumber(Bitmap bitmap) {
         int width = bitmap.getWidth();
         for (int i = 0; i < NUMBERS.length; i++) {
             int matches = 0;
