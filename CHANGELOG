@@ -10,6 +10,7 @@ v1.9.10.9
 * Ticket Rikskortet: Adapt to changed web page
 * Removes IcaBanken since they now require BankID
 * SveaDirekt: Adapt to changed web page
+* Rikslunchen: Adapt to new web service
 
 v1.9.10.8 (2016-09-29)
 * Add a Volatile account to the Test Bank that always changes its balance.
