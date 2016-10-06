@@ -63,13 +63,6 @@ public class DBAdapter {
         return legacyTransformer.asBanks(repository.findAll());
     }
 
-    public Cursor fetchTransactions(String account) {
-        //return mDb.query("transactions",
-        //        new String[]{"transdate", "btransaction", "amount", "currency"},
-        //        "account='" + account + "'", null, null, null, null);
-        return null;
-    }
-
     public long updateBank(Bank bank) {
         return repository.save(legacyTransformer.asConnection(bank));
     }
@@ -82,17 +75,6 @@ public class DBAdapter {
         return legacyTransformer.asBank(
                 repository.findById(bankId)
         );
-    }
-
-    public Cursor getAccount(String id) {
-       // Cursor c = mDb.query("accounts",
-       //         new String[]{"id", "balance", "name", "bankid", "acctype", "hidden", "notify",
-       //                 "currency", "aliasfor"}, "id='" + id + "'", null, null, null, null);
-       // if (c != null) {
-       //     c.moveToFirst();
-       // }
-       // return c;
-        return null;
     }
 
     public static DBAdapter create(Context context) {
