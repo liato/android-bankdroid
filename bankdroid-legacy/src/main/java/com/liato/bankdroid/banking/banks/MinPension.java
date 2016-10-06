@@ -16,9 +16,6 @@
 
 package com.liato.bankdroid.banking.banks;
 
-import android.content.Context;
-import android.text.InputType;
-
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
@@ -35,6 +32,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import android.content.Context;
+import android.text.InputType;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -54,7 +54,6 @@ public class MinPension extends Bank {
         BANKTYPE_ID = IBankTypes.MINPENSION;
         INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
         INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE | InputType.TYPE_TEXT_VARIATION_PASSWORD;
-        ;
         INPUT_HINT_USERNAME = res.getText(R.string.pno).toString();
     }
 

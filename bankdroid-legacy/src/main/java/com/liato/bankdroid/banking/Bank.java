@@ -136,7 +136,8 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     }
 
     public boolean toggleHideAccounts() {
-        return hideAccounts = !hideAccounts;
+        hideAccounts = !hideAccounts;
+        return hideAccounts;
     }
 
     public boolean getHideAccounts() {

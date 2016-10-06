@@ -608,8 +608,10 @@ public class LockPatternView extends View {
                                     bottom = startY;
                                 }
                             } else {
-                                left = right = startX;
-                                top = bottom = startY;
+                                left = startX;
+                                right = startX;
+                                top = startY;
+                                bottom = startY;
                             }
 
                             final float widthOffset = mSquareWidth / 2f;
@@ -900,7 +902,7 @@ public class LockPatternView extends View {
     /**
      * The call back interface for detecting patterns entered by the user.
      */
-    public static interface OnPatternListener {
+    public interface OnPatternListener {
 
         /**
          * A new pattern has begun.

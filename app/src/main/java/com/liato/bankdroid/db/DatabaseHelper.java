@@ -25,7 +25,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import static com.liato.bankdroid.db.Database.*;
+import static com.liato.bankdroid.db.Database.PROPERTY_CONNECTION_ID;
+import static com.liato.bankdroid.db.Database.PROPERTY_KEY;
+import static com.liato.bankdroid.db.Database.PROPERTY_TABLE_NAME;
+import static com.liato.bankdroid.db.Database.PROPERTY_VALUE;
 
 /**
  * @since 8 jan 2011
@@ -59,7 +62,7 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
             final int newVersion) {
         Log.w(DBAdapter.TAG, "Upgrading database from version " + oldVersion
                 + " to " + newVersion + ", which will destroy all old data");
-        // Version <= 1.7.2 
+        // Version <= 1.7.2
         if (oldVersion <= 9) {
             // Add an "extras" field to the bank and and "alias for" field to the account.
             db.execSQL("ALTER TABLE " + LegacyDatabase.BANK_TABLE_NAME + " ADD " +

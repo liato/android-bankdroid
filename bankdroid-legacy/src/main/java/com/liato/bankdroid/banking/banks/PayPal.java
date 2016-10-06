@@ -166,8 +166,9 @@ public class PayPal extends Bank {
                     JSONObject a = accArr.getJSONObject(i);
                     String accountName = a.getString("currency");
                     String displayName = accountName;
-                    if (accountName.equals(this.getCurrency()))
+                    if (accountName.equals(this.getCurrency())) {
                         displayName = accountName + " (Primary)";
+                    }
                     Double amount = a.getJSONObject("available")
                             .getDouble("unformattedAmount");
                     Account account = new Account(displayName,
