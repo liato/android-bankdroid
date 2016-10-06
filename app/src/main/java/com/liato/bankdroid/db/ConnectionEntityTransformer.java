@@ -11,7 +11,7 @@ class ConnectionEntityTransformer {
     ConnectionEntity.Builder transform(ContentValues values) {
         return ConnectionEntity.builder()
                 .id(values.getAsLong(Database.CONNECTION_ID))
-                .enabled(values.getAsBoolean(Database.CONNECTION_ENABLED))
+                .enabled(values.getAsInteger(Database.CONNECTION_ENABLED) != 0)
                 .lastUpdated(new DateTime(values.getAsLong(Database.CONNECTION_LAST_UPDATED)))
                 .name(values.getAsString(Database.CONNECTION_NAME))
                 .providerId(values.getAsString(Database.CONNECTION_PROVIDER_ID));

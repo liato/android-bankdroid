@@ -73,12 +73,15 @@ public class Transaction implements Comparable<Transaction> {
 
     @Override
     public int compareTo(Transaction another) {
+        int diff;
         try {
             Integer thisdate = Integer.parseInt(date.replaceAll("-", ""));
             Integer thatdate = Integer.parseInt((another).getDate().replaceAll("-", ""));
-            return thatdate - thisdate;
+            diff = thatdate - thisdate;
+
         } catch (NumberFormatException e) {
-            return 0;
+            diff = 0;
         }
+        return diff == 0 ? transaction.compareToIgnoreCase(another.transaction) : diff;
     }
 }

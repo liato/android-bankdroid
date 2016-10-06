@@ -121,7 +121,7 @@ public class Avanza extends Bank {
                     for (com.liato.bankdroid.banking.banks.avanza.model.CurrencyAccount currencyAccount : account
                             .getCurrencyAccounts()) {
                         transactions.add(new Transaction(Helpers.formatDate(now),
-                                "\u2014  " + currencyAccount.getCurrency() + "  \u2014",
+                                " \u2014  " + currencyAccount.getCurrency() + "  \u2014",
                                 BigDecimal.valueOf(currencyAccount.getBalance()),
                                 currencyAccount.getCurrency()));
                     }
@@ -131,7 +131,7 @@ public class Avanza extends Bank {
                         }
                         List<Position> positions = positionAgList.getPositions();
                         transactions.add(new Transaction(Helpers.formatDate(now),
-                                "\u2014  " + positionAgList.getInstrumentTypeName() +
+                                " \u2014  " + positionAgList.getInstrumentTypeName() +
                                         "  " + positionAgList.getTotalProfitPercent() + "%  \u2014",
                                 BigDecimal.valueOf(positionAgList.getTotalValue()),
                                 a.getCurrency()));

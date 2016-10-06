@@ -3,6 +3,8 @@ package com.liato.bankdroid.db;
 import android.content.ContentValues;
 
 import com.bankdroid.core.repository.AccountEntity;
+import com.liato.bankdroid.provider.IAccountTypes;
+import com.liato.bankdroid.provider.IBankTypes;
 
 import java.math.BigDecimal;
 
@@ -29,7 +31,7 @@ class AccountEntityTransformer {
         values.put(Database.ACCOUNT_NOTIFICATIONS_ENABLED, account.notifications() ? 1 : 0);
         values.put(Database.ACCOUNT_HIDDEN, account.hidden() ? 1 : 0);
         values.put(Database.ACCOUNT_CURRENCY, account.currency());
-        // values.put(Database.ACCOUNT_TYPE, null);
+        values.put(Database.ACCOUNT_TYPE, IAccountTypes.REGULAR);
         return values;
     }
 

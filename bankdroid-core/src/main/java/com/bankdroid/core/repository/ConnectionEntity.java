@@ -166,7 +166,7 @@ public class ConnectionEntity {
         }
 
         public Builder accounts(Collection<AccountEntity> accounts) {
-            accounts.addAll(accounts);
+            this.accounts.addAll(accounts);
             return this;
         }
 

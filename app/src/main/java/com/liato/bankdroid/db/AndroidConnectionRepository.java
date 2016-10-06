@@ -10,6 +10,7 @@ import com.bankdroid.core.repository.ConnectionEntity;
 import com.bankdroid.core.repository.ConnectionRepository;
 import com.bankdroid.core.repository.TransactionEntity;
 import com.liato.bankdroid.banking.LegacyProviderConfiguration;
+import com.liato.bankdroid.banking.banks.coop.model.web.D;
 
 import net.sf.andhsli.hotspotlogin.SimpleCrypto;
 
@@ -26,11 +27,13 @@ public class AndroidConnectionRepository implements ConnectionRepository {
     private final SQLiteDatabase db;
     private final ConnectionEntityTransformer connectionEntityTransformer;
     private final AccountEntityTransformer accountEntityTransformer;
+    private final TransactionEntityTransformer transactionEntityTransformer;
 
     public AndroidConnectionRepository(SQLiteDatabase db) {
         this.db = db;
         connectionEntityTransformer = new ConnectionEntityTransformer();
         accountEntityTransformer = new AccountEntityTransformer();
+        transactionEntityTransformer = new TransactionEntityTransformer();
     }
 
     @Override
@@ -100,9 +103,54 @@ public class AndroidConnectionRepository implements ConnectionRepository {
     }
 
     private Collection<AccountEntity> accountsFor(long connectionId) {
-        Collection<AccountEntity> accounts = new ArrayList<>();
+        Cursor cursor = null;
+        try {
+            cursor = db.query(Database.ACCOUNTS_TABLE_NAME, null,
+                    Database.ACCOUNT_CONNECTION_ID + "= ?",
+                    new String[]{Long.toString(connectionId)}, null, null, null);
+            if (cursor != null) {
+                Collection<AccountEntity> accounts = new ArrayList<>();
+                while (!cursor.isLast() && !cursor.isAfterLast()) {
+                    cursor.moveToNext();
+                    ContentValues values = asContentValues(cursor);
+                    String accountId = values.getAsString(Database.ACCOUNT_ID);
+                    AccountEntity account = accountEntityTransformer.transform(values)
+                            .transactions(transactionsFor(connectionId, accountId))
+                            .build();
+                    accounts.add(account);
+                }
+                return accounts;
+            }
+        } finally {
+            if(cursor != null) {
+                cursor.close();
+            }
+        }
+        return Collections.emptyList();
+    }
 
-        return accounts;
+    private Collection<TransactionEntity> transactionsFor(long connectionId, String accountId) {
+        Cursor cursor = null;
+        try {
+            cursor = db.query(Database.TRANSACTIONS_TABLE_NAME, null,
+                    Database.TRANSACTION_CONNECTION_ID + "= ? AND " +
+                            Database.TRANSACTION_ACCOUNT_ID + "= ?",
+                    new String[]{Long.toString(connectionId), accountId}, null, null, null);
+            if (cursor != null) {
+                Collection<TransactionEntity> transactions = new ArrayList<>();
+                while (!cursor.isLast() && !cursor.isAfterLast()) {
+                    cursor.moveToNext();
+                    ContentValues values = asContentValues(cursor);
+                    transactions.add(transactionEntityTransformer.transform(values).build());
+                }
+                return transactions;
+            }
+        } finally {
+            if(cursor != null) {
+                cursor.close();
+            }
+        }
+        return Collections.emptyList();
     }
 
     @Override
@@ -172,7 +220,20 @@ public class AndroidConnectionRepository implements ConnectionRepository {
         for(AccountEntity account : accounts) {
             ContentValues values = accountEntityTransformer.transform(account);
             values.put(Database.ACCOUNT_CONNECTION_ID, connectionId);
-            db.insert(Database.ACCOUNTS_TABLE_NAME, null, values);
+            db.insertWithOnConflict(Database.ACCOUNTS_TABLE_NAME, null, values,
+                    SQLiteDatabase.CONFLICT_REPLACE);
+            saveTransactions(connectionId, account.id(), account.transactions());
+        }
+    }
+
+    private void saveTransactions(long connectionId,
+                                  String accountId,
+                                  Collection<TransactionEntity> transactions) {
+        for(TransactionEntity transaction : transactions) {
+            ContentValues values = transactionEntityTransformer.transform(transaction);
+            values.put(Database.TRANSACTION_ACCOUNT_ID, accountId);
+            values.put(Database.TRANSACTION_CONNECTION_ID, connectionId);
+            db.insertOrThrow(Database.TRANSACTIONS_TABLE_NAME, null, values);
         }
     }
 

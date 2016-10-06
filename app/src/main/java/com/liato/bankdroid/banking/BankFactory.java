@@ -72,42 +72,15 @@ public class BankFactory {
 
     public static Account accountFromDb(Context context, String accountId,
             boolean loadTransactions) {
-        DBAdapter db = DBAdapter.create(context);
-        Cursor c = db.getAccount(accountId);
-
-        if (c == null || c.isClosed() || (c.isBeforeFirst() && c.isAfterLast())) {
-            return null;
-        }
-
-        Account account = new Account(c.getString(c.getColumnIndex("name")),
-                new BigDecimal(c.getString(c.getColumnIndex("balance"))),
-                c.getString(c.getColumnIndex("id")).split("_", 2)[1],
-                c.getLong(c.getColumnIndex("bankid")),
-                c.getInt(c.getColumnIndex("acctype")));
-        account.setHidden(c.getInt(c.getColumnIndex("hidden")) == 1 ? true : false);
-        account.setNotify(c.getInt(c.getColumnIndex("notify")) == 1 ? true : false);
-        account.setCurrency(c.getString(c.getColumnIndex("currency")));
-        account.setAliasfor(c.getString(c.getColumnIndex("aliasfor")));
-        c.close();
-        if (loadTransactions) {
-            ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-            String fromAccount = accountId;
-            if (account.getAliasfor() != null && account.getAliasfor().length() > 0) {
-                fromAccount = Long.toString(account.getBankDbId()) + "_" + account.getAliasfor();
-            }
-            c = db.fetchTransactions(fromAccount);
-            if (!(c == null || c.isClosed() || (c.isBeforeFirst() && c.isAfterLast()))) {
-                while (!c.isLast() && !c.isAfterLast()) {
-                    c.moveToNext();
-                    transactions.add(new Transaction(c.getString(c.getColumnIndex("transdate")),
-                            c.getString(c.getColumnIndex("btransaction")),
-                            new BigDecimal(c.getString(c.getColumnIndex("amount"))),
-                            c.getString(c.getColumnIndex("currency"))));
+        long bankId = LegacyBankHelper.connectionIdOf(accountId);
+        Bank bank = bankFromDb(bankId, context, loadTransactions);
+        if(bank != null) {
+            for(Account account : bank.getAccounts()) {
+                if(account.getId().equals(LegacyBankHelper.accountIdOf(accountId))) {
+                    return account;
                 }
-                c.close();
             }
-            account.setTransactions(transactions);
         }
-        return account;
+        return null;
     }
 }
