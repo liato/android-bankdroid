@@ -54,10 +54,6 @@ android {
         exclude 'META-INF/NOTICE.txt'
     }
 
-    lintOptions {
-        disable 'InvalidPackage'
-    }
-
     buildTypes {
         release {
             minifyEnabled false
