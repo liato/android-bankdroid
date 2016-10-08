@@ -21,8 +21,14 @@ checkstyle {
 
 android {
     lintOptions {
-        abortOnError false // TODO Set to true when project has been cleaned.
+        abortOnError true
+        warningsAsErrors true
+
+        // FIXME: This file contains *far* too many disabled checks. Somebody think of the children!
         lintConfig file("${project.rootDir}/config/quality/lint/lint.xml")
+
+        textOutput "stdout"
+        textReport true
 
         htmlReport true
         // optional path to report (default will be lint-results.html in the builddir)

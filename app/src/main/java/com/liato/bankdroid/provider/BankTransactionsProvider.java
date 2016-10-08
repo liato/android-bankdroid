@@ -50,7 +50,8 @@ public class BankTransactionsProvider extends ContentProvider implements
 
     private static final String CONTENT_PROVIDER_API_KEY = "content_provider_api_key";
 
-    private final static String TAG = "BankTransactionsProvider";
+    // Tags can be at most 23 characters, note the slight abbreviation
+    private final static String TAG = "BankTransactionsProvdr";
 
     private final static int TRANSACTIONS = 0;
 

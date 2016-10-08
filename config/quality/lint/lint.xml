@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lint>
+    <!-- FIXME: This file should be empty and all violations fixed. Then we'll all hug. -->
+
     <issue id="AdapterViewChildren" severity="ignore" />
     <issue id="AllowBackup" severity="ignore" />
     <issue id="AlwaysShowAction" severity="ignore" />
+    <issue id="AppCompatResource" severity="ignore" />
+    <issue id="BatteryLife" severity="ignore" />
     <issue id="ButtonCase" severity="ignore" />
     <issue id="ButtonOrder" severity="ignore" />
     <issue id="ButtonStyle" severity="ignore" />
+    <issue id="ClickableViewAccessibility" severity="ignore" />
     <issue id="CommitPrefEdits" severity="ignore" />
     <issue id="CommitTransaction" severity="ignore" />
     <issue id="ContentDescription" severity="ignore" />
@@ -28,16 +33,20 @@
     <issue id="ExtraText" severity="ignore" />
     <issue id="ExtraTranslation" severity="ignore" />
     <issue id="FloatMath" severity="ignore" />
+    <issue id="GetInstance" severity="ignore" />
     <issue id="GifUsage" severity="ignore" />
+    <issue id="GoogleAppIndexingWarning" severity="ignore" />
+    <issue id="GradleDependency" severity="ignore" />
+    <issue id="GradleDynamicVersion" severity="ignore" />
     <issue id="GradleOverrides" severity="ignore" />
     <issue id="GrantAllUris" severity="ignore" />
     <issue id="GridLayout" severity="ignore" />
     <issue id="HandlerLeak" severity="ignore" />
     <issue id="HardcodedDebugMode" severity="ignore" />
     <issue id="HardcodedText" severity="ignore" />
+    <issue id="HardwareIds" severity="ignore" />
     <issue id="IconColors" severity="ignore" />
-    <issue id="IconDensities" severity="error" />
-    <issue id="IconDipSize" severity="error" />
+    <issue id="IconDensities" severity="ignore" />
     <issue id="IconDuplicates" severity="ignore" />
     <issue id="IconDuplicatesConfig" severity="ignore" />
     <issue id="IconExtension" severity="ignore" />
@@ -49,6 +58,7 @@
     <issue id="IconXmlAndPng" severity="ignore" />
     <issue id="IllegalResourceRef" severity="ignore" />
     <issue id="InOrMmUsage" severity="ignore" />
+    <issue id="InflateParams" severity="ignore" />
     <issue id="InconsistentArrays" severity="ignore" />
     <issue id="InconsistentLayout" severity="ignore" />
     <issue id="InefficientWeight" severity="ignore" />
@@ -88,7 +98,9 @@
     <issue id="Overdraw" severity="ignore" />
     <issue id="Override" severity="ignore" />
     <issue id="PackagedPrivateKey" severity="ignore" />
+    <issue id="ParcelClassLoader" severity="ignore" />
     <issue id="ParcelCreator" severity="ignore" />
+    <issue id="PluralsCandidate" severity="ignore" />
     <issue id="PrivateResource" severity="ignore" />
     <issue id="Proguard" severity="ignore" />
     <issue id="ProguardSplit" severity="ignore" />
@@ -99,6 +111,8 @@
     <issue id="RequiredSize" severity="ignore" />
     <issue id="ResAuto" severity="ignore" />
     <issue id="ResourceAsColor" severity="ignore" />
+    <issue id="RtlHardcoded" severity="ignore" />
+    <issue id="RtlSymmetry" severity="ignore" />
     <issue id="ScrollViewCount" severity="ignore" />
     <issue id="ScrollViewSize" severity="ignore" />
     <issue id="SdCardPath" severity="ignore" />
@@ -109,6 +123,7 @@
     <issue id="SimpleDateFormat" severity="ignore" />
     <issue id="SmallSp" severity="ignore" />
     <issue id="SpUsage" severity="ignore" />
+    <issue id="StaticFieldLeak" severity="ignore" />
     <issue id="StateListReachable" severity="ignore" />
     <issue id="StringFormatCount" severity="ignore" />
     <issue id="StringFormatInvalid" severity="ignore" />
@@ -130,8 +145,7 @@
     <issue id="UnknownId" severity="ignore" />
     <issue id="UnknownIdInLayout" severity="ignore" />
     <issue id="UnlocalizedSms" severity="ignore" />
-    <issue id="UnusedNamespace" severity="ignore" />
-    <issue id="UnusedQuantity" severity="ignore" />
+    <issue id="UnusedAttribute" severity="ignore" />
     <issue id="UnusedResources" severity="ignore" />
     <issue id="UseCheckPermission" severity="ignore" />
     <issue id="UseCompoundDrawables" severity="ignore" />
