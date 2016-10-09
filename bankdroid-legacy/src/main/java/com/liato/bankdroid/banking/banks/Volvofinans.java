@@ -78,7 +78,7 @@ public class Volvofinans extends Bank {
     private HashMap<String, String> mAccountUrlMappings = new HashMap<String, String>();
 
     public Volvofinans(Context context) {
-        super(context);
+        super(context, R.drawable.logo_volvofinans);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

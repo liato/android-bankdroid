@@ -83,7 +83,7 @@ public class Villabanken extends Bank {
     private String accountResponse = null;
 
     public Villabanken(Context context) {
-        super(context);
+        super(context, R.drawable.logo_villabanken);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

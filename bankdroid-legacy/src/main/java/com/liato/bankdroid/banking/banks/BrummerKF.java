@@ -79,7 +79,7 @@ public class BrummerKF extends Bank {
             Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     public BrummerKF(Context context) {
-        super(context);
+        super(context, R.drawable.logo_brummer_kf);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

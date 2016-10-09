@@ -49,7 +49,7 @@ public class EspressoHouse extends Bank {
     private Document dResponse = null;
 
     public EspressoHouse(Context context) {
-        super(context);
+        super(context, R.drawable.logo_espressohouse);
         TAG = "EspressoHouse";
         NAME = "Espresso House";
         NAME_SHORT = "espressohouse";

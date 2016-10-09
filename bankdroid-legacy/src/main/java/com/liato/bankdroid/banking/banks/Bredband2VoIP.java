@@ -16,10 +16,6 @@
 
 package com.liato.bankdroid.banking.banks;
 
-import android.content.Context;
-import android.text.InputType;
-import android.util.Log;
-
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
@@ -32,6 +28,10 @@ import com.liato.bankdroid.provider.IBankTypes;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+
+import android.content.Context;
+import android.text.InputType;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -62,7 +62,7 @@ public class Bredband2VoIP extends Bank {
     private String response = null;
 
     public Bredband2VoIP(Context context) {
-        super(context);
+        super(context, R.drawable.logo_bredband2voip);
         TAG = "Bredband2VoIP";
         NAME = "Bredband2 VoIP";
         NAME_SHORT = "bredband2voip";

@@ -65,7 +65,7 @@ public class ICA extends Bank {
     private Map<String, String> mHeaders = new HashMap<String, String>();
 
     public ICA(Context context) {
-        super(context);
+        super(context, R.drawable.logo_ica);
         TAG = "ICA";
         NAME = "ICA";
         NAME_SHORT = "ica";

@@ -16,9 +16,6 @@
 
 package com.liato.bankdroid.banking.banks.coop;
 
-import android.content.Context;
-import android.text.TextUtils;
-
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.liato.bankdroid.Helpers;
@@ -39,6 +36,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import android.content.Context;
+import android.text.TextUtils;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -85,7 +85,7 @@ public class Coop extends Bank {
     private String response;
 
     public Coop(Context context) {
-        super(context);
+        super(context, R.drawable.logo_coop);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

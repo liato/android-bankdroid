@@ -31,6 +31,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HTTP;
 
 import android.content.Context;
+import android.support.annotation.DrawableRes;
 import android.text.Html;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -66,8 +67,8 @@ public abstract class AbstractSwedbank extends Bank {
 
     private Map<String, String> mIdMap = new HashMap<String, String>();
 
-    public AbstractSwedbank(Context context) {
-        super(context);
+    public AbstractSwedbank(Context context, @DrawableRes int logoResource) {
+        super(context, logoResource);
         SimpleModule module = new SimpleModule();
         module.addDeserializer(BigDecimal.class, new BalanceDeserializer());
         mObjectMapper.registerModule(module);
@@ -77,9 +78,9 @@ public abstract class AbstractSwedbank extends Bank {
         super.WEB_VIEW_ENABLED = WEB_VIEW_ENABLED;
     }
 
-    public AbstractSwedbank(String username, String password, Context context) throws BankException,
+    public AbstractSwedbank(String username, String password, Context context, @DrawableRes int logoResource) throws BankException,
             LoginException, BankChoiceException, IOException {
-        this(context);
+        this(context, logoResource);
         this.update(username, password);
     }
 

@@ -38,6 +38,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
+import android.support.annotation.DrawableRes;
 import android.text.Html;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -80,13 +81,13 @@ public abstract class SEBKortBase extends Bank {
     private Map<Account, String> mBillingUnitIds = new HashMap<Account, String>();
 
 
-    public SEBKortBase(Context context, String providerPart, String prodgroup) {
-        this(context, providerPart, prodgroup, "secure.sebkort.com", new int[]{R.raw.cert_sebkort});
+    public SEBKortBase(Context context, String providerPart, String prodgroup, @DrawableRes int logoResource) {
+        this(context, providerPart, prodgroup, "secure.sebkort.com", new int[]{R.raw.cert_sebkort}, logoResource);
     }
 
     public SEBKortBase(Context context, String providerPart, String prodgroup, String apiBase,
-            int[] certificates) {
-        super(context);
+            int[] certificates, @DrawableRes int logoResource) {
+        super(context, logoResource);
         super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
         super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
         super.STATIC_BALANCE = STATIC_BALANCE;
@@ -103,16 +104,16 @@ public abstract class SEBKortBase extends Bank {
     }
 
     public SEBKortBase(String username, String password, Context context, String url,
-            String prodgroup)
+            String prodgroup, @DrawableRes int logoResource)
             throws BankException, LoginException, BankChoiceException, IOException {
-        this(context, url, prodgroup);
+        this(context, url, prodgroup, logoResource);
         this.update(username, password);
     }
 
     public SEBKortBase(String username, String password, Context context, String url,
-            String prodgroup, String apiBase, int[] certificates)
+            String prodgroup, String apiBase, int[] certificates, @DrawableRes int logoResource)
             throws BankException, LoginException, BankChoiceException, IOException {
-        this(context, url, prodgroup, apiBase, certificates);
+        this(context, url, prodgroup, apiBase, certificates, logoResource);
         this.update(username, password);
     }
 

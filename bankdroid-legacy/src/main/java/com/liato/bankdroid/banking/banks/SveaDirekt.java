@@ -61,7 +61,7 @@ public class SveaDirekt extends Bank {
     private String response;
 
     public SveaDirekt(Context context) {
-        super(context);
+        super(context, R.drawable.logo_sveadirekt);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

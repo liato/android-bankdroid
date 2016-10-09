@@ -69,7 +69,7 @@ public class TrustBuddy extends Bank {
             Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     public TrustBuddy(Context context) {
-        super(context);
+        super(context, R.drawable.logo_trustbuddy);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

@@ -25,7 +25,7 @@
  * furnished to do so, subject to the following conditions:
  *
  * The above copyright notice and this permission notice shall be included in
- * 
+ *
  * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -90,22 +90,5 @@ public final class PluginUtils {
         Log.d(PluginConstants.LOG_TAG, "Icon stored. " + iconFile.getAbsolutePath());
 
         return iconFile.getAbsolutePath();
-    }
-
-    /**
-     * Gets resource id dynamically
-     */
-    public static int getDynamicResourceId(Context context, String resourceName,
-            String resourceType) {
-        return context.getResources()
-                .getIdentifier(resourceName, resourceType, context.getPackageName());
-    }
-
-    /**
-     * Gets resource string dynamically
-     */
-    public static String getDynamicResourceString(Context context, String resourceName) {
-        int resourceId = getDynamicResourceId(context, resourceName, "string");
-        return context.getString(resourceId);
     }
 }

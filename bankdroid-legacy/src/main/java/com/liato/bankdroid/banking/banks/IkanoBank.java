@@ -81,7 +81,7 @@ public class IkanoBank extends Bank {
     private String response = null;
 
     public IkanoBank(Context context) {
-        super(context);
+        super(context, R.drawable.logo_ikanobank);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
@@ -171,7 +171,7 @@ public class IkanoBank extends Bank {
              * 2: Name                  Kontonamn1
              * 3: Account number        123456
              * 4: Balance               316 000,39
-             * 
+             *
              */
             accounts.add(new Account(Html.fromHtml(matcher.group(2)).toString().trim(),
                     Helpers.parseBalance(matcher.group(4).trim()), matcher.group(1).trim()));

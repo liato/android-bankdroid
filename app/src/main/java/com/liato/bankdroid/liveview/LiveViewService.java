@@ -40,6 +40,7 @@
 package com.liato.bankdroid.liveview;
 
 import com.liato.bankdroid.MainActivity;
+import com.liato.bankdroid.R;
 import com.sonyericsson.extras.liveview.IPluginServiceCallbackV1;
 import com.sonyericsson.extras.liveview.IPluginServiceV1;
 
@@ -144,7 +145,7 @@ public class LiveViewService extends Service {
         Log.d(PluginConstants.LOG_TAG, "Enter LiveViewService.onCreate.");
 
         // Load menu icon
-        int iconId = PluginUtils.getDynamicResourceId(this, "ic_launcher", "drawable");
+        int iconId = R.drawable.ic_launcher;
         mMenuIcon = PluginUtils.storeIconToFile(this, getResources(), iconId, MENU_ICON_FILENAME);
     }
 
@@ -192,8 +193,7 @@ public class LiveViewService extends Service {
                 Log.d(PluginConstants.LOG_TAG, "Already started.");
             } else {
                 // Init
-                mPluginName = PluginUtils.getDynamicResourceString(this,
-                        PluginConstants.RESOURCE_STRING_PLUGIN_NAME);
+                mPluginName = getResources().getString(R.string.app_name);
 
                 // Bind to LiveView
                 connectToLiveView();

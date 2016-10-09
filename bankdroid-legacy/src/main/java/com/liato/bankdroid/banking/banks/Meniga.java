@@ -53,7 +53,7 @@ public class Meniga extends Bank {
             "\"Id\":([^,]*),.*?\"Text\":\"([^\"]*)\".*?\"OriginalDate\":\".?.?Date\\(([^\\)]*)\\).*?\"Amount\":([^,]*),");
 
     public Meniga(Context context) {
-        super(context);
+        super(context, R.drawable.logo_meniga);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

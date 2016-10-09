@@ -25,7 +25,7 @@
  * furnished to do so, subject to the following conditions:
  *
  * The above copyright notice and this permission notice shall be included in
- * 
+ *
  * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -39,6 +39,7 @@
 
 package com.liato.bankdroid.liveview;
 
+import com.liato.bankdroid.R;
 import com.liato.bankdroid.SettingsActivity;
 
 import android.content.BroadcastReceiver;
@@ -65,8 +66,7 @@ public class PluginReceiver extends BroadcastReceiver {
         if (command.contentEquals(PluginConstants.BROADCAST_COMMAND_PREFERENCES)) {
             String pluginName = intent.getExtras()
                     .getString(PluginConstants.BROADCAST_COMMAND_PLUGIN_NAME);
-            String myPluginName = PluginUtils
-                    .getDynamicResourceString(context, PluginConstants.RESOURCE_STRING_PLUGIN_NAME);
+            String myPluginName = context.getResources().getString(R.string.app_name);
 
             if (pluginName != null && pluginName.contentEquals(myPluginName)) {
                 Log.d(PluginConstants.LOG_TAG, "Starting preferences!");

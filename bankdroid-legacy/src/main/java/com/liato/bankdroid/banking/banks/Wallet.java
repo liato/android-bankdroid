@@ -20,6 +20,7 @@ import com.liato.bankdroid.banking.banks.sebkort.SEBKortBase;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
 
 import android.content.Context;
 
@@ -37,7 +38,7 @@ public class Wallet extends SEBKortBase {
     private static final int BANKTYPE_ID = Bank.WALLET;
 
     public Wallet(Context context) {
-        super(context, "wase", "0121");
+        super(context, "wase", "0121", R.drawable.logo_wallet);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
@@ -46,7 +47,7 @@ public class Wallet extends SEBKortBase {
 
     public Wallet(String username, String password, Context context) throws BankException,
             LoginException, BankChoiceException, IOException {
-        super(username, password, context, "wase", "0121");
+        super(username, password, context, "wase", "0121", R.drawable.logo_wallet);
     }
 
 }

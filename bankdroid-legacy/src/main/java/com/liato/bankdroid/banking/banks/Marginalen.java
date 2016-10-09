@@ -64,7 +64,7 @@ public class Marginalen extends Bank {
     private String accountUrl = "";
 
     public Marginalen(Context context) {
-        super(context);
+        super(context, R.drawable.logo_marginalen);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

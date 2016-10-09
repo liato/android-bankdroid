@@ -19,6 +19,7 @@ import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
 
 import android.content.Context;
 
@@ -38,7 +39,7 @@ public class SparbankenOresund extends MobilbankenBase {
     private static final int BANKTYPE_ID = Bank.SPARBANKEN_ORESUND;
 
     public SparbankenOresund(Context context) {
-        super(context);
+        super(context, R.drawable.logo_sparbanken_oresund);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

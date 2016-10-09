@@ -21,6 +21,7 @@ import com.liato.bankdroid.banking.banks.sebkort.SEBKortBase;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
 
 import android.content.Context;
 
@@ -38,7 +39,7 @@ public class EurobonusMastercardDk extends SEBKortBase {
     private static final int BANKTYPE_ID = Bank.SASEUROBONUSMASTERCARD_DK;
 
     public EurobonusMastercardDk(Context context) {
-        super(context, "sadk", "0101");
+        super(context, "sadk", "0101", R.drawable.logo_ebmaster_dk);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
@@ -48,7 +49,7 @@ public class EurobonusMastercardDk extends SEBKortBase {
 
     public EurobonusMastercardDk(String username, String password, Context context)
             throws BankException, LoginException, BankChoiceException, IOException {
-        super(username, password, context, "sadk", "0101");
+        super(username, password, context, "sadk", "0101", R.drawable.logo_ebmaster_dk);
     }
 
 }

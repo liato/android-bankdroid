@@ -15,9 +15,6 @@
  */
 package com.liato.bankdroid.banking.banks;
 
-import android.content.Context;
-import android.text.InputType;
-
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
@@ -34,6 +31,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import android.content.Context;
+import android.text.InputType;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -58,7 +58,7 @@ public class Hors extends Bank {
     private String response = null;
 
     public Hors(Context context) {
-        super(context);
+        super(context, R.drawable.logo_hors);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

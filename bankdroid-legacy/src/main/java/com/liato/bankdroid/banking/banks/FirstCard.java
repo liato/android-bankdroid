@@ -69,7 +69,7 @@ public class FirstCard extends Bank {
     private String response = null;
 
     public FirstCard(Context context) {
-        super(context);
+        super(context, R.drawable.logo_firstcard);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

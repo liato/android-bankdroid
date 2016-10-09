@@ -63,7 +63,7 @@ public class Osuuspankki extends Bank {
     private String response = null;
 
     public Osuuspankki(Context context) {
-        super(context);
+        super(context, R.drawable.logo_osuuspankki);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

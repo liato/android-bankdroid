@@ -82,7 +82,7 @@ public class Handelsbanken extends Bank {
     private String response = null;
 
     public Handelsbanken(Context context) {
-        super(context);
+        super(context, R.drawable.logo_handelsbanken);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

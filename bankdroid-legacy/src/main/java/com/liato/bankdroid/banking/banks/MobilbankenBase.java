@@ -30,6 +30,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 
 import android.content.Context;
+import android.support.annotation.DrawableRes;
 import android.text.Html;
 import android.text.InputType;
 
@@ -65,16 +66,16 @@ public abstract class MobilbankenBase extends Bank {
     private String response = null;
 
 
-    public MobilbankenBase(Context context) {
-        super(context);
+    public MobilbankenBase(Context context, @DrawableRes int logoResource) {
+        super(context , logoResource);
         super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
         super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
         super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
     }
 
-    public MobilbankenBase(String username, String password, Context context) throws BankException,
+    public MobilbankenBase(String username, String password, Context context, @DrawableRes int logoResource) throws BankException,
             LoginException, BankChoiceException, IOException {
-        this(context);
+        this(context, logoResource);
         this.update(username, password);
     }
 
@@ -134,7 +135,7 @@ public abstract class MobilbankenBase extends Bank {
              * 3: Account number    9570 012.345.678-9 SEK
              * 4: ?                 xxxxxxxxxxx
              * 5: Amount            ?
-             *   
+             *
              */
             accounts.add(new Account(
                     Html.fromHtml(matcher.group(2)).toString().trim(),

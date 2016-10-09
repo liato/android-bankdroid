@@ -33,6 +33,7 @@ import org.apache.http.client.CookieStore;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.text.InputType;
 import android.util.Log;
@@ -50,6 +51,9 @@ import eu.nullbyte.android.urllib.Urllib;
 public abstract class Bank implements Comparable<Bank>, IBankTypes {
 
     private final ProviderConfiguration defaultConfiguration = new LegacyProviderConfiguration(this);
+
+    @DrawableRes
+    private final int logoResource;
 
     protected String TAG = "Bank";
 
@@ -130,9 +134,10 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
 
     private Map<String, String> properties;
 
-    public Bank(Context context) {
+    public Bank(Context context, @DrawableRes int logoResource) {
         this.context = context;
         this.res = this.context.getResources();
+        this.logoResource = logoResource;
     }
 
     public boolean toggleHideAccounts() {
@@ -384,8 +389,9 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         return BROKEN;
     }
 
-    public int getImageResource() {
-        return res.getIdentifier("logo_" + NAME_SHORT, "drawable", context.getPackageName());
+    @DrawableRes
+    public final int getImageResource() {
+        return logoResource;
     }
 
     public int compareTo(Bank another) {

@@ -67,7 +67,7 @@ public class SevenDay extends Bank {
     private String response = null;
 
     public SevenDay(Context context) {
-        super(context);
+        super(context, R.drawable.logo_sevenday);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

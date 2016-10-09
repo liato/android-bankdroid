@@ -48,7 +48,7 @@ public class Chalmrest extends Bank {
     private String response = null;
 
     public Chalmrest(Context context) {
-        super(context);
+        super(context, R.drawable.logo_chalmrest);
 
         super.TAG = TAG;
         super.NAME = NAME;

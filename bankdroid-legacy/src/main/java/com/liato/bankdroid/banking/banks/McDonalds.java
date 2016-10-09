@@ -67,7 +67,7 @@ public class McDonalds extends Bank {
     private String response = "";
 
     public McDonalds(Context context) {
-        super(context);
+        super(context, R.drawable.logo_mcdonalds);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
@@ -119,7 +119,7 @@ public class McDonalds extends Bank {
              * Capture groups:
              * GROUP                    EXAMPLE DATA
              * 1: balance               845
-             * 
+             *
              */
             Account account = new Account("Presentkort", Helpers.parseBalance(matcher.group(1)),
                     "1");
@@ -133,7 +133,7 @@ public class McDonalds extends Bank {
                  * 1: Date                  11-03-17
                  * 2: Location              Sthlm, Sk&ouml;ndal
                  * 3: Amount                -144
-                 * 
+                 *
                  */
                 transactions.add(new Transaction("20" + matcher.group(1).trim(),
                         Html.fromHtml(matcher.group(2)).toString().trim(),

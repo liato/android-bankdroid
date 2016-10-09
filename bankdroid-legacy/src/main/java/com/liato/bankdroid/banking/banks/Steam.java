@@ -71,7 +71,7 @@ public class Steam extends Bank {
     private String response = null;
 
     public Steam(Context context) {
-        super(context);
+        super(context, R.drawable.logo_steam);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
@@ -124,7 +124,7 @@ public class Steam extends Bank {
              * Capture groups:
              * GROUP                EXAMPLE DATA
              * 1: Amount            0,--&#8364;
-             * 
+             *
              */
             String amount = Html.fromHtml(matcher.group(1)).toString().trim().replace("--", "00");
             Account account = new Account("Wallet", Helpers.parseBalance(amount), "1");

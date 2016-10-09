@@ -77,7 +77,7 @@ public class ForexBank extends Bank {
             Pattern.MULTILINE | Pattern.DOTALL);
 
     public ForexBank(Context context) {
-        super(context);
+        super(context, R.drawable.logo_forex);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

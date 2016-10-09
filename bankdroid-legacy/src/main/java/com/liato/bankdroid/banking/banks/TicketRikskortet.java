@@ -71,7 +71,7 @@ public class TicketRikskortet extends Bank {
     private String response = null;
 
     public TicketRikskortet(Context context) {
-        super(context);
+        super(context, R.drawable.logo_rikskortet);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
@@ -149,7 +149,7 @@ public class TicketRikskortet extends Bank {
              * Capture groups:
              * GROUP                EXAMPLE DATA
              * 1: Balance           590,22 kr
-             * 
+             *
              */
             BigDecimal b = Helpers.parseBalance(matcher.group(1));
             accounts.add(new Account("Saldo", b, "1"));

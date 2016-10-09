@@ -22,7 +22,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.res.Resources.NotFoundException;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -73,19 +72,14 @@ public class PairApplicationsActivity extends LockableActivity {
             String appName = bundle.getString(PAIR_APP_NAME);
 
             ImageView img = (ImageView) findViewById(R.id.imageView1);
-            String logoUri = "drawable/applogo_" + appName.toLowerCase();
 
-            // Dynamically load logo
-            int imageResource = getResources().getIdentifier(logoUri, null, getPackageName());
+            // Note that we used to load this dynamically, but Ekonomipuls was the
+            // only user ever. Doing it statically like this helps Android Lint
+            // know that the logo in question is still in use.
+            Drawable d = getResources().getDrawable(R.drawable.applogo_ekonomipuls);
+            img.setImageDrawable(d);
+            img.requestLayout();
 
-            try {
-                Drawable d = getResources().getDrawable(imageResource);
-                img.setImageDrawable(d);
-                img.requestLayout();
-            } catch (NotFoundException e) {
-                Log.e(TAG, "Could not find the requested image using uri " + logoUri);
-                e.printStackTrace();
-            }
             // Change application name
             TextView appNameView = (TextView) findViewById(R.id.app_name);
             appNameView.setText(appName);

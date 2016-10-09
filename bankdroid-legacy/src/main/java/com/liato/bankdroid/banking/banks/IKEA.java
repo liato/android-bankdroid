@@ -19,6 +19,7 @@ import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
 
 import android.content.Context;
 
@@ -39,7 +40,7 @@ public class IKEA extends AbsIkanoPartner {
     private static final int BANKTYPE_ID = Bank.IKEA;
 
     public IKEA(Context context) {
-        super(context);
+        super(context, R.drawable.logo_ikea);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

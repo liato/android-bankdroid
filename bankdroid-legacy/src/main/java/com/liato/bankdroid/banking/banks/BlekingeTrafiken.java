@@ -53,7 +53,7 @@ public class BlekingeTrafiken extends Bank {
     private String response = null;
 
     public BlekingeTrafiken(Context context) {
-        super(context);
+        super(context, R.drawable.logo_blekingetrafiken);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
