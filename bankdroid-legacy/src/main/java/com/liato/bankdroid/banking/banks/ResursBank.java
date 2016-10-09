@@ -55,7 +55,7 @@ public class ResursBank extends Bank {
     private String response = null;
 
     public ResursBank(Context context) {
-        super(context);
+        super(context, R.drawable.logo_resursbank);
         super.TAG = "ResursBank";
         super.NAME = "Resurs Bank";
         super.NAME_SHORT = "resursbank";
@@ -111,7 +111,7 @@ public class ResursBank extends Bank {
              * 3: Utnyttjad kredit      0,00 kr
              * 4: Reserverat  belopp    0,00 kr
              * 5: Kvar att utnyttja     0,00 kr
-             * 
+             *
              */
             String accountId = Html.fromHtml(matcher.group(1)).toString().trim().replaceAll(
                     "[^0-9]*", "");

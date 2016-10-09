@@ -71,7 +71,7 @@ public class BetterGlobe extends Bank {
             Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     public BetterGlobe(Context context) {
-        super(context);
+        super(context, R.drawable.logo_betterglobe);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

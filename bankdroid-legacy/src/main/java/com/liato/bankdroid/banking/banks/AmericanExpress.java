@@ -71,7 +71,7 @@ public class AmericanExpress extends Bank {
     private String response = null;
 
     public AmericanExpress(Context context) {
-        super(context);
+        super(context, R.drawable.logo_americanexpress);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

@@ -20,6 +20,7 @@ import com.liato.bankdroid.banking.banks.sebkort.SEBKortBase;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
 
 import android.content.Context;
 
@@ -37,7 +38,7 @@ public class Djurgarden extends SEBKortBase {
     private static final int BANKTYPE_ID = Bank.DJURGARDEN;
 
     public Djurgarden(Context context) {
-        super(context, "djse", "0116");
+        super(context, "djse", "0116", R.drawable.logo_djurgarden);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
@@ -46,7 +47,7 @@ public class Djurgarden extends SEBKortBase {
 
     public Djurgarden(String username, String password, Context context) throws BankException,
             LoginException, BankChoiceException, IOException {
-        super(username, password, context, "djse", "0116");
+        super(username, password, context, "djse", "0116", R.drawable.logo_djurgarden);
     }
 
 }

@@ -55,7 +55,7 @@ public class Avanza extends Bank {
     private static final String API_URL = "https://iphone.avanza.se/iphone-ws/";
 
     public Avanza(Context context) {
-        super(context);
+        super(context, R.drawable.logo_avanza);
         TAG = "Avanza";
         NAME = "Avanza";
         NAME_SHORT = "avanza";

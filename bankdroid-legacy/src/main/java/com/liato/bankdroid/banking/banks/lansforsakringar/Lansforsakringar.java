@@ -81,7 +81,7 @@ public class Lansforsakringar extends Bank {
     private HashMap<String, String> mAccountLedger = new HashMap<>();
 
     public Lansforsakringar(Context context) {
-        super(context);
+        super(context, R.drawable.logo_lansforsakringar);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

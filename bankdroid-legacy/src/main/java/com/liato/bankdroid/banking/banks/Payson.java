@@ -66,7 +66,7 @@ public class Payson extends Bank {
     private JSONObject userInfo = null;
 
     public Payson(Context context) {
-        super(context);
+        super(context, R.drawable.logo_payson);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

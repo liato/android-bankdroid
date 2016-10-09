@@ -19,6 +19,7 @@ import com.liato.bankdroid.banking.banks.sebkort.SEBKortBase;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.provider.IBankTypes;
 
 import android.content.Context;
@@ -37,7 +38,7 @@ public class Statoil extends SEBKortBase {
     private static final int BANKTYPE_ID = IBankTypes.STATOIL;
 
     public Statoil(Context context) {
-        super(context, "stse", "0122");
+        super(context, "stse", "0122", R.drawable.logo_statoil);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
@@ -46,7 +47,7 @@ public class Statoil extends SEBKortBase {
 
     public Statoil(String username, String password, Context context) throws BankException,
             LoginException, BankChoiceException, IOException {
-        super(username, password, context, "stse", "0122");
+        super(username, password, context, "stse", "0122", R.drawable.logo_statoil);
     }
 
 }

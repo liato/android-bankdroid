@@ -65,7 +65,7 @@ public class Hemkop extends Bank {
     private String response = null;
 
     public Hemkop(Context context) {
-        super(context);
+        super(context, R.drawable.logo_hemkop);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

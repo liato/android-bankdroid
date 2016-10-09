@@ -75,7 +75,7 @@ public class Skandiabanken extends Bank {
     private int customerId = 0;
 
     public Skandiabanken(Context context) {
-        super(context);
+        super(context, R.drawable.logo_skandiabanken);
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;

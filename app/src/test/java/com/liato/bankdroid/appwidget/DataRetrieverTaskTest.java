@@ -23,7 +23,7 @@ public class DataRetrieverTaskTest {
         private boolean hasUpdated = false;
 
         public TestableBank(int balanceBeforeUpdate, int balanceAfterUpdate) {
-            super(Mockito.mock(Context.class));
+            super(Mockito.mock(Context.class), 0);
 
             this.balanceBeforeUpdate = balanceBeforeUpdate;
             this.balanceAfterUpdate = balanceAfterUpdate;

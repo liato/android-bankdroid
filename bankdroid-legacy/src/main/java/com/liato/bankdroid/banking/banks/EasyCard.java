@@ -59,7 +59,7 @@ public class EasyCard extends Bank {
     private String response = null;
 
     public EasyCard(Context context) {
-        super(context);
+        super(context, R.drawable.logo_easycard);
 
         super.TAG = TAG;
         super.NAME = NAME;

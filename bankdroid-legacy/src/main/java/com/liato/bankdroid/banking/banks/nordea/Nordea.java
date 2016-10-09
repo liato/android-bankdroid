@@ -210,7 +210,7 @@ public class Nordea extends Bank {
     private int currentPageType;
 
     public Nordea(Context context) {
-        super(context);
+        super(context, R.drawable.logo_nordea);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

@@ -70,7 +70,7 @@ public class TestBank extends Bank {
             Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     public TestBank(Context context) {
-        super(context);
+        super(context, R.drawable.logo_bankdroid);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
@@ -178,10 +178,5 @@ public class TestBank extends Bank {
                     Helpers.parseBalance(matcher.group(3))));
         }
         account.setTransactions(transactions);
-    }
-
-    @Override
-    public int getImageResource() {
-        return res.getIdentifier("icon_large", "drawable", context.getPackageName());
     }
 }

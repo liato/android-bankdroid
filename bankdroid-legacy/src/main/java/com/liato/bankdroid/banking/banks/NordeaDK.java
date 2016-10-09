@@ -79,7 +79,7 @@ public class NordeaDK extends Bank {
     private String response;
 
     public NordeaDK(Context context) {
-        super(context);
+        super(context, R.drawable.logo_nordea_dk);
 
         super.TAG = TAG;
         super.NAME = NAME;

@@ -81,7 +81,7 @@ public class AkeliusInvest extends Bank {
     private HashMap<String, String> mIdMappings = new HashMap<String, String>();
 
     public AkeliusInvest(Context context) {
-        super(context);
+        super(context, R.drawable.logo_akeliusinvest);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

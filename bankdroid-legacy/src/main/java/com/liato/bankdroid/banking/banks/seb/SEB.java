@@ -84,7 +84,7 @@ public class SEB extends Bank {
     private ObjectMapper mObjectMapper;
 
     public SEB(Context context) {
-        super(context);
+        super(context, R.drawable.logo_seb);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

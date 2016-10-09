@@ -33,6 +33,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import android.content.Context;
+import android.support.annotation.DrawableRes;
 import android.text.InputType;
 import android.text.TextUtils;
 
@@ -55,18 +56,18 @@ public abstract class AbsIkanoPartner extends Bank {
 
     private String response = null;
 
-    public AbsIkanoPartner(Context context) {
-        super(context);
+    public AbsIkanoPartner(Context context, @DrawableRes int logoResource) {
+        super(context, logoResource);
         super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
         super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
         super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
         super.STATIC_BALANCE = true;
     }
 
-    public AbsIkanoPartner(String username, String password, Context context)
+    public AbsIkanoPartner(String username, String password, Context context, @DrawableRes int logoResource)
             throws BankException, LoginException,
             BankChoiceException, IOException {
-        this(context);
+        this(context, logoResource);
         this.update(username, password);
     }
 

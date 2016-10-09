@@ -62,7 +62,7 @@ public class SvenskaSpel extends Bank {
     private String response = "";
 
     public SvenskaSpel(Context context) {
-        super(context);
+        super(context, R.drawable.logo_svenskaspel);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

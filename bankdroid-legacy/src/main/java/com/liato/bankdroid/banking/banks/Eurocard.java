@@ -38,7 +38,7 @@ public class Eurocard extends SEBKortBase {
     private static final int BANKTYPE_ID = IBankTypes.EUROCARD;
 
     public Eurocard(Context context) {
-        super(context, "ecse", "0005", "secure.eurocard.se", new int[]{R.raw.cert_eurocard});
+        super(context, "ecse", "0005", "secure.eurocard.se", new int[]{R.raw.cert_eurocard}, R.drawable.logo_eurocard);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
@@ -48,7 +48,7 @@ public class Eurocard extends SEBKortBase {
     public Eurocard(String username, String password, Context context)
             throws BankException, LoginException, BankChoiceException, IOException {
         super(username, password, context, "ecse", "0005", "secure.eurocard.se",
-                new int[]{R.raw.cert_eurocard});
+                new int[]{R.raw.cert_eurocard}, R.drawable.logo_eurocard);
     }
 
 }

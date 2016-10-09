@@ -20,6 +20,7 @@ import com.liato.bankdroid.banking.banks.sebkort.SEBKortBase;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
 
 import android.content.Context;
 
@@ -37,7 +38,7 @@ public class SJPrio extends SEBKortBase {
     private static final int BANKTYPE_ID = Bank.SJPRIO;
 
     public SJPrio(Context context) {
-        super(context, "sjse", "0104");
+        super(context, "sjse", "0104", R.drawable.logo_sj_prio);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
@@ -46,6 +47,6 @@ public class SJPrio extends SEBKortBase {
 
     public SJPrio(String username, String password, Context context) throws BankException,
             LoginException, BankChoiceException, IOException {
-        super(username, password, context, "sjse", "0104");
+        super(username, password, context, "sjse", "0104", R.drawable.logo_sj_prio);
     }
 }

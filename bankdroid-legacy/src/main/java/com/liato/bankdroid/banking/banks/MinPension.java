@@ -47,7 +47,7 @@ import eu.nullbyte.android.urllib.Urllib;
 public class MinPension extends Bank {
 
     public MinPension(Context context) {
-        super(context);
+        super(context, R.drawable.logo_minpension);
         TAG = "MinPension";
         NAME = "Min Pension.se";
         NAME_SHORT = "minpension";

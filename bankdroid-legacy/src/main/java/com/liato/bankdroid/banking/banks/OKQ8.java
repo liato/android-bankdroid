@@ -76,7 +76,7 @@ public class OKQ8 extends Bank {
     private String response = null;
 
     public OKQ8(Context context) {
-        super(context);
+        super(context, R.drawable.logo_okq8);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

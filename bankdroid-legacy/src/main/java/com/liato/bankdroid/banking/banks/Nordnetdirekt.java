@@ -67,7 +67,7 @@ public class Nordnetdirekt extends Bank {
     private String response = null;
 
     public Nordnetdirekt(Context context) {
-        super(context);
+        super(context, R.drawable.logo_nordnetdirekt);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

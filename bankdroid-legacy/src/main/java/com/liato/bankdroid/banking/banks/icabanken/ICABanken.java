@@ -70,7 +70,7 @@ public class ICABanken extends Bank {
     private static final String API_VERSION = "1.0";
 
     public ICABanken(Context context) {
-        super(context);
+        super(context, R.drawable.logo_icabanken);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

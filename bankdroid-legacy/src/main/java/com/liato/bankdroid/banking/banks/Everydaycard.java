@@ -68,7 +68,7 @@ public class Everydaycard extends Bank {
     private String response = null;
 
     public Everydaycard(Context context) {
-        super(context);
+        super(context, R.drawable.logo_everydaycard);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2010 Nullbyte <http://nullbyte.eu>
  * Contributors: mhagander
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -77,7 +77,7 @@ public class DinersClub extends Bank {
     private String invoiceUrl;
 
     public DinersClub(Context context) {
-        super(context);
+        super(context, R.drawable.logo_dinersclub);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
@@ -160,7 +160,7 @@ public class DinersClub extends Bank {
              * 1: Name              Privatkort
              * 2: Card number       1234 789456 741
              * 3: Balance           3.331,79 kr
-             * 
+             *
              */
             accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim(),
                     Helpers.parseBalance(matcher.group(3)), "1"));

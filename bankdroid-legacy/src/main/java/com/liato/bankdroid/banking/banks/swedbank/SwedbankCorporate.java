@@ -3,6 +3,7 @@ package com.liato.bankdroid.banking.banks.swedbank;
 import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
+import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.provider.IBankTypes;
 
 import android.content.Context;
@@ -22,7 +23,7 @@ public class SwedbankCorporate extends AbstractSwedbank {
     private static final String APP_ID = "Our91qzclXdNmpdE";
 
     public SwedbankCorporate(Context context) {
-        super(context);
+        super(context, R.drawable.logo_swedbank);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
@@ -39,11 +40,5 @@ public class SwedbankCorporate extends AbstractSwedbank {
     @Override
     protected String getAppId() {
         return APP_ID;
-    }
-
-    @Override
-    public int getImageResource() {
-        return res.getIdentifier("logo_" + Swedbank.NAME_SHORT, "drawable",
-                context.getPackageName());
     }
 }

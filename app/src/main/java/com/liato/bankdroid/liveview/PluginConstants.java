@@ -25,7 +25,7 @@
  * furnished to do so, subject to the following conditions:
  *
  * The above copyright notice and this permission notice shall be included in
- * 
+ *
  * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -54,9 +54,6 @@ public final class PluginConstants {
     public static final String BROADCAST_COMMAND_START = "start";
 
     public static final String BROADCAST_COMMAND_PLUGIN_NAME = "pluginName";
-
-    // Resource string constants
-    public static final String RESOURCE_STRING_PLUGIN_NAME = "app_name";
 
     // LiveView Plugin interface intents
     public static final String LIVEVIEW_SERVICE_BIND_INTENT

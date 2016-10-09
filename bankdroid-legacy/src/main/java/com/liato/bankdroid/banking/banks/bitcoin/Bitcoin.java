@@ -59,7 +59,7 @@ public class Bitcoin extends Bank {
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#,##0.00000000 ");
 
     public Bitcoin(Context context) {
-        super(context);
+        super(context, R.drawable.logo_bitcoin);
         super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
