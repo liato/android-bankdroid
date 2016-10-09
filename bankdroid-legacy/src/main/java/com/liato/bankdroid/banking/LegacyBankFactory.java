@@ -2,7 +2,7 @@ package com.liato.bankdroid.banking;
 
 import com.liato.bankdroid.banking.banks.AkeliusInvest;
 import com.liato.bankdroid.banking.banks.AkeliusSpar;
-import com.liato.bankdroid.banking.banks.AmericanExpress;
+import com.liato.bankdroid.banking.banks.americanexpress.AmericanExpress;
 import com.liato.bankdroid.banking.banks.AppeakPoker;
 import com.liato.bankdroid.banking.banks.Audi;
 import com.liato.bankdroid.banking.banks.AvanzaMini;
