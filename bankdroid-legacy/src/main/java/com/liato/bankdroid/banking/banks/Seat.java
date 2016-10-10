@@ -28,8 +28,6 @@ import java.io.IOException;
 
 public class Seat extends AbsIkanoPartner {
 
-    private static final String TAG = "Seat";
-
     private static final String NAME = "Seatkortet";
 
     private static final String NAME_SHORT = "seat";

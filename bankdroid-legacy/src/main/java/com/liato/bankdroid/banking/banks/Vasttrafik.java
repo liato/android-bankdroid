@@ -42,8 +42,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class Vasttrafik extends Bank {
 
-    private static final String TAG = "Västtrafik";
-
     private static final String NAME = "Västtrafik";
 
     private static final String NAME_SHORT = "vasttrafik";

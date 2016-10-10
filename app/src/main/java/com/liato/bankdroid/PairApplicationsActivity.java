@@ -38,11 +38,6 @@ import timber.log.Timber;
  */
 public class PairApplicationsActivity extends LockableActivity {
 
-    /**
-     *
-     */
-    private static final String TAG = "Pair Application";
-
     private static final String PAIR_APP_NAME = "com.liato.bankdroid.PAIR_APP_NAME";
 
     public static void initialSetupApiKey(Context ctx) {

@@ -28,8 +28,6 @@ import java.io.IOException;
 
 public class Audi extends AbsIkanoPartner {
 
-    private static final String TAG = "Audi";
-
     private static final String NAME = "AudiKortet";
 
     private static final String NAME_SHORT = "audi";

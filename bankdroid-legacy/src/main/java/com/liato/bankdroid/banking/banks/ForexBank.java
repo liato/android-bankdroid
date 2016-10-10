@@ -30,9 +30,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class ForexBank extends Bank {
 
-    // Logon url: https://nettbank.edb.com/mobilepayment/index.jsp?n_bank=0087&nativeapp=android
-    private static final String TAG = "ForexBank";
-
     private static final String NAME = "Forex Bank";
 
     private static final String NAME_SHORT = "forex";

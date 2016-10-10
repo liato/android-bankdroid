@@ -38,8 +38,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class Bitcoin extends Bank {
 
-    private static final String TAG = "Bitcoin";
-
     private static final String NAME = "Bitcoin";
 
     private static final String NAME_SHORT = "bitcoin";

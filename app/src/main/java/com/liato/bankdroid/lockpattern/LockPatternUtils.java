@@ -79,8 +79,6 @@ public class LockPatternUtils {
      */
     public static final int MIN_PATTERN_REGISTER_FAIL = 3;
 
-    private static final String TAG = "LockPatternUtils";
-
     private static final String LOCK_PATTERN_FILE = "gesture.key";
 
     private final static String LOCKOUT_PERMANENT_KEY = "lockscreen.lockedoutpermanently";

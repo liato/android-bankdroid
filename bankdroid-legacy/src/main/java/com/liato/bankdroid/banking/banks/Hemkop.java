@@ -48,8 +48,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class Hemkop extends Bank {
 
-    private static final String TAG = "Hemkop";
-
     private static final String NAME = "Hemköp Kundkort";
 
     private static final String NAME_SHORT = "hemkop";

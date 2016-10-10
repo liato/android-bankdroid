@@ -45,8 +45,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class ICABanken extends Bank {
 
-    private static final String TAG = "ICABanken";
-
     private static final String NAME = "ICA Banken";
 
     private static final String NAME_SHORT = "icabanken";

@@ -29,8 +29,6 @@ import java.io.IOException;
 
 public class Quintessentially extends SEBKortBase {
 
-    private static final String TAG = "Quintessentially";
-
     private static final String NAME = "Quintessentially Credit Card";
 
     private static final String NAME_SHORT = "quintessentially";

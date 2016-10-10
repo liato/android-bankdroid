@@ -29,8 +29,6 @@ import java.io.IOException;
 
 public class Djurgarden extends SEBKortBase {
 
-    private static final String TAG = "Djurgarden";
-
     private static final String NAME = "Djurgårdskortet MasterCard";
 
     private static final String NAME_SHORT = "djurgarden";

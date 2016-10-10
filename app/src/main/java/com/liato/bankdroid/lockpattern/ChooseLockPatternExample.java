@@ -28,8 +28,6 @@ import android.widget.ImageView;
 
 public class ChooseLockPatternExample extends Activity implements View.OnClickListener {
 
-    protected static final String TAG = "Settings";
-
     private static final int REQUESTCODE_CHOOSE = 1;
 
     private static final long START_DELAY = 1000;

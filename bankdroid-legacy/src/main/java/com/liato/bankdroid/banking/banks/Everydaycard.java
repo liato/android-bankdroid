@@ -43,8 +43,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class Everydaycard extends Bank {
 
-    private static final String TAG = "Everydaycard";
-
     private static final String NAME = "Everydaycard";
 
     private static final String NAME_SHORT = "everydaycard";

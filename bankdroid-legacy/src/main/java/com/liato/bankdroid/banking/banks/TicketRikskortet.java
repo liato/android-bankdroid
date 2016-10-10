@@ -42,8 +42,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class TicketRikskortet extends Bank {
 
-    private static final String TAG = "Rikskortet";
-
     private static final String NAME = "Ticket Rikskortet";
 
     private static final String NAME_SHORT = "rikskortet";

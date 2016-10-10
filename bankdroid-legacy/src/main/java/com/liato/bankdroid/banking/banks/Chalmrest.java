@@ -26,8 +26,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class Chalmrest extends Bank {
 
-    private static final String TAG = "Chalmrest";
-
     private static final String NAME = "Chalmrest";
 
     private static final String NAME_SHORT = "chalmrest";

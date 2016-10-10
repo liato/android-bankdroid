@@ -40,8 +40,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class BlekingeTrafiken extends Bank {
 
-    private static final String TAG = "Blekingetrafiken";
-
     private static final String NAME = "Blekingetrafiken";
 
     private static final String NAME_SHORT = "blekingetrafiken";

@@ -44,8 +44,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class FirstCard extends Bank {
 
-    private static final String TAG = "FirstCard";
-
     private static final String NAME = "First Card";
 
     private static final String NAME_SHORT = "firstcard";

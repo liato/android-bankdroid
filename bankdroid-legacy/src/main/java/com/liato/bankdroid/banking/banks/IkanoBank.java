@@ -45,8 +45,6 @@ import timber.log.Timber;
 
 public class IkanoBank extends Bank {
 
-    private static final String TAG = "IkanoBank";
-
     private static final String NAME = "Ikano Bank";
 
     private static final String NAME_SHORT = "ikanobank";

@@ -29,8 +29,6 @@ import java.io.IOException;
 
 public class Wallet extends SEBKortBase {
 
-    private static final String TAG = "wallet";
-
     private static final String NAME = "wallet MasterCard";
 
     private static final String NAME_SHORT = "wallet";

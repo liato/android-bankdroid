@@ -42,8 +42,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class Villabanken extends Bank {
 
-    private static final String TAG = "Villabanken";
-
     private static final String NAME = "Villabanken";
 
     private static final String NAME_SHORT = "villabanken";

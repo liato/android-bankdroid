@@ -47,8 +47,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class Handelsbanken extends Bank {
 
-    private static final String TAG = "Handelsbanken";
-
     private static final String NAME = "Handelsbanken";
 
     private static final String NAME_SHORT = "handelsbanken";

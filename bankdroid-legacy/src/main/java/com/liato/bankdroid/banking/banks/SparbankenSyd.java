@@ -28,8 +28,6 @@ import java.io.IOException;
 
 public class SparbankenSyd extends MobilbankenBase {
 
-    private static final String TAG = "SparbankenSyd";
-
     private static final String NAME = "Sparbanken Syd";
 
     private static final String NAME_SHORT = "sparbanken_syd";

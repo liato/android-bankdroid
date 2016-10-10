@@ -30,8 +30,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class SveaDirekt extends Bank {
 
-    private static final String TAG = "SveaDirekt";
-
     private static final String NAME = "Svea Direkt";
 
     private static final String NAME_SHORT = "sveadirekt";

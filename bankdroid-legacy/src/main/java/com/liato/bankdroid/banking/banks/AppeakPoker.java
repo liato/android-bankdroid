@@ -40,8 +40,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class AppeakPoker extends Bank {
 
-    private static final String TAG = "AppeakPoker";
-
     private static final String NAME = "Appeak Poker";
 
     private static final String NAME_SHORT = "appeakpoker";

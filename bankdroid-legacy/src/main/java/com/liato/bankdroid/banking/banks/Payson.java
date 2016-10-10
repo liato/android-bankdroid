@@ -44,8 +44,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class Payson extends Bank {
 
-    private static final String TAG = "Payson";
-
     private static final String NAME = "Payson";
 
     private static final String NAME_SHORT = "payson";

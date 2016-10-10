@@ -29,8 +29,6 @@ import java.io.IOException;
 
 public class Preem extends AbsIkanoPartner {
 
-    private static final String TAG = "Preem";
-
     private static final String NAME = "Preem Privatkort";
 
     private static final String NAME_SHORT = "preem";

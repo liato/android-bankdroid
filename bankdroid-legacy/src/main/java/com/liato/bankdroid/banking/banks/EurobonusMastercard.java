@@ -30,8 +30,6 @@ import java.io.IOException;
 
 public class EurobonusMastercard extends SEBKortBase {
 
-    private static final String TAG = "EurobonusMastercard";
-
     private static final String NAME = "SAS EuroBonus MasterCard (Sweden)";
 
     private static final String NAME_SHORT = "ebmaster";

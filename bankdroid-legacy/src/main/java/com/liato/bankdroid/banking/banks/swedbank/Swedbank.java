@@ -14,8 +14,6 @@ public class Swedbank extends AbstractSwedbank {
 
     protected static final String NAME_SHORT = "swedbank";
 
-    private static final String TAG = "Swedbank";
-
     private static final String NAME = "Swedbank";
 
     private static final int BANKTYPE_ID = IBankTypes.SWEDBANK;

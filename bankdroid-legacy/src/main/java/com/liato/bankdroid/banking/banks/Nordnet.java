@@ -46,8 +46,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class Nordnet extends Bank {
 
-    private static final String TAG = "Nordnet";
-
     private static final String NAME = "Nordnet";
 
     private static final String NAME_SHORT = "nordnet";

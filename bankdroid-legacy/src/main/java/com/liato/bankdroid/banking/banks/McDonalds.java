@@ -43,8 +43,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class McDonalds extends Bank {
 
-    private static final String TAG = "McDonalds";
-
     private static final String NAME = "McDonald's Presentkort";
 
     private static final String NAME_SHORT = "mcdonalds";

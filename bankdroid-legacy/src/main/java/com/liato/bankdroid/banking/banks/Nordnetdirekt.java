@@ -43,8 +43,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class Nordnetdirekt extends Bank {
 
-    private static final String TAG = "Nordnetdirekt";
-
     private static final String NAME = "Nordnetdirekt";
 
     private static final String NAME_SHORT = "nordnetdirekt";

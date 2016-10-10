@@ -30,8 +30,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class Meniga extends Bank {
 
-    private static final String TAG = "Meniga";
-
     private static final String NAME = "Meniga";
 
     private static final String NAME_SHORT = "meniga";

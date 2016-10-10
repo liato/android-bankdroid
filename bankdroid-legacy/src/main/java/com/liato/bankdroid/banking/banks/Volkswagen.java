@@ -28,8 +28,6 @@ import java.io.IOException;
 
 public class Volkswagen extends AbsIkanoPartner {
 
-    private static final String TAG = "Volkswagen";
-
     private static final String NAME = "Volkswagenkortet";
 
     private static final String NAME_SHORT = "volkswagen";

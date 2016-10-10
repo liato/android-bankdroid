@@ -43,8 +43,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class Osuuspankki extends Bank {
 
-    private static final String TAG = "Osuuspankki";
-
     private static final String NAME = "Osuuspankki";
 
     private static final String NAME_SHORT = "osuuspankki";

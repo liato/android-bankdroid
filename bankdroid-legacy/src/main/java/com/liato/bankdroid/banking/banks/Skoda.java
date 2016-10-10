@@ -28,8 +28,6 @@ import java.io.IOException;
 
 public class Skoda extends AbsIkanoPartner {
 
-    private static final String TAG = "Skoda";
-
     private static final String NAME = "Skodakortet";
 
     private static final String NAME_SHORT = "skoda";

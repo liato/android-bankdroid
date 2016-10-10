@@ -29,8 +29,6 @@ import java.io.IOException;
 
 public class Opel extends SEBKortBase {
 
-    private static final String TAG = "Opel";
-
     private static final String NAME = "OpelKortet";
 
     private static final String NAME_SHORT = "opel";

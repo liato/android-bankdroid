@@ -47,8 +47,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class CSN extends Bank {
 
-    private static final String TAG = "CSN";
-
     private static final String NAME = "CSN";
 
     private static final String NAME_SHORT = "csn";

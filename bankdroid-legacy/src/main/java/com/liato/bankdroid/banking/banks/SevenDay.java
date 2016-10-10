@@ -43,8 +43,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class SevenDay extends Bank {
 
-    private static final String TAG = "SevenDay";
-
     private static final String NAME = "SevenDay";
 
     private static final String NAME_SHORT = "sevenday";
