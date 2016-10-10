@@ -1,6 +1,8 @@
 package com.liato.bankdroid.banking.banks.americanexpress.model;
 
 
+import android.support.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.Collections;
@@ -10,6 +12,8 @@ import java.util.List;
 public class LoginResponse {
 
     private int status;
+
+    @Nullable
     private LogonData logonData;
 
     public SummaryData getSummaryData() {

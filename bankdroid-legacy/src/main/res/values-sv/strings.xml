@@ -26,5 +26,5 @@
     <string name="invalid_card_number">Ogiltigt kortnummer.</string>
     <string name="bank_closed">Banken är för närvarande stängd.</string>
     <string name="server_error_try_again">Serverfel. Var god försök igen om en stund.</string>
-
+    <string name="update_transactions_error">Kunde ej uppdatera transaktionsdata. Var vänlig försök igen senare.</string>
 </resources>

@@ -40,6 +40,7 @@ import org.apache.http.protocol.HTTP;
 import org.joda.time.format.DateTimeFormat;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -57,12 +58,11 @@ public class AmericanExpress extends Bank {
 
     private static final String NAME_SHORT = "americanexpress";
 
-    private static final String URL = "https://www.americanexpress.com/home/se/home_c.shtml";
-
     private static final int BANKTYPE_ID = IBankTypes.AMERICANEXPRESS;
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
+    @Nullable
     private LoginResponse loginResponse;
 
     public AmericanExpress(Context context) {
@@ -71,7 +71,6 @@ public class AmericanExpress extends Bank {
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
         super.WEB_VIEW_ENABLED = false;
     }
 
@@ -84,9 +83,9 @@ public class AmericanExpress extends Bank {
     @Override
     protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context, CertificateReader.getCertificates(context,
-                R.raw.cert_americanexpress, R.raw.cert_americanexpress_global));
+                R.raw.cert_americanexpress_global));
         urlopen.setAllowCircularRedirects(true);
-        urlopen.setContentCharset(HTTP.ISO_8859_1);
+        urlopen.setContentCharset(HTTP.UTF_8);
         urlopen.addHeader("Face", "sv_SE");
         return new LoginPackage(urlopen, null, null,
                 "https://global.americanexpress.com/myca/intl/moblclient/emea/svc/v1/loginSummary.do");
@@ -95,17 +94,15 @@ public class AmericanExpress extends Bank {
     @Override
     public Urllib login() throws LoginException, BankException, IOException {
         LoginPackage lp = preLogin();
+        loginResponse = parseLoginResponse(urlopen.openAsHttpResponse(
+                lp.getLoginTarget(),
+                new StringEntity(
+                        objectAsJson(new LoginRequest(
+                                getUsername(),
+                                getPassword())),
+                        HTTP.UTF_8),
+                true));
 
-        HttpResponse response = urlopen.openAsHttpResponse(lp.getLoginTarget(),
-                new StringEntity(objectAsJson(new LoginRequest(getUsername(), getPassword())),
-                        HTTP.UTF_8), true);
-
-        loginResponse = MAPPER.reader()
-                .withType(LoginResponse.class)
-                .readValue(response.getEntity().getContent());
-        if(loginResponse.getLogonData().getStatus() != 0) {
-            throw new BankException(loginResponse.getLogonData().getMessage());
-        }
         urlopen.addHeader("cupcake", loginResponse.getLogonData().getCupcake());
         return urlopen;
     }
@@ -121,10 +118,10 @@ public class AmericanExpress extends Bank {
 
         for(Card card : loginResponse.getCards()) {
             Account account = asAccount(card);
-            accounts.add(account);
             if(card.isTransactionsEnabled()) {
                 account.setTransactions(fetchTransactionsFor(card));
             }
+            accounts.add(account);
         }
         if (accounts.isEmpty()) {
             throw new BankException(res.getText(R.string.no_accounts_found).toString());
@@ -141,12 +138,18 @@ public class AmericanExpress extends Bank {
                         "}",
                         HTTP.UTF_8), true);
         if(response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+            response.getEntity().consumeContent();
             throw new BankException(
-                    "There were a problem updating the transaction details. Please try again later.");
+                    res.getText(R.string.update_transactions_error).toString());
         }
+
         TransactionsResponse details = MAPPER.reader()
                 .withType(TransactionsResponse.class)
                 .readValue(response.getEntity().getContent());
+
+        if(details.getTransactionDetails() == null) {
+            throw new BankException(res.getText(R.string.server_error_try_again).toString());
+        }
         if(details.getTransactionDetails().getStatus() != 0) {
             throw new BankException(details.getTransactionDetails().getMessage());
         }
@@ -154,10 +157,12 @@ public class AmericanExpress extends Bank {
         return transactionsOf(details.getTransactionDetails());
     }
 
-    private List<Transaction> transactionsOf(TransactionDetails details) {
+    private List<Transaction> transactionsOf(@Nullable TransactionDetails details) {
         List<Transaction> transactions = new ArrayList<>();
-        for(com.liato.bankdroid.banking.banks.americanexpress.model.Transaction transaction : details.getTransactions()) {
-            transactions.add(asTransaction(transaction));
+        if(details != null) {
+            for(com.liato.bankdroid.banking.banks.americanexpress.model.Transaction transaction : details.getTransactions()) {
+                transactions.add(asTransaction(transaction));
+            }
         }
         return transactions;
     }
@@ -188,5 +193,23 @@ public class AmericanExpress extends Bank {
         } catch (JsonProcessingException e) {
             throw new BankException(e.getMessage(), e);
         }
+    }
+
+    private LoginResponse parseLoginResponse(HttpResponse response) throws IOException, BankException {
+        if(response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+            response.getEntity().consumeContent();
+            throw new BankException(res.getText(R.string.server_error_try_again).toString());
+        }
+        LoginResponse loginResponse = MAPPER.reader()
+                .withType(LoginResponse.class)
+                .readValue(response.getEntity().getContent());
+        if(loginResponse == null || loginResponse.getLogonData() == null) {
+            throw new BankException(res.getText(R.string.server_error_try_again).toString());
+        }
+        if(loginResponse.getLogonData().getStatus() != 0) {
+            throw new BankException(loginResponse.getLogonData().getMessage());
+        }
+
+        return loginResponse;
     }
 }
