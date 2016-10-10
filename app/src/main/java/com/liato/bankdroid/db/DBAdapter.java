@@ -39,8 +39,6 @@ import timber.log.Timber;
 
 public class DBAdapter {
 
-    static final String TAG = "DBAdapter";
-
     private DatabaseHelper mDbHelper;
 
     private SQLiteDatabase mDb;

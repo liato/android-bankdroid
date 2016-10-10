@@ -44,8 +44,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class Nordea extends Bank {
 
-    private static final String TAG = "Nordea";
-
     private static final String NAME = "Nordea";
 
     private static final String NAME_SHORT = "nordea";

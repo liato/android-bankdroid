@@ -12,8 +12,6 @@ import java.io.IOException;
 
 public class SparbankernaCorporate extends AbstractSwedbank {
 
-    private static final String TAG = "Sparbankerna Företag";
-
     private static final String NAME = "Sparbankerna Företag";
 
     private static final String NAME_SHORT = "sparbankerna-corporate";

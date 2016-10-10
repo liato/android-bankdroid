@@ -29,8 +29,6 @@ import java.io.IOException;
 
 public class Statoil extends SEBKortBase {
 
-    private static final String TAG = "Statoil";
-
     private static final String NAME = "Statoil Mastercard";
 
     private static final String NAME_SHORT = "statoil";

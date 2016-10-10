@@ -43,8 +43,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class PlusGirot extends Bank {
 
-    private static final String TAG = "PlusGirot";
-
     private static final String NAME = "PlusGirot";
 
     private static final String NAME_SHORT = "plusgirot";

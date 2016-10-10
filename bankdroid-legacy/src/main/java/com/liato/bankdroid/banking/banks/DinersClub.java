@@ -45,8 +45,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class DinersClub extends Bank {
 
-    private static final String TAG = "DinersClub";
-
     private static final String NAME = "Diners Club";
 
     private static final String NAME_SHORT = "dinersclub";

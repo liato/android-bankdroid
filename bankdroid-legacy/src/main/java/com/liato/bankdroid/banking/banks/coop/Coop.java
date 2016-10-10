@@ -55,8 +55,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class Coop extends Bank {
 
-    private static final String TAG = "Coop";
-
     private static final String NAME = "Coop";
 
     private static final String NAME_SHORT = "coop";

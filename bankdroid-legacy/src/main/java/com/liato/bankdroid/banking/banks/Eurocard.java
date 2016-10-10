@@ -29,8 +29,6 @@ import java.io.IOException;
 
 public class Eurocard extends SEBKortBase {
 
-    private static final String TAG = "Eurocard";
-
     private static final String NAME = "Eurocard";
 
     private static final String NAME_SHORT = "eurocard";

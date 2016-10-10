@@ -43,8 +43,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class Bioklubben extends Bank {
 
-    private static final String TAG = "Bioklubben";
-
     private static final String NAME = "Bioklubben";
 
     private static final String NAME_SHORT = "bioklubben";

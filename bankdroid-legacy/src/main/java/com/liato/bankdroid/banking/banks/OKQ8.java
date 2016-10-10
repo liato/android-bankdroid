@@ -45,8 +45,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class OKQ8 extends Bank {
 
-    private static final String TAG = "OKQ8";
-
     private static final String NAME = "OKQ8 VISA";
 
     private static final String NAME_SHORT = "okq8";

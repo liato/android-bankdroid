@@ -48,7 +48,6 @@ import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class PayPal extends Bank {
-    private static final String TAG = "PayPal";
     private static final String NAME = "PayPal";
     private static final String NAME_SHORT = "paypal";
     private static final String ORIGIN_URL =  "https://www.paypal.com";

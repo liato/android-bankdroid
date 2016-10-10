@@ -42,8 +42,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class BetterGlobe extends Bank {
 
-    private static final String TAG = "BetterGlobe";
-
     private static final String NAME = "Better Globe";
 
     private static final String NAME_SHORT = "betterglobe";

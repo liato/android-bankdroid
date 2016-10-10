@@ -29,8 +29,6 @@ import java.io.IOException;
 
 public class Chevrolet extends SEBKortBase {
 
-    private static final String TAG = "Chevrolet";
-
     private static final String NAME = "Chevrolet Big Plus Card";
 
     private static final String NAME_SHORT = "chevrolet";

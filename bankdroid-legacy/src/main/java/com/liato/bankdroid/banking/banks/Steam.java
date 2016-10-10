@@ -49,8 +49,6 @@ import timber.log.Timber;
 
 public class Steam extends Bank {
 
-    private static final String TAG = "Steam";
-
     private static final String NAME = "Steam Wallet";
 
     private static final String NAME_SHORT = "steam";

@@ -45,8 +45,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class Jojo extends Bank {
 
-    private static final String TAG = "Jojo";
-
     private static final String NAME = "Jojo Reskassa";
 
     private static final String NAME_SHORT = "jojo";

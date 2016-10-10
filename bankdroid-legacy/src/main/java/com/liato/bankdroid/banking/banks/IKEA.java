@@ -28,8 +28,6 @@ import java.io.IOException;
 
 public class IKEA extends AbsIkanoPartner {
 
-    private static final String TAG = "IKEA";
-
     private static final String NAME = "IKEA HANDLA kort";
 
     private static final String NAME_SHORT = "ikea";

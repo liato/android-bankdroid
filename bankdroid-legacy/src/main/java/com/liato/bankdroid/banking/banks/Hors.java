@@ -43,8 +43,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class Hors extends Bank {
 
-    private static final String TAG = "Hors";
-
     private static final String NAME = "Hörs";
 
     private static final String NAME_SHORT = "hors";

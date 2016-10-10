@@ -41,8 +41,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class Ostgotatrafiken extends Bank {
 
-    private static final String TAG = "Östgötatrafiken";
-
     private static final String NAME = "Östgötatrafiken";
 
     private static final String NAME_SHORT = "ogt";

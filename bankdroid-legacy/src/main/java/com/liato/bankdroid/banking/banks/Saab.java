@@ -29,8 +29,6 @@ import java.io.IOException;
 
 public class Saab extends SEBKortBase {
 
-    private static final String TAG = "SAAB";
-
     private static final String NAME = "SaabKortet";
 
     private static final String NAME_SHORT = "saab";

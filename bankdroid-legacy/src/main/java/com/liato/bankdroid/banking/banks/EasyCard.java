@@ -28,8 +28,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class EasyCard extends Bank {
 
-    private static final String TAG = "EasyCard";
-
     private static final String NAME = "EasyCard";
 
     private static final String NAME_SHORT = "easycard";

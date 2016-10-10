@@ -44,8 +44,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class BrummerKF extends Bank {
 
-    private static final String TAG = "BrummerKF";
-
     private static final String NAME = "Brummer KF & Pension";
 
     private static final String NAME_SHORT = "brummer_kf";

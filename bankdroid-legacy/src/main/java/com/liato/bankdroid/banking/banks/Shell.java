@@ -28,8 +28,6 @@ import java.io.IOException;
 
 public class Shell extends AbsIkanoPartner {
 
-    private static final String TAG = "Shell";
-
     private static final String NAME = "Shell MasterCard";
 
     private static final String NAME_SHORT = "shell";

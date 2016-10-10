@@ -12,8 +12,6 @@ import java.io.IOException;
 
 public class SwedbankYouth extends AbstractSwedbank {
 
-    private static final String TAG = "Swedbank Ung";
-
     private static final String NAME = "Swedbank Ung";
 
     private static final String NAME_SHORT = "swedbank-youth";

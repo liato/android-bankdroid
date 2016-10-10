@@ -29,8 +29,6 @@ import java.io.IOException;
 
 public class SJPrio extends SEBKortBase {
 
-    private static final String TAG = "SJPrio";
-
     private static final String NAME = "SJ Prio MasterCard";
 
     private static final String NAME_SHORT = "sj_prio";

@@ -43,8 +43,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class SvenskaSpel extends Bank {
 
-    private static final String TAG = "SvenskaSpel";
-
     private static final String NAME = "Svenska Spel";
 
     private static final String NAME_SHORT = "svenskaspel";

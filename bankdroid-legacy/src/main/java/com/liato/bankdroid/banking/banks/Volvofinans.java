@@ -54,8 +54,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class Volvofinans extends Bank {
 
-    private static final String TAG = "Volvofinans";
-
     private static final String NAME = "Volvofinans";
 
     private static final String NAME_SHORT = "volvofinans";

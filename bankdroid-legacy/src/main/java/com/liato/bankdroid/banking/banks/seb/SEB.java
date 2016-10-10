@@ -56,8 +56,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class SEB extends Bank {
 
-    private static final String TAG = "SEB";
-
     private static final String NAME = "SEB";
 
     private static final String NAME_SHORT = "seb";

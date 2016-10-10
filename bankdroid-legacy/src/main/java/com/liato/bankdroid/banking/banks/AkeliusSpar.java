@@ -45,8 +45,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class AkeliusSpar extends Bank {
 
-    private static final String TAG = "AkeliusSpar";
-
     private static final String NAME = "Akelius Spar";
 
     private static final String NAME_SHORT = "akeliusspar";

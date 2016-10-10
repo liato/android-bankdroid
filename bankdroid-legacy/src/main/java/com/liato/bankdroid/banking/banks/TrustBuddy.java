@@ -43,8 +43,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class TrustBuddy extends Bank {
 
-    private static final String TAG = "TrustBuddy";
-
     private static final String NAME = "TrustBuddy";
 
     private static final String NAME_SHORT = "trustbuddy";

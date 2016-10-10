@@ -29,8 +29,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class Marginalen extends Bank {
 
-    private static final String TAG = "Marginalen";
-
     private static final String NAME = "Marginalen Bank";
 
     private static final String NAME_SHORT = "marginalen";

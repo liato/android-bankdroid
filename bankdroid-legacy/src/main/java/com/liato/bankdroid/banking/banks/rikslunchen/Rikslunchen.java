@@ -38,8 +38,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class Rikslunchen extends Bank {
 
-    private static final String TAG = "Rikslunchen";
-
     private static final String NAME = "Rikslunchen";
 
     private static final String NAME_SHORT = "rikslunchen";

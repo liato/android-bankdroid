@@ -60,8 +60,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class Lansforsakringar extends Bank {
 
-    private static final String TAG = "Lansforsakringar";
-
     private static final String NAME = "Länsförsäkringar";
 
     private static final String NAME_SHORT = "lansforsakringar";

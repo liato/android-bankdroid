@@ -42,8 +42,6 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class Zidisha extends Bank {
 
-    private static final String TAG = "Zidisha";
-
     private static final String NAME = "Zidisha";
 
     private static final String NAME_SHORT = "zidisha";
