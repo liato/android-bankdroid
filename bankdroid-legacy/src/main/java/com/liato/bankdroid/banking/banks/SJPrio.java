@@ -39,7 +39,7 @@ public class SJPrio extends SEBKortBase {
 
     public SJPrio(Context context) {
         super(context, "sjse", "0104", R.drawable.logo_sj_prio);
-        super.TAG = TAG;
+
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;

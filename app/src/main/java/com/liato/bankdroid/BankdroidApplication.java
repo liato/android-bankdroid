@@ -1,17 +1,15 @@
 package com.liato.bankdroid;
 
 import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.answers.Answers;
-import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.BankFactory;
+import com.crashlytics.android.core.CrashlyticsCore;
 
 import android.app.Application;
+import android.support.annotation.Nullable;
+import android.util.Log;
 import android.widget.Toast;
 
-import java.util.List;
-import java.util.Locale;
-
 import io.fabric.sdk.android.Fabric;
+import timber.log.Timber;
 
 public class BankdroidApplication extends Application {
 
@@ -24,22 +22,16 @@ public class BankdroidApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Fabric.with(this, new Crashlytics(), new Answers());
-        Crashlytics.setString(LOG_KEY_LOCALE, Locale.getDefault().toString());
-        logBanks();
-    }
 
-    private void logBanks() {
-        List<Bank> banks = BankFactory.banksFromDb(this, false);
-        StringBuilder bankStringBuilder = new StringBuilder();
-        if (banks != null && !banks.isEmpty()) {
-            for (Bank bank : banks) {
-                bankStringBuilder.append(bank.getName())
-                        .append(",");
-            }
-            Crashlytics.setString(LOG_KEY_BANKS,
-                    bankStringBuilder.substring(0, bankStringBuilder.length() - 1));
+        CrashlyticsCore core = new CrashlyticsCore.Builder()
+                .disabled(BuildConfig.DEBUG)
+                .build();
+        Fabric.with(this, new Crashlytics.Builder().core(core).build());
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
         }
+        Timber.plant(new CrashlyticsTree());
     }
 
     public void setApplicationMessage(String messageText) {
@@ -51,6 +43,29 @@ public class BankdroidApplication extends Application {
             Toast toast = Toast.makeText(this, message, Toast.LENGTH_LONG);
             message = "";
             toast.show();
+        }
+    }
+
+    public class CrashlyticsTree extends Timber.Tree {
+        private static final String CRASHLYTICS_KEY_PRIORITY = "priority";
+        private static final String CRASHLYTICS_KEY_TAG = "tag";
+        private static final String CRASHLYTICS_KEY_MESSAGE = "message";
+
+        @Override
+        protected void log(int priority, @Nullable String tag, @Nullable String message, @Nullable Throwable t) {
+            if (priority == Log.VERBOSE || priority == Log.DEBUG || priority == Log.INFO) {
+                return;
+            }
+
+            Crashlytics.setInt(CRASHLYTICS_KEY_PRIORITY, priority);
+            Crashlytics.setString(CRASHLYTICS_KEY_TAG, tag);
+            Crashlytics.setString(CRASHLYTICS_KEY_MESSAGE, message);
+
+            if (t == null) {
+                Crashlytics.logException(new Exception(message));
+            } else {
+                Crashlytics.logException(t);
+            }
         }
     }
 }

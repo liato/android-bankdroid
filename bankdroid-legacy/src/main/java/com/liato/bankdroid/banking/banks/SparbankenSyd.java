@@ -40,7 +40,7 @@ public class SparbankenSyd extends MobilbankenBase {
 
     public SparbankenSyd(Context context) {
         super(context, R.drawable.logo_sparbanken_syd);
-        super.TAG = TAG;
+
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;

@@ -39,7 +39,7 @@ public class Opel extends SEBKortBase {
 
     public Opel(Context context) {
         super(context, "opse", "0107", R.drawable.logo_opel);
-        super.TAG = TAG;
+
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;

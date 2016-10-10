@@ -43,7 +43,6 @@ import org.apache.http.protocol.HTTP;
 
 import android.content.Context;
 import android.text.InputType;
-import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -85,7 +84,7 @@ public class SEB extends Bank {
 
     public SEB(Context context) {
         super(context, R.drawable.logo_seb);
-        super.TAG = TAG;
+
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;
@@ -217,7 +216,6 @@ public class SEB extends Bank {
 //        }
 //        }
 
-        Log.d("SEB", "Logged in");
 //        Matcher matcher;
 //        try {
 //            response = urlopen.open("https://m.seb.se/cgi-bin/pts3/mps/1100/mps1101.aspx?X1=digipassAppl1");

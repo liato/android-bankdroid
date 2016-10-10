@@ -81,7 +81,7 @@ public class NordeaDK extends Bank {
     public NordeaDK(Context context) {
         super(context, R.drawable.logo_nordea_dk);
 
-        super.TAG = TAG;
+
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;

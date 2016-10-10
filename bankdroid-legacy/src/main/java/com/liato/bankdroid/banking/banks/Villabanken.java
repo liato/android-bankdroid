@@ -78,13 +78,11 @@ public class Villabanken extends Bank {
     private String accountUrl
             = "https://kundportal.cerdo.se/villabankenpub/card/secure/CardAccountOverview.aspx";
 
-    ;
-
     private String accountResponse = null;
 
     public Villabanken(Context context) {
         super(context, R.drawable.logo_villabanken);
-        super.TAG = TAG;
+
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;

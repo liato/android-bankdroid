@@ -23,7 +23,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
+
+import timber.log.Timber;
 
 import static com.liato.bankdroid.db.Database.PROPERTY_CONNECTION_ID;
 import static com.liato.bankdroid.db.Database.PROPERTY_KEY;
@@ -60,8 +61,7 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(final SQLiteDatabase db, final int oldVersion,
             final int newVersion) {
-        Log.w(DBAdapter.TAG, "Upgrading database from version " + oldVersion
-                + " to " + newVersion + ", which will destroy all old data");
+        Timber.d("Upgrading database from version %d to %d", newVersion, oldVersion);
         // Version <= 1.7.2
         if (oldVersion <= 9) {
             // Add an "extras" field to the bank and and "alias for" field to the account.

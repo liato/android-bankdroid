@@ -39,7 +39,7 @@ public class Quintessentially extends SEBKortBase {
 
     public Quintessentially(Context context) {
         super(context, "quse", "0119", R.drawable.logo_quintessentially);
-        super.TAG = TAG;
+
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;

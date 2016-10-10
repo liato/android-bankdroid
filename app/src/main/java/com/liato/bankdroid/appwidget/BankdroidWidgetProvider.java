@@ -16,7 +16,6 @@
 
 package com.liato.bankdroid.appwidget;
 
-import com.crashlytics.android.Crashlytics;
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.MainActivity;
 import com.liato.bankdroid.R;
@@ -43,11 +42,12 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
 import java.io.IOException;
+
+import timber.log.Timber;
 
 public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 
@@ -112,13 +112,13 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
         String accountId = WidgetConfigureActivity.getAccountId(context, appWidgetId);
         long bankId = WidgetConfigureActivity.getBankId(context, appWidgetId);
         if (accountId == null) {
-            Log.w("BankdroidWidgetProvider", "Widget not found. ID: " + appWidgetId);
+            Timber.w("Widget not found. ID: %s", appWidgetId);
             return disableAppWidget(context, appWidgetManager,
                     appWidgetId);
         }
         Account account = BankFactory.accountFromDb(context, bankId + "_" + accountId, false);
         if (account == null) {
-            Log.w("BankdroidWidgetProvider", "Account not found in db: " + accountId);
+            Timber.w("Account not found in database");
             return disableAppWidget(context, appWidgetManager,
                     appWidgetId);
 
@@ -126,10 +126,9 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 
         Bank bank = BankFactory.bankFromDb(account.getBankDbId(), context, false);
         if (bank == null) {
-            Log.w("BankdroidWidgetProvider", "Bank not found: " + account.getBankDbId());
+            Timber.w("Bank not found in database");
             return disableAppWidget(context, appWidgetManager,
                     appWidgetId);
-
         }
 
         account.setBank(bank);
@@ -376,7 +375,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
             protected Void doInBackground(Void... params) {
                 String accountId = WidgetConfigureActivity.getAccountId(context, appWidgetId);
                 if (accountId == null) {
-                    Log.w("WidgetService", "Widget not found in db: " + appWidgetId);
+                    Timber.w("Widget not found %d", appWidgetId);
                     return null;
                 }
                 long bankId = WidgetConfigureActivity.getBankId(context, appWidgetId);
@@ -396,20 +395,14 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
                     }
 
                 } catch (BankException e) {
-                    Log.e(TAG, "Error while updating bank '" + bank.getDbId() + "'; " + e
-                            .getMessage());
-                    Crashlytics.logException(e);
+                    Timber.e(e, "Could not update bank %s", bank.getShortName());
                 } catch (LoginException e) {
-                    Log.e("", "Disabling bank: " + bank.getDbId());
+                    Timber.w(e, "Invalid credentials for bank %s", bank.getShortName());
                     DBAdapter.disable(bank, context);
                 } catch (BankChoiceException e) {
-                    Log.e(TAG, "Error while updating bank '" + bank.getDbId() + "'; " + e
-                            .getMessage());
                 } catch (IOException e) {
-                    Log.e(TAG, "Error while updating bank '" + bank.getDbId() + "'; " + e
-                            .getMessage());
                     if (NetworkUtils.isInternetAvailable()) {
-                        Crashlytics.logException(e);
+                        Timber.e(e, "Could not update bank %s", bank.getShortName());
                     }
                 }
                 BankdroidWidgetProvider.updateAppWidget(context, appWidgetManager, appWidgetId);

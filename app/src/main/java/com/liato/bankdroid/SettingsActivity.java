@@ -33,10 +33,11 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceScreen;
-import android.util.Log;
 import android.widget.Toast;
 
 import java.math.BigDecimal;
+
+import timber.log.Timber;
 
 public class SettingsActivity extends LockablePreferenceActivity
         implements OnPreferenceClickListener, OnPreferenceChangeListener {
@@ -124,7 +125,7 @@ public class SettingsActivity extends LockablePreferenceActivity
                             "http://www.sonyericsson.com/cws/products/accessories/overview/liveviewmicrodisplay")));
             return true;
         } else if ("test_notification".equals(prefKey)) {
-            Log.d(TAG, "Sending test notification.");
+            Timber.d("Sending test notification.");
             Account account1 = new Account("Personkonto", new BigDecimal(8351.00), "22");
             Bank bank1 = new Swedbank(this);
             bank1.setDbid(21);
@@ -152,7 +153,7 @@ public class SettingsActivity extends LockablePreferenceActivity
                 mLockPatternUtils.saveLockPattern(null);
                 ((CheckBoxPreference) findPreference("patternlock_enabled")).setChecked(false);
             } else {
-                Log.d(TAG, "User was unable to disable pattern lock.");
+                Timber.d("User was unable to disable pattern lock.");
             }
         } else if (requestCode == ENABLE_LOCKPATTERN) {
             // User attempted to enable the pattern lock, toggle the checkbox.

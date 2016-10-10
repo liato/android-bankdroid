@@ -32,7 +32,6 @@ import org.apache.http.message.BasicNameValuePair;
 import android.content.Context;
 import android.text.Html;
 import android.text.InputType;
-import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,6 +41,7 @@ import java.util.regex.Pattern;
 
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
+import timber.log.Timber;
 
 public class IkanoBank extends Bank {
 
@@ -82,7 +82,7 @@ public class IkanoBank extends Bank {
 
     public IkanoBank(Context context) {
         super(context, R.drawable.logo_ikanobank);
-        super.TAG = TAG;
+
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;
@@ -193,13 +193,13 @@ public class IkanoBank extends Bank {
         Matcher matcher;
         matcher = reViewState.matcher(response);
         if (!matcher.find()) {
-            Log.e(TAG, "Unable to find ViewState. L156.");
+            Timber.e("Unable to find ViewState. L156.");
             return;
         }
         String strViewState = matcher.group(1);
         matcher = reEventValidation.matcher(response);
         if (!matcher.find()) {
-            Log.e(TAG, "Unable to find EventValidation. L161.");
+            Timber.e("Unable to find EventValidation. L161.");
             return;
         }
         String strEventValidation = matcher.group(1);

@@ -40,7 +40,6 @@ public class EurobonusMastercardNo extends SEBKortBase {
 
     public EurobonusMastercardNo(Context context) {
         super(context, "sano", "0117", R.drawable.logo_ebmaster_no);
-        super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;

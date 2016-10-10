@@ -60,8 +60,6 @@ public class EasyCard extends Bank {
 
     public EasyCard(Context context) {
         super(context, R.drawable.logo_easycard);
-
-        super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;

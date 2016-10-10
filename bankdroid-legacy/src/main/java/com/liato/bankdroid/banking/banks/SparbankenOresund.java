@@ -40,7 +40,7 @@ public class SparbankenOresund extends MobilbankenBase {
 
     public SparbankenOresund(Context context) {
         super(context, R.drawable.logo_sparbanken_oresund);
-        super.TAG = TAG;
+
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;

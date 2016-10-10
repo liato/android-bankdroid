@@ -45,7 +45,8 @@ import com.liato.bankdroid.SettingsActivity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
+
+import timber.log.Timber;
 
 /**
  * Receives broadcast intents from LiveView service.
@@ -57,7 +58,7 @@ public class PluginReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String command = intent.getExtras().getString(PluginConstants.BROADCAST_COMMAND);
-        Log.d(PluginConstants.LOG_TAG, "Received command: " + command);
+        Timber.v("Received command: %s", command);
 
         if (command == null) {
             return;
@@ -69,7 +70,7 @@ public class PluginReceiver extends BroadcastReceiver {
             String myPluginName = context.getResources().getString(R.string.app_name);
 
             if (pluginName != null && pluginName.contentEquals(myPluginName)) {
-                Log.d(PluginConstants.LOG_TAG, "Starting preferences!");
+                Timber.v("Starting preferences!");
 
                 Intent prefsIntent = new Intent(context, SettingsActivity.class);
                 prefsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -77,9 +78,9 @@ public class PluginReceiver extends BroadcastReceiver {
             }
         } else if (command.contentEquals(PluginConstants.BROADCAST_COMMAND_START)) {
             if (LiveViewService.isAlreadyRunning()) {
-                Log.d(PluginConstants.LOG_TAG, "Service is already running.");
+                Timber.v("Service is already running.");
             } else {
-                Log.d(PluginConstants.LOG_TAG, "Starting service!");
+                Timber.v("Starting service!");
 
                 context.startService(new Intent(context, LiveViewService.class));
             }

@@ -39,7 +39,7 @@ public class Statoil extends SEBKortBase {
 
     public Statoil(Context context) {
         super(context, "stse", "0122", R.drawable.logo_statoil);
-        super.TAG = TAG;
+
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;

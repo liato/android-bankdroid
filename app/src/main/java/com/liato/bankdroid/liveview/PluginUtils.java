@@ -43,11 +43,12 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import timber.log.Timber;
 
 /**
  * Utils for LiveView plugin.
@@ -69,7 +70,7 @@ public final class PluginUtils {
      */
     public static String storeIconToFile(Context ctx, Resources resources, int resource,
             String fileName) {
-        Log.d(PluginConstants.LOG_TAG, "Store icon to file.");
+        Timber.d("Store icon to file.");
 
         if (resources == null) {
             return "";
@@ -83,11 +84,11 @@ public final class PluginUtils {
             fos.flush();
             fos.close();
         } catch (IOException e) {
-            Log.e(PluginConstants.LOG_TAG, "Failed to store to device", e);
+            Timber.e(e, "Failed to store to device");
         }
 
         File iconFile = ctx.getFileStreamPath(fileName);
-        Log.d(PluginConstants.LOG_TAG, "Icon stored. " + iconFile.getAbsolutePath());
+        Timber.d("Icon stored. %s", iconFile.getAbsolutePath());
 
         return iconFile.getAbsolutePath();
     }

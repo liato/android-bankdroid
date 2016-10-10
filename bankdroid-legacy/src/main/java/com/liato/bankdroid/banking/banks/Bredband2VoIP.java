@@ -31,7 +31,6 @@ import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
 import android.text.InputType;
-import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,6 +40,7 @@ import java.util.regex.Pattern;
 
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
+import timber.log.Timber;
 
 public class Bredband2VoIP extends Bank {
 
@@ -63,7 +63,6 @@ public class Bredband2VoIP extends Bank {
 
     public Bredband2VoIP(Context context) {
         super(context, R.drawable.logo_bredband2voip);
-        TAG = "Bredband2VoIP";
         NAME = "Bredband2 VoIP";
         NAME_SHORT = "bredband2voip";
         BANKTYPE_ID = IBankTypes.BREDBAND2VOIP;
@@ -148,7 +147,7 @@ public class Bredband2VoIP extends Bank {
                             Helpers.parseBalance(mTransaction.group(5)).negate()));
                 }
             } catch (Exception e) {
-                Log.w(TAG, "Unable to parse: " + mInvoiceUrl.group(1));
+                Timber.w(e, "Unable to parse: %s", mInvoiceUrl.group(1));
             }
         }
         account.setTransactions(transactions);
