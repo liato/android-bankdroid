@@ -56,7 +56,6 @@
     <issue id="IconMixedNinePatch" severity="ignore" />
     <issue id="IconNoDpi" severity="ignore" />
     <issue id="IconXmlAndPng" severity="ignore" />
-    <issue id="IllegalResourceRef" severity="ignore" />
     <issue id="InOrMmUsage" severity="ignore" />
     <issue id="InflateParams" severity="ignore" />
     <issue id="InconsistentArrays" severity="ignore" />
@@ -70,7 +69,6 @@
     <issue id="JavascriptInterface" severity="ignore" />
     <issue id="LabelFor" severity="ignore" />
     <issue id="LibraryCustomView" severity="ignore" />
-    <issue id="LocalSuppress" severity="ignore" />
     <issue id="MangledCRLF" severity="ignore" />
     <issue id="ManifestOrder" severity="ignore" />
     <issue id="ManifestTypo" severity="ignore" />
@@ -101,7 +99,6 @@
     <issue id="ParcelClassLoader" severity="ignore" />
     <issue id="ParcelCreator" severity="ignore" />
     <issue id="PluralsCandidate" severity="ignore" />
-    <issue id="PrivateResource" severity="ignore" />
     <issue id="Proguard" severity="ignore" />
     <issue id="ProguardSplit" severity="ignore" />
     <issue id="ProtectedPermissions" severity="ignore" />
@@ -109,8 +106,6 @@
     <issue id="Recycle" severity="ignore" />
     <issue id="Registered" severity="ignore" />
     <issue id="RequiredSize" severity="ignore" />
-    <issue id="ResAuto" severity="ignore" />
-    <issue id="ResourceAsColor" severity="ignore" />
     <issue id="RtlHardcoded" severity="ignore" />
     <issue id="RtlSymmetry" severity="ignore" />
     <issue id="ScrollViewCount" severity="ignore" />
@@ -146,7 +141,6 @@
     <issue id="UnknownIdInLayout" severity="ignore" />
     <issue id="UnlocalizedSms" severity="ignore" />
     <issue id="UnusedAttribute" severity="ignore" />
-    <issue id="UnusedResources" severity="ignore" />
     <issue id="UseCheckPermission" severity="ignore" />
     <issue id="UseCompoundDrawables" severity="ignore" />
     <issue id="UseSparseArrays" severity="ignore" />

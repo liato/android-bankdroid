@@ -49,15 +49,13 @@
             android:visibility="gone">
 
             <TableRow
-                android:id="@+id/TableRow01"
-                android:layout_width="fill_parent"
+                    android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|center_horizontal"
                 android:gravity="center_vertical|center_horizontal">
 
                 <Button
-                    android:id="@+id/btnAddBank"
-                    style="@style/Menu_Button"
+                        style="@style/Menu_Button"
                     android:drawableLeft="@drawable/button_add"
                     android:text="@string/add_new_account"></Button>
 
@@ -72,8 +70,7 @@
                     android:src="@drawable/menu_separator"></ImageView>
 
                 <Button
-                    android:id="@+id/btnAccountsRefresh"
-                    style="@style/Menu_Button"
+                        style="@style/Menu_Button"
                     android:drawableLeft="@drawable/button_refresh"
                     android:text="@string/refresh_balance"></Button>
             </TableRow>

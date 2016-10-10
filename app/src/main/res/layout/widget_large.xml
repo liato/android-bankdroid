@@ -26,8 +26,7 @@
 			android:layout_width="52dp"
 			android:src="@drawable/icon_large"></ImageView>
 		<RelativeLayout
-			android:id="@+id/RelativeLayout01"
-			android:layout_above="@+id/txtListitemAccountsItemAccountname"
+				android:layout_above="@+id/txtListitemAccountsItemAccountname"
 			android:layout_toRightOf="@+id/imgWidgetIcon"
 			android:layout_height="wrap_content"
 			android:layout_width="fill_parent">
@@ -81,12 +80,11 @@
 				android:gravity="right"
 				android:layout_alignTop="@+id/txtWidgetAccountbalance"
 				android:paddingTop="37dp"></TextView>
-		
+
 </RelativeLayout>
 	</RelativeLayout>
 	<RelativeLayout
-		android:id="@+id/RelativeLayout03"
-		android:layout_width="wrap_content"
+			android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_alignParentRight="true"
 		android:paddingTop="15dp"
@@ -129,7 +127,6 @@
 				android:indeterminate="true"
 				android:layout_height="wrap_content"
 				style="@style/Widget_Progress"
-				android:id="@+id/prgProgress"
 				android:minWidth="17dp"
 				android:visibility="visible"
 				android:minHeight="6dp"

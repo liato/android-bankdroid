@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    
+
     <string name="about">Om</string>
     <string name="version">Version $version av</string>
     <string name="widget_name_small">Bankdroid (Liten)</string>
@@ -11,9 +11,7 @@
     <string name="errors_when_updating">Fel vid uppdatering</string>
     <string name="logging_in">Loggar in...</string>
     <string name="could_not_create_account">Kunde ej skapa konto</string>
-    <string name="menu_edit">Redigera</string>
-    <string name="menu_remove">Radera</string>
-    <string name="transparent_background">Transparent bakgrund</string>
+	<string name="transparent_background">Transparent bakgrund</string>
     <string name="settings">Inställningar</string>
     <string name="refresh">Uppdatera</string>
     <string name="add_account">Lägg till konto</string>
@@ -24,15 +22,14 @@
 
     <string name="cancel">AVBRYT</string>
     <string name="save">SPARA</string>
-   
+
 	<string name="add_new_account">LÄGG TILL BANK</string>
-	<string name="banks_instructions">Du har inte lagt till någon bank ännu, tryck på knappen för att lägga till en bank.</string>
-	
+
 	<string name="main_instructions">Du har inte lagt till någon bank ännu, gå till menyn och tryck på konton för att lägga till ett nytt bankkonto.</string>
 	<string name="refresh_balance">UPPDATERA</string>
 
 	<string name="choose_an_account">Välj ett konto</string>
-	
+
 	<!--  Settings  -->
 	<string name="security_and_privacy">Säkerhet</string>
 	<string name="enable_patternlock_title">Aktivera grafiskt lösenord</string>
@@ -105,33 +102,14 @@
 	<string name="api_key_title">API-nyckel</string>
 	<string name="api_key_summary">Använd denna nyckel för för att komma åt kontoutdrag från andra applikationer</string>
 
-	<string name="update_frequency">Uppdateringsfrekvens</string>
-	<string name="access_code">Lösenord</string>
-	<string name="access_code_repeat">Upprepa lösenord</string>
-	<string name="passwords_mismatch">Du har angivit två olika lösenord. Skriv samma lösenord i båda fälten.</string>
-	<string name="passwords_mismatch_title">Felaktigt lösenord</string>
-	<string name="pin_desc">Ange ett lösenord om du vill lösenordsskydda applikationen och tillhörande widgets.</string>
-	<string name="notify_on_change">Notifiera vid kontohändelser</string>
-	<string name="with_sound">Med ljud</string>
-	<string name="vibrate">Vibrera</string>
-	<string name="notify_account_types">Endast för följande konototyper:</string>
 	<string name="funds">Fonder</string>
 	<string name="ccards">Kreditkort</string>
 	<string name="loans">Lån</string>
 	<string name="deposit_account">Transaktionskonto</string>
 	<string name="other">Andra</string>
 	<!--  /Settings  -->
-		
-    <string name="login">Logga in</string>
-    <string name="invalid_access_code">Ogiltig PIN-kod. Försök igen.</string>
-    
-    <string name="disabled">Inaktiverat</string>
- 	<string name="minutes">minuter</string>
-    <string name="hour">timme</string>
-    <string name="hours">timmar</string>
-    <string name="daily">Dagligen</string>
 
-    <string name="popup_refresh">Uppdatera</string>
+	<string name="popup_refresh">Uppdatera</string>
     <string name="popup_edit">Redigera</string>
     <string name="popup_www">WWW</string>
     <string name="popup_remove">Radera</string>
@@ -147,10 +125,10 @@
     <string name="remove_bank_title">Radera bank?</string>
     <string name="yes">Ja</string>
     <string name="no">Nej</string>
- 
+
     <string name="menu_show_hidden">Visa dolda konton</string>
     <string name="menu_hide_hidden">Göm dolda konton</string>
-    
+
     <string name="tran_desc">Inget kontoutdrag tillgängligt för detta konto.</string>
 
     <string name="thanks_to">Tack till</string>
@@ -159,10 +137,8 @@
     <!-- Unlock header -->
     <string name="patternlock_header">Rita ditt grafiska lösenord för att låsa upp Bankdroid</string>
     <!-- Security & location settings screen, header -->
-    <string name="lock_settings_title">Lås för SIM-kort</string>
-    <!-- Security & location settings screen, setting option name -->
-    <string name="lockpattern_change_lock_pattern_label">Byt grafiskt lösenord</string>
-    <!-- Security & location settings screen, change unlock pattern screen instruction when the user chooses "Change unlock pattern".  We first ask the user toe nter the current pattern, and this is the message seen -->
+	<!-- Security & location settings screen, setting option name -->
+	<!-- Security & location settings screen, change unlock pattern screen instruction when the user chooses "Change unlock pattern".  We first ask the user toe nter the current pattern, and this is the message seen -->
     <string name="lockpattern_need_to_unlock">Bekräfta sparat grafiskt lösenord</string>
     <!-- Do not translate. -->
     <string name="lockpattern_need_to_unlock_footer"></string>
@@ -192,20 +168,15 @@
     <!-- Security & location settings screen, change unlock pattern screen button, on bottom of screen. Once they draw a new pattern and confirm it by drawing it again, they press this button to exit -->
     <string name="lockpattern_continue_button_text">Fortsätt</string>
     <!-- Security & location settings screen, unlock screen activity title -->
-    <string name="lockpattern_settings_title">Grafiskt lösenord</string>
-    <!-- Security & location settings screen, setting check box title if the unlock pattern MUST be drawn everytime they turn on the screen -->
-    <string name="lockpattern_settings_enable_title">Begär grafiskt lösenord</string>
-    <!-- Security & location settings screen, setting summary for the checkbox "Require pattern" -->
-    <string name="lockpattern_settings_enable_summary">Måste rita grafiskt lösenord för att låsa upp skärmen</string>
-    <!-- Security & location settings screen, setting check box title. This setting controls whether a visible green line is drawn as the user moves his finger around while drawing the unlock pattern.  If checked, this line is drawn.  If unchecked, there is nothing drawn so the user does not reveal his pattern while he unlocks the phone.-->
+	<!-- Security & location settings screen, setting check box title if the unlock pattern MUST be drawn everytime they turn on the screen -->
+	<!-- Security & location settings screen, setting summary for the checkbox "Require pattern" -->
+	<!-- Security & location settings screen, setting check box title. This setting controls whether a visible green line is drawn as the user moves his finger around while drawing the unlock pattern.  If checked, this line is drawn.  If unchecked, there is nothing drawn so the user does not reveal his pattern while he unlocks the phone.-->
     <string name="lockpattern_settings_enable_visible_pattern_title">Anv. synligt graf. lös.</string>
     <!-- Security & location settings screen, setting check box title. This setting controls whether tactile feedback will be produced when the user draws the pattern.-->
     <string name="lockpattern_settings_enable_tactile_feedback_title">Använd känslig feedback</string>
     <!-- Security & location settings screen, setting option name when user has never set an unlock pattern -->
-    <string name="lockpattern_settings_choose_lock_pattern">Ange grafiskt lösenord</string>
-    <!-- Security & location settings screen, setting option name when user has previously set an unlock pattern and wants to change to a new pattern -->
-    <string name="lockpattern_settings_change_lock_pattern">Byt grafiskt lösenord</string>
-    <!-- Security & location settings screen, the help instructions (an animation) caption -->
+	<!-- Security & location settings screen, setting option name when user has previously set an unlock pattern and wants to change to a new pattern -->
+	<!-- Security & location settings screen, the help instructions (an animation) caption -->
     <string name="lockpattern_settings_help_how_to_record">Så här ritar du ett grafiskt lösenord</string>
     <!-- Security & location settings screen, change unlock pattern screen instruction on top of screen after too many incorrect attempts -->
     <string name="lockpattern_too_many_failed_confirmation_attempts_header">För många felaktiga försök!</string>
@@ -226,7 +197,7 @@
 		\n<font height="17">\n</font><b>3</b>\u00A0 Rita ditt grafiska lösenord igen för att bekräfta.
 		\n<font height="17">\n</font><b>Är du redo att börja? Välj \u201CNästa\u201D</b>.
 		\n<font height="3">\n</font>"Välj \u201CAvbryt\u201D om du vill lämna telefonen oskyddad.</font>
-		
+
 	</string>
     <!-- ChooseLockPatternExample --> <skip />
     <!-- ChooseLockPatternExample, screen title that shows an example pattern -->
