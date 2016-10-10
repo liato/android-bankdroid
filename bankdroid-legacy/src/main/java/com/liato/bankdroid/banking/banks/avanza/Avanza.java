@@ -39,6 +39,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.support.annotation.DrawableRes;
 import android.util.Base64;
 
 import java.io.IOException;
@@ -54,8 +55,8 @@ public class Avanza extends Bank {
 
     private static final String API_URL = "https://iphone.avanza.se/iphone-ws/";
 
-    public Avanza(Context context) {
-        super(context, R.drawable.logo_avanza);
+    protected Avanza(Context context, @DrawableRes int logoResource) {
+        super(context, logoResource);
         TAG = "Avanza";
         NAME = "Avanza";
         NAME_SHORT = "avanza";
@@ -63,10 +64,8 @@ public class Avanza extends Bank {
         BANKTYPE_ID = IBankTypes.AVANZA;
     }
 
-    public Avanza(String username, String password, Context context)
-            throws BankException, LoginException, BankChoiceException, IOException {
-        this(context);
-        this.update(username, password);
+    public Avanza(Context context) {
+        this(context, R.drawable.logo_avanza);
     }
 
     @Override

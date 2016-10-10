@@ -5,7 +5,6 @@
     <string name="password">Password</string>
     <string name="extras_field">Extras</string>
     <string name="card_number">Card number</string>
-    <string name="cvc">CVC</string>
     <string name="account_number">Account number</string>
     <string name="control_code">Control code</string>
     <string name="email">E-mail</string>

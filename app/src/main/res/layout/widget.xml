@@ -81,8 +81,7 @@
 			android:text="Loading..." />
 	</LinearLayout>
 	<LinearLayout
-		android:id="@+id/layWidgetRow03"
-		android:layout_below="@+id/layWidgetRow02"
+			android:layout_below="@+id/layWidgetRow02"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:gravity="bottom"
@@ -101,7 +100,6 @@
 				android:indeterminate="true"
 				android:layout_height="wrap_content"
 				style="@style/Widget_Progress"
-				android:id="@+id/prgProgress"
 				android:maxHeight="2dp"
 				android:minHeight="2dp"
 				android:minWidth="17dp"

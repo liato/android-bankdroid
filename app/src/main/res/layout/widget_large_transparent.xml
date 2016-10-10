@@ -25,8 +25,7 @@
 			android:layout_width="52dp"
 			android:src="@drawable/icon_large"></ImageView>
 		<RelativeLayout
-			android:id="@+id/RelativeLayout01"
-			android:layout_above="@+id/txtListitemAccountsItemAccountname"
+				android:layout_above="@+id/txtListitemAccountsItemAccountname"
 			android:layout_toRightOf="@+id/imgWidgetIcon"
 			android:layout_height="wrap_content"
 			android:layout_width="fill_parent">
@@ -52,7 +51,7 @@
 				android:id="@+id/txtWidgetAccountnameBlur"
 				android:layout_alignRight="@+id/imgBalanceblur"
 				android:layout_alignTop="@+id/imgBalanceblur"
-				android:visibility="gone"></TextView>			
+				android:visibility="gone"></TextView>
 			<TextView
 				android:textColor="#fff"
 				android:inputType="none"
@@ -83,8 +82,7 @@
 		</RelativeLayout>
 	</RelativeLayout>
 	<RelativeLayout
-		android:id="@+id/RelativeLayout03"
-		android:layout_width="wrap_content"
+			android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_alignParentRight="true"
 		android:paddingTop="15dp"
@@ -127,7 +125,6 @@
 				android:indeterminate="true"
 				android:layout_height="wrap_content"
 				style="@style/Widget_Progress"
-				android:id="@+id/prgProgress"
 				android:minWidth="17dp"
 				android:visibility="visible"
 				android:minHeight="6dp"

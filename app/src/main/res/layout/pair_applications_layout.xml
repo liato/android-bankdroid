@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/RelativeLayout01"
 	android:layout_width="wrap_content"
 	android:layout_height="fill_parent"
 	android:background="@drawable/background_repeat">
@@ -19,12 +18,12 @@
 				android:typeface="sans"
 				android:textSize="16sp"
 				android:text="@string/pair_message" />
-				
-		<ImageView 
-			android:layout_width="wrap_content" 
-			android:src="@drawable/logo_unknown_app" 
-			android:layout_height="wrap_content" 
-			android:id="@+id/imageView1" 
+
+		<ImageView
+			android:layout_width="wrap_content"
+			android:src="@drawable/logo_unknown_app"
+			android:layout_height="wrap_content"
+			android:id="@+id/imageView1"
 			android:layout_gravity="center_horizontal"
 			android:paddingTop="40dp"
 			/>
@@ -49,8 +48,7 @@
 		android:layout_below="@+id/LinearLayout01"
 		android:gravity="bottom">
 		<TableRow
-			android:id="@+id/TableRow01"
-			android:layout_height="wrap_content"
+				android:layout_height="wrap_content"
 			android:gravity="center_vertical|center_horizontal"
 			android:layout_gravity="center_vertical|center_horizontal"
 			android:layout_width="fill_parent">
@@ -75,6 +73,6 @@
 				android:drawableLeft="@drawable/button_accept"
 				android:text="@string/approve"
 				style="@style/Menu_Button"></Button>
-		</TableRow>		
+		</TableRow>
 	</TableLayout>
 </RelativeLayout>
