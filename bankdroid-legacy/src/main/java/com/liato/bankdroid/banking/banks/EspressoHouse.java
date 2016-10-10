@@ -50,7 +50,6 @@ public class EspressoHouse extends Bank {
 
     public EspressoHouse(Context context) {
         super(context, R.drawable.logo_espressohouse);
-        TAG = "EspressoHouse";
         NAME = "Espresso House";
         NAME_SHORT = "espressohouse";
         BANKTYPE_ID = IBankTypes.ESPRESSOHOUSE;

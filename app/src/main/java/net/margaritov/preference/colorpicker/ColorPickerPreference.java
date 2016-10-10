@@ -22,10 +22,11 @@ import android.graphics.Bitmap.Config;
 import android.graphics.Color;
 import android.preference.Preference;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
+import timber.log.Timber;
 
 /**
  * A preference type that allows a user to choose a time
@@ -138,7 +139,7 @@ public class ColorPickerPreference
                 try {
                     mDefaultValue = convertToColorInt(defaultValue);
                 } catch (NumberFormatException e) {
-                    Log.e("ColorPickerPreference", "Wrong color: " + defaultValue);
+                    Timber.w("Wrong color: %s", defaultValue);
                     mDefaultValue = convertToColorInt("#FF000000");
                 }
             } else {

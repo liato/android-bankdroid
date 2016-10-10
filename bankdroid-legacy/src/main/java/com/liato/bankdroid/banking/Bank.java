@@ -36,7 +36,6 @@ import android.content.res.Resources.NotFoundException;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.text.InputType;
-import android.util.Log;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -47,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 
 import eu.nullbyte.android.urllib.Urllib;
+import timber.log.Timber;
 
 public abstract class Bank implements Comparable<Bank>, IBankTypes {
 
@@ -457,11 +457,11 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
             CookieStore cookies = urlopen.getHttpclient().getCookieStore();
             return new SessionPackage(html, cookies);
         } catch (ClientProtocolException e) {
-            Log.e(TAG, e.getMessage());
+            Timber.e(e);
         } catch (IOException e) {
-            Log.e(TAG, e.getMessage());
+            Timber.e(e);
         } catch (BankException e) {
-            Log.e(TAG, e.getMessage());
+            Timber.e(e);
         }
         String html = String.format(preloader,
                 String.format("function go(){window.location=\"%s\" }", this.URL),

@@ -25,11 +25,12 @@ import android.content.SharedPreferences.Editor;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import timber.log.Timber;
 
 /**
  * @author Magnus Andersson
@@ -84,7 +85,7 @@ public class PairApplicationsActivity extends LockableActivity {
             TextView appNameView = (TextView) findViewById(R.id.app_name);
             appNameView.setText(appName);
         } else {
-            Log.w(TAG, "Unknown application");
+            Timber.w("Unknown application");
         }
 
 

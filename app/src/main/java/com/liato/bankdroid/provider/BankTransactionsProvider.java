@@ -28,10 +28,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import timber.log.Timber;
 
 /**
  * <p>
@@ -143,7 +144,7 @@ public class BankTransactionsProvider extends ContentProvider implements
      */
     @Override
     public String getType(final Uri uri) {
-        Log.d(TAG, "Got URI " + uri.toString());
+        Timber.d("Got URI: %s", uri.toString());
 
         switch (uriMatcher.match(uri)) {
             case BANK_ACCOUNTS:
@@ -187,7 +188,7 @@ public class BankTransactionsProvider extends ContentProvider implements
 
         final String apiKey = uri.getPathSegments().get(1);
 
-        Log.d(TAG, "Trying to access database with " + apiKey);
+        Timber.v("Trying to access database with %s", apiKey);
 
         if (!apiKey.startsWith(API_KEY, 0)) {
             return null;

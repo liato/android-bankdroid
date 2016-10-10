@@ -27,7 +27,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.util.DisplayMetrics;
-import android.util.Log;
 
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -37,6 +36,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import timber.log.Timber;
 
 public class Helpers {
 
@@ -107,7 +108,7 @@ public class Helpers {
         try {
             ret = new BigDecimal(balance);
         } catch (NumberFormatException e) {
-            Log.e("parseBalance", "Unable to parse: " + balance);
+            Timber.e(e, "Unable to parse balance %s ", balance);
             ret = new BigDecimal(0);
         }
         return ret;

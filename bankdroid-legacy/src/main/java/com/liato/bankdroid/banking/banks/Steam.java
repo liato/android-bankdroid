@@ -31,7 +31,6 @@ import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
 import android.text.Html;
-import android.util.Log;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -46,6 +45,7 @@ import java.util.regex.Pattern;
 
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
+import timber.log.Timber;
 
 public class Steam extends Bank {
 
@@ -72,7 +72,7 @@ public class Steam extends Bank {
 
     public Steam(Context context) {
         super(context, R.drawable.logo_steam);
-        super.TAG = TAG;
+
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;
@@ -165,7 +165,7 @@ public class Steam extends Bank {
                             Helpers.parseCurrency(Html.fromHtml(matcher.group(2)).toString().trim(),
                                     "USD")));
                 } catch (ParseException e) {
-                    Log.e(TAG, "Unable to parse date: " + matcher.group(1).trim());
+                    Timber.e(e, "Unable to parse date: %s", matcher.group(1).trim());
                 }
             }
             Collections.sort(transactions, Collections.reverseOrder());

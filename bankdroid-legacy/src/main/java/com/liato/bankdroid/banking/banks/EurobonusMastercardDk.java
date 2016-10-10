@@ -40,7 +40,6 @@ public class EurobonusMastercardDk extends SEBKortBase {
 
     public EurobonusMastercardDk(Context context) {
         super(context, "sadk", "0101", R.drawable.logo_ebmaster_dk);
-        super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;

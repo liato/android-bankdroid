@@ -39,7 +39,6 @@ public class Djurgarden extends SEBKortBase {
 
     public Djurgarden(Context context) {
         super(context, "djse", "0116", R.drawable.logo_djurgarden);
-        super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;

@@ -73,7 +73,7 @@ public class Ostgotatrafiken extends Bank {
 
     public Ostgotatrafiken(Context context) {
         super(context, R.drawable.logo_ogt);
-        super.TAG = TAG;
+
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;

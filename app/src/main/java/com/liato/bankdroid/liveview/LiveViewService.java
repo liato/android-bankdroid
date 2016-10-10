@@ -52,7 +52,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.util.Log;
+
+import timber.log.Timber;
 
 /**
  * Implementation of the Live View plug-in service.
@@ -97,8 +98,7 @@ public class LiveViewService extends Service {
 
         @Override
         public void onServiceConnected(final ComponentName className, IBinder service) {
-            Log.d(PluginConstants.LOG_TAG,
-                    "Enter LiveViewService.ServiceConnection.onServiceConnected.");
+            Timber.d("Enter LiveViewService.ServiceConnection.onServiceConnected.");
 
             mLiveView = IPluginServiceV1.Stub.asInterface(service);
 
@@ -111,20 +111,19 @@ public class LiveViewService extends Service {
                     // Register
                     mPluginId = mLiveView
                             .register(lvCallback, mMenuIcon, mPluginName, false, getPackageName());
-                    Log.d(PluginConstants.LOG_TAG, "Plugin registered with id: " + mPluginId);
+                    Timber.d("Plugin registered with id: %d", mPluginId);
                 }
             } catch (RemoteException re) {
-                Log.e(PluginConstants.LOG_TAG, "Failed to install plugin. Stop self.");
+                Timber.e("Failed to install plugin. Stop self.");
                 stopSelf();
             }
 
-            Log.d(PluginConstants.LOG_TAG, "Plugin registered. mPluginId: " + mPluginId);
+            Timber.d("Plugin registered. mPluginId: %d", mPluginId);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName className) {
-            Log.d(PluginConstants.LOG_TAG,
-                    "Enter LiveViewService.ServiceConnection.onServiceDisconnected.");
+            Timber.d("Enter LiveViewService.ServiceConnection.onServiceDisconnected.");
             stopSelf();
         }
 
@@ -142,7 +141,7 @@ public class LiveViewService extends Service {
 
     public void onCreate() {
         super.onCreate();
-        Log.d(PluginConstants.LOG_TAG, "Enter LiveViewService.onCreate.");
+        Timber.d("Enter LiveViewService.onCreate.");
 
         // Load menu icon
         int iconId = R.drawable.ic_launcher;
@@ -150,7 +149,7 @@ public class LiveViewService extends Service {
     }
 
     public void onDestroy() {
-        Log.d(PluginConstants.LOG_TAG, "Enter LiveViewService.onDestroy.");
+        Timber.d("Enter LiveViewService.onDestroy.");
 
         // Unbind from LiveView service
         if (mServiceConnection != null) {
@@ -165,7 +164,7 @@ public class LiveViewService extends Service {
 
     public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
-        Log.d(PluginConstants.LOG_TAG, "Enter LiveViewService.onStart.");
+        Timber.d("Enter LiveViewService.onStart.");
         if (intent == null) {
             return;
         }
@@ -178,19 +177,19 @@ public class LiveViewService extends Service {
                                 extras.getString(INTENT_EXTRA_TITLE),
                                 extras.getString(INTENT_EXTRA_TEXT), System.currentTimeMillis(),
                                 "");
-                        Log.d(PluginConstants.LOG_TAG, "Announce sent to LiveView Application");
+                        Timber.d("Announce sent to LiveView Application");
                     } else {
-                        Log.d(PluginConstants.LOG_TAG, "LiveView Application not reachable");
+                        Timber.d("LiveView Application not reachable");
                     }
                 } catch (Exception e) {
-                    Log.e(PluginConstants.LOG_TAG, "Failed to send announce", e);
+                    Timber.e(e, "Failed to send announce");
                 }
             }
 
         } else {
             // We end up here when LiveView Application probes the plugin
             if (isAlreadyRunning()) {
-                Log.d(PluginConstants.LOG_TAG, "Already started.");
+                Timber.d("Already started.");
             } else {
                 // Init
                 mPluginName = getResources().getString(R.string.app_name);
@@ -206,7 +205,7 @@ public class LiveViewService extends Service {
 
     @Override
     public IBinder onBind(final Intent intent) {
-        Log.d(PluginConstants.LOG_TAG, "Enter LiveViewService.onBind.");
+        Timber.d("Enter LiveViewService.onBind.");
         return null;
     }
 
@@ -217,9 +216,9 @@ public class LiveViewService extends Service {
         boolean result = bindService(new Intent(PluginConstants.LIVEVIEW_SERVICE_BIND_INTENT),
                 mServiceConnection, 0);
         if (result) {
-            Log.d(PluginConstants.LOG_TAG, "Bound to LiveView.");
+            Timber.d("Bound to LiveView.");
         } else {
-            Log.d(PluginConstants.LOG_TAG, "No bind.");
+            Timber.d("No bind.");
             stopSelf();
         }
     }
@@ -231,7 +230,7 @@ public class LiveViewService extends Service {
      * Opens the MainActivity on the phone.
      */
     protected void openInPhone(String openInPhoneAction) {
-        Log.d(PluginConstants.LOG_TAG, "openInPhone");
+        Timber.d("openInPhone");
         Intent i = new Intent(this, MainActivity.class)
                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);

@@ -83,7 +83,6 @@ public class AkeliusSpar extends Bank {
 
     public AkeliusSpar(Context context) {
         super(context, R.drawable.logo_akeliusspar);
-        super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;

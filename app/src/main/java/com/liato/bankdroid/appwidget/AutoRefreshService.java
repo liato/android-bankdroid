@@ -16,7 +16,6 @@
 
 package com.liato.bankdroid.appwidget;
 
-import com.crashlytics.android.Crashlytics;
 import com.liato.bankdroid.Helpers;
 import com.liato.bankdroid.MainActivity;
 import com.liato.bankdroid.R;
@@ -47,13 +46,14 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
+import timber.log.Timber;
 
 public class AutoRefreshService extends Service {
 
@@ -182,8 +182,7 @@ public class AutoRefreshService extends Service {
         try {
             pendingIntent.send();
         } catch (final CanceledException e) {
-            // TODO Auto-generated catch block
-            Log.e("", e.getMessage(), e);
+            Timber.w(e, "Problem occurred while updating widget");
         }
     }
 
@@ -208,7 +207,7 @@ public class AutoRefreshService extends Service {
             if (InsideUpdatePeriod()) {
                 new DataRetrieverTask(this).execute();
             } else {
-                Log.v(TAG, "Skipping update due to not in update period.");
+                Timber.v("Skipping update due to not in update period.");
                 stopSelf();
             }
         }
@@ -308,9 +307,9 @@ public class AutoRefreshService extends Service {
             for (final Bank bank : banks) {
                 if (prefs.getBoolean("debug_mode", false)
                         && prefs.getBoolean("debug_only_testbank", false)) {
-                    Log.d(TAG,
-                            "Debug::Only_Testbank is ON. Skipping update for "
-                                    + bank.getName());
+                    Timber.d(
+                            "Only_Testbank is ON. Skipping update for %s",
+                            bank.getName());
                     continue;
                 }
                 if (bank.isDisabled()) {
@@ -391,19 +390,14 @@ public class AutoRefreshService extends Service {
                     }
                 } catch (final BankException e) {
                     // Refresh widgets if an update fails
-                    Log.e(TAG, "Error while updating bank '" + bank.getDbId()
-                            + "'; BankException: " + e.getMessage());
-
-                    Crashlytics.logException(e);
+                    Timber.e(e, "Could not update bank %s", bank.getShortName());
                 } catch (final LoginException e) {
-                    Log.e(TAG, "Error while updating bank '" + bank.getDbId()
-                            + "'; LoginException: " + e.getMessage());
+                    Timber.d(e, "Invalid credentials for bank %s", bank.getShortName());
                     refreshWidgets = true;
                     db.disableBank(bank.getDbId());
                 } catch (BankChoiceException e) {
                 } catch (Exception e) {
-                    Log.e(TAG, "Error while updating bank '" + bank.getDbId()
-                            + "'; Exception: " + e.getMessage());
+                    Timber.e(e, "An unexpected error occurred while updating bank %s", bank.getShortName());
                 }
             }
 

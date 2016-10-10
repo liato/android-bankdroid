@@ -39,7 +39,7 @@ public class Saab extends SEBKortBase {
 
     public Saab(Context context) {
         super(context, "sbse", "0106", R.drawable.logo_saab);
-        super.TAG = TAG;
+
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;

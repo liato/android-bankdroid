@@ -60,7 +60,7 @@ public class Bitcoin extends Bank {
 
     public Bitcoin(Context context) {
         super(context, R.drawable.logo_bitcoin);
-        super.TAG = TAG;
+
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;

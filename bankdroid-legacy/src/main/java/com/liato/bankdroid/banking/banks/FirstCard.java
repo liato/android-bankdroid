@@ -70,7 +70,6 @@ public class FirstCard extends Bank {
 
     public FirstCard(Context context) {
         super(context, R.drawable.logo_firstcard);
-        super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;

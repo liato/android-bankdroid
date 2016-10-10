@@ -39,7 +39,7 @@ public class Wallet extends SEBKortBase {
 
     public Wallet(Context context) {
         super(context, "wase", "0121", R.drawable.logo_wallet);
-        super.TAG = TAG;
+
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;

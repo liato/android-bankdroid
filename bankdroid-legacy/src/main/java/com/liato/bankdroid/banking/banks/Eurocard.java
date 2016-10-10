@@ -39,7 +39,6 @@ public class Eurocard extends SEBKortBase {
 
     public Eurocard(Context context) {
         super(context, "ecse", "0005", "secure.eurocard.se", new int[]{R.raw.cert_eurocard}, R.drawable.logo_eurocard);
-        super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;

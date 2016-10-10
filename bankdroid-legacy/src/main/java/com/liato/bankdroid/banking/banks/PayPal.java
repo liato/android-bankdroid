@@ -65,7 +65,7 @@ public class PayPal extends Bank {
 
     public PayPal(Context context) {
         super(context, R.drawable.logo_paypal);
-        super.TAG = TAG;
+
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;

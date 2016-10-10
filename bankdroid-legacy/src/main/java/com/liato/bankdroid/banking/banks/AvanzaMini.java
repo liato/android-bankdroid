@@ -26,7 +26,6 @@ public class AvanzaMini extends Avanza {
 
     public AvanzaMini(Context context) {
         super(context, R.drawable.logo_avanzamini);
-        TAG = "AvanzaMini";
         NAME = "Avanza Mini";
         NAME_SHORT = "avanzamini";
         URL = "https://www.avanza.se/mini/hem/";

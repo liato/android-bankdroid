@@ -67,7 +67,7 @@ public class Nordnet extends Bank {
 
     public Nordnet(Context context) {
         super(context, R.drawable.logo_nordnet);
-        super.TAG = TAG;
+
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;

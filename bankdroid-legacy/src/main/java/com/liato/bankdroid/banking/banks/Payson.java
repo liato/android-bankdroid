@@ -67,7 +67,7 @@ public class Payson extends Bank {
 
     public Payson(Context context) {
         super(context, R.drawable.logo_payson);
-        super.TAG = TAG;
+
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;

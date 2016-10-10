@@ -28,7 +28,6 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -37,6 +36,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
+
+import timber.log.Timber;
 
 /**
  * Utilities for the lock patten and its settings.
@@ -231,9 +232,9 @@ public class LockPatternUtils {
      */
     public void saveLockPattern(List<LockPatternView.Cell> pattern) {
         if (pattern == null) {
-            Log.d(TAG, "Removing lock pattern");
+            Timber.d("Removing lock pattern");
         } else {
-            Log.d(TAG, "Saving lock pattern: " + LockPatternUtils.patternToString(pattern));
+            Timber.v("Saving lock pattern: %s", LockPatternUtils.patternToString(pattern));
         }
         // Compute the hash
         final byte[] hash = LockPatternUtils.patternToHash(pattern);
@@ -250,10 +251,10 @@ public class LockPatternUtils {
             setBoolean(PATTERN_EVER_CHOSEN, true);
         } catch (FileNotFoundException fnfe) {
             // Cant do much, unless we want to fail over to using the settings provider
-            Log.e(TAG, "Unable to save lock pattern to " + sLockPatternFilename);
+            Timber.e(fnfe, "Unable to save lock pattern to %s", sLockPatternFilename);
         } catch (IOException ioe) {
             // Cant do much
-            Log.e(TAG, "Unable to save lock pattern to " + sLockPatternFilename);
+            Timber.e(ioe, "Unable to save lock pattern to %s", sLockPatternFilename);
         }
     }
 

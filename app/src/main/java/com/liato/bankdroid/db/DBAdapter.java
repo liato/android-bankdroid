@@ -27,13 +27,14 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+
+import timber.log.Timber;
 
 
 public class DBAdapter {
@@ -174,7 +175,7 @@ public class DBAdapter {
                         try {
                             value = SimpleCrypto.encrypt(Crypto.getKey(), bank.getPassword());
                         } catch (Exception e) {
-                            Log.w(TAG, "SimpleCrypto error: " + e.getMessage());
+                            Timber.e(e, "Could not encrypt password.");
                         }
                     }
                     ContentValues propertyValues = new ContentValues();

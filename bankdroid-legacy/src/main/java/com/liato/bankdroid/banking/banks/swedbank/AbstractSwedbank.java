@@ -36,7 +36,6 @@ import android.text.Html;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Base64;
-import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,6 +50,7 @@ import java.util.UUID;
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.HttpMethod;
 import eu.nullbyte.android.urllib.Urllib;
+import timber.log.Timber;
 
 public abstract class AbstractSwedbank extends Bank {
 
@@ -213,8 +213,11 @@ public abstract class AbstractSwedbank extends Bank {
             IOException {
         HttpResponse httpResponse = urlopen.openAsHttpResponse(
                 getResourceUri("engagement/cardaccount/" + mIdMap.get(account.getId())), false);
-        if (httpResponse.getStatusLine().getStatusCode() != 200) {
-            Log.i(TAG, "Couldn't find transactions for creditcard");
+        int responseCode = httpResponse.getStatusLine().getStatusCode();
+        if (responseCode != 200) {
+            Timber.i(
+                    "Couldn't find transactions for creditcard. Got response code %d",
+                    responseCode);
             account.setTransactions(Collections.<Transaction>emptyList());
             return;
         }

@@ -39,7 +39,6 @@ public class Chevrolet extends SEBKortBase {
 
     public Chevrolet(Context context) {
         super(context, "chse", "0086", R.drawable.logo_chevrolet);
-        super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;

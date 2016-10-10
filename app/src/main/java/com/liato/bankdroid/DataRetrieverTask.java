@@ -16,7 +16,6 @@
 
 package com.liato.bankdroid;
 
-import com.crashlytics.android.Crashlytics;
 import com.liato.bankdroid.appwidget.AutoRefreshService;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
@@ -37,11 +36,12 @@ import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import timber.log.Timber;
 
 public class DataRetrieverTask extends AsyncTask<String, String, Void> {
 
@@ -137,7 +137,7 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
                 this.errors.add(bank.getName() + " (" + bank.getUsername()
                         + ")");
 
-                Crashlytics.logException(e);
+                Timber.e(e, "Could not update bank.");
             } catch (final LoginException e) {
                 this.errors.add(bank.getName() + " (" + bank.getUsername()
                         + ")");
@@ -145,12 +145,11 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
             } catch (BankChoiceException e) {
                 this.errors.add(bank.getName() + " (" + bank.getUsername()
                         + ")");
-                Log.e(TAG, "BankChoiceError: " + e.getMessage());
             } catch (IOException e) {
                 this.errors.add(bank.getName() + " (" + bank.getUsername()
                         + ")");
                 if (NetworkUtils.isInternetAvailable()) {
-                    Crashlytics.logException(e);
+                    Timber.e(e);
                 }
             }
 

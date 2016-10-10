@@ -80,7 +80,6 @@ public class BrummerKF extends Bank {
 
     public BrummerKF(Context context) {
         super(context, R.drawable.logo_brummer_kf);
-        super.TAG = TAG;
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;
