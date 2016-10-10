@@ -24,8 +24,7 @@ public class BankdroidApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Fabric.with(this, new Crashlytics());
-        Fabric.with(this, new Answers());
+        Fabric.with(this, new Crashlytics(), new Answers());
         Crashlytics.setString(LOG_KEY_LOCALE, Locale.getDefault().toString());
         logBanks();
     }
