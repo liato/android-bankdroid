@@ -73,7 +73,7 @@ dependencies {
     compile 'com.jakewharton:butterknife:6.1.0'
     compile "com.android.support:appcompat-v7:24.1.1"
     compile 'com.google.collections:google-collections:1.0'
-    compile('com.crashlytics.sdk.android:crashlytics:2.2.1@aar') {
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
         transitive = true;
     }
 

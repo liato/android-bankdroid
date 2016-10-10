@@ -1,6 +1,7 @@
 package com.liato.bankdroid;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.BankFactory;
 
@@ -24,6 +25,7 @@ public class BankdroidApplication extends Application {
     public void onCreate() {
         super.onCreate();
         Fabric.with(this, new Crashlytics());
+        Fabric.with(this, new Answers());
         Crashlytics.setString(LOG_KEY_LOCALE, Locale.getDefault().toString());
         logBanks();
     }
