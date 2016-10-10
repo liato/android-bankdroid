@@ -30,5 +30,6 @@
     <string name="invalid_card_number">Invalid card number.</string>
     <string name="bank_closed">The bank is currently closed.</string>
     <string name="server_error_try_again">Server error. Please try again later.</string>
+    <string name="update_transactions_error">"There was a problem updating the transaction details. Please try again later."</string>
 
 </resources>
