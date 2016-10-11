@@ -15,7 +15,7 @@ public class NetworkUtils {
     }
 
 
-    public static boolean ping(byte[] ipAddress, int timeout) {
+    private static boolean ping(byte[] ipAddress, int timeout) {
         DatagramSocket datagramSocket = null;
         try {
             datagramSocket = new DatagramSocket();
