@@ -19,14 +19,8 @@
 
     Do "./gradlew check" to test your newly added rule. If there are violations, check
     the console output or the HTML report and remedy them until the build passes.
-
-    If you can't / won't fix a specific violation, you can exclude rules like in the
-    logging-java.xml example below.
     -->
     <rule ref="rulesets/java/android.xml" />
 
-    <rule ref="rulesets/java/logging-java.xml">
-        <!-- FIXME: Re-enable this rule and fix all instances -->
-        <exclude name="AvoidPrintStackTrace" />
-    </rule>
+    <rule ref="rulesets/java/logging-java.xml" />
 </ruleset>

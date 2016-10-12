@@ -68,6 +68,7 @@ import java.util.Map;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import timber.log.Timber;
 
 public class BankEditActivity extends LockableActivity implements OnItemSelectedListener {
 
@@ -363,7 +364,7 @@ public class BankEditActivity extends LockableActivity implements OnItemSelected
                         }
                     });
                 } else {
-                    exc.printStackTrace();
+                    Timber.w(exc, "Failed getting info from bank");
                     builder.setMessage(this.exc.getMessage())
                             .setTitle(res.getText(R.string.could_not_create_account))
                             .setIcon(android.R.drawable.ic_dialog_alert)

@@ -51,6 +51,7 @@ import java.util.Locale;
 
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
+import timber.log.Timber;
 
 public class Volvofinans extends Bank {
 
@@ -183,7 +184,7 @@ public class Volvofinans extends Bank {
                         Date d = DATE_PARSER.parse(date);
                         date = DATE_FORMATTER.format(d);
                     } catch (ParseException e) {
-                        e.printStackTrace();
+                        Timber.w(e, "Volvofinans: Date parsing failed");
                     }
 
                     transactions.add(new Transaction(date, acc.getString("text"), Helpers
