@@ -1,14 +1,19 @@
 buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
 
     dependencies {
         classpath 'io.fabric.tools:gradle:1.+'
+        classpath "org.ajoberstar:gradle-git:1.5.1"
     }
 }
 apply plugin: 'com.android.application'
 apply from: '../config/quality/quality.gradle'
+apply plugin: "org.ajoberstar.grgit"
 
 if(new File('app/crashlytics.properties').exists()) {
     apply plugin: 'io.fabric'
@@ -22,6 +27,12 @@ def keystorePropertiesFile = project.file("keystore.properties")
 def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
+ext {
+    git = org.ajoberstar.grgit.Grgit.open()
+    gitVersionCode = git.tag.list().size()
+    gitVersionName = "${git.describe()}"
+}
+
 android {
     compileSdkVersion 24
     buildToolsVersion "24.0.1"
@@ -31,8 +42,8 @@ android {
         applicationId "com.liato.bankdroid"
         minSdkVersion 9
         targetSdkVersion 24
-        versionCode 224
-        versionName "1.9.10.8"
+        versionCode 224 + gitVersionCode
+        versionName gitVersionName
     }
 
     signingConfigs {

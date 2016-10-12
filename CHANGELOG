@@ -1,6 +1,6 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
-v1.9.10.9
+v1.9.10.9 (2016-10-12)
 * Länsförsäkringar: Remove broken web links
 * Improve Javadocs in the Bank class
 * Make successfully refreshing a disabled bank re-enable it
@@ -11,6 +11,7 @@ v1.9.10.9
 * Removes IcaBanken since they now require BankID
 * SveaDirekt: Adapt to changed web page
 * Rikslunchen: Adapt to new web service
+* AmericanExpress: Use their mobile API
 
 v1.9.10.8 (2016-09-29)
 * Add a Volatile account to the Test Bank that always changes its balance.
