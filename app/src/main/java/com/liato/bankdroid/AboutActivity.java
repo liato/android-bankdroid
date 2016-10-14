@@ -18,8 +18,6 @@ package com.liato.bankdroid;
 
 import android.content.Intent;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
@@ -41,14 +39,7 @@ public class AboutActivity extends LockableActivity {
         setContentView(R.layout.about);
         ButterKnife.inject(this);
         PackageInfo pInfo;
-        String version = "v1.x.x";
-        try {
-            pInfo = getPackageManager().getPackageInfo(getPackageName(),
-                    PackageManager.GET_META_DATA);
-            version = pInfo.versionName;
-        } catch (final NameNotFoundException e) {
-            e.printStackTrace();
-        }
+        String version = BuildConfig.VERSION_NAME;
         mVersion.setText(
                 getText(R.string.version).toString().replace("$version", version));
 

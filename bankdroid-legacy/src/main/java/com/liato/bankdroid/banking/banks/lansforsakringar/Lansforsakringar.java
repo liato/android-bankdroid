@@ -42,6 +42,7 @@ import com.liato.bankdroid.provider.IBankTypes;
 import com.liato.bankdroid.utils.StringUtils;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.text.InputType;
 
 import java.io.IOException;
@@ -57,6 +58,7 @@ import java.util.UUID;
 
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
+import timber.log.Timber;
 
 public class Lansforsakringar extends Bank {
 
@@ -139,11 +141,12 @@ public class Lansforsakringar extends Bank {
         return readJsonValue(urlopen.openStream(url, postData, false), valueType);
     }
 
+    @Nullable
     private String objectAsJson(Object value) {
         try {
             return mObjectMapper.writeValueAsString(value);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            Timber.w(e, "Failed converting Object to JSON");
         }
         return null;
     }
@@ -161,8 +164,7 @@ public class Lansforsakringar extends Bank {
             }
             return md5;
         } catch (NoSuchAlgorithmException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Timber.w(e, "Länsförsäkringar: Error generating challenge");
         }
         return "";
 

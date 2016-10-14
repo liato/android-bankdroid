@@ -32,8 +32,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -176,14 +174,7 @@ public class MainActivity extends LockableActivity {
         dialog.setContentView(R.layout.about);
         dialog.setTitle(getString(R.string.about));
         PackageInfo pInfo;
-        String version = "v1.x.x";
-        try {
-            pInfo = getPackageManager()
-                    .getPackageInfo(getPackageName(), PackageManager.GET_META_DATA);
-            version = pInfo.versionName;
-        } catch (final NameNotFoundException e) {
-            e.printStackTrace();
-        }
+        String version = BuildConfig.VERSION_NAME;
         ((TextView) dialog.findViewById(R.id.txtVersion))
                 .setText(getText(R.string.version).toString().replace("$version", version));
         return dialog;

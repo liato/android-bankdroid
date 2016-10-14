@@ -421,12 +421,8 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         String preloader = "Error...";
         try {
             preloader = IOUtils.toString(context.getResources().openRawResource(R.raw.loading));
-        } catch (NotFoundException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+        } catch (NotFoundException | IOException e1) {
+            Timber.w(e1, "Error getting session package");
         }
 
         try {

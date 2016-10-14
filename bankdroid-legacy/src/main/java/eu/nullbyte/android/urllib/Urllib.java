@@ -84,6 +84,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import timber.log.Timber;
+
 public class Urllib {
 
     private static int MAX_RETRIES = 5;
@@ -134,14 +136,8 @@ public class Urllib {
             registry.register(new Scheme("https",
                     pins != null && !trustSystemKeystore ? mSSLSocketFactory
                             : SSLSocketFactory.getSocketFactory(), 443));
-        } catch (UnrecoverableKeyException e) {
-            e.printStackTrace();
-        } catch (KeyManagementException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (KeyStoreException e) {
-            e.printStackTrace();
+        } catch (UnrecoverableKeyException | KeyManagementException | KeyStoreException | NoSuchAlgorithmException e) {
+            Timber.w(e, "Urllib: SSLSocketFactory error");
         }
         ClientConnectionManager manager = new ThreadSafeClientConnManager(params, registry);
         httpclient = new BankdroidHttpClient(manager, params);
@@ -264,7 +260,7 @@ public class Urllib {
             try {
                 return new UrlEncodedFormEntity(postData, this.charset);
             } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+                Timber.w(e, "Error converting NameValuePair list to HttpEntity");
             }
         }
         return null;

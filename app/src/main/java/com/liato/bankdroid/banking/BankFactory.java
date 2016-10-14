@@ -25,12 +25,15 @@ import net.sf.andhsli.hotspotlogin.SimpleCrypto;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.annotation.Nullable;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import timber.log.Timber;
 
 public class BankFactory {
 
@@ -43,6 +46,7 @@ public class BankFactory {
         return LegacyBankFactory.listBanks(context);
     }
 
+    @Nullable
     public static Bank bankFromDb(long id, Context context, boolean loadAccounts) {
         Bank bank = null;
         DBAdapter db = new DBAdapter(context);
@@ -63,8 +67,7 @@ public class BankFactory {
                     bank.setAccounts(accountsFromDb(context, bank.getDbId()));
                 }
             } catch (BankException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                Timber.w(e, "Failed getting bank from database");
             } finally {
                 c.close();
             }
@@ -187,8 +190,7 @@ public class BankFactory {
                 try {
                     value = SimpleCrypto.decrypt(Crypto.getKey(), value);
                 } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    Timber.w(e, "Failed decrypting bank properties");
                 }
             }
             properties.put(key, value);

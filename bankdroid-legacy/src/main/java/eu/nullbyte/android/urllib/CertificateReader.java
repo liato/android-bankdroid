@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -15,6 +14,8 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
+
+import timber.log.Timber;
 
 public class CertificateReader {
 
@@ -33,12 +34,12 @@ public class CertificateReader {
                     try {
                         is.close();
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        Timber.w(e, "Failed to close input stream");
                     }
                 }
             }
-        } catch (CertificateException e1) {
-            e1.printStackTrace();
+        } catch (CertificateException e) {
+            Timber.w(e, "Generating certificate failed");
         }
         return certificates.toArray(new Certificate[certificates.size()]);
     }
@@ -51,14 +52,8 @@ public class CertificateReader {
             is = new BufferedInputStream(context.getResources().openRawResource(rawResCert));
             keyStore.load(is, password.toCharArray());
             return new ClientCertificate(keyStore, password);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (CertificateException e) {
-            e.printStackTrace();
-        } catch (KeyStoreException e) {
-            e.printStackTrace();
+        } catch (IOException | NoSuchAlgorithmException | CertificateException | KeyStoreException e) {
+            Timber.w(e, "Failed to get client certificate");
         } finally {
             if (is != null) {
                 try {
@@ -67,29 +62,6 @@ public class CertificateReader {
                     //noop
                 }
             }
-        }
-        return null;
-    }
-
-
-    public static String[] getPins(Context context, int... rawResCerts) {
-        Certificate[] certs = getCertificates(context, rawResCerts);
-        if (certs != null && certs.length > 0) {
-            String[] pins = new String[certs.length];
-            for (int i = 0; i < certs.length; i++) {
-                Certificate cert = certs[i];
-                String hash = getCertificateHash(cert);
-                pins[i] = hash;
-                try {
-                    MessageDigest digest = MessageDigest.getInstance("SHA1");
-                    byte[] publicKey = cert.getPublicKey().getEncoded();
-                    byte[] pin = digest.digest(publicKey);
-                    pins[i] = CertificateReader.byteArrayToHexString(pin);
-                } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
-                }
-            }
-            return pins;
         }
         return null;
     }
@@ -103,17 +75,5 @@ public class CertificateReader {
             data += Integer.toHexString(b[i] & 0xf);
         }
         return data;
-    }
-
-    public static String getCertificateHash(Certificate cert) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA1");
-            byte[] publicKey = cert.getPublicKey().getEncoded();
-            byte[] pin = digest.digest(publicKey);
-            return CertificateReader.byteArrayToHexString(pin);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 }

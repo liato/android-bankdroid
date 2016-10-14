@@ -41,6 +41,7 @@ import android.webkit.WebViewClient;
 import java.io.IOException;
 
 import eu.nullbyte.android.urllib.Urllib;
+import timber.log.Timber;
 
 import static android.graphics.Color.WHITE;
 
@@ -106,12 +107,8 @@ public class WebViewActivity extends LockableActivity implements OnClickListener
                     "", // Javascript function
                     "" // HTML
             );
-        } catch (NotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (NotFoundException | IOException e) {
+            Timber.w(e, "Error loading loading.html");
         }
         mWebView.loadDataWithBaseURL("what://is/this/i/dont/even", preloader, "text/html", "utf-8",
                 null);
