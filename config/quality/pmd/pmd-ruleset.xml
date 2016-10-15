@@ -1,26 +1,134 @@
 <?xml version="1.0"?>
-<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Android Application Rules"
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Bankdroid Rules"
     xmlns="http://pmd.sf.net/ruleset/1.0.0"
     xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd"
     xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd">
 
-    <description>Custom ruleset for Android application</description>
+    <description>Custom ruleset for Bankdroid, created by create-pmd-suppressions.sh</description>
 
     <exclude-pattern>.*/R.java</exclude-pattern>
     <exclude-pattern>.*/gen/.*</exclude-pattern>
 
-    <!--
-    FIXME: This file needs a lot more rules.
-
-    To add more, first decide on one from here:
-    https://github.com/pmd/pmd/tree/master/pmd-java/src/main/resources/rulesets/java
-
-    Then add it just like android.xml has been added (below).
-
-    Do "./gradlew check" to test your newly added rule. If there are violations, check
-    the console output or the HTML report and remedy them until the build passes.
-    -->
-    <rule ref="rulesets/java/android.xml" />
-
-    <rule ref="rulesets/java/logging-java.xml" />
+    <!-- FIXME: This file should be empty and all violations fixed. Then we'll all hug. -->
+    <rule ref="rulesets/internal/all-java.xml">
+        <exclude name="AbstractNaming" />
+        <exclude name="AccessorClassGeneration" />
+        <exclude name="AddEmptyString" />
+        <exclude name="AppendCharacterWithChar" />
+        <exclude name="ArrayIsStoredDirectly" />
+        <exclude name="AssignmentInOperand" />
+        <exclude name="AssignmentToNonFinalStatic" />
+        <exclude name="AtLeastOneConstructor" />
+        <exclude name="AvoidCatchingGenericException" />
+        <exclude name="AvoidCatchingNPE" />
+        <exclude name="AvoidConstantsInterface" />
+        <exclude name="AvoidDecimalLiteralsInBigDecimalConstructor" />
+        <exclude name="AvoidDeeplyNestedIfStmts" />
+        <exclude name="AvoidDuplicateLiterals" />
+        <exclude name="AvoidFieldNameMatchingMethodName" />
+        <exclude name="AvoidFieldNameMatchingTypeName" />
+        <exclude name="AvoidInstantiatingObjectsInLoops" />
+        <exclude name="AvoidLiteralsInIfCondition" />
+        <exclude name="AvoidPrefixingMethodParameters" />
+        <exclude name="AvoidReassigningParameters" />
+        <exclude name="AvoidSynchronizedAtMethodLevel" />
+        <exclude name="AvoidThrowingRawExceptionTypes" />
+        <exclude name="BeanMembersShouldSerialize" />
+        <exclude name="BigIntegerInstantiation" />
+        <exclude name="BooleanGetMethodName" />
+        <exclude name="CallSuperInConstructor" />
+        <exclude name="ClassWithOnlyPrivateConstructorsShouldBeFinal" />
+        <exclude name="CollapsibleIfStatements" />
+        <exclude name="CommentDefaultAccessModifier" />
+        <exclude name="CommentRequired" />
+        <exclude name="CommentSize" />
+        <exclude name="CompareObjectsWithEquals" />
+        <exclude name="ConfusingTernary" />
+        <exclude name="ConstantsInInterface" />
+        <exclude name="ConstructorCallsOverridableMethod" />
+        <exclude name="CyclomaticComplexity" />
+        <exclude name="DataflowAnomalyAnalysis" />
+        <exclude name="DefaultPackage" />
+        <exclude name="DoNotThrowExceptionInFinally" />
+        <exclude name="DoNotUseThreads" />
+        <exclude name="EmptyCatchBlock" />
+        <exclude name="EmptyIfStmt" />
+        <exclude name="EmptyMethodInAbstractClassShouldBeAbstract" />
+        <exclude name="ExceptionAsFlowControl" />
+        <exclude name="ExcessiveClassLength" />
+        <exclude name="ExcessiveImports" />
+        <exclude name="ExcessiveMethodLength" />
+        <exclude name="ExcessiveParameterList" />
+        <exclude name="ExcessivePublicCount" />
+        <exclude name="FieldDeclarationsShouldBeAtStartOfClass" />
+        <exclude name="FinalFieldCouldBeStatic" />
+        <exclude name="GodClass" />
+        <exclude name="ImmutableField" />
+        <exclude name="InefficientStringBuffering" />
+        <exclude name="InsufficientStringBufferDeclaration" />
+        <exclude name="JUnit4TestShouldUseBeforeAnnotation" />
+        <exclude name="JUnitTestsShouldIncludeAssert" />
+        <exclude name="LawOfDemeter" />
+        <exclude name="LocalVariableCouldBeFinal" />
+        <exclude name="LongInstantiation" />
+        <exclude name="LongVariable" />
+        <exclude name="LooseCoupling" />
+        <exclude name="LoosePackageCoupling" />
+        <exclude name="MethodArgumentCouldBeFinal" />
+        <exclude name="MethodNamingConventions" />
+        <exclude name="MissingBreakInSwitch" />
+        <exclude name="MissingSerialVersionUID" />
+        <exclude name="ModifiedCyclomaticComplexity" />
+        <exclude name="NPathComplexity" />
+        <exclude name="NcssMethodCount" />
+        <exclude name="NullAssignment" />
+        <exclude name="OneDeclarationPerLine" />
+        <exclude name="OnlyOneReturn" />
+        <exclude name="PositionLiteralsFirstInComparisons" />
+        <exclude name="PrematureDeclaration" />
+        <exclude name="PreserveStackTrace" />
+        <exclude name="RedundantFieldInitializer" />
+        <exclude name="ShortClassName" />
+        <exclude name="ShortMethodName" />
+        <exclude name="ShortVariable" />
+        <exclude name="SignatureDeclareThrowsException" />
+        <exclude name="SimpleDateFormatNeedsLocale" />
+        <exclude name="SimplifyBooleanReturns" />
+        <exclude name="SimplifyStartsWith" />
+        <exclude name="SingularField" />
+        <exclude name="StdCyclomaticComplexity" />
+        <exclude name="StringInstantiation" />
+        <exclude name="SuspiciousConstantFieldName" />
+        <exclude name="SwitchDensity" />
+        <exclude name="SwitchStmtsShouldHaveDefault" />
+        <exclude name="TooFewBranchesForASwitchStatement" />
+        <exclude name="TooManyFields" />
+        <exclude name="TooManyMethods" />
+        <exclude name="UncommentedEmptyConstructor" />
+        <exclude name="UncommentedEmptyMethodBody" />
+        <exclude name="UnnecessaryConstructor" />
+        <exclude name="UnnecessaryConversionTemporary" />
+        <exclude name="UnnecessaryFullyQualifiedName" />
+        <exclude name="UnnecessaryLocalBeforeReturn" />
+        <exclude name="UnnecessaryParentheses" />
+        <exclude name="UnnecessaryWrapperObjectCreation" />
+        <exclude name="UnsynchronizedStaticDateFormatter" />
+        <exclude name="UnusedFormalParameter" />
+        <exclude name="UnusedLocalVariable" />
+        <exclude name="UnusedPrivateField" />
+        <exclude name="UnusedPrivateMethod" />
+        <exclude name="UseCollectionIsEmpty" />
+        <exclude name="UseConcurrentHashMap" />
+        <exclude name="UseEqualsToCompareStrings" />
+        <exclude name="UseIndexOfChar" />
+        <exclude name="UseLocaleWithCaseConversions" />
+        <exclude name="UseObjectForClearerAPI" />
+        <exclude name="UseStringBufferForStringAppends" />
+        <exclude name="UseUtilityClass" />
+        <exclude name="UseVarargs" />
+        <exclude name="UselessOverridingMethod" />
+        <exclude name="UselessParentheses" />
+        <exclude name="UselessQualifiedThis" />
+        <exclude name="VariableNamingConventions" />
+    </rule>
 </ruleset>
