@@ -1,1 +1,1 @@
-include ':app', ':bankdroid-legacy', ':bankdroid-interface'
+include ':app', ':bankdroid-legacy'
