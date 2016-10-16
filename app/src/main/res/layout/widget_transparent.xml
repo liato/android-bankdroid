@@ -15,7 +15,7 @@
 		android:layout_height="22dp"
 		android:layout_width="fill_parent"
 		android:id="@+id/hitBox"
-		android:focusable="true"></FrameLayout>
+		android:focusable="true"/>
 	<LinearLayout
 		android:layout_height="wrap_content"
 		android:layout_width="wrap_content"
@@ -29,7 +29,7 @@
 			android:layout_gravity="center_vertical"
 			android:baselineAlignBottom="true"
 			android:src="@drawable/ic_launcher"
-			android:scaleType="fitXY"></ImageView>
+			android:scaleType="fitXY"/>
 	<TextView
 		android:id="@+id/txtWidgetAccountname"
 		android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
 		android:layout_marginLeft="2dp"
 		android:layout_marginRight="2dp"
 		android:text="Bankdroid"
-		android:lines="1"></TextView>
+		android:lines="1"/>
 	<TextView
 		android:id="@+id/txtWidgetAccountnameBlur"
 		android:layout_height="wrap_content"
@@ -54,7 +54,7 @@
 		android:layout_marginRight="2dp"
 		android:text="Bankdroid"
 		android:lines="1"
-		android:visibility="gone"></TextView>
+		android:visibility="gone"/>
 	</LinearLayout>
 	<LinearLayout
 		android:id="@+id/layWidgetRow02"
@@ -71,8 +71,9 @@
 			android:scaleType="centerInside"
 			android:adjustViewBounds="false"
 			android:paddingTop="5dp"
-			android:visibility="gone"></ImageView>
+			android:visibility="gone"/>
 		<TextView
+
 			android:textColor="#fff"
 			android:inputType="none"
 			android:layout_gravity="center_vertical|center_horizontal"
@@ -107,26 +108,7 @@
 				android:maxHeight="2dp"
 				android:minHeight="2dp"
 				android:minWidth="17dp"
-				android:visibility="visible"></ProgressBar>
-		</FrameLayout>
-
-
-		<FrameLayout
-			android:layout_height="wrap_content"
-			android:id="@+id/frmWarning"
-			android:layout_width="fill_parent"
-			android:visibility="invisible">
-			<ImageView
-				android:id="@+id/imgWarning"
-				android:adjustViewBounds="true"
-				android:layout_gravity="bottom|right"
-				android:layout_height="fill_parent"
-				android:src="@drawable/indicator_input_error"
-				android:scaleType="fitXY"
-				android:layout_width="wrap_content"></ImageView>
+				android:visibility="visible"/>
 		</FrameLayout>
 	</LinearLayout>
-
-
-
 </RelativeLayout>

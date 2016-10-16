@@ -372,7 +372,7 @@ public class LockPatternUtils {
     private void setBoolean(String systemSettingKey, boolean enabled) {
         Editor editor = mPrefs.edit();
         editor.putBoolean(systemSettingKey, enabled);
-        editor.commit();
+        editor.apply();
     }
 
     private long getLong(String systemSettingKey, long def) {
@@ -382,6 +382,6 @@ public class LockPatternUtils {
     private void setLong(String systemSettingKey, long value) {
         Editor editor = mPrefs.edit();
         editor.putLong(systemSettingKey, value);
-        editor.commit();
+        editor.apply();
     }
 }

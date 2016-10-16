@@ -424,7 +424,7 @@ public class AutoRefreshService extends Service {
             }
             Editor edit = prefs.edit();
             edit.putLong("autoupdates_last_update", System.currentTimeMillis());
-            edit.commit();
+            edit.apply();
             autoRefreshService.stopSelf();
         }
     }

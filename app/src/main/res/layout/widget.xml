@@ -105,21 +105,5 @@
 				android:minWidth="17dp"
 				android:visibility="visible"></ProgressBar>
 		</FrameLayout>
-
-
-		<FrameLayout
-			android:layout_height="wrap_content"
-			android:id="@+id/frmWarning"
-			android:layout_width="fill_parent"
-			android:visibility="invisible">
-			<ImageView
-				android:id="@+id/imgWarning"
-				android:adjustViewBounds="true"
-				android:layout_gravity="bottom|right"
-				android:layout_height="fill_parent"
-				android:src="@drawable/indicator_input_error"
-				android:scaleType="fitXY"
-				android:layout_width="wrap_content"></ImageView>
-		</FrameLayout>
 	</LinearLayout>
 </RelativeLayout>

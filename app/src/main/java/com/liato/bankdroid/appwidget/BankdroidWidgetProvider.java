@@ -78,7 +78,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
         SharedPreferences prefs = context.getSharedPreferences("widget_prefs", 0);
         Editor e = prefs.edit();
         e.putBoolean("widget_unblurred_" + appWidgetId, true);
-        e.commit();
+        e.apply();
 
         RemoteViews views = buildAppWidget(context, appWidgetManager, appWidgetId);
         if (views != null) {
@@ -95,7 +95,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
         SharedPreferences prefs = context.getSharedPreferences("widget_prefs", 0);
         Editor e = prefs.edit();
         e.remove("widget_unblurred_" + appWidgetId);
-        e.commit();
+        e.apply();
         RemoteViews views = buildAppWidget(context, appWidgetManager, appWidgetId);
         if (views != null) {
             views.setViewVisibility(R.id.imgBalanceblur, View.VISIBLE);
@@ -158,13 +158,9 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
         views.setTextViewText(R.id.txtWidgetAccountbalance,
                 Helpers.formatBalance(account.getBalance(), account.getCurrency(),
                         defprefs.getBoolean("round_widget_balance", false),
-                        bank.getDecimalFormatter()));
+                        bank.getDecimalFormatter(),
+                        bank.isDisabled()));
         views.setImageViewResource(R.id.imgWidgetIcon, bank.getImageResource());
-        if (bank.isDisabled()) {
-            views.setViewVisibility(R.id.frmWarning, View.VISIBLE);
-        } else {
-            views.setViewVisibility(R.id.frmWarning, View.INVISIBLE);
-        }
         Intent intent = new Intent(context, MainActivity.class);
         PendingIntent pendingIntent;
 
@@ -236,7 +232,6 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
         views.setTextViewText(R.id.txtWidgetAccountname, "");
         views.setTextViewText(R.id.txtWidgetAccountbalance, "ERROR");
         views.setImageViewResource(R.id.imgWidgetIcon, R.drawable.icon_large);
-        views.setViewVisibility(R.id.frmWarning, View.VISIBLE);
 
         Intent intent = new Intent(context, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
@@ -379,7 +374,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
                     return null;
                 }
                 long bankId = WidgetConfigureActivity.getBankId(context, appWidgetId);
-                Bank bank = BankFactory.bankFromDb(new Long(bankId), context, true);
+                Bank bank = BankFactory.bankFromDb(bankId, context, true);
                 if (bank == null) {
                     return null;
                 }

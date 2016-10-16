@@ -56,7 +56,7 @@ public class WidgetConfigureActivity extends LockableActivity {
         SharedPreferences.Editor prefs = context.getSharedPreferences("widget_prefs", 0).edit();
         prefs.putString(WIDGET_PREFIX + appWidgetId, accountId);
         prefs.putLong(WIDGET_PREFIX + appWidgetId + "_bankid", bankId);
-        prefs.commit();
+        prefs.apply();
     }
 
     public static String getAccountId(Context context, int appWidgetId) {
@@ -73,7 +73,7 @@ public class WidgetConfigureActivity extends LockableActivity {
         SharedPreferences.Editor prefs = context.getSharedPreferences("widget_prefs", 0).edit();
         prefs.remove(WIDGET_PREFIX + appWidgetId);
         prefs.remove(WIDGET_PREFIX + appWidgetId + "_bankid");
-        prefs.commit();
+        prefs.apply();
     }
 
     @Override
@@ -114,7 +114,7 @@ public class WidgetConfigureActivity extends LockableActivity {
                         .edit();
                 prefs.putBoolean("transperant_background" + mAppWidgetId,
                         ((CheckBox) findViewById(R.id.chkTransperantBackground)).isChecked());
-                prefs.commit();
+                prefs.apply();
                 // Push widget update to surface with newly set prefix
                 AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
                 BankdroidWidgetProvider.updateAppWidget(context, appWidgetManager,

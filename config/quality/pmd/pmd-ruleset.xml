@@ -70,7 +70,6 @@
         <exclude name="JUnitTestsShouldIncludeAssert" />
         <exclude name="LawOfDemeter" />
         <exclude name="LocalVariableCouldBeFinal" />
-        <exclude name="LongInstantiation" />
         <exclude name="LongVariable" />
         <exclude name="LooseCoupling" />
         <exclude name="LoosePackageCoupling" />

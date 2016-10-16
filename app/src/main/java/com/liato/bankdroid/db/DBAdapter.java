@@ -190,7 +190,7 @@ public class DBAdapter {
                 vals.put("bankid", bankId);
                 vals.put("balance", acc.getBalance().toPlainString());
                 vals.put("name", acc.getName());
-                vals.put("id", new Long(bankId).toString() + "_" + acc.getId());
+                vals.put("id", bankId + "_" + acc.getId());
                 vals.put("hidden", acc.isHidden() ? 1 : 0);
                 vals.put("notify", acc.isNotify() ? 1 : 0);
                 vals.put("currency", acc.getCurrency());
@@ -200,14 +200,14 @@ public class DBAdapter {
                 if (acc.getAliasfor() == null || acc.getAliasfor().length() == 0) {
                     List<Transaction> transactions = acc.getTransactions();
                     if (transactions != null && !transactions.isEmpty()) {
-                        deleteTransactions(new Long(bankId).toString() + "_" + acc.getId());
+                        deleteTransactions(bankId + "_" + acc.getId());
                         for (Transaction transaction : transactions) {
                             ContentValues transvals = new ContentValues();
                             transvals.put("transdate", transaction.getDate());
                             transvals.put("btransaction", transaction.getTransaction());
                             transvals.put("amount", transaction.getAmount().toPlainString());
                             transvals.put("account",
-                                    new Long(bankId).toString() + "_" + acc.getId());
+                                    bankId + "_" + acc.getId());
                             transvals.put("currency", transaction.getCurrency());
                             mDb.insert("transactions", null, transvals);
                         }
@@ -239,7 +239,7 @@ public class DBAdapter {
     }
 
     public Cursor getBank(long bankId) {
-        return getBank(new Long(bankId).toString());
+        return getBank(Long.toString(bankId));
     }
 
     public Cursor getAccount(String id) {

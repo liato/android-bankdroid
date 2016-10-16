@@ -16,17 +16,13 @@
 
 package com.liato.bankdroid;
 
-import com.liato.bankdroid.legacy.R;
-
 import org.apache.http.NameValuePair;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.res.Configuration;
-import android.os.Build;
-import android.util.DisplayMetrics;
+import android.support.annotation.Nullable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.StrikethroughSpan;
 
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -40,6 +36,7 @@ import java.util.List;
 import timber.log.Timber;
 
 public class Helpers {
+    private static final StrikethroughSpan STRIKE_THROUGH_SPAN = new StrikethroughSpan();
 
     private final static String[] currencies = {"AED", "AFN", "ALL", "AMD", "ANG", "AOA", "ARS",
             "AUD",
@@ -90,8 +87,6 @@ public class Helpers {
 
     private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
-    private static String USER_AGENT;
-
     public static BigDecimal parseBalance(String balance) {
         if (balance == null) {
             return new BigDecimal(0);
@@ -114,8 +109,8 @@ public class Helpers {
         return ret;
     }
 
-    public static String formatBalance(BigDecimal balance, String curr, boolean round,
-            DecimalFormat format) {
+    public static CharSequence formatBalance(BigDecimal balance, String curr, boolean round,
+                                             @Nullable DecimalFormat format, boolean strikethrough) {
         DecimalFormatSymbols dfs = new DecimalFormatSymbols();
         dfs.setDecimalSeparator(',');
         dfs.setGroupingSeparator(' ');
@@ -128,21 +123,23 @@ public class Helpers {
             }
         }
         currency.setDecimalFormatSymbols(dfs);
-        return currency.format(balance.doubleValue()) + curr;
+
+        SpannableString returnMe = new SpannableString(currency.format(balance.doubleValue()) + curr);
+        if (strikethrough) {
+            returnMe.setSpan(STRIKE_THROUGH_SPAN, 0, returnMe.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+        return returnMe;
     }
 
-    public static String formatBalance(BigDecimal balance, String curr) {
-        return formatBalance(balance, curr, false, null);
-    }
-
-    public static String formatBalance(Double balance, String curr) {
-        return formatBalance(new BigDecimal(balance), curr);
+    public static CharSequence formatBalance(BigDecimal balance, String curr) {
+        return formatBalance(balance, curr, false, null, false);
     }
 
     static public void setActivityAnimation(Activity activity, int in, int out) {
         try {
             Method method = Activity.class
-                    .getMethod("overridePendingTransition", new Class[]{int.class, int.class});
+                    .getMethod("overridePendingTransition", int.class, int.class);
             method.invoke(activity, in, out);
         } catch (Exception e) {
             // Can't change animation, so do nothing
@@ -231,52 +228,6 @@ public class Helpers {
 
     public static String formatDate(Date date) {
         return DATE_FORMAT.format(date);
-    }
-
-    public static String getAppUserAgentString(Context context) {
-        if (USER_AGENT != null) {
-            return USER_AGENT;
-        }
-        String appName = context.getResources().getString(R.string.app_name);
-        String appVersion = "";
-        int height = 0;
-        int width = 0;
-        DisplayMetrics display = context.getResources().getDisplayMetrics();
-        Configuration config = context.getResources().getConfiguration();
-
-        // Always send screen dimension for portrait mode
-        if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            height = display.widthPixels;
-            width = display.heightPixels;
-        } else {
-            width = display.widthPixels;
-            height = display.heightPixels;
-        }
-
-        try {
-            PackageInfo packageInfo = context.getPackageManager()
-                    .getPackageInfo(context.getPackageName(), PackageManager.GET_CONFIGURATIONS);
-            appVersion = packageInfo.versionName;
-        } catch (PackageManager.NameNotFoundException ignore) {
-            // this should never happen, we are looking up ourself
-        }
-
-        // Tries to conform to default android UA string without the Safari / webkit noise, plus adds the screen dimensions
-        USER_AGENT = String
-                .format("%1$s/%2$s (%3$s; U; Android %4$s; %5$s-%6$s; %12$s Build/%7$s; %8$s) %9$dX%10$d %11$s %12$s"
-                        , appName
-                        , appVersion
-                        , System.getProperty("os.name", "Linux")
-                        , Build.VERSION.RELEASE
-                        , config.locale.getLanguage().toLowerCase()
-                        , config.locale.getCountry().toLowerCase()
-                        , Build.ID
-                        , Build.BRAND
-                        , width
-                        , height
-                        , Build.MANUFACTURER
-                        , Build.MODEL);
-        return USER_AGENT;
     }
 
 }

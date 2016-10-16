@@ -47,8 +47,6 @@ public class LockableActivity extends ActionBarActivity {
 
     private SharedPreferences mPrefs;
 
-    private Editor mEditor;
-
     private LockPatternUtils mLockPatternUtils;
 
     private boolean mHasLoaded = false;
@@ -240,9 +238,9 @@ public class LockableActivity extends ActionBarActivity {
     }
 
     private void writeLockTime(long time) {
-        mEditor = mPrefs.edit();
-        mEditor.putLong("locked_at", time);
-        mEditor.commit();
+        Editor editor = mPrefs.edit();
+        editor.putLong("locked_at", time);
+        editor.apply();
     }
 
     protected void onActivityResult(int requestCode, int resultCode,
