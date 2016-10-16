@@ -35,8 +35,6 @@ public class LockablePreferenceActivity extends PreferenceActivity {
 
     private SharedPreferences mPrefs;
 
-    private Editor mEditor;
-
     private LockPatternUtils mLockPatternUtils;
 
     private boolean mHasLoaded = false;
@@ -67,7 +65,7 @@ public class LockablePreferenceActivity extends PreferenceActivity {
         If this activity never loaded set the lock time to
         10 seconds ago.
         This is to prevent the following scenario:
-            1. Activity Starts 
+            1. Activity Starts
             2. Lock screen is displayed
             3. User presses the home button
             4. "lock time" is set in onPause to when the home button was pressed
@@ -111,9 +109,9 @@ public class LockablePreferenceActivity extends PreferenceActivity {
     }
 
     private void writeLockTime(long time) {
-        mEditor = mPrefs.edit();
-        mEditor.putLong("locked_at", time);
-        mEditor.commit();
+        Editor editor = mPrefs.edit();
+        editor.putLong("locked_at", time);
+        editor.apply();
     }
 
     protected boolean isLockEnabled() {
@@ -121,9 +119,9 @@ public class LockablePreferenceActivity extends PreferenceActivity {
     }
 
     protected void setLockEnabled(boolean enabled) {
-        mEditor = mPrefs.edit();
-        mEditor.putBoolean("lock_enabled", enabled);
-        mEditor.commit();
+        Editor editor = mPrefs.edit();
+        editor.putBoolean("lock_enabled", enabled);
+        editor.apply();
     }
 
     protected void onActivityResult(int requestCode, int resultCode,

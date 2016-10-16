@@ -8,7 +8,6 @@
     <issue id="BatteryLife" severity="ignore" />
     <issue id="ButtonCase" severity="ignore" />
     <issue id="ClickableViewAccessibility" severity="ignore" />
-    <issue id="CommitPrefEdits" severity="ignore" />
     <issue id="ContentDescription" severity="ignore" />
     <issue id="DefaultLocale" severity="ignore" />
     <issue id="Deprecated" severity="ignore" />

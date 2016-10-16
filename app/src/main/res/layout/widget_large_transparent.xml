@@ -82,31 +82,6 @@
 		</RelativeLayout>
 	</RelativeLayout>
 	<RelativeLayout
-			android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_alignParentRight="true"
-		android:paddingTop="15dp"
-		android:paddingRight="11dp">
-		<FrameLayout
-			android:layout_height="wrap_content"
-			android:id="@+id/frmWarning"
-			android:layout_width="wrap_content"
-			android:visibility="invisible">
-			<ImageView
-				android:id="@+id/imgWarning"
-				android:adjustViewBounds="true"
-				android:layout_height="fill_parent"
-				android:src="@drawable/indicator_input_error"
-				android:scaleType="fitXY"
-				android:layout_width="wrap_content"
-				android:layout_gravity="top|right"
-				android:maxWidth="17dp"
-				android:maxHeight="17dp"
-				android:minHeight="17dp"
-				android:minWidth="17dp"></ImageView>
-		</FrameLayout>
-	</RelativeLayout>
-	<RelativeLayout
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_alignTop="@+id/RelativeLayout02"

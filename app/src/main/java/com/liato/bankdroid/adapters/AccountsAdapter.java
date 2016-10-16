@@ -100,7 +100,8 @@ public class AccountsAdapter extends BaseAdapter {
                 .setText(Helpers.formatBalance(bank.getBalance(),
                         bank.getCurrency(),
                         prefs.getBoolean("round_balance", false) || !bank.getDisplayDecimals(),
-                        bank.getDecimalFormatter()));
+                        bank.getDecimalFormatter(),
+                        false));
         icon.setImageResource(bank.getImageResource());
         ImageView warning = (ImageView) convertView.findViewById(R.id.imgWarning);
         if (bank.isDisabled()) {
@@ -131,7 +132,8 @@ public class AccountsAdapter extends BaseAdapter {
                         account.getCurrency(),
                         prefs.getBoolean("round_balance", false) || !account.getBank()
                                 .getDisplayDecimals(),
-                        account.getBank().getDecimalFormatter()));
+                        account.getBank().getDecimalFormatter(),
+                        false));
         if (account.isHidden()) {
             txtAccountName.setTextColor(Color.argb(255, 191, 191, 191));
             txtBalance.setTextColor(Color.argb(255, 191, 191, 191));

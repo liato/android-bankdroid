@@ -51,7 +51,7 @@ public class PairApplicationsActivity extends LockableActivity {
 
             // Commit to preferences
             editor.putString("content_provider_api_key", genKey.toUpperCase());
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -112,7 +112,7 @@ public class PairApplicationsActivity extends LockableActivity {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
         Editor editor = pref.edit();
         editor.putBoolean("content_provider_enabled", true);
-        editor.commit();
+        editor.apply();
         String apiKey;
 
         try {
