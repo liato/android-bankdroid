@@ -47,6 +47,10 @@ function set_pmd_suppressions() {
 
     <!-- FIXME: This file should be empty and all violations fixed. Then we will all hug. -->
     <rule ref="rulesets/internal/all-java.xml">
+
+        <!-- This check needs extra configuration to work, disable it for now -->
+        <exclude name="LoosePackageCoupling" />
+
 EOF
 
   for RULE in $1; do

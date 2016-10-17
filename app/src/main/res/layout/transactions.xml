@@ -29,7 +29,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_alignParentBottom="true"
-        android:layout_below="@+id/layBankHeader"
+        android:layout_below="@+id/txtTranDesc"
         android:background="@drawable/background_repeat"
         android:cacheColorHint="#00000000"
         android:clickable="false"
