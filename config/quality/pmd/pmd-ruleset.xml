@@ -13,7 +13,6 @@
     <rule ref="rulesets/internal/all-java.xml">
         <exclude name="AbstractNaming" />
         <exclude name="AccessorClassGeneration" />
-        <exclude name="AddEmptyString" />
         <exclude name="AppendCharacterWithChar" />
         <exclude name="ArrayIsStoredDirectly" />
         <exclude name="AssignmentInOperand" />
@@ -49,19 +48,16 @@
         <exclude name="CyclomaticComplexity" />
         <exclude name="DataflowAnomalyAnalysis" />
         <exclude name="DefaultPackage" />
-        <exclude name="DoNotThrowExceptionInFinally" />
         <exclude name="DoNotUseThreads" />
         <exclude name="EmptyCatchBlock" />
         <exclude name="EmptyIfStmt" />
         <exclude name="EmptyMethodInAbstractClassShouldBeAbstract" />
-        <exclude name="ExceptionAsFlowControl" />
         <exclude name="ExcessiveClassLength" />
         <exclude name="ExcessiveImports" />
         <exclude name="ExcessiveMethodLength" />
         <exclude name="ExcessiveParameterList" />
         <exclude name="ExcessivePublicCount" />
         <exclude name="FieldDeclarationsShouldBeAtStartOfClass" />
-        <exclude name="FinalFieldCouldBeStatic" />
         <exclude name="GodClass" />
         <exclude name="ImmutableField" />
         <exclude name="InefficientStringBuffering" />
@@ -72,11 +68,9 @@
         <exclude name="LocalVariableCouldBeFinal" />
         <exclude name="LongVariable" />
         <exclude name="LooseCoupling" />
-        <exclude name="LoosePackageCoupling" />
         <exclude name="MethodArgumentCouldBeFinal" />
         <exclude name="MethodNamingConventions" />
         <exclude name="MissingBreakInSwitch" />
-        <exclude name="MissingSerialVersionUID" />
         <exclude name="ModifiedCyclomaticComplexity" />
         <exclude name="NPathComplexity" />
         <exclude name="NcssMethodCount" />
@@ -103,7 +97,6 @@
         <exclude name="TooFewBranchesForASwitchStatement" />
         <exclude name="TooManyFields" />
         <exclude name="TooManyMethods" />
-        <exclude name="UncommentedEmptyConstructor" />
         <exclude name="UncommentedEmptyMethodBody" />
         <exclude name="UnnecessaryConstructor" />
         <exclude name="UnnecessaryConversionTemporary" />
