@@ -19,8 +19,8 @@ package com.liato.bankdroid;
 import com.liato.bankdroid.appwidget.AutoRefreshService;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
+import com.liato.bankdroid.banking.banks.TestBank;
 import com.liato.bankdroid.banking.banks.nordea.Nordea;
-import com.liato.bankdroid.banking.banks.swedbank.Swedbank;
 import com.liato.bankdroid.lockpattern.ChooseLockPattern;
 import com.liato.bankdroid.lockpattern.ConfirmLockPattern;
 import com.liato.bankdroid.lockpattern.LockPatternUtils;
@@ -127,7 +127,7 @@ public class SettingsActivity extends LockablePreferenceActivity
         } else if ("test_notification".equals(prefKey)) {
             Timber.d("Sending test notification.");
             Account account1 = new Account("Personkonto", new BigDecimal(8351.00), "22");
-            Bank bank1 = new Swedbank(this);
+            Bank bank1 = new TestBank(this);
             bank1.setDbid(21);
             bank1.setCustomName("800416-0001");
 
