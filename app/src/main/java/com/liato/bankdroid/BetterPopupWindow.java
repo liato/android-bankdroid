@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
@@ -20,6 +21,7 @@ import android.widget.PopupWindow;
  */
 public class BetterPopupWindow {
 
+    protected final ViewGroup parentView;
     protected final View anchor;
 
     private final PopupWindow window;
@@ -35,8 +37,9 @@ public class BetterPopupWindow {
      *
      * @param anchor the view that the BetterPopupWindow will be displaying 'from'
      */
-    public BetterPopupWindow(View anchor) {
+    public BetterPopupWindow(ViewGroup parentView, View anchor) {
         this.anchor = anchor;
+        this.parentView = parentView;
         this.window = new PopupWindow(anchor.getContext());
 
         // when a touch even happens outside of the window

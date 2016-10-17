@@ -31,7 +31,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -58,8 +57,6 @@ public class MainActivity extends LockableActivity {
     @InjectView(R.id.txtAccountsDesc)
     TextView mAccountsDescription;
 
-    private final static String TAG = "MainActivity";
-
     protected static boolean showHidden = false;
 
     private static Bank selected_bank = null;
@@ -85,16 +82,17 @@ public class MainActivity extends LockableActivity {
         ButterKnife.inject(this);
 
         adapter = new AccountsAdapter(this, showHidden);
-        final ArrayList<Bank> banks = new ArrayList<Bank>();//BankFactory.banksFromDb(this, true);
+        final ArrayList<Bank> banks = new ArrayList<>();
         adapter.setGroups(banks);
         final ListView lv = (ListView) findViewById(R.id.lstAccountsList);
         lv.setAdapter(adapter);
         lv.setOnItemLongClickListener(new OnItemLongClickListener() {
+            @Override
             public boolean onItemLongClick(final AdapterView<?> parent, final View view,
                     final int position, final long id) {
                 if (adapter.getItem(position) instanceof Account) {
                     selected_account = (Account) adapter.getItem(position);
-                    final PopupMenuAccount pmenu = new PopupMenuAccount(view, MainActivity.this);
+                    final PopupMenuAccount pmenu = new PopupMenuAccount(parent, view, MainActivity.this);
                     pmenu.showLikeQuickAction(0, 12);
                     return true;
                 } else if (adapter.getItem(position) instanceof Bank) {
@@ -108,11 +106,12 @@ public class MainActivity extends LockableActivity {
             }
         });
         lv.setOnItemClickListener(new OnItemClickListener() {
+            @Override
             public void onItemClick(final AdapterView<?> parent, final View view,
                     final int position, final long id) {
                 if (adapter.getItem(position) instanceof Bank) {
                     selected_bank = (Bank) adapter.getItem(position);
-                    final PopupMenuBank pmenu = new PopupMenuBank(view, MainActivity.this);
+                    final PopupMenuBank pmenu = new PopupMenuBank(parent, view, MainActivity.this);
                     pmenu.showLikeQuickAction(0, 12);
                 } else {
                     final Intent intent = new Intent(MainActivity.this, TransactionsActivity.class);
@@ -173,7 +172,6 @@ public class MainActivity extends LockableActivity {
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.about);
         dialog.setTitle(getString(R.string.about));
-        PackageInfo pInfo;
         String version = BuildConfig.VERSION_NAME;
         ((TextView) dialog.findViewById(R.id.txtVersion))
                 .setText(getText(R.string.version).toString().replace("$version", version));
@@ -227,8 +225,8 @@ public class MainActivity extends LockableActivity {
 
         MainActivity parent = null;
 
-        public PopupMenuBank(final View anchor, final MainActivity parent) {
-            super(anchor);
+        public PopupMenuBank(final ViewGroup parentView, final View anchor, final MainActivity parent) {
+            super(parentView, anchor);
             this.parent = parent;
         }
 
@@ -239,7 +237,7 @@ public class MainActivity extends LockableActivity {
                     (LayoutInflater) this.anchor.getContext()
                             .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-            final ViewGroup root = (ViewGroup) inflater.inflate(R.layout.popup_bank, null);
+            final ViewGroup root = (ViewGroup) inflater.inflate(R.layout.popup_bank, this.parentView);
             final Button btnHide = (Button) root.findViewById(R.id.btnHide);
             final Button btnUnhide = (Button) root.findViewById(R.id.btnUnhide);
             final Button btnWWW = (Button) root.findViewById(R.id.btnWWW);
@@ -305,6 +303,7 @@ public class MainActivity extends LockableActivity {
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setPositiveButton(context.getText(R.string.yes),
                                     new DialogInterface.OnClickListener() {
+                                        @Override
                                         public void onClick(final DialogInterface dialog,
                                                 final int id) {
                                             final DBAdapter db = new DBAdapter(context);
@@ -315,6 +314,7 @@ public class MainActivity extends LockableActivity {
                                     })
                             .setNegativeButton(context.getText(R.string.no),
                                     new DialogInterface.OnClickListener() {
+                                        @Override
                                         public void onClick(final DialogInterface dialog,
                                                 final int id) {
                                             dialog.cancel();
@@ -340,8 +340,8 @@ public class MainActivity extends LockableActivity {
 
         MainActivity parent = null;
 
-        public PopupMenuAccount(final View anchor, final MainActivity parent) {
-            super(anchor);
+        public PopupMenuAccount(final ViewGroup parentView, final View anchor, final MainActivity parent) {
+            super(parentView, anchor);
             this.parent = parent;
         }
 
@@ -351,7 +351,7 @@ public class MainActivity extends LockableActivity {
                     (LayoutInflater) this.anchor.getContext()
                             .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-            final ViewGroup root = (ViewGroup) inflater.inflate(R.layout.popup_account, null);
+            final ViewGroup root = (ViewGroup) inflater.inflate(R.layout.popup_account, this.parentView);
             final Button btnHide = (Button) root.findViewById(R.id.btnHide);
             final Button btnUnhide = (Button) root.findViewById(R.id.btnUnhide);
             final Button btnDisableNotifications = (Button) root

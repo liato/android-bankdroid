@@ -24,6 +24,7 @@ import android.content.Context;
 import android.graphics.PixelFormat;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 public class ColorPickerDialog
@@ -41,8 +42,12 @@ public class ColorPickerDialog
 
     private OnColorChangedListener mListener;
 
-    public ColorPickerDialog(Context context, int initialColor) {
+    private final ViewGroup mParent;
+
+    public ColorPickerDialog(ViewGroup parent, Context context, int initialColor) {
         super(context);
+
+        this.mParent = parent;
 
         init(initialColor);
     }
@@ -60,7 +65,7 @@ public class ColorPickerDialog
         LayoutInflater inflater = (LayoutInflater) getContext()
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        View layout = inflater.inflate(R.layout.dialog_color_picker, null);
+        View layout = inflater.inflate(R.layout.dialog_color_picker, mParent);
 
         setContentView(layout);
 
