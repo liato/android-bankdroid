@@ -149,7 +149,7 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
                 this.errors.add(bank.getName() + " (" + bank.getUsername()
                         + ")");
                 if (NetworkUtils.isInternetAvailable()) {
-                    Timber.e(e);
+                    Timber.e(e, "IO error talking to bank");
                 }
             }
 

@@ -3,7 +3,7 @@ apply from: '../config/quality/quality.gradle'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.1"
+    buildToolsVersion "24.0.3"
 
     useLibrary 'org.apache.http.legacy'
     defaultConfig {

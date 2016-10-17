@@ -99,7 +99,6 @@
         <exclude name="TooManyMethods" />
         <exclude name="UncommentedEmptyMethodBody" />
         <exclude name="UnnecessaryConstructor" />
-        <exclude name="UnnecessaryConversionTemporary" />
         <exclude name="UnnecessaryFullyQualifiedName" />
         <exclude name="UnnecessaryLocalBeforeReturn" />
         <exclude name="UnnecessaryParentheses" />

@@ -49,7 +49,7 @@ public class WebViewActivity extends LockableActivity implements OnClickListener
 
     private final static String TAG = "WebViewActivity";
 
-    private static WebView mWebView;
+    private WebView mWebView;
 
     private final LockableActivity activity = this;
 

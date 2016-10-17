@@ -23,6 +23,7 @@ import android.graphics.Color;
 import android.preference.Preference;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -41,6 +42,8 @@ public class ColorPickerPreference
         ColorPickerDialog.OnColorChangedListener {
 
     private static final String androidns = "http://schemas.android.com/apk/res/android";
+
+    private ViewGroup parent;
 
     View mView;
 
@@ -155,6 +158,12 @@ public class ColorPickerPreference
     }
 
     @Override
+    protected View onCreateView(ViewGroup parent) {
+        this.parent = parent;
+        return super.onCreateView(parent);
+    }
+
+    @Override
     protected void onBindView(View view) {
         super.onBindView(view);
         mView = view;
@@ -234,8 +243,9 @@ public class ColorPickerPreference
         }
     }
 
+    @Override
     public boolean onPreferenceClick(Preference preference) {
-        ColorPickerDialog picker = new ColorPickerDialog(getContext(), getValue());
+        ColorPickerDialog picker = new ColorPickerDialog(parent, getContext(), getValue());
         picker.setOnColorChangedListener(this);
         if (mAlphaSliderEnabled) {
             picker.setAlphaSliderVisible(true);

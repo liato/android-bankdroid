@@ -27,7 +27,6 @@ import com.liato.bankdroid.provider.IBankTypes;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
 
 import android.content.Context;
@@ -452,12 +451,8 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
 
             CookieStore cookies = urlopen.getHttpclient().getCookieStore();
             return new SessionPackage(html, cookies);
-        } catch (ClientProtocolException e) {
-            Timber.e(e);
-        } catch (IOException e) {
-            Timber.e(e);
-        } catch (BankException e) {
-            Timber.e(e);
+        } catch (IOException | BankException e) {
+            Timber.e(e, "Error getting session package");
         }
         String html = String.format(preloader,
                 String.format("function go(){window.location=\"%s\" }", this.URL),
