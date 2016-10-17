@@ -18,7 +18,6 @@
     <issue id="GradleDependency" severity="ignore" />
     <issue id="GradleDynamicVersion" severity="ignore" />
     <issue id="HardcodedText" severity="ignore" />
-    <issue id="HardwareIds" severity="ignore" />
     <issue id="IconDensities" severity="ignore" />
     <issue id="IconDuplicates" severity="ignore" />
     <issue id="IconLocation" severity="ignore" />
