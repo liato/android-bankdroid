@@ -47,7 +47,7 @@ public class LiabilityAccountBuilder extends AbstractAccountBuilder<LiabilityAcc
                 mInterest, mPayments);
     }
 
-    private class BasicLiabilityAccount extends BasicAccount implements LiabilityAccount {
+    private static class BasicLiabilityAccount extends BasicAccount implements LiabilityAccount {
 
         private double mInterest;
         private Collection<Payment> mPayments;

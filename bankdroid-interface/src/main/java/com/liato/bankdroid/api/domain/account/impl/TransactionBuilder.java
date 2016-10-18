@@ -29,7 +29,7 @@ public class TransactionBuilder {
         return mTransaction;
     }
 
-    private class BasicTransaction implements Transaction {
+    private static class BasicTransaction implements Transaction {
 
         private BigDecimal amount;
         private String description;

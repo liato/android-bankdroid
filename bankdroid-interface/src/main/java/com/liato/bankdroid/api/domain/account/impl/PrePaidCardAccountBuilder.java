@@ -36,7 +36,7 @@ public class PrePaidCardAccountBuilder extends AbstractAccountBuilder<PrePaidCar
                 mExpirationDate, mValidFrom);
     }
 
-    private class BasicPrePaidCardAccount extends BasicAccount implements PrePaidCardAccount {
+    private static class BasicPrePaidCardAccount extends BasicAccount implements PrePaidCardAccount {
 
         private DateTime mExpirationDate;
         private DateTime mValidFrom;

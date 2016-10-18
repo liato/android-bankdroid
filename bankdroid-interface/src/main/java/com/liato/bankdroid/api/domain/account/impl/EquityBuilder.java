@@ -47,7 +47,7 @@ public class EquityBuilder {
     }
 
 
-    private class BasicEquity implements Equity {
+    private static class BasicEquity implements Equity {
 
         private String mName;
 
