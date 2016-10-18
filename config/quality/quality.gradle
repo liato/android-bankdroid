@@ -3,12 +3,9 @@ apply plugin: 'findbugs'
 apply plugin: 'pmd'
 
 // Add checkstyle, findbugs and lint to the check task.
-check.dependsOn 'checkstyle', 'findbugs', 'pmd', 'lint'
+check.dependsOn 'checkstyle', 'findbugs', 'pmd'
 
 task checkstyle(type: Checkstyle) {
-    configFile file("${project.rootDir}/config/quality/checkstyle/checkstyle.xml")
-    configProperties.checkstyleSuppressionsPath = file("${project.rootDir}/config/quality/checkstyle/suppressions.xml").absolutePath
-
     source 'src'
     include '**/*.java'
     classpath = files()
@@ -17,30 +14,14 @@ task checkstyle(type: Checkstyle) {
 checkstyle {
     toolVersion '6.1.1' // TODO https://github.com/jshiell/checkstyle-idea/blob/dbe595028c3488400790e6caed2f122fba0bded1/README#L13-19
     ignoreFailures false
+    configFile file("${project.rootDir}/config/quality/checkstyle/checkstyle.xml")
+    configProperties.checkstyleSuppressionsPath = file("${project.rootDir}/config/quality/checkstyle/suppressions.xml").absolutePath
 }
 
-android {
-    lintOptions {
-        abortOnError true
-        warningsAsErrors true
-
-        // FIXME: This file contains *far* too many disabled checks. Somebody think of the children!
-        lintConfig file("${project.rootDir}/config/quality/lint/lint.xml")
-
-        textOutput "stdout"
-        textReport true
-
-        htmlReport true
-        // optional path to report (default will be lint-results.html in the builddir)
-        htmlOutput file("$project.buildDir/reports/lint/lint.html")
-    }
-}
-
-task findbugs(type: FindBugs, dependsOn: 'compileDebugSources') {
+task findbugs(type: FindBugs) {
     effort = "max"
     reportLevel = "high"
     excludeFilter = new File("${project.rootDir}/config/quality/findbugs/findbugs-filter.xml")
-    classes = files("$project.buildDir/intermediates/classes")
 
     source 'src'
     include '**/*.java'
@@ -80,4 +61,30 @@ task pmd(type: Pmd) {
             destination "$project.buildDir/reports/pmd/pmd.html"
         }
     }
+}
+
+if(plugins.hasPlugin('android') || plugins.hasPlugin('com.android.library')) {
+    check.dependsOn 'lint'
+    tasks.getByName("findbugs").dependsOn 'compileDebugSources'
+    tasks.getByName('findbugs').classes = files("$project.buildDir/intermediates/classes")
+    android {
+        lintOptions {
+            abortOnError true
+            warningsAsErrors true
+
+            // FIXME: This file contains *far* too many disabled checks. Somebody think of the children!
+            lintConfig file("${project.rootDir}/config/quality/lint/lint.xml")
+
+            textOutput "stdout"
+            textReport true
+
+            htmlReport true
+            // optional path to report (default will be lint-results.html in the builddir)
+            htmlOutput file("$project.buildDir/reports/lint/lint.html")
+        }
+    }
+}
+if(plugins.hasPlugin('java')) {
+    tasks.getByName('findbugs').classes = files("$project.buildDir/classes")
+    tasks.getByName('findbugs').dependsOn 'classes'
 }
