@@ -82,7 +82,7 @@ public class FieldBuilder {
         return this;
     }
 
-    private class BasicField implements Field {
+    private static class BasicField implements Field {
 
         private ResourceBundle resourceBundle;
 
@@ -148,7 +148,7 @@ public class FieldBuilder {
         public List<Entry> getValues() {
             if(values == null) {
                 values = Collections.emptyList();
-            };
+            }
             return values;
         }
 

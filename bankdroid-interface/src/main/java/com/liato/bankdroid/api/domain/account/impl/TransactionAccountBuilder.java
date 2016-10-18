@@ -41,7 +41,7 @@ public class TransactionAccountBuilder extends AbstractAccountBuilder<Transactio
                 mTransactions);
     }
 
-    private class BasicTransactionAccount extends BasicAccount implements TransactionAccount {
+    private static class BasicTransactionAccount extends BasicAccount implements TransactionAccount {
 
         private Collection<Transaction> mTransactions;
 
