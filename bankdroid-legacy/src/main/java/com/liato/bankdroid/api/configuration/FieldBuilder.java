@@ -13,7 +13,7 @@ public class FieldBuilder {
     private BasicField field;
 
     /**
-     * Create a new {@link Field} builder without i18n support. 
+     * Create a new {@link Field} builder without i18n support.
      */
     public FieldBuilder(String reference) {
       this(reference, null);
@@ -24,7 +24,7 @@ public class FieldBuilder {
      * The following keys needs to be in the ResourceBundle:
      * {@code field.{reference}.label} - Locale label value
      * {@code field.{reference}.placeholder} - Locale placeholder value.
-     * 
+     *
      * Setting {@link #placeholder(String)} or {@link #label(String) specifically will override the i18n values.
      * Otherwise they will be set to the value specified in the Locale bundle or in the default bundle if not present.
      * If a key is not present at all in the ResourceBundle the key will will be returned.
@@ -148,7 +148,7 @@ public class FieldBuilder {
         public List<Entry> getValues() {
             if(values == null) {
                 values = Collections.emptyList();
-            };
+            }
             return values;
         }
 
