@@ -43,7 +43,6 @@ import com.liato.bankdroid.banking.banks.SveaDirekt;
 import com.liato.bankdroid.banking.banks.SvenskaSpel;
 import com.liato.bankdroid.banking.banks.TestBank;
 import com.liato.bankdroid.banking.banks.TicketRikskortet;
-import com.liato.bankdroid.banking.banks.TrustBuddy;
 import com.liato.bankdroid.banking.banks.Vasttrafik;
 import com.liato.bankdroid.banking.banks.Villabanken;
 import com.liato.bankdroid.banking.banks.Volkswagen;
@@ -158,8 +157,6 @@ public class LegacyBankFactory {
                 return new EasyCard(context);
             case IBankTypes.APPEAKPOKER:
                 return new AppeakPoker(context);
-            case IBankTypes.TRUSTBUDDY:
-                return new TrustBuddy(context);
             case IBankTypes.BRUMMER_KF:
                 return new BrummerKF(context);
             case IBankTypes.ZIDISHA:
@@ -191,7 +188,6 @@ public class LegacyBankFactory {
         List<Bank> banks = new ArrayList<>();
         banks.add(new AkeliusInvest(context));
         banks.add(new AkeliusSpar(context));
-        banks.add(new TrustBuddy(context));
         banks.add(new BrummerKF(context));
         banks.add(new Nordea(context));
         banks.add(new Lansforsakringar(context));

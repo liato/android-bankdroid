@@ -66,7 +66,6 @@ public interface IBankTypes {
     int SVENSKASPEL = 63;
     int EASYCARD = 64;
     int APPEAKPOKER = 65;
-    int TRUSTBUDDY = 66;
     int BRUMMER_KF = 67;
     int ZIDISHA = 68;
     int BETTERGLOBE = 69;
