@@ -1,5 +1,8 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
+Not yet released
+* Remove TrustBuddy since they're no longer in business
+
 v1.9.10.10 (2016-10-17)
 * Fixes crash for Amex
 * Strikethrough balance in widget indicates update problems. 
