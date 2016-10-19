@@ -32,7 +32,6 @@ import com.liato.bankdroid.banking.banks.Payson;
 import com.liato.bankdroid.banking.banks.PlusGirot;
 import com.liato.bankdroid.banking.banks.ResursBank;
 import com.liato.bankdroid.banking.banks.SevenDay;
-import com.liato.bankdroid.banking.banks.SupremeCard;
 import com.liato.bankdroid.banking.banks.SveaDirekt;
 import com.liato.bankdroid.banking.banks.SvenskaSpel;
 import com.liato.bankdroid.banking.banks.TestBank;
@@ -146,8 +145,6 @@ public class LegacyBankFactory {
                 return new Bitcoin(context);
             case IBankTypes.SVEADIREKT:
                 return new SveaDirekt(context);
-            case IBankTypes.SUPREMECARD:
-                return new SupremeCard(context);
             case IBankTypes.BLEKINGETRAFIKEN:
                 return new BlekingeTrafiken(context);
             case IBankTypes.OSTGOTATRAFIKEN:
@@ -205,7 +202,6 @@ public class LegacyBankFactory {
         banks.add(new BetterGlobe(context));
         banks.add(new Bitcoin(context));
         banks.add(new SveaDirekt(context));
-        banks.add(new SupremeCard(context));
         banks.add(new BlekingeTrafiken(context));
         banks.add(new Ostgotatrafiken(context));
         banks.add(new Bredband2VoIP(context));
