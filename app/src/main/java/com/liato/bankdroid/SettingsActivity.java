@@ -42,8 +42,6 @@ import timber.log.Timber;
 public class SettingsActivity extends LockablePreferenceActivity
         implements OnPreferenceClickListener, OnPreferenceChangeListener {
 
-    private final static String TAG = "SettingsActivity";
-
     private final static int DISABLE_LOCKPATTERN = 1;
 
     private final static int ENABLE_LOCKPATTERN = 2;

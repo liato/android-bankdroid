@@ -6,7 +6,6 @@
     <issue id="AlwaysShowAction" severity="ignore" />
     <issue id="AppCompatResource" severity="ignore" />
     <issue id="BatteryLife" severity="ignore" />
-    <issue id="ButtonCase" severity="ignore" />
     <issue id="ClickableViewAccessibility" severity="ignore" />
     <issue id="ContentDescription" severity="ignore" />
     <issue id="DefaultLocale" severity="ignore" />
@@ -19,6 +18,7 @@
     <issue id="HardcodedText" severity="ignore" />
     <issue id="IconDensities" severity="ignore" />
     <issue id="IconDuplicates" severity="ignore" />
+    <issue id="IconExpectedSize" severity="ignore" />
     <issue id="IconLocation" severity="ignore" />
     <issue id="IconMissingDensityFolder" severity="ignore" />
     <issue id="InefficientWeight" severity="ignore" />
@@ -28,6 +28,7 @@
     <issue id="MergeRootFrame" severity="ignore" />
     <issue id="MissingTranslation" severity="ignore" />
     <issue id="NewApi" severity="ignore" />
+    <issue id="NewerVersionAvailable" severity="ignore" />
     <issue id="NotSibling" severity="ignore" />
     <issue id="ObsoleteLayoutParam" severity="ignore" />
     <issue id="Orientation" severity="ignore" />
@@ -38,14 +39,14 @@
     <issue id="RtlHardcoded" severity="ignore" />
     <issue id="RtlSymmetry" severity="ignore" />
     <issue id="ScrollViewSize" severity="ignore" />
+    <issue id="SelectableText" severity="ignore" />
     <issue id="SetJavaScriptEnabled" severity="ignore" />
     <issue id="SimpleDateFormat" severity="ignore" />
     <issue id="SpUsage" severity="ignore" />
     <issue id="TrulyRandom" severity="ignore" />
-    <issue id="TypographyEllipsis" severity="ignore" />
-    <issue id="Typos" severity="ignore" />
     <issue id="UnknownIdInLayout" severity="ignore" />
     <issue id="UnusedAttribute" severity="ignore" />
+    <issue id="UnusedIds" severity="ignore" />
     <issue id="UnusedResources" severity="ignore" />
     <issue id="UseCompoundDrawables" severity="ignore" />
     <issue id="UselessParent" severity="ignore" />

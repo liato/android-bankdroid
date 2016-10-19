@@ -40,8 +40,6 @@ public class WidgetConfigureActivity extends LockableActivity {
 
     private static final String WIDGET_PREFIX = "widget_";
 
-    private static final int LOGIN_ID = 1;
-
     int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 
     private AccountsAdapter adapter;

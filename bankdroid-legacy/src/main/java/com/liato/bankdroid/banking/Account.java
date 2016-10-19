@@ -18,6 +18,8 @@ package com.liato.bankdroid.banking;
 
 import com.liato.bankdroid.provider.IAccountTypes;
 
+import android.support.annotation.Nullable;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -120,6 +122,7 @@ public class Account implements IAccountTypes {
         this.id = id;
     }
 
+    @Nullable
     public Bank getBank() {
         return bank;
     }

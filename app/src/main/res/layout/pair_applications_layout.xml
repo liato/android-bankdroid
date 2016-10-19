@@ -54,7 +54,7 @@
 			android:layout_width="fill_parent">
 			<Button
 				android:onClick="cancelPairing"
-				android:text="@string/cancel"
+				android:text="@android:string/cancel"
 				android:drawableLeft="@drawable/button_cancel"
 				android:id="@+id/btnSettingsCancel"
 				style="@style/Menu_Button"></Button>

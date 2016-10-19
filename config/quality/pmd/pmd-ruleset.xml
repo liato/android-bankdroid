@@ -108,9 +108,7 @@
         <exclude name="UnnecessaryParentheses" />
         <exclude name="UnnecessaryWrapperObjectCreation" />
         <exclude name="UnsynchronizedStaticDateFormatter" />
-        <exclude name="UnusedFormalParameter" />
         <exclude name="UnusedLocalVariable" />
-        <exclude name="UnusedPrivateField" />
         <exclude name="UnusedPrivateMethod" />
         <exclude name="UseCollectionIsEmpty" />
         <exclude name="UseConcurrentHashMap" />

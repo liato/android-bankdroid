@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <string name="about">Om</string>
     <string name="version">Version $version av</string>
     <string name="widget_name_small">Bankdroid (Liten)</string>
     <string name="widget_name_large">Bankdroid (Stor)</string>
     <string name="accounts_were_not_updated">Saldon för följande konton har ej uppdaterats</string>
-    <string name="updating_account_balance">Uppdaterar saldoinformation...</string>
+    <string name="updating_account_balance">Uppdaterar saldoinformation…</string>
     <string name="errors_when_updating">Fel vid uppdatering</string>
-    <string name="logging_in">Loggar in...</string>
+    <string name="logging_in">Loggar in…</string>
     <string name="could_not_create_account">Kunde ej skapa konto</string>
 	<string name="transparent_background">Transparent bakgrund</string>
     <string name="settings">Inställningar</string>
@@ -20,7 +19,6 @@
     <string name="optional_field">(frivilligt)</string>
     <string name="error_desc">Senaste uppdateringsförsöket misslyckades och uppdateringar för detta konto har inaktiverats. Se till att lösenord och användarnamn är korrekt angivet och tryck på spara-knappen.</string>
 
-    <string name="cancel">AVBRYT</string>
     <string name="save">SPARA</string>
 
 	<string name="add_new_account">LÄGG TILL BANK</string>
@@ -206,8 +204,6 @@
     <string name="lock_example_message">Anslut minst fyra punkter.
     \n\nVälj \u201CNästa\u201D när du vill rita ditt eget grafiska lösenord.
     </string>
-	<string name="lock_cancel">Avbryt</string>
-	<string name="lock_ok">Ok</string>
 
 	<string name="select_a_bank">Välj en bank</string>
 	<string name="invalid_integer">%1$s är inte ett giltigt positivt heltal, var god försök igen.</string>
@@ -222,4 +218,5 @@
     <!-- Error messages -->
     <string name="error_bank_not_found">Den valda banken kunde inte hittas.</string>
     <string name="error_account_not_found">Det valda kontot kunde inte hittas.</string>
+	<string name="disabled_refresh_or_edit">Senaste uppdateringen misslyckades och vi har slutat uppdatera kontot automatiskt. Uppdatera kontot manuellt för att försöka igen eller ändra kontot och kontrollera dina inloggningsuppgifter.</string>
 </resources>

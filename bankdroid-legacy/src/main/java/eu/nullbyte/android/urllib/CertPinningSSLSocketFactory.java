@@ -48,8 +48,6 @@ import javax.net.ssl.TrustManager;
 
 public class CertPinningSSLSocketFactory extends SSLSocketFactory {
 
-    private final static String TAG = CertPinningSSLSocketFactory.class.getSimpleName();
-
     private SSLContext sslcontext = null;
 
     private Certificate[] certificates;
