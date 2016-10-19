@@ -4,7 +4,6 @@ import com.liato.bankdroid.banking.banks.AkeliusInvest;
 import com.liato.bankdroid.banking.banks.AkeliusSpar;
 import com.liato.bankdroid.banking.banks.americanexpress.AmericanExpress;
 import com.liato.bankdroid.banking.banks.AppeakPoker;
-import com.liato.bankdroid.banking.banks.Audi;
 import com.liato.bankdroid.banking.banks.AvanzaMini;
 import com.liato.bankdroid.banking.banks.BetterGlobe;
 import com.liato.bankdroid.banking.banks.Bioklubben;
@@ -122,8 +121,6 @@ public class LegacyBankFactory {
                 return new Shell(context);
             case IBankTypes.VOLKSWAGEN:
                 return new Volkswagen(context);
-            case IBankTypes.AUDI:
-                return new Audi(context);
             case IBankTypes.PREEM:
                 return new Preem(context);
             case IBankTypes.SEAT:
@@ -211,7 +208,6 @@ public class LegacyBankFactory {
         banks.add(new Nordnetdirekt(context));
         banks.add(new Shell(context));
         banks.add(new Volkswagen(context));
-        banks.add(new Audi(context));
         banks.add(new Preem(context));
         banks.add(new Seat(context));
         banks.add(new Skoda(context));

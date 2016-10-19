@@ -47,7 +47,6 @@ public interface IBankTypes {
     int PLUSGIROT = 40;
     int SHELL = 41;
     int VOLKSWAGEN = 42;
-    int AUDI = 43;
     int PREEM = 44;
     int SEAT = 45;
     int SKODA = 46;
