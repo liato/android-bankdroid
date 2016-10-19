@@ -37,7 +37,6 @@ import com.liato.bankdroid.banking.banks.SvenskaSpel;
 import com.liato.bankdroid.banking.banks.TestBank;
 import com.liato.bankdroid.banking.banks.TicketRikskortet;
 import com.liato.bankdroid.banking.banks.Vasttrafik;
-import com.liato.bankdroid.banking.banks.Volkswagen;
 import com.liato.bankdroid.banking.banks.Zidisha;
 import com.liato.bankdroid.banking.banks.avanza.Avanza;
 import com.liato.bankdroid.banking.banks.bitcoin.Bitcoin;
@@ -108,8 +107,6 @@ public class LegacyBankFactory {
                 return new McDonalds(context);
             case IBankTypes.PLUSGIROT:
                 return new PlusGirot(context);
-            case IBankTypes.VOLKSWAGEN:
-                return new Volkswagen(context);
             case IBankTypes.IKEA:
                 return new IKEA(context);
             case IBankTypes.NORDNETDIREKT:
@@ -184,7 +181,6 @@ public class LegacyBankFactory {
         banks.add(new AmericanExpress(context));
         banks.add(new PlusGirot(context));
         banks.add(new Nordnetdirekt(context));
-        banks.add(new Volkswagen(context));
         banks.add(new IKEA(context));
         banks.add(new Vasttrafik(context));
         banks.add(new Everydaycard(context));

@@ -44,7 +44,6 @@ public interface IBankTypes {
     int AMERICANEXPRESS = 31;
     int MCDONALDS = 32;
     int PLUSGIROT = 40;
-    int VOLKSWAGEN = 42;
     int IKEA = 47;
     int NORDNETDIREKT = 50;
     int DANSKEBANK = 52;
@@ -63,7 +62,6 @@ public interface IBankTypes {
     int BETTERGLOBE = 69;
     int BITCOIN = 72;
     int SVEADIREKT = 74;
-    int SUPREMECARD = 75;
     int BLEKINGETRAFIKEN = 77;
     int OSTGOTATRAFIKEN = 78;
     int BREDBAND2VOIP = 79;
