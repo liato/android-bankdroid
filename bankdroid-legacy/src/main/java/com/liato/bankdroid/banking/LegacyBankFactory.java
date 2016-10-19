@@ -46,7 +46,6 @@ import com.liato.bankdroid.banking.banks.TicketRikskortet;
 import com.liato.bankdroid.banking.banks.Vasttrafik;
 import com.liato.bankdroid.banking.banks.Villabanken;
 import com.liato.bankdroid.banking.banks.Volkswagen;
-import com.liato.bankdroid.banking.banks.Volvofinans;
 import com.liato.bankdroid.banking.banks.Zidisha;
 import com.liato.bankdroid.banking.banks.avanza.Avanza;
 import com.liato.bankdroid.banking.banks.bitcoin.Bitcoin;
@@ -109,8 +108,6 @@ public class LegacyBankFactory {
                 return new SevenDay(context);
             case IBankTypes.OSUUSPANKKI:
                 return new Osuuspankki(context);
-            case IBankTypes.VOLVOFINANS:
-                return new Volvofinans(context);
             case IBankTypes.CSN:
                 return new CSN(context);
             case IBankTypes.RESURSBANK:
@@ -206,7 +203,6 @@ public class LegacyBankFactory {
         banks.add(new Nordnet(context));
         banks.add(new SevenDay(context));
         banks.add(new Osuuspankki(context));
-        banks.add(new Volvofinans(context));
         banks.add(new CSN(context));
         banks.add(new ResursBank(context));
         banks.add(new McDonalds(context));

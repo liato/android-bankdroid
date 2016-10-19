@@ -40,7 +40,6 @@ public interface IBankTypes {
     int NORDNET = 25;
     int SEVENDAY = 26;
     int OSUUSPANKKI = 27;
-    int VOLVOFINANS = 28;
     int CSN = 29;
     int RESURSBANK = 30;
     int AMERICANEXPRESS = 31;
