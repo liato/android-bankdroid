@@ -237,7 +237,7 @@ public class MainActivity extends LockableActivity {
                     (LayoutInflater) this.anchor.getContext()
                             .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-            final ViewGroup root = (ViewGroup) inflater.inflate(R.layout.popup_bank, this.parentView);
+            final ViewGroup root = (ViewGroup) inflater.inflate(R.layout.popup_bank, this.parentView, false);
             final Button btnHide = (Button) root.findViewById(R.id.btnHide);
             final Button btnUnhide = (Button) root.findViewById(R.id.btnUnhide);
             final Button btnWWW = (Button) root.findViewById(R.id.btnWWW);
@@ -351,7 +351,7 @@ public class MainActivity extends LockableActivity {
                     (LayoutInflater) this.anchor.getContext()
                             .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-            final ViewGroup root = (ViewGroup) inflater.inflate(R.layout.popup_account, this.parentView);
+            final ViewGroup root = (ViewGroup) inflater.inflate(R.layout.popup_account, this.parentView, false);
             final Button btnHide = (Button) root.findViewById(R.id.btnHide);
             final Button btnUnhide = (Button) root.findViewById(R.id.btnUnhide);
             final Button btnDisableNotifications = (Button) root
