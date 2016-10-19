@@ -24,7 +24,6 @@ import com.liato.bankdroid.banking.banks.McDonalds;
 import com.liato.bankdroid.banking.banks.Meniga;
 import com.liato.bankdroid.banking.banks.MinPension;
 import com.liato.bankdroid.banking.banks.Nordnet;
-import com.liato.bankdroid.banking.banks.Nordnetdirekt;
 import com.liato.bankdroid.banking.banks.OKQ8;
 import com.liato.bankdroid.banking.banks.Ostgotatrafiken;
 import com.liato.bankdroid.banking.banks.Osuuspankki;
@@ -106,8 +105,6 @@ public class LegacyBankFactory {
                 return new PlusGirot(context);
             case IBankTypes.IKEA:
                 return new IKEA(context);
-            case IBankTypes.NORDNETDIREKT:
-                return new Nordnetdirekt(context);
             case IBankTypes.DANSKEBANK:
                 return new DanskeBank(context);
             case IBankTypes.VASTTRAFIK:
@@ -176,7 +173,6 @@ public class LegacyBankFactory {
         banks.add(new McDonalds(context));
         banks.add(new AmericanExpress(context));
         banks.add(new PlusGirot(context));
-        banks.add(new Nordnetdirekt(context));
         banks.add(new IKEA(context));
         banks.add(new Vasttrafik(context));
         banks.add(new Everydaycard(context));

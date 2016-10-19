@@ -44,7 +44,6 @@ public interface IBankTypes {
     int MCDONALDS = 32;
     int PLUSGIROT = 40;
     int IKEA = 47;
-    int NORDNETDIREKT = 50;
     int DANSKEBANK = 52;
     int VASTTRAFIK = 54;
     int EVERYDAYCARD = 55;
