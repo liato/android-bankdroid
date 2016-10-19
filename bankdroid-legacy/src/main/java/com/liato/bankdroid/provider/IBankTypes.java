@@ -40,7 +40,6 @@ public interface IBankTypes {
     int SEVENDAY = 26;
     int OSUUSPANKKI = 27;
     int CSN = 29;
-    int RESURSBANK = 30;
     int AMERICANEXPRESS = 31;
     int MCDONALDS = 32;
     int PLUSGIROT = 40;

@@ -30,7 +30,6 @@ import com.liato.bankdroid.banking.banks.Ostgotatrafiken;
 import com.liato.bankdroid.banking.banks.Osuuspankki;
 import com.liato.bankdroid.banking.banks.Payson;
 import com.liato.bankdroid.banking.banks.PlusGirot;
-import com.liato.bankdroid.banking.banks.ResursBank;
 import com.liato.bankdroid.banking.banks.SevenDay;
 import com.liato.bankdroid.banking.banks.SveaDirekt;
 import com.liato.bankdroid.banking.banks.SvenskaSpel;
@@ -99,8 +98,6 @@ public class LegacyBankFactory {
                 return new Osuuspankki(context);
             case IBankTypes.CSN:
                 return new CSN(context);
-            case IBankTypes.RESURSBANK:
-                return new ResursBank(context);
             case IBankTypes.AMERICANEXPRESS:
                 return new AmericanExpress(context);
             case IBankTypes.MCDONALDS:
@@ -176,7 +173,6 @@ public class LegacyBankFactory {
         banks.add(new SevenDay(context));
         banks.add(new Osuuspankki(context));
         banks.add(new CSN(context));
-        banks.add(new ResursBank(context));
         banks.add(new McDonalds(context));
         banks.add(new AmericanExpress(context));
         banks.add(new PlusGirot(context));
