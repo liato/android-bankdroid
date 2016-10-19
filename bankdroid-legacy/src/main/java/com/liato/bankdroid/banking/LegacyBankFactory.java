@@ -32,7 +32,6 @@ import com.liato.bankdroid.banking.banks.Payson;
 import com.liato.bankdroid.banking.banks.PlusGirot;
 import com.liato.bankdroid.banking.banks.ResursBank;
 import com.liato.bankdroid.banking.banks.SevenDay;
-import com.liato.bankdroid.banking.banks.Shell;
 import com.liato.bankdroid.banking.banks.Skoda;
 import com.liato.bankdroid.banking.banks.SupremeCard;
 import com.liato.bankdroid.banking.banks.SveaDirekt;
@@ -114,8 +113,6 @@ public class LegacyBankFactory {
                 return new McDonalds(context);
             case IBankTypes.PLUSGIROT:
                 return new PlusGirot(context);
-            case IBankTypes.SHELL:
-                return new Shell(context);
             case IBankTypes.VOLKSWAGEN:
                 return new Volkswagen(context);
             case IBankTypes.SKODA:
@@ -197,7 +194,6 @@ public class LegacyBankFactory {
         banks.add(new AmericanExpress(context));
         banks.add(new PlusGirot(context));
         banks.add(new Nordnetdirekt(context));
-        banks.add(new Shell(context));
         banks.add(new Volkswagen(context));
         banks.add(new Skoda(context));
         banks.add(new IKEA(context));

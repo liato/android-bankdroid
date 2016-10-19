@@ -45,10 +45,7 @@ public interface IBankTypes {
     int AMERICANEXPRESS = 31;
     int MCDONALDS = 32;
     int PLUSGIROT = 40;
-    int SHELL = 41;
     int VOLKSWAGEN = 42;
-    int PREEM = 44;
-    int SEAT = 45;
     int SKODA = 46;
     int IKEA = 47;
     int NORDNETDIREKT = 50;
