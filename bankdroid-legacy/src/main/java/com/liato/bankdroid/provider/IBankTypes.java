@@ -28,7 +28,6 @@ public interface IBankTypes {
     int COOP = 6;
     int ICA = 7;
     int AVANZA = 9;
-    int VILLABANKEN = 10;
     int AVANZAMINI = 11;
     int OKQ8 = 12;
     int FIRSTCARD = 14;

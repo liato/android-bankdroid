@@ -37,7 +37,6 @@ import com.liato.bankdroid.banking.banks.SvenskaSpel;
 import com.liato.bankdroid.banking.banks.TestBank;
 import com.liato.bankdroid.banking.banks.TicketRikskortet;
 import com.liato.bankdroid.banking.banks.Vasttrafik;
-import com.liato.bankdroid.banking.banks.Villabanken;
 import com.liato.bankdroid.banking.banks.Volkswagen;
 import com.liato.bankdroid.banking.banks.Zidisha;
 import com.liato.bankdroid.banking.banks.avanza.Avanza;
@@ -77,8 +76,6 @@ public class LegacyBankFactory {
                 return new ICA(context);
             case IBankTypes.AVANZA:
                 return new Avanza(context);
-            case IBankTypes.VILLABANKEN:
-                return new Villabanken(context);
             case IBankTypes.AVANZAMINI:
                 return new AvanzaMini(context);
             case IBankTypes.OKQ8:
@@ -170,7 +167,6 @@ public class LegacyBankFactory {
         banks.add(new Coop(context));
         banks.add(new ICA(context));
         banks.add(new Avanza(context));
-        banks.add(new Villabanken(context));
         banks.add(new AvanzaMini(context));
         banks.add(new OKQ8(context));
         banks.add(new FirstCard(context));
