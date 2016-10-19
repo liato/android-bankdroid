@@ -31,7 +31,6 @@ import com.liato.bankdroid.banking.banks.Osuuspankki;
 import com.liato.bankdroid.banking.banks.Payson;
 import com.liato.bankdroid.banking.banks.PlusGirot;
 import com.liato.bankdroid.banking.banks.ResursBank;
-import com.liato.bankdroid.banking.banks.Seat;
 import com.liato.bankdroid.banking.banks.SevenDay;
 import com.liato.bankdroid.banking.banks.Shell;
 import com.liato.bankdroid.banking.banks.Skoda;
@@ -119,8 +118,6 @@ public class LegacyBankFactory {
                 return new Shell(context);
             case IBankTypes.VOLKSWAGEN:
                 return new Volkswagen(context);
-            case IBankTypes.SEAT:
-                return new Seat(context);
             case IBankTypes.SKODA:
                 return new Skoda(context);
             case IBankTypes.IKEA:
@@ -202,7 +199,6 @@ public class LegacyBankFactory {
         banks.add(new Nordnetdirekt(context));
         banks.add(new Shell(context));
         banks.add(new Volkswagen(context));
-        banks.add(new Seat(context));
         banks.add(new Skoda(context));
         banks.add(new IKEA(context));
         banks.add(new Vasttrafik(context));
