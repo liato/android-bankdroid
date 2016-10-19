@@ -1,8 +1,6 @@
 package com.liato.bankdroid.db;
 
 import com.liato.bankdroid.banking.LegacyBankHelper;
-import com.liato.bankdroid.banking.LegacyProviderConfiguration;
-import com.liato.bankdroid.provider.IBankTypes;
 
 import org.junit.After;
 import org.junit.Before;
@@ -77,18 +75,18 @@ public class ConnectionTableCreationTest {
 
         underTest.onUpgrade(db, 12, 13);
 
-        assertThat(dbTestHelper.tableExists(LegacyDatabase.BANK_TABLE_NAME), is(false));
+        assertThat("Legacy bank table exists.", dbTestHelper.tableExists(LegacyDatabase.BANK_TABLE_NAME), is(false));
 
         Cursor actual = db.query(Database.CONNECTION_TABLE_NAME, null, null, null, null, null, null);
-        assertThat(actual.getCount(), is(1));
+        assertThat("Connection is not migrated", actual.getCount(), is(1));
 
         actual.moveToFirst();
-        assertThat(actual.getLong(actual.getColumnIndex(Database.CONNECTION_ID)), is(LegacyFixtures.LEGACY_BANK_ID));
-        assertThat(actual.getString(actual.getColumnIndex(Database.CONNECTION_NAME)), is(LegacyFixtures.LEGACY_BANK_CUSTOM_NAME));
-        assertThat(actual.getString(actual.getColumnIndex(CONNECTION_PROVIDER_ID)), is(PROVIDER_ID));
-        assertThat(actual.getInt(actual.getColumnIndex(Database.CONNECTION_ENABLED)), is(DISABLED));
-        assertThat(actual.getString(actual.getColumnIndex(Database.CONNECTION_LAST_UPDATED)), is(LegacyFixtures.LEGACY_BANK_UPDATED));
-        assertThat(actual.getInt(actual.getColumnIndex(Database.CONNECTION_SORT_ORDER)), is(LegacyFixtures.LEGACY_BANK_SORT_ORDER));
+        assertThat("Invalid connection id", actual.getLong(actual.getColumnIndex(Database.CONNECTION_ID)), is(LegacyFixtures.LEGACY_BANK_ID));
+        assertThat("Invalid name", actual.getString(actual.getColumnIndex(Database.CONNECTION_NAME)), is(LegacyFixtures.LEGACY_BANK_CUSTOM_NAME));
+        assertThat("Invalid provider id", actual.getString(actual.getColumnIndex(CONNECTION_PROVIDER_ID)), is(PROVIDER_ID));
+        assertThat("Invalid enabled flag", actual.getInt(actual.getColumnIndex(Database.CONNECTION_ENABLED)), is(DISABLED));
+        assertThat("Invalid last updated timestamp", actual.getString(actual.getColumnIndex(Database.CONNECTION_LAST_UPDATED)), is(LegacyFixtures.LEGACY_BANK_UPDATED));
+        assertThat("Invalid sort order", actual.getInt(actual.getColumnIndex(Database.CONNECTION_SORT_ORDER)), is(LegacyFixtures.LEGACY_BANK_SORT_ORDER));
     }
 
     @Test
@@ -102,7 +100,7 @@ public class ConnectionTableCreationTest {
         underTest.onUpgrade(db, 12, 13);
 
         Cursor actual = db.query(Database.CONNECTION_TABLE_NAME, null, null, null, null, null, null);
-        assertThat(actual.getCount(), is(0));
+        assertThat("Invalid bank type are not ignored", actual.getCount(), is(0));
 
     }
 

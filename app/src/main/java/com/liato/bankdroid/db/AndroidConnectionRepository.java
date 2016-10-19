@@ -10,11 +10,8 @@ import com.bankdroid.core.repository.ConnectionEntity;
 import com.bankdroid.core.repository.ConnectionRepository;
 import com.bankdroid.core.repository.TransactionEntity;
 import com.liato.bankdroid.banking.LegacyProviderConfiguration;
-import com.liato.bankdroid.banking.banks.coop.model.web.D;
 
 import net.sf.andhsli.hotspotlogin.SimpleCrypto;
-
-import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.Collection;

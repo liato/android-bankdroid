@@ -19,7 +19,6 @@ package com.liato.bankdroid;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.banking.BankFactory;
-import com.liato.bankdroid.banking.LegacyBankHelper;
 import com.liato.bankdroid.banking.Transaction;
 
 import android.content.Context;
@@ -40,8 +39,6 @@ import java.util.List;
 import static com.liato.bankdroid.banking.LegacyBankHelper.legacyAccountIdOf;
 
 public class TransactionsActivity extends LockableActivity {
-
-    final static String TAG = "TransactionActivity";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

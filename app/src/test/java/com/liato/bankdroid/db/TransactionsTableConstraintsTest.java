@@ -23,11 +23,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 
 import static com.liato.bankdroid.db.Database.ACCOUNTS_TABLE_NAME;
-import static com.liato.bankdroid.db.Database.ACCOUNT_BALANCE;
-import static com.liato.bankdroid.db.Database.ACCOUNT_CONNECTION_ID;
 import static com.liato.bankdroid.db.Database.ACCOUNT_ID;
-import static com.liato.bankdroid.db.Database.CONNECTION_ID;
-import static com.liato.bankdroid.db.Database.CONNECTION_TABLE_NAME;
 import static com.liato.bankdroid.db.Database.TRANSACTIONS_TABLE_NAME;
 import static com.liato.bankdroid.db.Database.TRANSACTION_ACCOUNT_ID;
 import static com.liato.bankdroid.db.Database.TRANSACTION_AMOUNT;
@@ -39,7 +35,6 @@ import static com.liato.bankdroid.db.Database.TRANSACTION_ID;
 import static com.liato.bankdroid.db.Database.TRANSACTION_PENDING;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -94,31 +89,31 @@ public class TransactionsTableConstraintsTest {
 
         Cursor actual = db.query(TRANSACTIONS_TABLE_NAME, null, null, null, null, null, null);
 
-        assertThat(actual.moveToFirst(), is(true));
-        assertThat(actual.getCount(), is(1));
+        assertThat("Transaction not saved in database", actual.moveToFirst(), is(true));
+        assertThat("Invalid number of saved transactions", actual.getCount(), is(1));
 
-        assertThat(
+        assertThat("Invalid transaction id",
                 actual.getString(actual.getColumnIndex(TRANSACTION_ID)),
                 is(VALID_TRANSACTION_ID));
-        assertThat(
+        assertThat("Invalid account id",
                 actual.getString(actual.getColumnIndex(TRANSACTION_ACCOUNT_ID)),
                 is(VALID_TRANSACTION_ACCOUNT_ID));
-        assertThat(
+        assertThat("Invalid amount",
                 actual.getString(actual.getColumnIndex(TRANSACTION_AMOUNT)),
                 is(VALID_TRANSACTION_AMOUNT));
-        assertThat(
+        assertThat("Invalid currency",
                 actual.getString(actual.getColumnIndex(TRANSACTION_CURRENCY)),
                 is(VALID_TRANSACTION_CURRENCY));
-        assertThat(
+        assertThat("Invalid connection id",
                 actual.getLong(actual.getColumnIndex(TRANSACTION_CONNECTION_ID)),
                 is(VALID_TRANSACTION_CONNECTION_ID));
-        assertThat(
+        assertThat("Invalid transaction date",
                 actual.getString(actual.getColumnIndex(TRANSACTION_DATE)),
                 is(VALID_TRANSACTION_DATE));
-        assertThat(
+        assertThat("Invalid description",
                 actual.getString(actual.getColumnIndex(TRANSACTION_DESCRIPTION)),
                 is(VALID_TRANSACTION_DESCRIPTION));
-        assertThat(
+        assertThat("Invalid pending flag",
                 actual.getInt(actual.getColumnIndex(TRANSACTION_PENDING)),
                 is(PENDING_TRANSACTION));
     }
@@ -166,9 +161,11 @@ public class TransactionsTableConstraintsTest {
         db.insertOrThrow(TRANSACTIONS_TABLE_NAME, null, transaction);
 
         Cursor actual = db.query(TRANSACTIONS_TABLE_NAME, null, null, null, null, null, null);
-        assertThat(actual.moveToFirst(), is(true));
+        assertThat("Transaction not saved in database", actual.moveToFirst(), is(true));
 
-        assertThat(actual.getString(actual.getColumnIndex(TRANSACTION_AMOUNT)), is(BigDecimal.ZERO.toPlainString()));
+        assertThat("Invalid default amount",
+                actual.getString(actual.getColumnIndex(TRANSACTION_AMOUNT)),
+                is(BigDecimal.ZERO.toPlainString()));
     }
 
     @Test
@@ -194,19 +191,19 @@ public class TransactionsTableConstraintsTest {
         db.insertOrThrow(TRANSACTIONS_TABLE_NAME, null, transaction);
 
         Cursor actual = db.query(TRANSACTIONS_TABLE_NAME, null, null, null, null, null, null);
-        assertThat(actual.moveToFirst(), is(true));
+        assertThat("Transaction not saved in database", actual.moveToFirst(), is(true));
 
-        assertThat(actual.getInt(actual.getColumnIndex(TRANSACTION_PENDING)), is(NOT_PENDING));
+        assertThat("Invalid default pending flag", actual.getInt(actual.getColumnIndex(TRANSACTION_PENDING)), is(NOT_PENDING));
     }
 
     @Test
     public void  removing_an_account_will_remove_related_transactions() {
         db.insertOrThrow(TRANSACTIONS_TABLE_NAME, null, createValidTransaction());
-        assertThat(rowCountFor(TRANSACTIONS_TABLE_NAME), is(1));
+        assertThat("Invalid number of saved transactions", rowCountFor(TRANSACTIONS_TABLE_NAME), is(1));
 
         db.delete(ACCOUNTS_TABLE_NAME, ACCOUNT_ID + "= ?", new String[]{VALID_TRANSACTION_ACCOUNT_ID});
 
-        assertThat(rowCountFor(TRANSACTIONS_TABLE_NAME), is(0));
+        assertThat("Transactions not deleted", rowCountFor(TRANSACTIONS_TABLE_NAME), is(0));
     }
 
     @Test

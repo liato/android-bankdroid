@@ -73,22 +73,31 @@ public class ConnectionEntity {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         ConnectionEntity that = (ConnectionEntity) o;
 
-        if (id != that.id) return false;
-        if (enabled != that.enabled) return false;
-        if (providerId != null ? !providerId.equals(that.providerId) : that.providerId != null)
+        if (id != that.id) {
             return false;
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (lastUpdated != null ? !lastUpdated.equals(that.lastUpdated) : that.lastUpdated != null)
+        }
+        if (enabled != that.enabled) {
             return false;
-        if (properties != null ? !properties.equals(that.properties) : that.properties != null)
+        }
+        if (providerId != null ? !providerId.equals(that.providerId) : that.providerId != null) {
             return false;
-        return accounts != null ? accounts.equals(that.accounts) : that.accounts == null;
-
+        }
+        if (name != null ? !name.equals(that.name) : that.name != null) {
+            return false;
+        }
+        if (lastUpdated != null ? !lastUpdated.equals(that.lastUpdated) : that.lastUpdated != null) {
+            return false;
+        }
+        return properties != null ? properties.equals(that.properties) : that.properties == null && (accounts != null ? accounts.equals(that.accounts) : that.accounts == null);
     }
 
     @Override

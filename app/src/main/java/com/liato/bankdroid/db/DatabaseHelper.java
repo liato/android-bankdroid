@@ -28,10 +28,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 import timber.log.Timber;
 
-import java.text.SimpleDateFormat;
-
-import static com.liato.bankdroid.db.Database.*;
-
 /**
  * @since 8 jan 2011
  */
@@ -149,7 +145,7 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
                 account.put(Database.ACCOUNT_NOTIFICATIONS_ENABLED, notifications);
                 account.put(Database.ACCOUNT_HIDDEN, hidden);
                 account.put(Database.ACCOUNT_TYPE, LegacyBankHelper.fromLegacyAccountType(type));
-                db.insert(ACCOUNTS_TABLE_NAME, null, account);
+                db.insert(Database.ACCOUNTS_TABLE_NAME, null, account);
             }
             c.close();
         }
@@ -158,7 +154,7 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
 
     private void migrateBanks(SQLiteDatabase db) {
         // TODO migrate lastUpdated to use timestamp
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         db.execSQL(Database.TABLE_CONNECTION);
         Cursor c = db.query(LegacyDatabase.BANK_TABLE_NAME, null, null, null,null,null,null);
@@ -183,7 +179,7 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
                     connection.put(Database.CONNECTION_ENABLED, enabled);
                     connection.put(Database.CONNECTION_LAST_UPDATED, lastUpdated);
                     connection.put(Database.CONNECTION_SORT_ORDER, sortOrder);
-                    db.insertOrThrow(CONNECTION_TABLE_NAME, null, connection);
+                    db.insertOrThrow(Database.CONNECTION_TABLE_NAME, null, connection);
                 }
             }
             c.close();
@@ -220,7 +216,7 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
                 transaction.put(Database.TRANSACTION_CURRENCY, currency);
                 transaction.put(Database.TRANSACTION_DESCRIPTION, description);
                 transaction.put(Database.TRANSACTION_DATE, date);
-                db.insert(TRANSACTIONS_TABLE_NAME, null, transaction);
+                db.insert(Database.TRANSACTIONS_TABLE_NAME, null, transaction);
 
             }
             c.close();
@@ -253,24 +249,24 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
                 long id = c.getLong(c.getColumnIndex(LegacyDatabase.BANK_ID));
 
                 ContentValues usernameProperty = new ContentValues();
-                usernameProperty.put(PROPERTY_CONNECTION_ID, id);
-                usernameProperty.put(PROPERTY_KEY, LegacyProviderConfiguration.USERNAME);
-                usernameProperty.put(PROPERTY_VALUE, c.getString(c.getColumnIndex(LegacyDatabase.BANK_USERNAME)));
-                db.insertOrThrow(PROPERTY_TABLE_NAME, null, usernameProperty);
+                usernameProperty.put(Database.PROPERTY_CONNECTION_ID, id);
+                usernameProperty.put(Database.PROPERTY_KEY, LegacyProviderConfiguration.USERNAME);
+                usernameProperty.put(Database.PROPERTY_VALUE, c.getString(c.getColumnIndex(LegacyDatabase.BANK_USERNAME)));
+                db.insertOrThrow(Database.PROPERTY_TABLE_NAME, null, usernameProperty);
 
                 ContentValues passwordProperty = new ContentValues();
-                passwordProperty.put(PROPERTY_CONNECTION_ID, id);
-                passwordProperty.put(PROPERTY_KEY, LegacyProviderConfiguration.PASSWORD);
-                passwordProperty.put(PROPERTY_VALUE, c.getString(c.getColumnIndex(LegacyDatabase.BANK_PASSWORD)));
-                db.insertOrThrow(PROPERTY_TABLE_NAME, null, passwordProperty);
+                passwordProperty.put(Database.PROPERTY_CONNECTION_ID, id);
+                passwordProperty.put(Database.PROPERTY_KEY, LegacyProviderConfiguration.PASSWORD);
+                passwordProperty.put(Database.PROPERTY_VALUE, c.getString(c.getColumnIndex(LegacyDatabase.BANK_PASSWORD)));
+                db.insertOrThrow(Database.PROPERTY_TABLE_NAME, null, passwordProperty);
 
                 String extras = c.getString(c.getColumnIndex(LegacyDatabase.BANK_EXTRAS));
                 if(extras != null && !extras.isEmpty()) {
                     ContentValues extrasProperty = new ContentValues();
-                    extrasProperty.put(PROPERTY_CONNECTION_ID, id);
-                    extrasProperty.put(PROPERTY_KEY, LegacyProviderConfiguration.EXTRAS);
-                    extrasProperty.put(PROPERTY_VALUE, extras);
-                    db.insertOrThrow(PROPERTY_TABLE_NAME, null, extrasProperty);
+                    extrasProperty.put(Database.PROPERTY_CONNECTION_ID, id);
+                    extrasProperty.put(Database.PROPERTY_KEY, LegacyProviderConfiguration.EXTRAS);
+                    extrasProperty.put(Database.PROPERTY_VALUE, extras);
+                    db.insertOrThrow(Database.PROPERTY_TABLE_NAME, null, extrasProperty);
                 }
             }
             c.close();
@@ -286,9 +282,9 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.execSQL(Database.TABLE_CONNECTION_PROPERTIES);
         db.execSQL("INSERT INTO " + Database.PROPERTY_TABLE_NAME + " SELECT "
-                + PROPERTY_CONNECTION_ID + ","
-                + PROPERTY_KEY + ","
-                + PROPERTY_VALUE
+                + Database.PROPERTY_CONNECTION_ID + ","
+                + Database.PROPERTY_KEY + ","
+                + Database.PROPERTY_VALUE
                 + " FROM " + tempTable);
         db.execSQL("DROP TABLE " + tempTable);
     }

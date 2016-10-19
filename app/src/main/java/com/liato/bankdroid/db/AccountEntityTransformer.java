@@ -4,7 +4,6 @@ import android.content.ContentValues;
 
 import com.bankdroid.core.repository.AccountEntity;
 import com.liato.bankdroid.provider.IAccountTypes;
-import com.liato.bankdroid.provider.IBankTypes;
 
 import java.math.BigDecimal;
 

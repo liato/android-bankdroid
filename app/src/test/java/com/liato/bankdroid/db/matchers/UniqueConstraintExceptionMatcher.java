@@ -7,7 +7,6 @@ import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
 import android.database.sqlite.SQLiteConstraintException;
-import android.text.TextUtils;
 
 public class UniqueConstraintExceptionMatcher extends
         TypeSafeMatcher<SQLiteConstraintException> {

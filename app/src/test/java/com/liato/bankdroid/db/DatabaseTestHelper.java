@@ -51,7 +51,7 @@ public class DatabaseTestHelper {
     private static SQLiteDatabase createTestDatabaseFrom(String path) throws IOException {
         File testDb = File.createTempFile("test",".db");
         if(path != null) {
-            FileUtils.copyURLToFile(DatabaseTestHelper.class.getClassLoader().getResource(path),
+            FileUtils.copyURLToFile(Thread.currentThread().getContextClassLoader().getResource(path),
                     testDb);
         }
         return SQLiteDatabase.openDatabase(testDb.getCanonicalPath(), null, OPEN_READWRITE);

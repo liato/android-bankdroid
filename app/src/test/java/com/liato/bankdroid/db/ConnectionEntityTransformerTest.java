@@ -28,7 +28,7 @@ public class ConnectionEntityTransformerTest {
     @Test
     public void transforming_content_values_to_an_entity_maps_correctly() {
         ConnectionEntity actual = underTest.transform(Fixtures.createValidConnection()).build();
-        assertThat(actual, is(connectionEntity()));
+        assertThat("Incorrect transformation", actual, is(connectionEntity()));
     }
 
     @Test
@@ -37,7 +37,7 @@ public class ConnectionEntityTransformerTest {
         expected.remove(Database.CONNECTION_SORT_ORDER);
 
         ContentValues actual = underTest.transform(connectionEntity());
-        assertThat(actual, is(expected));
+        assertThat("Incorrect content values transformation", actual, is(expected));
     }
 
     private ConnectionEntity connectionEntity() {

@@ -6,7 +6,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.bankdroid.core.repository.ConnectionEntity;
 
-import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,11 +50,11 @@ public class AndroidConnectionRepositoryTest {
     public void deleting_a_connection_will_delete_it_from_the_db() {
         ContentValues expected = Fixtures.createValidConnection();
         db.insertOrThrow(Database.CONNECTION_TABLE_NAME, null, expected);
-        assertThat(rowCount(), is(1));
+        assertThat("Connection not saved in database", rowCount(), is(1));
 
         underTest.delete(expected.getAsLong(Database.CONNECTION_ID));
 
-        assertThat(rowCount(), is(0));
+        assertThat("Connection has not been deleted", rowCount(), is(0));
     }
 
     @Test
@@ -65,22 +64,22 @@ public class AndroidConnectionRepositoryTest {
         db.insertOrThrow(Database.PROPERTY_TABLE_NAME, null,
                 createValidProperty(expectedConnection.getAsLong(Database.CONNECTION_ID))
         );
-        assertThat(rowCount(), is(1));
+        assertThat("Connection not saved in database", rowCount(), is(1));
 
         ConnectionEntity actual = underTest.findById(expectedConnection.getAsLong(Database.CONNECTION_ID));
-        assertThat(actual, is(notNullValue()));
-        assertThat(actual.id(), is(expectedConnection.getAsLong(Database.CONNECTION_ID)));
+        assertThat("Connection not found", actual, is(notNullValue()));
+        assertThat("Wrong connection found", actual.id(), is(expectedConnection.getAsLong(Database.CONNECTION_ID)));
 
         Map<String, String> actualProperties = actual.properties();
-        assertThat(actualProperties.size(), is(1));
-        assertThat(actualProperties.containsKey(EXPECTED_PROPERTY_KEY), is(true));
-        assertThat(actualProperties.get(EXPECTED_PROPERTY_KEY), is(EXPECTED_PROPERTY_VALUE));
+        assertThat("No connection properties found", actualProperties.size(), is(1));
+        assertThat("Does not contain expected key", actualProperties.containsKey(EXPECTED_PROPERTY_KEY), is(true));
+        assertThat("Does not contain expected value", actualProperties.get(EXPECTED_PROPERTY_KEY), is(EXPECTED_PROPERTY_VALUE));
 
     }
 
     @Test
     public void saving_a_connection_will_persist_it_to_the_database() {
-        fail();
+        fail("not implemented");
     }
 
     private ContentValues createValidProperty(long expectedConnectionId) {

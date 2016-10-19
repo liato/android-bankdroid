@@ -72,17 +72,17 @@ public class AccountsTableConstraintsTest {
 
         Cursor actual = db.query(ACCOUNTS_TABLE_NAME, null, null, null, null, null, null);
 
-        assertThat(actual.moveToFirst(), is(true));
-        assertThat(actual.getCount(), is(1));
+        assertThat("Account not saved to database", actual.moveToFirst(), is(true));
+        assertThat("Invalid number of saved accounts",actual.getCount(), is(1));
 
-        assertThat(actual.getString(actual.getColumnIndex(ACCOUNT_ID)), is(Fixtures.VALID_ACCOUNT_ID));
-        assertThat(actual.getLong(actual.getColumnIndex(ACCOUNT_CONNECTION_ID)), is(Fixtures.VALID_ACCOUNT_CONNECTION_ID));
-        assertThat(actual.getString(actual.getColumnIndex(ACCOUNT_TYPE)), is(Fixtures.VALID_ACCOUNT_TYPE));
-        assertThat(actual.getString(actual.getColumnIndex(ACCOUNT_NAME)),is(Fixtures.VALID_ACCOUNT_NAME));
-        assertThat(actual.getString(actual.getColumnIndex(ACCOUNT_BALANCE)),is(Fixtures.VALID_ACCOUNT_BALANCE));
-        assertThat(actual.getString(actual.getColumnIndex(ACCOUNT_CURRENCY)), is(Fixtures.VALID_ACCOUNT_CURRENCY));
-        assertThat(actual.getInt(actual.getColumnIndex(ACCOUNT_HIDDEN)), is(Fixtures.VALID_ACCOUNT_HIDDEN));
-        assertThat(actual.getInt(actual.getColumnIndex(ACCOUNT_NOTIFICATIONS_ENABLED)),is(Fixtures.VALID_ACCOUNT_NOTIFICATIONS));
+        assertThat("Invalid id", actual.getString(actual.getColumnIndex(ACCOUNT_ID)), is(Fixtures.VALID_ACCOUNT_ID));
+        assertThat("Invalid connection id", actual.getLong(actual.getColumnIndex(ACCOUNT_CONNECTION_ID)), is(Fixtures.VALID_ACCOUNT_CONNECTION_ID));
+        assertThat("Invalid type", actual.getString(actual.getColumnIndex(ACCOUNT_TYPE)), is(Fixtures.VALID_ACCOUNT_TYPE));
+        assertThat("Invalid name",actual.getString(actual.getColumnIndex(ACCOUNT_NAME)),is(Fixtures.VALID_ACCOUNT_NAME));
+        assertThat("Invalid balance",actual.getString(actual.getColumnIndex(ACCOUNT_BALANCE)),is(Fixtures.VALID_ACCOUNT_BALANCE));
+        assertThat("Invalid currency",actual.getString(actual.getColumnIndex(ACCOUNT_CURRENCY)), is(Fixtures.VALID_ACCOUNT_CURRENCY));
+        assertThat("Invalid hidden flag", actual.getInt(actual.getColumnIndex(ACCOUNT_HIDDEN)), is(Fixtures.VALID_ACCOUNT_HIDDEN));
+        assertThat("Invalid notifications flag", actual.getInt(actual.getColumnIndex(ACCOUNT_NOTIFICATIONS_ENABLED)),is(Fixtures.VALID_ACCOUNT_NOTIFICATIONS));
     }
 
     @Test
@@ -110,15 +110,15 @@ public class AccountsTableConstraintsTest {
         db.insertOrThrow(ACCOUNTS_TABLE_NAME, null, Fixtures.createValidAccount());
         Cursor savedAccounts = db.query(ACCOUNTS_TABLE_NAME, null, null, null, null, null, null);
 
-        assertThat(savedAccounts.moveToFirst(), is(true));
-        assertThat(savedAccounts.getCount(), is(1));
+        assertThat("Account not saved to database", savedAccounts.moveToFirst(), is(true));
+        assertThat("Invalid number of saved accounts", savedAccounts.getCount(), is(1));
         savedAccounts.close();
 
         db.delete(CONNECTION_TABLE_NAME, CONNECTION_ID + "= ?", new String[]{Long.toString(Fixtures.VALID_ACCOUNT_CONNECTION_ID)});
 
         Cursor actual = db.query(ACCOUNTS_TABLE_NAME, null, null, null, null, null, null);
-        assertThat(actual.moveToFirst(), is(false));
-        assertThat(actual.getCount(), is(0));
+        assertThat("Account not deleted", actual.moveToFirst(), is(false));
+        assertThat("Account not deleted", actual.getCount(), is(0));
     }
 
     @Test
@@ -144,9 +144,9 @@ public class AccountsTableConstraintsTest {
         db.insertOrThrow(ACCOUNTS_TABLE_NAME, null, account);
 
         Cursor actual = db.query(ACCOUNTS_TABLE_NAME, null, null, null, null, null, null);
-        assertThat(actual.moveToFirst(), is(true));
+        assertThat("Account not saved in database", actual.moveToFirst(), is(true));
 
-        assertThat(actual.getString(actual.getColumnIndex(ACCOUNT_BALANCE)), is(BigDecimal.ZERO.toPlainString()));
+        assertThat("Invalid default balance", actual.getString(actual.getColumnIndex(ACCOUNT_BALANCE)), is(BigDecimal.ZERO.toPlainString()));
     }
 
     @Test
@@ -162,9 +162,9 @@ public class AccountsTableConstraintsTest {
         db.insertOrThrow(ACCOUNTS_TABLE_NAME, null, account);
 
         Cursor actual = db.query(ACCOUNTS_TABLE_NAME, null, null, null, null, null, null);
-        assertThat(actual.moveToFirst(), is(true));
+        assertThat("Account not saved in database", actual.moveToFirst(), is(true));
 
-        assertThat(actual.getInt(actual.getColumnIndex(ACCOUNT_HIDDEN)), is(NOT_HIDDEN));
+        assertThat("Invalid default hidden flag", actual.getInt(actual.getColumnIndex(ACCOUNT_HIDDEN)), is(NOT_HIDDEN));
     }
 
     @Test
@@ -185,17 +185,17 @@ public class AccountsTableConstraintsTest {
         db.insertOrThrow(ACCOUNTS_TABLE_NAME, null, account);
 
         Cursor actual = db.query(ACCOUNTS_TABLE_NAME, null, null, null, null, null, null);
-        assertThat(actual.moveToFirst(), is(true));
+        assertThat("Account not saved in database", actual.moveToFirst(), is(true));
 
-        assertThat(actual.getInt(actual.getColumnIndex(ACCOUNT_NOTIFICATIONS_ENABLED)), is(NOTIFICATIONS_ENABLED));
+        assertThat("Invalid default notifications flag", actual.getInt(actual.getColumnIndex(ACCOUNT_NOTIFICATIONS_ENABLED)), is(NOTIFICATIONS_ENABLED));
     }
 
     @Test
     public void adding_an_account_with_an_already_existing_combination_of_account_id_and_connection_id_is_prohibited() {
         db.insertOrThrow(ACCOUNTS_TABLE_NAME, null, Fixtures.createValidAccount());
         Cursor savedAccounts = db.query(ACCOUNTS_TABLE_NAME, null, null, null, null, null, null);
-        assertThat(savedAccounts.moveToFirst(), is(true));
-        assertThat(savedAccounts.getCount(), is(1));
+        assertThat("Account is not saved in database", savedAccounts.moveToFirst(), is(true));
+        assertThat("Invalid number of saved accounts", savedAccounts.getCount(), is(1));
         savedAccounts.close();
 
         exception.expect(SQLiteConstraintException.class);

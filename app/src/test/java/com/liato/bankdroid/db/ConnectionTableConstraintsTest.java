@@ -66,18 +66,18 @@ public class ConnectionTableConstraintsTest {
         db.insertOrThrow(CONNECTION_TABLE_NAME, null, createValidConnection());
         Cursor actual = db.query(CONNECTION_TABLE_NAME, null, null, null, null, null, null);
 
-        assertThat(actual.moveToFirst(), is(true));
-        assertThat(actual.getCount(), is(1));
+        assertThat("Connection not saved in database", actual.moveToFirst(), is(true));
+        assertThat("Invalid number of connections in database", actual.getCount(), is(1));
 
-        assertThat(actual.getLong(actual.getColumnIndex(CONNECTION_ID)), is(VALID_CONNECTION_ID));
-        assertThat(actual.getString(actual.getColumnIndex(CONNECTION_NAME)), is(VALID_CONNECTION_NAME));
-        assertThat(actual.getString(actual.getColumnIndex(CONNECTION_PROVIDER_ID)), is(
+        assertThat("Invalid connection id", actual.getLong(actual.getColumnIndex(CONNECTION_ID)), is(VALID_CONNECTION_ID));
+        assertThat("Invalid connection name", actual.getString(actual.getColumnIndex(CONNECTION_NAME)), is(VALID_CONNECTION_NAME));
+        assertThat("Invalid provider id", actual.getString(actual.getColumnIndex(CONNECTION_PROVIDER_ID)), is(
                 VALID_CONNECTION_PROVIDER_ID));
-        assertThat(actual.getLong(actual.getColumnIndex(CONNECTION_LAST_UPDATED)), is(
+        assertThat("Invalid last updated timestamp", actual.getLong(actual.getColumnIndex(CONNECTION_LAST_UPDATED)), is(
                 VALID_CONNECTION_LAST_UPDATED));
-        assertThat(actual.getLong(actual.getColumnIndex(CONNECTION_SORT_ORDER)), is(
+        assertThat("Invalid sort order", actual.getLong(actual.getColumnIndex(CONNECTION_SORT_ORDER)), is(
                 VALID_CONNECTION_SORT_ORDER));
-        assertThat(actual.getInt(actual.getColumnIndex(CONNECTION_ENABLED)), is(VALID_CONNECTION_DISABLED));
+        assertThat("Invalid enabled flag", actual.getInt(actual.getColumnIndex(CONNECTION_ENABLED)), is(VALID_CONNECTION_DISABLED));
     }
 
     @Test
@@ -110,9 +110,11 @@ public class ConnectionTableConstraintsTest {
         db.insertOrThrow(CONNECTION_TABLE_NAME, null, connection);
         Cursor actual = db.query(CONNECTION_TABLE_NAME, null, null, null, null, null, null);
 
-        assertThat(actual.moveToFirst(), is(true));
-        assertThat(actual.getCount(), is(1));
-        assertThat(actual.getInt(actual.getColumnIndex(CONNECTION_ENABLED)), is(ENABLED));
+        assertThat("Connection not saved in database", actual.moveToFirst(), is(true));
+        assertThat("Invalid number of saved connections", actual.getCount(), is(1));
+        assertThat("Invalid default enabled flag",
+                actual.getInt(actual.getColumnIndex(CONNECTION_ENABLED)),
+                is(ENABLED));
     }
 
     @Test

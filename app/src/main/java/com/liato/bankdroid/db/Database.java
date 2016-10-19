@@ -121,7 +121,7 @@ public class Database {
             .append(ACCOUNTS_TABLE_NAME)
             .append("(")
             .append(ACCOUNT_ID)
-            .append( ",")
+            .append(",")
             .append(ACCOUNT_CONNECTION_ID)
             .append(") ON DELETE CASCADE, ")
             .append("PRIMARY KEY (")

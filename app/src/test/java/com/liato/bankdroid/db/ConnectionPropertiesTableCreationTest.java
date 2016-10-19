@@ -4,8 +4,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.liato.bankdroid.banking.LegacyProviderConfiguration;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +27,6 @@ import static com.liato.bankdroid.db.LegacyFixtures.LEGACY_BANK_PASSWORD;
 import static com.liato.bankdroid.db.LegacyFixtures.LEGACY_BANK_USERNAME;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -56,7 +53,8 @@ public class ConnectionPropertiesTableCreationTest {
         prepareDatabase(withEmptyDatabase());
 
         underTest.onCreate(db);
-        assertThat(dbTestHelper.tableExists(PROPERTY_TABLE_NAME),
+        assertThat("Connection properties table does not exist",
+                dbTestHelper.tableExists(PROPERTY_TABLE_NAME),
                 is(true));
     }
 
@@ -65,7 +63,8 @@ public class ConnectionPropertiesTableCreationTest {
         prepareDatabase(withDatabaseVersion(11));
 
         underTest.onUpgrade(db, 11, 12);
-        assertThat(dbTestHelper.tableExists(PROPERTY_TABLE_NAME),
+        assertThat("Connection properties table does not exist",
+                dbTestHelper.tableExists(PROPERTY_TABLE_NAME),
                 is(true));
     }
 
@@ -76,23 +75,22 @@ public class ConnectionPropertiesTableCreationTest {
         underTest.onUpgrade(db, 11, 12);
 
         Cursor actual = db.query(Database.PROPERTY_TABLE_NAME, null, null, null, null, null, null);
-        assertThat(actual.getCount(), is(3));
+        assertThat("Wrong number of migrated properties", actual.getCount(), is(3));
 
         actual.moveToFirst();
-        assertThat(actual.getLong(actual.getColumnIndex(PROPERTY_CONNECTION_ID)), is(LEGACY_BANK_ID));
-        assertThat(actual.getString(actual.getColumnIndex(PROPERTY_KEY)), is(USERNAME));
-        assertThat(actual.getString(actual.getColumnIndex(PROPERTY_VALUE)), is(LEGACY_BANK_USERNAME));
+        assertThat("Invalid connection id", actual.getLong(actual.getColumnIndex(PROPERTY_CONNECTION_ID)), is(LEGACY_BANK_ID));
+        assertThat("Invalid username key", actual.getString(actual.getColumnIndex(PROPERTY_KEY)), is(USERNAME));
+        assertThat("Invalid username value", actual.getString(actual.getColumnIndex(PROPERTY_VALUE)), is(LEGACY_BANK_USERNAME));
 
         actual.moveToNext();
-        assertThat(actual.getLong(actual.getColumnIndex(PROPERTY_CONNECTION_ID)), is(LEGACY_BANK_ID));
-        assertThat(actual.getString(actual.getColumnIndex(PROPERTY_KEY)), is(PASSWORD));
-        assertThat(actual.getString(actual.getColumnIndex(PROPERTY_VALUE)), is(LEGACY_BANK_PASSWORD));
+        assertThat("Invalid connection id", actual.getLong(actual.getColumnIndex(PROPERTY_CONNECTION_ID)), is(LEGACY_BANK_ID));
+        assertThat("Invalid password key", actual.getString(actual.getColumnIndex(PROPERTY_KEY)), is(PASSWORD));
+        assertThat("Invalid password value", actual.getString(actual.getColumnIndex(PROPERTY_VALUE)), is(LEGACY_BANK_PASSWORD));
 
         actual.moveToNext();
-        assertThat(actual.getLong(actual.getColumnIndex(PROPERTY_CONNECTION_ID)), is(LEGACY_BANK_ID));
-        assertThat(actual.getString(actual.getColumnIndex(PROPERTY_KEY)), is(EXTRAS));
-        assertThat(actual.getString(actual.getColumnIndex(PROPERTY_VALUE)), is(LEGACY_BANK_EXTRAS));
-
+        assertThat("Invalid connection id", actual.getLong(actual.getColumnIndex(PROPERTY_CONNECTION_ID)), is(LEGACY_BANK_ID));
+        assertThat("Invalid extras key", actual.getString(actual.getColumnIndex(PROPERTY_KEY)), is(EXTRAS));
+        assertThat("Invalid extras value", actual.getString(actual.getColumnIndex(PROPERTY_VALUE)), is(LEGACY_BANK_EXTRAS));
     }
 
     @Test
@@ -103,12 +101,12 @@ public class ConnectionPropertiesTableCreationTest {
         underTest.onUpgrade(db, 12, 13);
 
         Cursor actual = db.query(Database.PROPERTY_TABLE_NAME, null, null, null, null, null, null);
-        assertThat(actual.getCount(), is(1));
+        assertThat("Wrong number of migrated properties", actual.getCount(), is(1));
 
         actual.moveToFirst();
-        assertThat(actual.getLong(actual.getColumnIndex(PROPERTY_CONNECTION_ID)), is(LEGACY_BANK_ID));
-        assertThat(actual.getString(actual.getColumnIndex(PROPERTY_KEY)), is(VALID_PROPERTY_KEY));
-        assertThat(actual.getString(actual.getColumnIndex(PROPERTY_VALUE)), is(VALID_PROPERTY_VALUE));
+        assertThat("Invalid connection id", actual.getLong(actual.getColumnIndex(PROPERTY_CONNECTION_ID)), is(LEGACY_BANK_ID));
+        assertThat("Invalid property key", actual.getString(actual.getColumnIndex(PROPERTY_KEY)), is(VALID_PROPERTY_KEY));
+        assertThat("Invalid property value", actual.getString(actual.getColumnIndex(PROPERTY_VALUE)), is(VALID_PROPERTY_VALUE));
     }
 
     private ContentValues legacyProperty() {

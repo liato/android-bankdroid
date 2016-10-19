@@ -15,7 +15,6 @@ import android.database.sqlite.SQLiteDatabase;
 import java.io.IOException;
 import java.math.BigDecimal;
 
-import static com.liato.bankdroid.db.Database.CONNECTION_TABLE_NAME;
 import static com.liato.bankdroid.db.Database.TRANSACTIONS_TABLE_NAME;
 import static com.liato.bankdroid.db.Database.TRANSACTION_DATE;
 import static com.liato.bankdroid.db.Database.TRANSACTION_DESCRIPTION;
@@ -23,7 +22,6 @@ import static com.liato.bankdroid.db.DatabaseTestHelper.withDatabaseVersion;
 import static com.liato.bankdroid.db.DatabaseTestHelper.withEmptyDatabase;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -70,7 +68,8 @@ public class TransactionsTableCreationTest {
         prepareDatabase(withDatabaseVersion(12));
 
         underTest.onUpgrade(db, 12, 13);
-        assertThat(dbTestHelper.tableExists(TRANSACTIONS_TABLE_NAME),
+        assertThat("Transactions table has not been created",
+                dbTestHelper.tableExists(TRANSACTIONS_TABLE_NAME),
                 is(true));
     }
 
@@ -82,17 +81,17 @@ public class TransactionsTableCreationTest {
         underTest.onUpgrade(db, 12, 13);
 
         Cursor actual = db.query(Database.TRANSACTIONS_TABLE_NAME, null, null, null, null, null, null);
-        assertThat(actual.getCount(), is(1));
+        assertThat("Transaction has not been migrated", actual.getCount(), is(1));
 
         actual.moveToFirst();
 
-        assertThat(actual.getLong(actual.getColumnIndex(Database.TRANSACTION_ID)), is(LEGACY_TRANSACTION_ID));
-        assertThat(actual.getString(actual.getColumnIndex(Database.TRANSACTION_ACCOUNT_ID)), is(LegacyFixtures.LEGACY_ACCOUNT_ID));
-        assertThat(actual.getLong(actual.getColumnIndex(Database.TRANSACTION_CONNECTION_ID)), is(LegacyFixtures.LEGACY_BANK_ID));
-        assertThat(actual.getString(actual.getColumnIndex(Database.TRANSACTION_AMOUNT)), is(LEGACY_TRANSACTION_AMOUNT));
-        assertThat(actual.getString(actual.getColumnIndex(Database.TRANSACTION_CURRENCY)), is(LEGACY_TRANSACTION_CURRENCY));
-        assertThat(actual.getString(actual.getColumnIndex(TRANSACTION_DATE)), is(LEGACY_TRANSACTION_DATE));
-        assertThat(actual.getString(actual.getColumnIndex(TRANSACTION_DESCRIPTION)), is(LEGACY_TRANSACTION_DESCRIPTION));
+        assertThat("Invalid transaction id", actual.getLong(actual.getColumnIndex(Database.TRANSACTION_ID)), is(LEGACY_TRANSACTION_ID));
+        assertThat("Invalid account id", actual.getString(actual.getColumnIndex(Database.TRANSACTION_ACCOUNT_ID)), is(LegacyFixtures.LEGACY_ACCOUNT_ID));
+        assertThat("Invalid connection id", actual.getLong(actual.getColumnIndex(Database.TRANSACTION_CONNECTION_ID)), is(LegacyFixtures.LEGACY_BANK_ID));
+        assertThat("Invalid amount", actual.getString(actual.getColumnIndex(Database.TRANSACTION_AMOUNT)), is(LEGACY_TRANSACTION_AMOUNT));
+        assertThat("Invalid currency", actual.getString(actual.getColumnIndex(Database.TRANSACTION_CURRENCY)), is(LEGACY_TRANSACTION_CURRENCY));
+        assertThat("Invalid transaction date", actual.getString(actual.getColumnIndex(TRANSACTION_DATE)), is(LEGACY_TRANSACTION_DATE));
+        assertThat("Invalid description", actual.getString(actual.getColumnIndex(TRANSACTION_DESCRIPTION)), is(LEGACY_TRANSACTION_DESCRIPTION));
     }
 
     private void addLegacyTransaction() {

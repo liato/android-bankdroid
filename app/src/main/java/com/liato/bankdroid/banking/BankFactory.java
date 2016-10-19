@@ -17,21 +17,13 @@
 package com.liato.bankdroid.banking;
 
 import com.liato.bankdroid.banking.exceptions.BankException;
-import com.liato.bankdroid.db.Crypto;
 import com.liato.bankdroid.db.DBAdapter;
-import com.liato.bankdroid.db.Database;
-
-import net.sf.andhsli.hotspotlogin.SimpleCrypto;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.support.annotation.Nullable;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import timber.log.Timber;
 

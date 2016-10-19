@@ -2,7 +2,6 @@ package com.liato.bankdroid.db;
 
 
 import com.liato.bankdroid.banking.LegacyBankHelper;
-import com.liato.bankdroid.provider.IAccountTypes;
 
 import org.junit.After;
 import org.junit.Before;
@@ -17,7 +16,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import java.io.IOException;
 
-import static com.liato.bankdroid.db.Database.ACCOUNTS_TABLE_NAME;
 import static com.liato.bankdroid.db.DatabaseTestHelper.withDatabaseVersion;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -48,7 +46,7 @@ public class AccountsTableCreationTest {
         prepareDatabase(DatabaseTestHelper.withEmptyDatabase());
 
         underTest.onCreate(db);
-        assertThat(dbTestHelper.tableExists(ACCOUNTS_TABLE_NAME),
+        assertThat("Accounts table has not been created", dbTestHelper.tableExists(Database.ACCOUNTS_TABLE_NAME),
                 is(true));
     }
 
@@ -59,7 +57,7 @@ public class AccountsTableCreationTest {
 
         underTest.onUpgrade(db, 12, 13);
         assertThat("Accounts table has not been created",
-                dbTestHelper.tableExists(ACCOUNTS_TABLE_NAME),
+                dbTestHelper.tableExists(Database.ACCOUNTS_TABLE_NAME),
                 is(true));
     }
 
@@ -72,15 +70,15 @@ public class AccountsTableCreationTest {
         underTest.onUpgrade(db, 12, 13);
 
         Cursor actual = db.query(Database.ACCOUNTS_TABLE_NAME, null, null, null, null, null, null);
-        assertThat(actual.getCount(), is(1));
+        assertThat("Invalid number of migrated accounts", actual.getCount(), is(1));
 
         actual.moveToFirst();
-        assertThat(actual.getString(actual.getColumnIndex(Database.ACCOUNT_ID)), is(LegacyFixtures.LEGACY_ACCOUNT_ID));
-        assertThat(actual.getString(actual.getColumnIndex(Database.ACCOUNT_BALANCE)), is(LegacyFixtures.LEGACY_ACCOUNT_BALANCE));
-        assertThat(actual.getString(actual.getColumnIndex(Database.ACCOUNT_CURRENCY)), is(LegacyFixtures.LEGACY_ACCOUNT_CURRENCY));
-        assertThat(actual.getString(actual.getColumnIndex(Database.ACCOUNT_NAME)), is(LegacyFixtures.LEGACY_ACCOUNT_NAME));
-        assertThat(actual.getInt(actual.getColumnIndex(Database.ACCOUNT_HIDDEN)), is(LegacyFixtures.LEGACY_ACCOUNT_HIDDEN));
-        assertThat(actual.getString(actual.getColumnIndex(Database.ACCOUNT_TYPE)), is(VALID_ACCOUNT_TYPE));
+        assertThat("Invalid id", actual.getString(actual.getColumnIndex(Database.ACCOUNT_ID)), is(LegacyFixtures.LEGACY_ACCOUNT_ID));
+        assertThat("Invalid balance", actual.getString(actual.getColumnIndex(Database.ACCOUNT_BALANCE)), is(LegacyFixtures.LEGACY_ACCOUNT_BALANCE));
+        assertThat("Invalid currency", actual.getString(actual.getColumnIndex(Database.ACCOUNT_CURRENCY)), is(LegacyFixtures.LEGACY_ACCOUNT_CURRENCY));
+        assertThat("Invalid name", actual.getString(actual.getColumnIndex(Database.ACCOUNT_NAME)), is(LegacyFixtures.LEGACY_ACCOUNT_NAME));
+        assertThat("Invalid hidden flag", actual.getInt(actual.getColumnIndex(Database.ACCOUNT_HIDDEN)), is(LegacyFixtures.LEGACY_ACCOUNT_HIDDEN));
+        assertThat("Invalid account type", actual.getString(actual.getColumnIndex(Database.ACCOUNT_TYPE)), is(VALID_ACCOUNT_TYPE));
     }
 
     private void addLegacyAccount() {

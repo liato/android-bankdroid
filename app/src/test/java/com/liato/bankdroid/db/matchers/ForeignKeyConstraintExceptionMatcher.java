@@ -11,9 +11,6 @@ public class ForeignKeyConstraintExceptionMatcher extends
 
     private static final String EXPECTED_MESSAGE = "foreign key constraint failed]";
 
-    public ForeignKeyConstraintExceptionMatcher() {
-    }
-
     @Override
     public boolean matchesSafely(SQLiteConstraintException item) {
         return item.getCause() != null &&

@@ -22,7 +22,6 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.compatibility.ConnectionTransformer;
 
 import android.content.Context;
-import android.database.Cursor;
 import java.util.Collection;
 
 public class DBAdapter {
