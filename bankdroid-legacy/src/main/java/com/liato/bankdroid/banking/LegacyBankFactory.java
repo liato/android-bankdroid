@@ -13,7 +13,6 @@ import com.liato.bankdroid.banking.banks.BrummerKF;
 import com.liato.bankdroid.banking.banks.CSN;
 import com.liato.bankdroid.banking.banks.Chalmrest;
 import com.liato.bankdroid.banking.banks.DanskeBank;
-import com.liato.bankdroid.banking.banks.EasyCard;
 import com.liato.bankdroid.banking.banks.Everydaycard;
 import com.liato.bankdroid.banking.banks.FirstCard;
 import com.liato.bankdroid.banking.banks.Hemkop;
@@ -147,8 +146,6 @@ public class LegacyBankFactory {
                 return new Chalmrest(context);
             case IBankTypes.SVENSKASPEL:
                 return new SvenskaSpel(context);
-            case IBankTypes.EASYCARD:
-                return new EasyCard(context);
             case IBankTypes.APPEAKPOKER:
                 return new AppeakPoker(context);
             case IBankTypes.BRUMMER_KF:
@@ -219,7 +216,6 @@ public class LegacyBankFactory {
         banks.add(new Bioklubben(context));
         banks.add(new Chalmrest(context));
         banks.add(new SvenskaSpel(context));
-        banks.add(new EasyCard(context));
         banks.add(new AppeakPoker(context));
         banks.add(new Zidisha(context));
         banks.add(new BetterGlobe(context));
