@@ -71,6 +71,7 @@ if(plugins.hasPlugin('android') || plugins.hasPlugin('com.android.library')) {
         lintOptions {
             abortOnError true
             warningsAsErrors true
+            checkAllWarnings true
 
             // FIXME: This file contains *far* too many disabled checks. Somebody think of the children!
             lintConfig file("${project.rootDir}/config/quality/lint/lint.xml")

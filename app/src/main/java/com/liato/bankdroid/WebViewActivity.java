@@ -47,11 +47,7 @@ import static android.graphics.Color.WHITE;
 
 public class WebViewActivity extends LockableActivity implements OnClickListener {
 
-    private final static String TAG = "WebViewActivity";
-
     private WebView mWebView;
-
-    private final LockableActivity activity = this;
 
     private boolean mFirstPageLoaded = false;
 

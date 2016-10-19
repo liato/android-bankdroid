@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources  xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="version">Version $version by</string>
-    <string name="app_name">Bankdroid</string>
+    <string name="app_name" translatable="false">Bankdroid</string>
     <string name="widget_name_small">Bankdroid (Small)</string>
     <string name="widget_name_large">Bankdroid (Large)</string>
     <string name="about">About</string>
     <string name="accounts_were_not_updated">Balance for the following accounts could not be updated</string>
-    <string name="updating_account_balance">Refreshing account balance...</string>
+    <string name="updating_account_balance">Refreshing account balance…</string>
     <string name="errors_when_updating">Errors while refreshing</string>
-    <string name="logging_in">Signing in...</string>
+    <string name="logging_in">Signing in…</string>
     <string name="could_not_create_account">Could not create account</string>
 	<string name="transparent_background">Transparent background</string>
     <string name="settings">Settings</string>
@@ -21,12 +21,11 @@
     <string name="bank">Bank</string>
     <string name="error_desc">The last update was unsuccessful and updates for this account have been disabled. Make sure you\'ve entered your username and password correctly and press the save button.</string>
 
-    <string name="cancel">CANCEL</string>
     <string name="save">SAVE</string>
 
 	<string name="add_new_account">ADD BANK</string>
 
-	<string name="main_instructions">You have not added any bank accounts yet, press the "Accounts" button in the menu to add a new account.</string>
+	<string name="main_instructions">You have not added any bank accounts yet, press the “Accounts” button in the menu to add a new account.</string>
 	<string name="refresh_balance">REFRESH</string>
 
 	<string name="choose_an_account">Choose an account</string>
@@ -133,6 +132,7 @@
     <string name="menu_hide_hidden">Hide hidden accounts</string>
 
     <string name="tran_desc">No transaction history available for this account.</string>
+	<string name="disabled_refresh_or_edit">The last update was unsuccessful and updates for this account have been disabled. Manually refresh the account to try again or edit the account and check your credentials.</string>
 
     <string name="thanks_to">Thanks to</string>
     <string name="thanks">
@@ -258,8 +258,6 @@
     <string name="lock_example_message">Connect at least four dots.\n
         \nSelect \u201CNext\u201D when you\u2019re ready to draw your own pattern.
     </string>
-	<string name="lock_cancel">Cancel</string>
-	<string name="lock_ok">Ok</string>
 
 	<string name="permission_provider_label">Basic account information and the transaction history</string>
 	<string name="permission_provider_desc">Allows the application to access what banks and accounts are configured in BankDroids. Your Bank credentials are not exposed. Transaction history can also be accessed.</string>

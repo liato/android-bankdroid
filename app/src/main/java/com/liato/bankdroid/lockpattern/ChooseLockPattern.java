@@ -400,8 +400,8 @@ public class ChooseLockPattern extends Activity implements View.OnClickListener 
      * The states of the left footer button.
      */
     enum LeftButtonMode {
-        Cancel(R.string.lock_cancel, true),
-        CancelDisabled(R.string.lock_cancel, false),
+        Cancel(android.R.string.cancel, true),
+        CancelDisabled(android.R.string.cancel, false),
         Retry(R.string.lockpattern_retry_button_text, true),
         RetryDisabled(R.string.lockpattern_retry_button_text, false),
         Gone(ID_EMPTY_MESSAGE, false);
@@ -429,7 +429,7 @@ public class ChooseLockPattern extends Activity implements View.OnClickListener 
         ContinueDisabled(R.string.lockpattern_continue_button_text, false),
         Confirm(R.string.lockpattern_confirm_button_text, true),
         ConfirmDisabled(R.string.lockpattern_confirm_button_text, false),
-        Ok(R.string.lock_ok, true);
+        Ok(android.R.string.ok, true);
 
         final int text;
 

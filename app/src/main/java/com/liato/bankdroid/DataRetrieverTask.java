@@ -45,8 +45,6 @@ import timber.log.Timber;
 
 public class DataRetrieverTask extends AsyncTask<String, String, Void> {
 
-    private final static String TAG = "DataRetrieverTask";
-
     private final ProgressDialog dialog;
 
     private final MainActivity parent;

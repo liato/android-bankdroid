@@ -24,6 +24,7 @@ import com.liato.bankdroid.banking.Transaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,8 +38,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class TransactionsActivity extends LockableActivity {
-
-    final static String TAG = "TransactionActivity";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,6 +69,10 @@ public class TransactionsActivity extends LockableActivity {
         icon.setImageResource(bank.getImageResource());
         List<Transaction> transactions = account.getTransactions();
 
+        if (bank.isDisabled()) {
+            findViewById(R.id.txtDisabledWarning).setVisibility(View.VISIBLE);
+        }
+
         if (!transactions.isEmpty()) {
             Collections.sort(transactions);
             findViewById(R.id.txtTranDesc).setVisibility(View.GONE);
@@ -93,7 +96,7 @@ public class TransactionsActivity extends LockableActivity {
     private void redirectToMain(String errorMessage) {
         final Intent intent = new Intent(this, MainActivity.class);
         ((BankdroidApplication) getApplicationContext())
-                .setApplicationMessage(getString(R.string.error_bank_not_found));
+                .setApplicationMessage(errorMessage);
         startActivity(intent);
     }
 
@@ -101,7 +104,7 @@ public class TransactionsActivity extends LockableActivity {
 
         private LayoutInflater inflater;
 
-        private ArrayList<Object> items = new ArrayList<Object>();
+        private ArrayList<Object> items = new ArrayList<>();
 
         public TransactionsAdapter(List<Transaction> transactions) {
             inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -129,10 +132,10 @@ public class TransactionsActivity extends LockableActivity {
             ((TextView) convertView.findViewById(R.id.txtAmount)).setText(
                     Helpers.formatBalance(transaction.getAmount(), transaction.getCurrency()));
             if (transaction.getAmount().signum() == 1) {
-                ((ImageView) convertView.findViewById(R.id.imgColor))
+                convertView.findViewById(R.id.imgColor)
                         .setBackgroundResource(R.drawable.transaction_positive);
             } else {
-                ((ImageView) convertView.findViewById(R.id.imgColor))
+                convertView.findViewById(R.id.imgColor)
                         .setBackgroundResource(R.drawable.transaction_negative);
             }
             return convertView;
@@ -162,6 +165,7 @@ public class TransactionsActivity extends LockableActivity {
         }
 
         @Override
+        @Nullable
         public View getView(int position, View convertView, ViewGroup parent) {
             Object item = getItem(position);
             if (item == null) {

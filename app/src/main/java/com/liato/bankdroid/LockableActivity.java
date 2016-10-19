@@ -35,7 +35,6 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 
@@ -50,13 +49,6 @@ public class LockableActivity extends ActionBarActivity {
     private LockPatternUtils mLockPatternUtils;
 
     private boolean mHasLoaded = false;
-
-    //    private LinearLayout mTitlebarButtons;
-    private LayoutInflater mInflater;
-//    private ProgressBar mProgressBar;
-
-//    private ImageView mHomeButton;
-//    private View mHomeButtonCont;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

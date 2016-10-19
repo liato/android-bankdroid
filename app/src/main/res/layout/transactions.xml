@@ -16,10 +16,21 @@
         android:layout_below="@id/toolbar" />
 
     <TextView
-        android:id="@+id/txtTranDesc"
+        android:id="@+id/txtDisabledWarning"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/layBankHeader"
+        android:layout_margin="10dp"
+        android:drawableLeft="@drawable/indicator_input_error"
+        android:drawablePadding="10dp"
+        android:text="@string/disabled_refresh_or_edit"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/txtTranDesc"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txtDisabledWarning"
         android:layout_margin="10dp"
         android:text="@string/tran_desc"
         android:visibility="visible" />

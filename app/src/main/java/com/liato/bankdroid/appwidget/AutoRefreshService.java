@@ -75,8 +75,6 @@ public class AutoRefreshService extends Service {
     public final static String BROADCAST_TRANSACTIONS_UPDATED
             = "com.liato.bankdroid.action.TRANSACTIONS";
 
-    private final static String TAG = "AutoRefreshService";
-
     public static void showNotification(final Bank bank, final Account account,
             final BigDecimal diff, Context context) {
 
@@ -189,16 +187,16 @@ public class AutoRefreshService extends Service {
     @Override
     public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
-        handleStart(intent, startId);
+        handleStart();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        handleStart(intent, startId);
+        handleStart();
         return START_NOT_STICKY;
     }
 
-    private void handleStart(Intent intent, int startId) {
+    private void handleStart() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
         if (ni != null &&

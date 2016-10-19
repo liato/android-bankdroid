@@ -30,8 +30,6 @@ import android.preference.PreferenceManager;
 
 public class StartupReceiver extends BroadcastReceiver {
 
-    private final static String TAG = "StartupReceiver";
-
     public static void setAlarm(Context context) {
         PendingIntent alarmSender;
         alarmSender = PendingIntent

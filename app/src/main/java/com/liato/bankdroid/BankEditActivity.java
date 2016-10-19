@@ -81,8 +81,6 @@ public class BankEditActivity extends LockableActivity implements OnItemSelected
     @InjectView(R.id.txtErrorDesc)
     TextView mErrorDescription;
 
-    private final static String TAG = "BankEditActivity";
-
     private Bank SELECTED_BANK;
 
     private long BANKID = -1;
