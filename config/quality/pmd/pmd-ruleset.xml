@@ -110,7 +110,6 @@
         <exclude name="SimplifyStartsWith" />
         <exclude name="SingularField" />
         <exclude name="StdCyclomaticComplexity" />
-        <exclude name="StringInstantiation" />
         <exclude name="SuspiciousConstantFieldName" />
         <exclude name="SwitchDensity" />
         <exclude name="SwitchStmtsShouldHaveDefault" />
@@ -125,7 +124,6 @@
         <exclude name="UnnecessaryWrapperObjectCreation" />
         <exclude name="UnsynchronizedStaticDateFormatter" />
         <exclude name="UnusedLocalVariable" />
-        <exclude name="UnusedPrivateMethod" />
         <exclude name="UseCollectionIsEmpty" />
         <exclude name="UseConcurrentHashMap" />
         <exclude name="UseEqualsToCompareStrings" />

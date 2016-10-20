@@ -14,6 +14,7 @@
     <string name="settings">Settings</string>
     <string name="refresh">Refresh</string>
     <string name="add_account">Add account</string>
+	<string name="loading">Loading…</string>
 
 
     <string name="optional_field">(optional)</string>
@@ -132,10 +133,10 @@
     <string name="menu_hide_hidden">Hide hidden accounts</string>
 
     <string name="tran_desc">No transaction history available for this account.</string>
-	<string name="disabled_refresh_or_edit">The last update was unsuccessful and updates for this account have been disabled. Manually refresh the account to try again or edit the account and check your credentials.</string>
+	<string name="disabled_refresh_or_edit">Our last connection attempt to this bank failed and further updates for this bank have been disabled. Manually refresh the bank to try again or open the settings for this bank and check your credentials.</string>
 
     <string name="thanks_to">Thanks to</string>
-    <string name="thanks">
+    <string name="thanks" translatable="false">
     Wendell Fernandes (Icon)
     \nKingcool (ICA Banken &amp; SEB)
     \ngrief (Länsförsäkringar)

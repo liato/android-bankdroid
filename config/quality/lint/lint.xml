@@ -9,13 +9,11 @@
     <issue id="ClickableViewAccessibility" severity="ignore" />
     <issue id="ContentDescription" severity="ignore" />
     <issue id="DefaultLocale" severity="ignore" />
-    <issue id="Deprecated" severity="ignore" />
     <issue id="ExportedReceiver" severity="ignore" />
     <issue id="GetInstance" severity="ignore" />
     <issue id="GoogleAppIndexingWarning" severity="ignore" />
     <issue id="GradleDependency" severity="ignore" />
     <issue id="GradleDynamicVersion" severity="ignore" />
-    <issue id="HardcodedText" severity="ignore" />
     <issue id="IconDensities" severity="ignore" />
     <issue id="IconDuplicates" severity="ignore" />
     <issue id="IconExpectedSize" severity="ignore" />
@@ -42,7 +40,6 @@
     <issue id="SelectableText" severity="ignore" />
     <issue id="SetJavaScriptEnabled" severity="ignore" />
     <issue id="SimpleDateFormat" severity="ignore" />
-    <issue id="SpUsage" severity="ignore" />
     <issue id="TrulyRandom" severity="ignore" />
     <issue id="UnknownIdInLayout" severity="ignore" />
     <issue id="UnusedAttribute" severity="ignore" />

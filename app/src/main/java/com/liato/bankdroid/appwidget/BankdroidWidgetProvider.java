@@ -166,7 +166,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
 
         //intent = new Intent(context, AccountsActivity.class);
         pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-        views.setOnClickPendingIntent(R.id.imgWarning, pendingIntent);
+        views.setOnClickPendingIntent(R.id.layWidgetContainer, pendingIntent);
 
         intent = new Intent(context, WidgetService.class);
         intent.setAction(AutoRefreshService.BROADCAST_WIDGET_REFRESH);
