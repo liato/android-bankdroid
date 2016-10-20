@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,50 +43,30 @@ public class AccountsAdapter extends BaseAdapter {
 
     public final static int VIEWTYPE_EMPTY = 2;
 
-    SharedPreferences prefs;
+    private final SharedPreferences prefs;
 
     private ArrayList<Bank> banks;
 
-    private Context context;
-
-    private LayoutInflater inflater;
+    private final LayoutInflater inflater;
 
     private boolean showHidden;
 
     public AccountsAdapter(Context context, boolean showHidden) {
-        this.context = context;
-        this.banks = new ArrayList<Bank>();
-        inflater = LayoutInflater.from(this.context);
+        this.banks = new ArrayList<>();
+        inflater = LayoutInflater.from(context);
         this.showHidden = showHidden;
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
-    public void addGroup(Bank bank) {
-        banks.add(bank);
-    }
-
     public void setGroups(ArrayList<Bank> banks) {
         this.banks = banks;
-                /*for (Bank b : this.banks) {
-                    ArrayList<Account> as = b.getAccounts();
-            for (Account a : as) {
-                if (a.isHidden() && !showHidden) {
-                    as.remove(a);
-                }
-
-            }
-        }*/
-    }
-
-    public boolean isShowHidden() {
-        return showHidden;
     }
 
     public void setShowHidden(boolean showHidden) {
         this.showHidden = showHidden;
     }
 
-    public View newBankView(Bank bank, ViewGroup parent, View convertView) {
+    private View newBankView(Bank bank, ViewGroup parent, View convertView) {
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.listitem_accounts_group, parent, false);
         }
@@ -103,16 +84,16 @@ public class AccountsAdapter extends BaseAdapter {
                         bank.getDecimalFormatter(),
                         false));
         icon.setImageResource(bank.getImageResource());
-        ImageView warning = (ImageView) convertView.findViewById(R.id.imgWarning);
+        View warning = convertView.findViewById(R.id.txtDisabledWarningX);
         if (bank.isDisabled()) {
             warning.setVisibility(View.VISIBLE);
         } else {
-            warning.setVisibility(View.INVISIBLE);
+            warning.setVisibility(View.GONE);
         }
         return convertView;
     }
 
-    public View newAccountView(Account account, ViewGroup parent, View convertView) {
+    private View newAccountView(Account account, ViewGroup parent, View convertView) {
         if ((account.isHidden() && !showHidden) || account.getBank().getHideAccounts()) {
             return convertView == null ? inflater.inflate(R.layout.empty, parent, false)
                     : convertView;
@@ -158,6 +139,7 @@ public class AccountsAdapter extends BaseAdapter {
     }
 
     @Override
+    @Nullable
     public Object getItem(int position) {
         if (banks.size() == 0) {
             return null;
@@ -188,26 +170,27 @@ public class AccountsAdapter extends BaseAdapter {
     }
 
     @Override
+    @Nullable
     public View getView(int position, View convertView, ViewGroup parent) {
         Object item = getItem(position);
         if (item == null) {
             return null;
         }
         if (item instanceof Bank) {
-            return newBankView((Bank) item, parent, convertView);
+            return newBankView((Bank)item, parent, convertView);
         } else if (item instanceof Account) {
-            return newAccountView((Account) item, parent, convertView);
+            return newAccountView((Account)item, parent, convertView);
         }
         return null;
     }
 
+    @Override
     public boolean isEnabled(int position) {
         if (getItemViewType(position) == VIEWTYPE_EMPTY) {
             return false;
         }
         return true;
     }
-
 
     @Override
     public int getViewTypeCount() {
@@ -220,8 +203,9 @@ public class AccountsAdapter extends BaseAdapter {
         if (item instanceof Bank) {
             return VIEWTYPE_BANK;
         } else {
-            if ((((Account) item).isHidden() && !showHidden) ||
-                    ((Account) item).getBank().getHideAccounts()) {
+            final Account account = (Account)item;
+            if ((account.isHidden() && !showHidden) ||
+                    account.getBank().getHideAccounts()) {
                 return VIEWTYPE_EMPTY;
             }
         }

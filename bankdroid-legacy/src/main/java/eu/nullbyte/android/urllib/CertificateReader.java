@@ -65,15 +65,4 @@ public class CertificateReader {
         }
         return null;
     }
-
-    private static String byteArrayToHexString(byte[] b) {
-        int len = b.length;
-        String data = new String();
-
-        for (int i = 0; i < len; i++) {
-            data += Integer.toHexString((b[i] >> 4) & 0xf);
-            data += Integer.toHexString(b[i] & 0xf);
-        }
-        return data;
-    }
 }
