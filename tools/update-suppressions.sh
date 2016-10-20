@@ -45,6 +45,22 @@ function set_pmd_suppressions() {
     <exclude-pattern>.*/R.java</exclude-pattern>
     <exclude-pattern>.*/gen/.*</exclude-pattern>
 
+    <rule ref="rulesets/internal/all-java.xml/TooManyStaticImports">
+        <properties>
+            <property name="legalPackages" type="String"
+              description="Allow static imports for following packages."
+              value="org.hamcrest.*|org.junit.*"/>
+            <property name="xpath">
+                <value><![CDATA[
+                    .[count(ImportDeclaration[@Static='true' and
+                    not(
+                        matches(@PackageName, \$legalPackages)
+                    )]) > \$maximumStaticImports]
+                ]]></value>
+            </property>
+        </properties>
+    </rule>
+
     <!-- FIXME: This file should be empty and all violations fixed. Then we will all hug. -->
     <rule ref="rulesets/internal/all-java.xml">
 
