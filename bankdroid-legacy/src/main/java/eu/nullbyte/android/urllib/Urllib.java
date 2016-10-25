@@ -17,6 +17,7 @@
 package eu.nullbyte.android.urllib;
 
 import com.liato.bankdroid.legacy.R;
+import com.liato.bankdroid.utils.ExceptionUtils;
 
 import org.apache.http.ConnectionReuseStrategy;
 import org.apache.http.HttpEntity;
@@ -146,7 +147,11 @@ public class Urllib {
     }
 
     public String open(String url) throws ClientProtocolException, IOException {
-        return this.open(url, new ArrayList<NameValuePair>());
+        try {
+            return this.open(url, new ArrayList<NameValuePair>());
+        } catch (IOException e) {
+            throw ExceptionUtils.bankdroidifyException(e);
+        }
     }
 
     public String post(String url) throws ClientProtocolException, IOException {
@@ -155,7 +160,11 @@ public class Urllib {
 
     public String open(String url, List<NameValuePair> postData)
             throws ClientProtocolException, IOException {
-        return open(url, postData, false);
+        try {
+            return open(url, postData, false);
+        } catch (IOException e) {
+            throw ExceptionUtils.bankdroidifyException(e);
+        }
     }
 
     public String open(String url, List<NameValuePair> postData, boolean forcePost)
@@ -171,7 +180,11 @@ public class Urllib {
             boolean forcePost) throws ClientProtocolException, IOException {
         HttpEntity entity = (postData == null || postData.isEmpty()) && !forcePost ? null
                 : new UrlEncodedFormEntity(postData, this.charset);
-        return openAsHttpResponse(url, entity, forcePost);
+        try {
+            return openAsHttpResponse(url, entity, forcePost);
+        } catch (IOException e) {
+            throw ExceptionUtils.bankdroidifyException(e);
+        }
     }
 
     public HttpResponse openAsHttpResponse(String url, boolean forcePost)
@@ -181,10 +194,14 @@ public class Urllib {
 
     public HttpResponse openAsHttpResponse(String url, HttpEntity entity, boolean forcePost)
             throws ClientProtocolException, IOException {
-        if ((entity == null) && !forcePost) {
-            return openAsHttpResponse(url, entity, HttpMethod.GET);
-        } else {
-            return openAsHttpResponse(url, entity, HttpMethod.POST);
+        try {
+            if ((entity == null) && !forcePost) {
+                return openAsHttpResponse(url, entity, HttpMethod.GET);
+            } else {
+                return openAsHttpResponse(url, entity, HttpMethod.POST);
+            }
+        } catch (IOException e) {
+            throw ExceptionUtils.bankdroidifyException(e);
         }
     }
 
@@ -273,8 +290,12 @@ public class Urllib {
 
     public InputStream openStream(String url, String postData, boolean forcePost)
             throws ClientProtocolException, IOException {
-        return openStream(url, postData != null ? new StringEntity(postData, this.charset) : null,
-                forcePost);
+        try {
+            return openStream(url, postData != null ? new StringEntity(postData, this.charset) : null,
+                    forcePost);
+        } catch (IOException e) {
+            throw ExceptionUtils.bankdroidifyException(e);
+        }
     }
 
     public InputStream openStream(String url, HttpEntity postData, boolean forcePost)
