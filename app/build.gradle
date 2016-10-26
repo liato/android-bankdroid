@@ -7,8 +7,12 @@ buildscript {
     }
 
     dependencies {
-        classpath 'io.fabric.tools:gradle:1.+'
         classpath "org.ajoberstar:gradle-git:1.5.1"
+
+        // The dynamic version here is explicitly recommended by the Crashlytics docs:
+        // https://docs.fabric.io/android/fabric/integration.html#modify-build-gradle
+        //noinspection GradleDynamicVersion
+        classpath 'io.fabric.tools:gradle:1.+'
     }
 }
 apply plugin: 'com.android.application'
@@ -83,7 +87,7 @@ dependencies {
     compile project(':bankdroid-core')
     compile 'com.jakewharton:butterknife:6.1.0'
     compile 'com.jakewharton.timber:timber:4.3.1'
-    compile "com.android.support:appcompat-v7:24.1.1"
+    compile "com.android.support:appcompat-v7:24.2.1"
     compile 'com.google.collections:google-collections:1.0'
     compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
         transitive = true;
