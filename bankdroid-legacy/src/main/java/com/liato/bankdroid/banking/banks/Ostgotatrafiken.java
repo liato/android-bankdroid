@@ -45,9 +45,6 @@ public class Ostgotatrafiken extends Bank {
 
     private static final String NAME_SHORT = "ogt";
 
-    private static final String URL
-            = "https://www.ostgotatrafiken.se/Priser--biljetter/Mina-sidor/Login/";
-
     private static final int BANKTYPE_ID = IBankTypes.OSTGOTATRAFIKEN;
 
     private Pattern reViewState = Pattern.compile(
@@ -75,7 +72,6 @@ public class Ostgotatrafiken extends Bank {
         super.NAME = NAME;
         super.NAME_SHORT = NAME_SHORT;
         super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
     }
 
     public Ostgotatrafiken(String username, String password, Context context) throws BankException,
@@ -90,18 +86,20 @@ public class Ostgotatrafiken extends Bank {
                 R.raw.cert_ostgotatrafiken_login, R.raw.cert_ostgotatrafiken_overview));
 
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
-        postData.add(new BasicNameValuePair("Username", getUsername()));
-        postData.add(new BasicNameValuePair("Password", getPassword()));
-        postData.add(new BasicNameValuePair("Login", "Logga in"));
+        postData.add(new BasicNameValuePair("", "{\"authSource\":10," +
+                                            "\"keepMeLimitedLoggedIn\":true," +
+                                            "\"userName\":\"" + getUsername() + "\"," +
+                                            "\"password\":\"" + getPassword() + "\"," +
+                                            "\"impersonateUserName\":\"\"}"));
 
-        return new LoginPackage(urlopen, postData, response, URL);
+        return new LoginPackage(urlopen, postData, response, "https://www.ostgotatrafiken.se/ajax/Login/Attempt");
     }
 
     @Override
     public Urllib login() throws LoginException, BankException, IOException {
         LoginPackage lp = preLogin();
         response = urlopen.open(lp.getLoginTarget(), lp.getPostData());
-        if (!response.contains("Logga ut")) {
+        if (!response.contains("presentationUserName")) {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         return urlopen;
