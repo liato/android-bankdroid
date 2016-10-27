@@ -1,11 +1,13 @@
 package com.liato.bankdroid.utils;
 
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.CustomEvent;
+import com.liato.bankdroid.BuildConfig;
+
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
-
-import com.crashlytics.android.Crashlytics;
-import com.liato.bankdroid.BuildConfig;
 
 import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
@@ -35,6 +37,13 @@ public class LoggingUtils {
     private static boolean isCrashlyticsEnabled() {
         return EmulatorUtils.RUNNING_ON_ANDROID &&
                 !EmulatorUtils.RUNNING_ON_EMULATOR;
+    }
+
+    public static void logCustom(CustomEvent event) {
+        if (isCrashlyticsEnabled()) {
+            event.putCustomAttribute("App Version", BuildConfig.VERSION_NAME);
+            Answers.getInstance().logCustom(event);
+        }
     }
 
     private static class CrashlyticsTree extends Timber.Tree {

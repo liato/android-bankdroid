@@ -18,23 +18,19 @@ package com.liato.bankdroid.db;
 
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
-import com.liato.bankdroid.banking.LegacyProviderConfiguration;
 import com.liato.bankdroid.banking.Transaction;
-
-import net.sf.andhsli.hotspotlogin.SimpleCrypto;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.Nullable;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-
-import timber.log.Timber;
 
 
 public class DBAdapter {
@@ -169,13 +165,6 @@ public class DBAdapter {
             for(Map.Entry<String,String> property : properties.entrySet()) {
                 String value = property.getValue();
                 if(value != null && !value.isEmpty()) {
-                    if (LegacyProviderConfiguration.PASSWORD.equals(property.getKey())) {
-                        try {
-                            value = SimpleCrypto.encrypt(Crypto.getKey(), bank.getPassword());
-                        } catch (Exception e) {
-                            Timber.e(e, "Could not encrypt password.");
-                        }
-                    }
                     ContentValues propertyValues = new ContentValues();
                     propertyValues.put(Database.PROPERTY_KEY, property.getKey());
                     propertyValues.put(Database.PROPERTY_VALUE, value);
@@ -227,6 +216,7 @@ public class DBAdapter {
         mDb.update("banks", initialValues, "_id=" + bankId, null);
     }
 
+    @Nullable
     public Cursor getBank(String bankId) {
         Cursor c = mDb.query("banks",
                 new String[]{"_id", "balance", "banktype", "disabled",
@@ -238,10 +228,12 @@ public class DBAdapter {
         return c;
     }
 
+    @Nullable
     public Cursor getBank(long bankId) {
         return getBank(Long.toString(bankId));
     }
 
+    @Nullable
     public Cursor getAccount(String id) {
         Cursor c = mDb.query("accounts",
                 new String[]{"id", "balance", "name", "bankid", "acctype", "hidden", "notify",
