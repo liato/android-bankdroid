@@ -6,7 +6,7 @@ public class Database {
 
     static final int DATABASE_VERSION = 12;
 
-    static final String PROPERTY_TABLE_NAME = "connection_properties";
+    public static final String PROPERTY_TABLE_NAME = "connection_properties";
     public static final String PROPERTY_CONNECTION_ID = "connection_id";
     public static final String PROPERTY_KEY = "property";
     public static final String PROPERTY_VALUE = "value";
