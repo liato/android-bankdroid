@@ -395,6 +395,7 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
                     Timber.w(e, "Invalid credentials for bank %s", bank.getShortName());
                     DBAdapter.disable(bank, context);
                 } catch (BankChoiceException e) {
+                    Timber.w(e, "BankChoiceException");
                 } catch (IOException e) {
                     if (NetworkUtils.isInternetAvailable()) {
                         Timber.e(e, "Could not update bank %s", bank.getShortName());

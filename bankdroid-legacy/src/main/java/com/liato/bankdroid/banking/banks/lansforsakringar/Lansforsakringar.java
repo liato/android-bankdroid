@@ -130,10 +130,9 @@ public class Lansforsakringar extends Bank {
             try {
                 is.close();
             } catch(IOException e) {
-                // Ignore
+                Timber.w(e, "Closing JSON stream failed");
             }
         }
-
     }
 
     private <T> T readJsonValue(String url, String postData, Class<T> valueType)
@@ -235,8 +234,7 @@ public class Lansforsakringar extends Bank {
             }
             account.setTransactions(transactions);
         } catch (BankException e) {
-            // No transactions for account if this fails.
-            // readJsonValue will print the stack trace
+            Timber.e(e, "Failed updating Länsförsäkringar transactions");
         }
 
         super.updateComplete();

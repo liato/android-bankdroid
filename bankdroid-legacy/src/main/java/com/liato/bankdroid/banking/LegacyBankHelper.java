@@ -6,6 +6,8 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+import timber.log.Timber;
+
 public class LegacyBankHelper {
 
     private static Map<String, Integer> legacyProviderReferences;
@@ -39,7 +41,7 @@ public class LegacyBankHelper {
                 references.put(legacyId, reference);
                 legacyIds.put(reference, legacyId);
             } catch(IllegalAccessException e) {
-                //TODO log if provider could not be mapped.
+                Timber.e(e, "Provider could not be mapped");
             }
         }
         legacyProviderReferences = legacyIds;

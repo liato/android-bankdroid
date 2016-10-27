@@ -16,6 +16,7 @@
 
 package eu.nullbyte.android.urllib;
 
+import com.liato.bankdroid.legacy.BuildConfig;
 import com.liato.bankdroid.legacy.R;
 import com.liato.bankdroid.utils.ExceptionUtils;
 
@@ -65,8 +66,6 @@ import org.apache.http.util.EntityUtils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.preference.PreferenceManager;
@@ -396,22 +395,12 @@ public class Urllib {
 
     private String createUserAgentString() {
         String appName = mContext.getString(R.string.app_name);
-        String packageName = "";
-        String appVersion = "";
-
-        try {
-            PackageInfo packageInfo = mContext.getPackageManager()
-                    .getPackageInfo(mContext.getPackageName(), PackageManager.GET_CONFIGURATIONS);
-            packageName = packageInfo.packageName;
-            appVersion = packageInfo.versionName;
-        } catch (PackageManager.NameNotFoundException ignore) {
-        }
 
         Configuration config = mContext.getResources().getConfiguration();
         return String
                 .format("%1$s/%2$s (%3$s; U; Android %4$s; %5$s-%6$s; %10$s Build/%7$s; %8$s) %9$s %10$s"
                         , appName
-                        , appVersion
+                        , BuildConfig.VERSION_NAME
                         , System.getProperty("os.name", "Linux")
                         , Build.VERSION.RELEASE
                         , config.locale.getLanguage().toLowerCase()

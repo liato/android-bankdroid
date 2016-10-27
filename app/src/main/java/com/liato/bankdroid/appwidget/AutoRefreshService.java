@@ -394,6 +394,7 @@ public class AutoRefreshService extends Service {
                     refreshWidgets = true;
                     db.disableBank(bank.getDbId());
                 } catch (BankChoiceException e) {
+                    Timber.w(e, "BankChoiceException");
                 } catch (Exception e) {
                     Timber.e(e, "An unexpected error occurred while updating bank %s", bank.getShortName());
                 }

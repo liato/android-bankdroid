@@ -42,6 +42,7 @@ import java.util.List;
 
 import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
+import timber.log.Timber;
 
 public class Jojo extends Bank {
 
@@ -141,6 +142,7 @@ public class Jojo extends Bank {
             }
         } catch (IOException e) {
             // Ignore and defaults to zero
+            Timber.w(e, "Getting Jojo card balance failed");
         }
         return BigDecimal.ZERO;
     }

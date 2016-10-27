@@ -39,7 +39,6 @@
         <exclude name="AssignmentToNonFinalStatic" />
         <exclude name="AtLeastOneConstructor" />
         <exclude name="AvoidCatchingGenericException" />
-        <exclude name="AvoidCatchingNPE" />
         <exclude name="AvoidConstantsInterface" />
         <exclude name="AvoidDecimalLiteralsInBigDecimalConstructor" />
         <exclude name="AvoidDeeplyNestedIfStmts" />
@@ -69,7 +68,6 @@
         <exclude name="DataflowAnomalyAnalysis" />
         <exclude name="DefaultPackage" />
         <exclude name="DoNotUseThreads" />
-        <exclude name="EmptyCatchBlock" />
         <exclude name="EmptyIfStmt" />
         <exclude name="EmptyMethodInAbstractClassShouldBeAbstract" />
         <exclude name="ExcessiveClassLength" />

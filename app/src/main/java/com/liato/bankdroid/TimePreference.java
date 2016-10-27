@@ -8,6 +8,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TimePicker;
 
+import timber.log.Timber;
+
 public class TimePreference extends DialogPreference {
 
     private int lastValue = 0;
@@ -64,6 +66,7 @@ public class TimePreference extends DialogPreference {
             try {
                 val = Integer.parseInt(defaultValue.toString());
             } catch (NumberFormatException e) {
+                Timber.e(e, "TimePreference's defaultValue is not a number");
             }
         }
 
