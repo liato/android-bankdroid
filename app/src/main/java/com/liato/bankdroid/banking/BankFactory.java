@@ -99,7 +99,7 @@ public class BankFactory {
                 }
                 banks.add(bank);
             } catch (BankException e) {
-                //e.printStackTrace();
+                Timber.w(e, "BankFactory.banksFromDb()");
             }
         }
         c.close();
@@ -168,7 +168,8 @@ public class BankFactory {
                 account.setAliasfor(c.getString(c.getColumnIndex("aliasfor")));
                 accounts.add(account);
             } catch (ArrayIndexOutOfBoundsException e) {
-                // Attempted to load an account without and ID, probably an old Avanza account.
+                // Probably an old Avanza account
+                Timber.w(e, "Attempted to load an account without an ID: %d", bankId);
             }
         }
         c.close();

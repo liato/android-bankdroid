@@ -46,6 +46,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 
+import timber.log.Timber;
+
 public class CertPinningSSLSocketFactory extends SSLSocketFactory {
 
     private SSLContext sslcontext = null;
@@ -133,7 +135,9 @@ public class CertPinningSSLSocketFactory extends SSLSocketFactory {
             // close the socket before re-throwing the exception
             try {
                 sslsock.close();
-            } catch (Exception x) { /*ignore*/ }
+            } catch (Exception e) {
+                Timber.w(e, "Error closing SSL socket (ignored)");
+            }
             throw iox;
         }
         return sslsock;

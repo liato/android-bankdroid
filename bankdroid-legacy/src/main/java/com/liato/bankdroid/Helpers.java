@@ -142,7 +142,7 @@ public class Helpers {
                     .getMethod("overridePendingTransition", int.class, int.class);
             method.invoke(activity, in, out);
         } catch (Exception e) {
-            // Can't change animation, so do nothing
+            Timber.w(e, "Can't change animation, so do nothing");
         }
     }
 
