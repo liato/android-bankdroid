@@ -1,5 +1,8 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
+Not yet released
+* Bioklubben: Use https. It's secure and http page no longer exists.
+
 v1.9.11 (2016-10-26)
 * Warn about disabled banks in the transactions list
 * Show warning text about disabled banks in the main activity

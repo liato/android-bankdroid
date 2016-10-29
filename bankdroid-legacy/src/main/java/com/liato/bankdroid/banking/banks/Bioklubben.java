@@ -39,6 +39,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import eu.nullbyte.android.urllib.CertificateReader;
 import eu.nullbyte.android.urllib.Urllib;
 
 public class Bioklubben extends Bank {
@@ -47,7 +48,7 @@ public class Bioklubben extends Bank {
 
     private static final String NAME_SHORT = "bioklubben";
 
-    private static final String URL = "http://bioklubben.sf.se/Start.aspx";
+    private static final String URL = "https://bioklubben.sf.se/Start.aspx";
 
     private static final int BANKTYPE_ID = Bank.BIOKLUBBEN;
 
@@ -76,9 +77,9 @@ public class Bioklubben extends Bank {
 
     @Override
     protected LoginPackage preLogin() throws BankException, IOException {
-        urlopen = new Urllib(context);
+        urlopen = new Urllib(context, CertificateReader.getCertificates(context, R.raw.cert_bioklubben));
         urlopen.setAllowCircularRedirects(true);
-        response = urlopen.open("http://bioklubben.sf.se/Start.aspx");
+        response = urlopen.open(URL);
 
         Document d = Jsoup.parse(response);
         Element e = d.getElementById("__VIEWSTATE");
@@ -109,7 +110,7 @@ public class Bioklubben extends Bank {
         postData.add(
                 new BasicNameValuePair("ctl00$ContentPlaceHolder1$LoginUserControl$PasswordTextBox",
                         getPassword()));
-        return new LoginPackage(urlopen, postData, response, "http://bioklubben.sf.se/Start.aspx");
+        return new LoginPackage(urlopen, postData, response, URL);
     }
 
     public Urllib login() throws LoginException, BankException, IOException {
@@ -129,7 +130,7 @@ public class Bioklubben extends Bank {
         }
         urlopen = login();
         Document d = Jsoup.parse(urlopen.open(
-                "http://bioklubben.sf.se/MyPurchases.aspx?ParentTreeID=1&TreeID=1"));
+                "https://bioklubben.sf.se/MyPurchases.aspx?ParentTreeID=1&TreeID=1"));
         Element e = d.getElementById("ctl00_ContentPlaceHolder1_BonusPointsLabel");
         if (e == null) {
             throw new BankException(
