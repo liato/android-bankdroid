@@ -105,33 +105,38 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
 
         // Add username, password and extras fields to properties table.
         Cursor c = db.query(tempTable, null, null, null,null,null,null);
-        if (!(c == null || c.isClosed() || (c.isBeforeFirst() && c.isAfterLast()))) {
-            while (!c.isLast() && !c.isAfterLast()) {
-                c.moveToNext();
-                long id = c.getLong(c.getColumnIndex(LegacyDatabase.BANK_ID));
+        try {
+            if (!(c == null || c.isClosed() || (c.isBeforeFirst() && c.isAfterLast()))) {
+                while (!c.isLast() && !c.isAfterLast()) {
+                    c.moveToNext();
+                    long id = c.getLong(c.getColumnIndex(LegacyDatabase.BANK_ID));
 
-                ContentValues usernameProperty = new ContentValues();
-                usernameProperty.put(PROPERTY_CONNECTION_ID, id);
-                usernameProperty.put(PROPERTY_KEY, LegacyProviderConfiguration.USERNAME);
-                usernameProperty.put(PROPERTY_VALUE, c.getString(c.getColumnIndex(LegacyDatabase.BANK_USERNAME)));
-                db.insert(PROPERTY_TABLE_NAME, null, usernameProperty);
+                    ContentValues usernameProperty = new ContentValues();
+                    usernameProperty.put(PROPERTY_CONNECTION_ID, id);
+                    usernameProperty.put(PROPERTY_KEY, LegacyProviderConfiguration.USERNAME);
+                    usernameProperty.put(PROPERTY_VALUE, c.getString(c.getColumnIndex(LegacyDatabase.BANK_USERNAME)));
+                    db.insert(PROPERTY_TABLE_NAME, null, usernameProperty);
 
-                ContentValues passwordProperty = new ContentValues();
-                passwordProperty.put(PROPERTY_CONNECTION_ID, id);
-                passwordProperty.put(PROPERTY_KEY, LegacyProviderConfiguration.PASSWORD);
-                passwordProperty.put(PROPERTY_VALUE, c.getString(c.getColumnIndex(LegacyDatabase.BANK_PASSWORD)));
-                db.insert(PROPERTY_TABLE_NAME, null, passwordProperty);
+                    ContentValues passwordProperty = new ContentValues();
+                    passwordProperty.put(PROPERTY_CONNECTION_ID, id);
+                    passwordProperty.put(PROPERTY_KEY, LegacyProviderConfiguration.PASSWORD);
+                    passwordProperty.put(PROPERTY_VALUE, c.getString(c.getColumnIndex(LegacyDatabase.BANK_PASSWORD)));
+                    db.insert(PROPERTY_TABLE_NAME, null, passwordProperty);
 
-                String extras = c.getString(c.getColumnIndex(LegacyDatabase.BANK_EXTRAS));
-                if(extras != null && !extras.isEmpty()) {
-                    ContentValues extrasProperty = new ContentValues();
-                    extrasProperty.put(PROPERTY_CONNECTION_ID, id);
-                    extrasProperty.put(PROPERTY_KEY, LegacyProviderConfiguration.EXTRAS);
-                    extrasProperty.put(PROPERTY_VALUE, extras);
-                    db.insert(PROPERTY_TABLE_NAME, null, extrasProperty);
+                    String extras = c.getString(c.getColumnIndex(LegacyDatabase.BANK_EXTRAS));
+                    if (extras != null && !extras.isEmpty()) {
+                        ContentValues extrasProperty = new ContentValues();
+                        extrasProperty.put(PROPERTY_CONNECTION_ID, id);
+                        extrasProperty.put(PROPERTY_KEY, LegacyProviderConfiguration.EXTRAS);
+                        extrasProperty.put(PROPERTY_VALUE, extras);
+                        db.insert(PROPERTY_TABLE_NAME, null, extrasProperty);
+                    }
                 }
             }
-            c.close();
+        } finally {
+            if (c != null) {
+                c.close();
+            }
         }
         db.execSQL("DROP TABLE " + tempTable);
     }

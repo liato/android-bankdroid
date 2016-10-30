@@ -64,6 +64,13 @@ function set_pmd_suppressions() {
         </properties>
     </rule>
 
+    <!-- Add Cursor to the classes that need closing -->
+    <rule ref="rulesets/internal/all-java.xml/CloseResource">
+        <properties>
+            <property name="types" value="Connection,Statement,ResultSet,Cursor" />
+        </properties>
+    </rule>
+
     <!-- FIXME: This file should be empty and all violations fixed. Then we will all hug. -->
     <rule ref="rulesets/internal/all-java.xml">
 

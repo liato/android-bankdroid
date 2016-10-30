@@ -84,10 +84,10 @@ public class BankFactory {
         ArrayList<Bank> banks = new ArrayList<>();
         DBAdapter db = new DBAdapter(context);
         Cursor c = db.fetchBanks();
-        if (c == null) {
-            return banks;
-        }
         try {
+            if (c == null || c.getCount() == 0) {
+                return banks;
+            }
             while (!c.isLast() && !c.isAfterLast()) {
                 c.moveToNext();
                 try {
@@ -109,7 +109,9 @@ public class BankFactory {
                 }
             }
         } finally {
-            c.close();
+            if (c != null) {
+                c.close();
+            }
         }
         return banks;
     }
@@ -118,38 +120,50 @@ public class BankFactory {
     public static Account accountFromDb(Context context, String accountId,
             boolean loadTransactions) {
         DBAdapter db = new DBAdapter(context);
-        Cursor c = db.getAccount(accountId);
+        Cursor ac = db.getAccount(accountId);
 
-        if (c == null || c.isClosed() || (c.isBeforeFirst() && c.isAfterLast())) {
-            return null;
+        Account account;
+        try {
+            if (ac == null || ac.isClosed() || (ac.isBeforeFirst() && ac.isAfterLast())) {
+                return null;
+            }
+
+            account = new Account(ac.getString(ac.getColumnIndex("name")),
+                    new BigDecimal(ac.getString(ac.getColumnIndex("balance"))),
+                    ac.getString(ac.getColumnIndex("id")).split("_", 2)[1],
+                    ac.getLong(ac.getColumnIndex("bankid")),
+                    ac.getInt(ac.getColumnIndex("acctype")));
+            account.setHidden(ac.getInt(ac.getColumnIndex("hidden")) == 1);
+            account.setNotify(ac.getInt(ac.getColumnIndex("notify")) == 1);
+            account.setCurrency(ac.getString(ac.getColumnIndex("currency")));
+            account.setAliasfor(ac.getString(ac.getColumnIndex("aliasfor")));
+        } finally {
+            if (ac != null) {
+                ac.close();
+            }
         }
 
-        Account account = new Account(c.getString(c.getColumnIndex("name")),
-                new BigDecimal(c.getString(c.getColumnIndex("balance"))),
-                c.getString(c.getColumnIndex("id")).split("_", 2)[1],
-                c.getLong(c.getColumnIndex("bankid")),
-                c.getInt(c.getColumnIndex("acctype")));
-        account.setHidden(c.getInt(c.getColumnIndex("hidden")) == 1);
-        account.setNotify(c.getInt(c.getColumnIndex("notify")) == 1);
-        account.setCurrency(c.getString(c.getColumnIndex("currency")));
-        account.setAliasfor(c.getString(c.getColumnIndex("aliasfor")));
-        c.close();
         if (loadTransactions) {
             ArrayList<Transaction> transactions = new ArrayList<>();
             String fromAccount = accountId;
             if (account.getAliasfor() != null && account.getAliasfor().length() > 0) {
                 fromAccount = Long.toString(account.getBankDbId()) + "_" + account.getAliasfor();
             }
-            c = db.fetchTransactions(fromAccount);
-            if (!(c == null || c.isClosed() || (c.isBeforeFirst() && c.isAfterLast()))) {
-                while (!c.isLast() && !c.isAfterLast()) {
-                    c.moveToNext();
-                    transactions.add(new Transaction(c.getString(c.getColumnIndex("transdate")),
-                            c.getString(c.getColumnIndex("btransaction")),
-                            new BigDecimal(c.getString(c.getColumnIndex("amount"))),
-                            c.getString(c.getColumnIndex("currency"))));
+            Cursor tc = db.fetchTransactions(fromAccount);
+            try {
+                if (!(tc == null || tc.isClosed() || (tc.isBeforeFirst() && tc.isAfterLast()))) {
+                    while (!tc.isLast() && !tc.isAfterLast()) {
+                        tc.moveToNext();
+                        transactions.add(new Transaction(tc.getString(tc.getColumnIndex("transdate")),
+                                tc.getString(tc.getColumnIndex("btransaction")),
+                                new BigDecimal(tc.getString(tc.getColumnIndex("amount"))),
+                                tc.getString(tc.getColumnIndex("currency"))));
+                    }
                 }
-                c.close();
+            } finally {
+                if (tc != null) {
+                    tc.close();
+                }
             }
             account.setTransactions(transactions);
         }
@@ -160,10 +174,10 @@ public class BankFactory {
         ArrayList<Account> accounts = new ArrayList<>();
         DBAdapter db = new DBAdapter(context);
         Cursor c = db.fetchAccounts(bankId);
-        if (c == null) {
-            return accounts;
-        }
         try {
+            if (c == null || c.getCount() == 0) {
+                return accounts;
+            }
             while (!c.isLast() && !c.isAfterLast()) {
                 c.moveToNext();
                 try {
@@ -183,7 +197,9 @@ public class BankFactory {
                 }
             }
         } finally {
-            c.close();
+            if (c != null) {
+                c.close();
+            }
         }
         return accounts;
     }
@@ -193,10 +209,10 @@ public class BankFactory {
         Map<String, String> decryptedProperties = new HashMap<>();
         DBAdapter db = new DBAdapter(context);
         Cursor c = db.fetchProperties(Long.toString(bankId));
-        if(c == null) {
-            return properties;
-        }
         try {
+            if (c == null || c.getCount() == 0) {
+                return properties;
+            }
             while (!c.isLast() && !c.isAfterLast()) {
                 c.moveToNext();
                 String key = c.getString(c.getColumnIndex(Database.PROPERTY_KEY));
@@ -214,7 +230,9 @@ public class BankFactory {
                 properties.put(key, value);
             }
         } finally {
-            c.close();
+          if (c != null) {
+              c.close();
+          }
         }
 
         storeDecryptedProperties(context, bankId, decryptedProperties);
