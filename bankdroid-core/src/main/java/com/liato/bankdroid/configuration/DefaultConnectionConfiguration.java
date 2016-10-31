@@ -8,19 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public enum DefaultConnectionConfiguration {
-
-    INSTANCE;
+public class DefaultConnectionConfiguration {
 
     public static final String NAME = "provider.configuration.name";
 
-    private List<Field> configuration;
+    private final static List<Field> configuration = createConfiguration();
 
-    DefaultConnectionConfiguration() {
-        configuration = createConfiguration();
-    }
-
-    private List<Field> createConfiguration() {
+    private static List<Field> createConfiguration() {
         List<Field> configuration = new ArrayList<>();
         configuration.add(new FieldBuilder(NAME, ResourceBundle.getBundle("i18n.application"))
                 .placeholder("")
@@ -30,6 +24,6 @@ public enum DefaultConnectionConfiguration {
     }
 
     public static List<Field> fields() {
-        return INSTANCE.configuration;
+        return configuration;
     }
 }

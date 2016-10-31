@@ -36,8 +36,6 @@ public class ChooseLockPatternExample extends Activity implements View.OnClickLi
 
     private View mSkipButton;
 
-    private View mImageView;
-
     private AnimationDrawable mAnimation;
 
     private Runnable mRunnable = new Runnable() {
@@ -94,10 +92,10 @@ public class ChooseLockPatternExample extends Activity implements View.OnClickLi
         mSkipButton = findViewById(R.id.skip_button);
         mSkipButton.setOnClickListener(this);
 
-        mImageView = (ImageView) findViewById(R.id.lock_anim);
-        mImageView.setBackgroundResource(R.drawable.lock_anim);
-        mImageView.setOnClickListener(this);
-        mAnimation = (AnimationDrawable) mImageView.getBackground();
+        View imageView = (ImageView) findViewById(R.id.lock_anim);
+        imageView.setBackgroundResource(R.drawable.lock_anim);
+        imageView.setOnClickListener(this);
+        mAnimation = (AnimationDrawable) imageView.getBackground();
     }
 
     protected void startAnimation(final AnimationDrawable animation) {

@@ -106,7 +106,6 @@
         <exclude name="SimpleDateFormatNeedsLocale" />
         <exclude name="SimplifyBooleanReturns" />
         <exclude name="SimplifyStartsWith" />
-        <exclude name="SingularField" />
         <exclude name="StdCyclomaticComplexity" />
         <exclude name="SuspiciousConstantFieldName" />
         <exclude name="SwitchDensity" />

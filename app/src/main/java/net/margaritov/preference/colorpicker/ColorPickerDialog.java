@@ -36,8 +36,6 @@ public class ColorPickerDialog
 
     private ColorPickerView mColorPicker;
 
-    private ColorPickerPanelView mOldColor;
-
     private ColorPickerPanelView mNewColor;
 
     private OnColorChangedListener mListener;
@@ -72,20 +70,20 @@ public class ColorPickerDialog
         setTitle(R.string.dialog_color_picker);
 
         mColorPicker = (ColorPickerView) layout.findViewById(R.id.color_picker_view);
-        mOldColor = (ColorPickerPanelView) layout.findViewById(R.id.old_color_panel);
+        ColorPickerPanelView oldColor = (ColorPickerPanelView) layout.findViewById(R.id.old_color_panel);
         mNewColor = (ColorPickerPanelView) layout.findViewById(R.id.new_color_panel);
 
-        ((LinearLayout) mOldColor.getParent()).setPadding(
+        ((LinearLayout) oldColor.getParent()).setPadding(
                 Math.round(mColorPicker.getDrawingOffset()),
                 0,
                 Math.round(mColorPicker.getDrawingOffset()),
                 0
         );
 
-        mOldColor.setOnClickListener(this);
+        oldColor.setOnClickListener(this);
         mNewColor.setOnClickListener(this);
         mColorPicker.setOnColorChangedListener(this);
-        mOldColor.setColor(color);
+        oldColor.setColor(color);
         mColorPicker.setColor(color, true);
 
     }
