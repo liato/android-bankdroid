@@ -80,8 +80,6 @@ public class Coop extends Bank {
 
     private ObjectMapper mObjectMapper;
 
-    private String response;
-
     public Coop(Context context) {
         super(context, R.drawable.logo_coop);
 
@@ -141,7 +139,7 @@ public class Coop extends Bank {
 
         login();
 
-        response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/Mina-poang/");
+        String response = urlopen.open("https://www.coop.se/Mina-sidor/Oversikt/Mina-poang/");
         Document dResponse = Jsoup.parse(response);
         Account poang = new Account("\u2014  Poäng",
                 Helpers.parseBalance(dResponse.select(".Grid-cell--1 p").text()),

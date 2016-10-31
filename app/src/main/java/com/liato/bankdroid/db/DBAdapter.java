@@ -35,8 +35,6 @@ import java.util.Map;
 
 public class DBAdapter {
 
-    private DatabaseHelper mDbHelper;
-
     private SQLiteDatabase mDb;
 
     /**
@@ -46,8 +44,8 @@ public class DBAdapter {
      * @param ctx the Context within which to work
      */
     public DBAdapter(Context ctx) {
-        mDbHelper = DatabaseHelper.getHelper(ctx);
-        mDb = mDbHelper.getWritableDatabase();
+        DatabaseHelper dbHelper = DatabaseHelper.getHelper(ctx);
+        mDb = dbHelper.getWritableDatabase();
     }
 
     /**
