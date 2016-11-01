@@ -4,6 +4,8 @@ import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 import com.liato.bankdroid.BuildConfig;
+import com.liato.bankdroid.banking.Account;
+import com.liato.bankdroid.banking.Bank;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -40,9 +42,41 @@ public class LoggingUtils {
     }
 
     public static void logCustom(CustomEvent event) {
-        if (isCrashlyticsEnabled()) {
-            event.putCustomAttribute("App Version", BuildConfig.VERSION_NAME);
-            Answers.getInstance().logCustom(event);
+        if (!isCrashlyticsEnabled()) {
+            return;
+        }
+
+        event.putCustomAttribute("App Version", BuildConfig.VERSION_NAME);
+        Answers.getInstance().logCustom(event);
+    }
+
+    public static void logDisabledBank(Bank bank) {
+        if (!isCrashlyticsEnabled()) {
+            return;
+        }
+
+        logCustom(new CustomEvent("Disabled Bank").
+                putCustomAttribute("Name", bank.getDisplayName()));
+    }
+
+    public static void logBankUpdate(Bank bank, boolean withTransactions) {
+        if (!isCrashlyticsEnabled()) {
+            return;
+        }
+
+        logCustom(new CustomEvent("Bank Updated").
+                putCustomAttribute("Name", bank.getDisplayName()).
+                putCustomAttribute("With Transactions", Boolean.toString(withTransactions)));
+
+        boolean hasTransactions = false;
+        for (Account account : bank.getAccounts()) {
+            if (account.getTransactions() != null && !account.getTransactions().isEmpty()) {
+                hasTransactions = true;
+            }
+        }
+        if (withTransactions && !hasTransactions) {
+            logCustom(new CustomEvent("Bank Without Transactions").
+                    putCustomAttribute("Name", bank.getDisplayName()));
         }
     }
 

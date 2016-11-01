@@ -24,6 +24,7 @@ import com.liato.bankdroid.banking.exceptions.BankChoiceException;
 import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.db.DBAdapter;
+import com.liato.bankdroid.utils.LoggingUtils;
 import com.liato.bankdroid.utils.NetworkUtils;
 
 import android.app.AlertDialog;
@@ -80,6 +81,7 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
         return this.dialog;
     }
 
+    @Nullable
     protected Bank getBankFromDb(long bankId, Context parent) {
         return BankFactory.bankFromDb(bankId, parent, true);
     }
@@ -122,6 +124,7 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
             publishProgress(i, bank);
 
             if (isListingAllBanks() && bank.isDisabled()) {
+                LoggingUtils.logDisabledBank(bank);
                 continue;
             }
 
@@ -131,6 +134,8 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
                 bank.closeConnection();
                 saveBank(bank, parent);
                 i++;
+
+                LoggingUtils.logBankUpdate(bank, true);
             } catch (final BankException e) {
                 this.errors.add(bank.getName() + " (" + bank.getUsername()
                         + ")");
@@ -194,6 +199,7 @@ public class DataRetrieverTask extends AsyncTask<String, String, Void> {
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setNeutralButton("Ok",
                             new DialogInterface.OnClickListener() {
+                                @Override
                                 public void onClick(
                                         final DialogInterface dialog,
                                         final int id) {
