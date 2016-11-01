@@ -27,6 +27,7 @@ import com.liato.bankdroid.banking.exceptions.BankException;
 import com.liato.bankdroid.banking.exceptions.LoginException;
 import com.liato.bankdroid.db.DBAdapter;
 import com.liato.bankdroid.liveview.LiveViewService;
+import com.liato.bankdroid.utils.LoggingUtils;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -289,7 +290,7 @@ public class AutoRefreshService extends Service {
 
         @Override
         protected Void doInBackground(final String... args) {
-            errors = new ArrayList<String>();
+            errors = new ArrayList<>();
             Boolean refreshWidgets = false;
             final List<Bank> banks = getBanks();
             if (banks.isEmpty()) {
@@ -300,7 +301,7 @@ public class AutoRefreshService extends Service {
             BigDecimal diff;
             BigDecimal minDelta = new BigDecimal(prefs.getString("notify_min_delta", "0"));
 
-            final HashMap<String, Account> accounts = new HashMap<String, Account>();
+            final HashMap<String, Account> accounts = new HashMap<>();
 
             for (final Bank bank : banks) {
                 if (prefs.getBoolean("debug_mode", false)
@@ -311,6 +312,7 @@ public class AutoRefreshService extends Service {
                     continue;
                 }
                 if (bank.isDisabled()) {
+                    LoggingUtils.logDisabledBank(bank);
                     continue;
                 }
                 try {
@@ -320,6 +322,7 @@ public class AutoRefreshService extends Service {
                         accounts.put(account.getId(), account);
                     }
                     bank.update();
+
                     diff = currentBalance.subtract(bank.getBalance());
 
                     if (diff.compareTo(BigDecimal.ZERO) != 0) {
@@ -373,6 +376,9 @@ public class AutoRefreshService extends Service {
                         if (prefs.getBoolean(
                                 "autoupdates_transactions_enabled", true)) {
                             bank.updateAllTransactions();
+                            LoggingUtils.logBankUpdate(bank, true);
+                        } else {
+                            LoggingUtils.logBankUpdate(bank, false);
                         }
                     }
                     bank.closeConnection();
