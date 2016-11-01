@@ -122,7 +122,7 @@ public class BankEditActivity extends LockableActivity implements OnItemSelected
 
     @OnClick(R.id.btnSettingsOk)
     public void onSubmit(View v) {
-        if(!validate()) {
+        if (!validate()) {
             return;
         }
         SELECTED_BANK.setProperties(getFormParameters(SELECTED_BANK.getConnectionConfiguration()));
@@ -139,7 +139,7 @@ public class BankEditActivity extends LockableActivity implements OnItemSelected
     @Override
     public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int pos, long id) {
         Bank selectedBank = (Bank) parentView.getItemAtPosition(pos);
-        if(SELECTED_BANK == null || !SELECTED_BANK.equals(selectedBank)) {
+        if (SELECTED_BANK == null || !SELECTED_BANK.equals(selectedBank)) {
             SELECTED_BANK = selectedBank;
                     mFormContainer.removeAllViewsInLayout();
             createForm(SELECTED_BANK.getConnectionConfiguration(),
@@ -154,10 +154,10 @@ public class BankEditActivity extends LockableActivity implements OnItemSelected
 
 
     private void createForm(List<Field>... configurations) {
-        for(List<Field> fields : configurations) {
+        for (List<Field> fields : configurations) {
             for (Field field : fields) {
                 createLabel(field);
-                if(field.getValues().isEmpty()) {
+                if (field.getValues().isEmpty()) {
                     createField(field);
                 } else {
                     createSpinner(field);
@@ -203,7 +203,7 @@ public class BankEditActivity extends LockableActivity implements OnItemSelected
                 DefaultConnectionConfiguration.NAME);
         customName.setText(bank.getCustomName());
 
-        for(Map.Entry<String, String> property : bank.getProperties().entrySet()) {
+        for (Map.Entry<String, String> property : bank.getProperties().entrySet()) {
             EditText propertyInput = (EditText) mFormContainer.findViewWithTag(property.getKey());
             propertyInput.setText(property.getValue());
         }
@@ -211,7 +211,7 @@ public class BankEditActivity extends LockableActivity implements OnItemSelected
 
     private Map<String, String> getFormParameters(List<Field> fields) {
         Map<String, String> properties = new HashMap<>();
-        for(Field field : fields) {
+        for (Field field : fields) {
             properties.put(field.getReference(), getFormParameter(field.getReference()));
         }
         return properties;
@@ -219,10 +219,10 @@ public class BankEditActivity extends LockableActivity implements OnItemSelected
 
     private String getFormParameter(String property) {
         View propertyView = mFormContainer.findViewWithTag(property);
-        if(propertyView instanceof EditText) {
+        if (propertyView instanceof EditText) {
             EditText propertyInput = (EditText) propertyView;
             return propertyInput.getText().toString().trim();
-        } else if(propertyView instanceof Spinner) {
+        } else if (propertyView instanceof Spinner) {
             Spinner spinnerProperty = (Spinner) propertyView;
             Entry entry = (Entry) spinnerProperty.getSelectedItem();
             return entry.getKey();
@@ -235,7 +235,7 @@ public class BankEditActivity extends LockableActivity implements OnItemSelected
         boolean valid = true;
         Iterator<Field> fields = Iterators.concat(SELECTED_BANK.getConnectionConfiguration().iterator(),
                 DefaultConnectionConfiguration.fields().iterator());
-        while(fields.hasNext()) {
+        while (fields.hasNext()) {
             Field field = fields.next();
             try {
                 field.validate(getFormParameter(field.getReference()));

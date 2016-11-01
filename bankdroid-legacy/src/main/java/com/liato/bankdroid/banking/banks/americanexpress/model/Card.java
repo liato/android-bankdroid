@@ -70,7 +70,7 @@ public class Card {
     }
 
     public BigDecimal getBalance() {
-        if(summary != null && summary.getTotalBalance() != null) {
+        if (summary != null && summary.getTotalBalance() != null) {
             return Helpers.parseBalance(summary.getTotalBalance().getValue()).negate();
         }
         return BigDecimal.ZERO;

@@ -43,7 +43,7 @@ public class LoginResponse {
     }
 
     public List<Card> getCards() {
-        if(summaryData != null && summaryData.getCardList() != null) {
+        if (summaryData != null && summaryData.getCardList() != null) {
             return summaryData.getCardList();
         }
         return Collections.emptyList();

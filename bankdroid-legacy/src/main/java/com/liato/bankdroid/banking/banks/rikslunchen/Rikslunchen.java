@@ -86,7 +86,7 @@ public class Rikslunchen extends Bank {
         HttpResponse response = urlopen.openAsHttpResponse(
                 BASE_URL + "?cardid=" + getUsername(),
                 false);
-        if(response.getStatusLine().getStatusCode() != 200) {
+        if (response.getStatusLine().getStatusCode() != 200) {
             response.getEntity().consumeContent();
             throw new LoginException(context.getString(R.string.invalid_card_number));
         }

@@ -106,7 +106,7 @@ public class OKQ8 extends Bank {
         }
         String postAction = matcher.group(1);
         postData.add(new BasicNameValuePair("javax.faces.ViewState",
-                postAction.substring(postAction.length()-5,postAction.length()-1)));
+                postAction.substring(postAction.length() - 5, postAction.length() - 1)));
         postData.add(new BasicNameValuePair("loginForm", "loginForm"));
         postData.add(new BasicNameValuePair("button", "Logga in"));
 

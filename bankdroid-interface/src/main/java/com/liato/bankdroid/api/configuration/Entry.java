@@ -6,7 +6,7 @@ public class Entry {
     private final String mValue;
 
     public Entry(String key, String value) {
-        if(key == null || key.trim().isEmpty()) {
+        if (key == null || key.trim().isEmpty()) {
             throw new IllegalArgumentException("key cannot be null or empty.");
         }
         mKey = key;

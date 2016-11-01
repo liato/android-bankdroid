@@ -24,7 +24,7 @@ public class TransactionAccountBuilder extends AbstractAccountBuilder<Transactio
     }
 
     public TransactionAccountBuilder addTransaction(Transaction transaction) {
-        if(mTransactions == null) {
+        if (mTransactions == null) {
             mTransactions = new ArrayList<>();
         }
         mTransactions.add(transaction);

@@ -40,7 +40,7 @@ public class TransactionDetails {
     public List<Transaction> getTransactions() {
         if (activityList != null) {
             List<Transaction> transactions = new ArrayList<>();
-            for(AccountActivity activity : activityList) {
+            for (AccountActivity activity : activityList) {
                 transactions.addAll(activity.getTransactionList());
             }
             return transactions;

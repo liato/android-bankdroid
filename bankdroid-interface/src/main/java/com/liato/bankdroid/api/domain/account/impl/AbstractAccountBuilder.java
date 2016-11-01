@@ -34,7 +34,7 @@ abstract class AbstractAccountBuilder<T extends AbstractAccountBuilder<T>> {
     }
 
     public T addCustomAttribute(String key, String value) {
-        if(mCustomAttributes == null) {
+        if (mCustomAttributes == null) {
             mCustomAttributes = new HashMap<>();
         }
         mCustomAttributes.put(key, value);
