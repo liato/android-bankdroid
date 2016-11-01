@@ -369,7 +369,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     }
 
     public Map<String, String> getProperties() {
-        if(this.properties == null) {
+        if (this.properties == null) {
             this.properties = new HashMap<>();
         }
         return this.properties;

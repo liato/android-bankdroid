@@ -9,7 +9,7 @@ import java.util.Map;
 
 import static com.liato.bankdroid.api.domain.account.impl.AccountBuilder.BasicAccount;
 
-public class PrePaidCardAccountBuilder extends AbstractAccountBuilder<PrePaidCardAccountBuilder>{
+public class PrePaidCardAccountBuilder extends AbstractAccountBuilder<PrePaidCardAccountBuilder> {
 
     private DateTime mValidFrom;
     private DateTime mExpirationDate;

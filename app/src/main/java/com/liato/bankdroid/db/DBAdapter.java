@@ -136,7 +136,7 @@ public class DBAdapter {
 
     public Cursor fetchProperties(String bankId) {
         return mDb.query(Database.PROPERTY_TABLE_NAME, null,
-                Database.PROPERTY_CONNECTION_ID+"='"+bankId+"'", null, null, null, null);
+                Database.PROPERTY_CONNECTION_ID + "='" + bankId + "'", null, null, null, null);
     }
 
     public long updateBank(Bank bank) {
@@ -162,9 +162,9 @@ public class DBAdapter {
         }
         if (bankId != -1) {
             Map<String, String> properties = bank.getProperties();
-            for(Map.Entry<String,String> property : properties.entrySet()) {
+            for (Map.Entry<String, String> property : properties.entrySet()) {
                 String value = property.getValue();
-                if(value != null && !value.isEmpty()) {
+                if (value != null && !value.isEmpty()) {
                     ContentValues propertyValues = new ContentValues();
                     propertyValues.put(Database.PROPERTY_KEY, property.getKey());
                     propertyValues.put(Database.PROPERTY_VALUE, value);

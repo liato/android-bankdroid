@@ -10,7 +10,7 @@ import java.util.Map;
 
 import static com.liato.bankdroid.api.domain.account.impl.AccountBuilder.BasicAccount;
 
-public class CreditCardAccountBuilder extends AbstractAccountBuilder<CreditCardAccountBuilder>{
+public class CreditCardAccountBuilder extends AbstractAccountBuilder<CreditCardAccountBuilder> {
 
     private BigDecimal mCreditLimit;
 

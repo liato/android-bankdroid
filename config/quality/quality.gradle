@@ -63,7 +63,7 @@ task pmd(type: Pmd) {
     }
 }
 
-if(plugins.hasPlugin('android') || plugins.hasPlugin('com.android.library')) {
+if (plugins.hasPlugin('android') || plugins.hasPlugin('com.android.library')) {
     check.dependsOn 'lint'
     tasks.getByName("findbugs").dependsOn 'compileDebugSources'
     tasks.getByName('findbugs').classes = files("$project.buildDir/intermediates/classes")
@@ -85,7 +85,7 @@ if(plugins.hasPlugin('android') || plugins.hasPlugin('com.android.library')) {
         }
     }
 }
-if(plugins.hasPlugin('java')) {
+if (plugins.hasPlugin('java')) {
     tasks.getByName('findbugs').classes = files("$project.buildDir/classes")
     tasks.getByName('findbugs').dependsOn 'classes'
 }

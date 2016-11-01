@@ -19,9 +19,9 @@ public class EquityBuilder {
      *                       a 25 % loss, while {@code 1.5} is 50 % profit.
      * @param currency The currency of the equity.
      */
-    public EquityBuilder(BigDecimal balance, double revenue, String currency){
+    public EquityBuilder(BigDecimal balance, double revenue, String currency) {
         mEquity = new BasicEquity(costFromBalanceAndRevenue(balance, revenue),
-                revenueFromBalanceAndRevenueAsPerecntage(balance, revenue),currency);
+                revenueFromBalanceAndRevenueAsPerecntage(balance, revenue), currency);
     }
 
     public EquityBuilder name(String name) {

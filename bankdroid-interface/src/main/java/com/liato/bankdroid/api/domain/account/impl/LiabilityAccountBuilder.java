@@ -30,7 +30,7 @@ public class LiabilityAccountBuilder extends AbstractAccountBuilder<LiabilityAcc
     }
 
     public LiabilityAccountBuilder addPayment(Payment payment) {
-        if(mPayments == null) {
+        if (mPayments == null) {
             mPayments = new ArrayList<>();
         }
         mPayments.add(payment);

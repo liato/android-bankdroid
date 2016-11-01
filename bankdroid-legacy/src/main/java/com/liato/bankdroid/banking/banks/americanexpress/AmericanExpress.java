@@ -116,9 +116,9 @@ public class AmericanExpress extends Bank {
 
         urlopen = login();
 
-        for(Card card : loginResponse.getCards()) {
+        for (Card card : loginResponse.getCards()) {
             Account account = asAccount(card);
-            if(card.isTransactionsEnabled()) {
+            if (card.isTransactionsEnabled()) {
                 account.setTransactions(fetchTransactionsFor(card));
             }
             accounts.add(account);
@@ -137,7 +137,7 @@ public class AmericanExpress extends Bank {
                         "\"sortedIndex\":" + card.getSortedIndex() +
                         "}",
                         HTTP.UTF_8), true);
-        if(response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
             response.getEntity().consumeContent();
             throw new BankException(
                     res.getText(R.string.update_transactions_error).toString());
@@ -147,10 +147,10 @@ public class AmericanExpress extends Bank {
                 .withType(TransactionsResponse.class)
                 .readValue(response.getEntity().getContent());
 
-        if(details.getTransactionDetails() == null) {
+        if (details.getTransactionDetails() == null) {
             throw new BankException(res.getText(R.string.server_error_try_again).toString());
         }
-        if(details.getTransactionDetails().getStatus() != 0) {
+        if (details.getTransactionDetails().getStatus() != 0) {
             throw new BankException(details.getTransactionDetails().getMessage());
         }
 
@@ -159,8 +159,8 @@ public class AmericanExpress extends Bank {
 
     private List<Transaction> transactionsOf(@Nullable TransactionDetails details) {
         List<Transaction> transactions = new ArrayList<>();
-        if(details != null) {
-            for(com.liato.bankdroid.banking.banks.americanexpress.model.Transaction transaction : details.getTransactions()) {
+        if (details != null) {
+            for (com.liato.bankdroid.banking.banks.americanexpress.model.Transaction transaction : details.getTransactions()) {
                 transactions.add(asTransaction(transaction));
             }
         }
@@ -196,17 +196,17 @@ public class AmericanExpress extends Bank {
     }
 
     private LoginResponse parseLoginResponse(HttpResponse response) throws IOException, BankException {
-        if(response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
             response.getEntity().consumeContent();
             throw new BankException(res.getText(R.string.server_error_try_again).toString());
         }
         LoginResponse loginResponse = MAPPER.reader()
                 .withType(LoginResponse.class)
                 .readValue(response.getEntity().getContent());
-        if(loginResponse == null || loginResponse.getLogonData() == null) {
+        if (loginResponse == null || loginResponse.getLogonData() == null) {
             throw new BankException(res.getText(R.string.server_error_try_again).toString());
         }
-        if(loginResponse.getLogonData().getStatus() != 0) {
+        if (loginResponse.getLogonData().getStatus() != 0) {
             throw new BankException(loginResponse.getLogonData().getMessage());
         }
 

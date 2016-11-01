@@ -33,16 +33,17 @@
         <module name="EmptyForIteratorPad" />
         <module name="MethodParamPad" />
 
-        <!--
         <module name="NoWhitespaceAfter">
             <property name="tokens" value="BNOT,DEC,DOT,INC,LNOT,UNARY_MINUS,UNARY_PLUS" />
         </module>
         <module name="NoWhitespaceBefore" />
-        <module name="WhitespaceAfter" />
+        <module name="WhitespaceAfter">
+            <property name="tokens" value="COMMA, SEMI"/> <!-- Not TYPECAST -->
+        </module>
         <module name="WhitespaceAround">
            <property name="allowEmptyMethods" value="true" />
         </module>
-        -->
+
         <module name="ParenPad" />
         <module name="TypecastParenPad" />
         <module name="RedundantModifier" />

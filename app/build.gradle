@@ -19,7 +19,7 @@ apply plugin: 'com.android.application'
 apply from: '../config/quality/quality.gradle'
 apply plugin: "org.ajoberstar.grgit"
 
-if(new File('app/crashlytics.properties').exists()) {
+if (new File('app/crashlytics.properties').exists()) {
     apply plugin: 'io.fabric'
 }
 

@@ -8,7 +8,7 @@ import android.text.InputType;
 public class FieldTypeMapper {
 
     public static FieldType toFieldType(int androidFieldType) {
-        switch(androidFieldType) {
+        switch (androidFieldType) {
             case InputType.TYPE_CLASS_NUMBER:
                 return FieldType.NUMBER;
             case InputType.TYPE_CLASS_PHONE:
@@ -20,7 +20,7 @@ public class FieldTypeMapper {
         }
     }
     public static int fromFieldType(FieldType fieldType) {
-        switch(fieldType) {
+        switch (fieldType) {
             case NUMBER:
                 return InputType.TYPE_CLASS_NUMBER;
             case PHONE:

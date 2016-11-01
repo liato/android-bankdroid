@@ -14,7 +14,7 @@ public class LegacyBankHelper {
     private static Map<Integer, String> providerReferences;
 
     public static String getReferenceFromLegacyId(int legacyId) {
-        if(providerReferences == null) {
+        if (providerReferences == null) {
             generateLegacyProviderReferences();
         }
         return providerReferences.get(legacyId);
@@ -22,7 +22,7 @@ public class LegacyBankHelper {
 
     // TODO Used during refactoring. Remove before 2.0
     public static int getLegacyIdFromReference(String reference) {
-        if(legacyProviderReferences == null) {
+        if (legacyProviderReferences == null) {
             generateLegacyProviderReferences();
         }
         return legacyProviderReferences.get(reference);
@@ -32,15 +32,14 @@ public class LegacyBankHelper {
         Map<Integer, String> references = new HashMap<>();
         Map<String, Integer> legacyIds = new HashMap<>();
         Field[] fields = IBankTypes.class.getFields();
-        for(int i = 0 ; i < fields.length; i++) {
-            Field field = fields[i];
+        for (Field field : fields) {
             try {
                 String reference = field.getName().toLowerCase().replaceAll("_", "-");
                 Integer legacyId = field.getInt(new IBankTypes() {
                 });
                 references.put(legacyId, reference);
                 legacyIds.put(reference, legacyId);
-            } catch(IllegalAccessException e) {
+            } catch (IllegalAccessException e) {
                 Timber.e(e, "Provider could not be mapped");
             }
         }

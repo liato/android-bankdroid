@@ -13,7 +13,7 @@ public class FieldBuilder {
     private BasicField field;
 
     /**
-     * Create a new {@link Field} builder without i18n support. 
+     * Create a new {@link Field} builder without i18n support.
      */
     public FieldBuilder(String reference) {
       this(reference, null);
@@ -24,7 +24,7 @@ public class FieldBuilder {
      * The following keys needs to be in the ResourceBundle:
      * {@code field.{reference}.label} - Locale label value
      * {@code field.{reference}.placeholder} - Locale placeholder value.
-     * 
+     *
      * Setting {@link #placeholder(String)} or {@link #label(String) specifically will override the i18n values.
      * Otherwise they will be set to the value specified in the Locale bundle or in the default bundle if not present.
      * If a key is not present at all in the ResourceBundle the key will will be returned.
@@ -32,7 +32,7 @@ public class FieldBuilder {
      * @param bundle The ResourceBundle to be used for i18n support.
      */
     public FieldBuilder(String reference, ResourceBundle bundle) {
-        if(reference == null || reference.trim().isEmpty()) {
+        if (reference == null || reference.trim().isEmpty()) {
             throw new IllegalArgumentException("reference must be provided.");
         }
         field = new BasicField(reference, bundle);
@@ -146,7 +146,7 @@ public class FieldBuilder {
 
         @Override
         public List<Entry> getValues() {
-            if(values == null) {
+            if (values == null) {
                 values = Collections.emptyList();
             }
             return values;
@@ -154,18 +154,18 @@ public class FieldBuilder {
 
         @Override
         public void validate(String value) throws IllegalArgumentException {
-            if(isRequired()) {
-                if(value == null || value.trim().isEmpty()) {
+            if (isRequired()) {
+                if (value == null || value.trim().isEmpty()) {
                     throw new IllegalArgumentException(String.format("%s is required", getLabel()));
                 }
-                if(validator != null) {
+                if (validator != null) {
                     validator.validate(value);
                 }
             }
         }
 
         private String getLocaleString(String key) {
-            if(!isLocale()) {
+            if (!isLocale()) {
                 return null;
             }
             String propertyKey = String.format("field.%s.%s", getReference(), key);

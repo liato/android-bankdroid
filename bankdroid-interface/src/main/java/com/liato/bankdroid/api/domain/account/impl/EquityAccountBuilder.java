@@ -11,7 +11,7 @@ import java.util.Map;
 
 import static com.liato.bankdroid.api.domain.account.impl.AccountBuilder.BasicAccount;
 
-public class EquityAccountBuilder extends AbstractAccountBuilder<EquityAccountBuilder>{
+public class EquityAccountBuilder extends AbstractAccountBuilder<EquityAccountBuilder> {
 
     private BigDecimal mCost;
 
@@ -38,7 +38,7 @@ public class EquityAccountBuilder extends AbstractAccountBuilder<EquityAccountBu
     }
 
     public EquityAccountBuilder addEquity(Equity equity) {
-        if(mEquities == null) {
+        if (mEquities == null) {
             mEquities = new ArrayList<>();
         }
         mEquities.add(equity);

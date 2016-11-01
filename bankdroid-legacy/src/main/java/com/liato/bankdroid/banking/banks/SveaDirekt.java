@@ -124,7 +124,7 @@ public class SveaDirekt extends Bank {
         response = urlopen.open(ACCOUNTS_URL);
         Document doc = Jsoup.parse(response);
         ArrayList<Account> accounts = parseAccounts(doc);
-        for(Account account : accounts) {
+        for (Account account : accounts) {
             response = urlopen.open(TRANSACTIONS_URL + "?account=" + account.getId());
             account.setTransactions(parseTransactions(response));
         }

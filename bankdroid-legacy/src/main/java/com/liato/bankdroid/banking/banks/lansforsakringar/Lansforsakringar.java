@@ -129,7 +129,7 @@ public class Lansforsakringar extends Bank {
         } finally {
             try {
                 is.close();
-            } catch(IOException e) {
+            } catch (IOException e) {
                 Timber.w(e, "Closing JSON stream failed");
             }
         }

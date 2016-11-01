@@ -58,7 +58,7 @@ public class AccountBuilder extends AbstractAccountBuilder<AccountBuilder> {
 
         @Override
         public Map<String, String> getCustomAttributes() {
-            return mCustomAttributes == null ? Collections.<String,String>emptyMap() : mCustomAttributes;
+            return mCustomAttributes == null ? Collections.<String, String>emptyMap() : mCustomAttributes;
         }
     }
 }

@@ -74,7 +74,7 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
             db.execSQL("ALTER TABLE " + LegacyDatabase.BANK_TABLE_NAME + " ADD " +
                     LegacyDatabase.BANK_HIDE_ACCOUNTS + " integer;");
         }
-        if(oldVersion <= 11) {
+        if (oldVersion <= 11) {
             try {
                 db.beginTransaction();
                 db.execSQL(Database.TABLE_CONNECTION_PROPERTIES);
@@ -104,7 +104,7 @@ final public class DatabaseHelper extends SQLiteOpenHelper {
             + LegacyDatabase.BANK_HIDE_ACCOUNTS + " FROM " + tempTable);
 
         // Add username, password and extras fields to properties table.
-        Cursor c = db.query(tempTable, null, null, null,null,null,null);
+        Cursor c = db.query(tempTable, null, null, null, null, null, null);
         try {
             if (!(c == null || c.isClosed() || (c.isBeforeFirst() && c.isAfterLast()))) {
                 while (!c.isLast() && !c.isAfterLast()) {
