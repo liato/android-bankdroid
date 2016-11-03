@@ -144,7 +144,7 @@ public class LegacyBankFactory {
             case IBankTypes.HORS:
                 return new Hors(context);
             default:
-                throw new BankException("BankType id not found.");
+                throw new BankException("BankType id not found: " + id);
         }
     }
 
