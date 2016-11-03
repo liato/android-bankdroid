@@ -1,5 +1,7 @@
 package com.liato.bankdroid.utils;
 
+import android.support.annotation.Nullable;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
@@ -23,21 +25,10 @@ public class ExceptionUtils {
             return exception;
         }
 
-        T returnMe;
-        try {
-            returnMe = (T)exception.getClass().getConstructor(String.class)
-                    .newInstance(exception.getMessage());
-        } catch (InstantiationException e) {
-            Timber.e(e, "Unable to Bankdroidify exception of type %s", exception.getClass());
-            return exception;
-        } catch (InvocationTargetException e) {
-            Timber.e(e, "Unable to Bankdroidify exception of type %s", exception.getClass());
-            return exception;
-        } catch (IllegalAccessException e) {
-            Timber.e(e, "Unable to Bankdroidify exception of type %s", exception.getClass());
-            return exception;
-        } catch (NoSuchMethodException e) {
-            Timber.e(e, "Unable to Bankdroidify exception of type %s", exception.getClass());
+        T returnMe = createWrapperException(exception);
+        if (returnMe == null) {
+            Timber.w(new RuntimeException(
+                    "Unable to bankdroidify exception of class: " + exception.getClass()));
             return exception;
         }
 
@@ -46,6 +37,27 @@ public class ExceptionUtils {
         returnMe.setStackTrace(bankdroidifiedStacktrace);
 
         return returnMe;
+    }
+
+    @Nullable
+    private static <T extends Throwable> T createWrapperException(T wrapMe) {
+        Class<?> newClass = wrapMe.getClass();
+        while (newClass != null) {
+            try {
+                return (T) newClass.getConstructor(String.class)
+                        .newInstance(wrapMe.getMessage());
+            } catch (InvocationTargetException e) {
+                newClass = newClass.getSuperclass();
+            } catch (NoSuchMethodException e) {
+                newClass = newClass.getSuperclass();
+            } catch (InstantiationException e) {
+                newClass = newClass.getSuperclass();
+            } catch (IllegalAccessException e) {
+                newClass = newClass.getSuperclass();
+            }
+        }
+
+        return null;
     }
 
     /**
