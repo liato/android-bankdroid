@@ -104,7 +104,6 @@
         <exclude name="OnlyOneReturn" />
         <exclude name="PositionLiteralsFirstInComparisons" />
         <exclude name="PrematureDeclaration" />
-        <exclude name="PreserveStackTrace" />
         <exclude name="RedundantFieldInitializer" />
         <exclude name="ShortClassName" />
         <exclude name="ShortMethodName" />

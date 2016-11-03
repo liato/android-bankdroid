@@ -108,7 +108,7 @@ public class Payson extends Bank {
             userInfo = new JSONObject(
                     urlopen.open("https://www.payson.se/myaccount/user/getuserinfo"));
         } catch (JSONException e) {
-            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString(), e);
         }
         return urlopen;
     }
