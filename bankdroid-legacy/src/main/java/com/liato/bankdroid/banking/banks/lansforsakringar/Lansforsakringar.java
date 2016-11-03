@@ -115,7 +115,7 @@ public class Lansforsakringar extends Bank {
                     objectAsJson(new LoginRequest(getUsername(), getPassword())), LoginResponse.class);
             urlopen.addHeader("Utoken", lr.getTicket());
         } catch (Exception e) {
-            throw new LoginException(res.getText(R.string.invalid_username_password).toString());
+            throw new LoginException(res.getText(R.string.invalid_username_password).toString(), e);
         }
         return urlopen;
     }

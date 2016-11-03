@@ -86,7 +86,7 @@ public class CertPinningSSLSocketFactory extends SSLSocketFactory {
             context.init(keyManagers, new TrustManager[]{mTrustManager}, null);
             return context;
         } catch (Exception e) {
-            throw new IOException(e.getMessage());
+            throw new IOException(e.getMessage(), e);
         }
     }
 

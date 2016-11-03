@@ -13,7 +13,7 @@ public class StringUtils {
         try {
             return string.getBytes(CHARSET);
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("Internal error");
+            throw new RuntimeException("Internal error", e);
         }
     }
 
@@ -21,7 +21,7 @@ public class StringUtils {
         try {
             return new String(bytes, CHARSET);
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("Internal error");
+            throw new RuntimeException("Internal error", e);
         }
     }
 }

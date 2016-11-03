@@ -96,7 +96,7 @@ public class Bitcoin extends Bank {
             setCurrency("BTC");
         } catch (JsonParseException e) {
             throw new BankException(res.getText(
-                    R.string.invalid_bitcoin_address).toString());
+                    R.string.invalid_bitcoin_address).toString(), e);
         }
 
         return urlopen;

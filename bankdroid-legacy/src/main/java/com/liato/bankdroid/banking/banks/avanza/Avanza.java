@@ -84,7 +84,7 @@ public class Avanza extends Bank {
             homeUrl = jsonResponse.getString("redirectUrl");
         } catch (JSONException e) {
             throw new BankException(
-                    res.getText(R.string.unable_to_find).toString() + " login link.");
+                    res.getText(R.string.unable_to_find).toString() + " login link.", e);
         }
         LoginPackage lp = new LoginPackage(urlopen, postData, "", URL + homeUrl);
         lp.setIsLoggedIn(true);
