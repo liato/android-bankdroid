@@ -56,7 +56,7 @@ public class LoggingUtils {
         }
 
         logCustom(new CustomEvent("Disabled Bank").
-                putCustomAttribute("Name", bank.getDisplayName()));
+                putCustomAttribute("Name", bank.getName()));
     }
 
     public static void logBankUpdate(Bank bank, boolean withTransactions) {
@@ -65,7 +65,7 @@ public class LoggingUtils {
         }
 
         logCustom(new CustomEvent("Bank Updated").
-                putCustomAttribute("Name", bank.getDisplayName()).
+                putCustomAttribute("Name", bank.getName()).
                 putCustomAttribute("With Transactions", Boolean.toString(withTransactions)));
 
         boolean hasTransactions = false;
@@ -76,7 +76,7 @@ public class LoggingUtils {
         }
         if (withTransactions && !hasTransactions) {
             logCustom(new CustomEvent("Bank Without Transactions").
-                    putCustomAttribute("Name", bank.getDisplayName()));
+                    putCustomAttribute("Name", bank.getName()));
         }
     }
 
