@@ -46,8 +46,6 @@ public class BrummerKF extends Bank {
 
     private static final String NAME = "Brummer KF & Pension";
 
-    private static final String NAME_SHORT = "brummer_kf";
-
     private static final String URL = "https://www.brummer.se/";
 
     private static final int BANKTYPE_ID = IBankTypes.BRUMMER_KF;
@@ -78,14 +76,21 @@ public class BrummerKF extends Bank {
 
     public BrummerKF(Context context) {
         super(context, R.drawable.logo_brummer_kf);
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
-        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
-        super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
-        super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
-        super.STATIC_BALANCE = STATIC_BALANCE;
+        super.url = URL;
+        super.inputTypeUsername = INPUT_TYPE_USERNAME;
+        super.inputTypePassword = INPUT_TYPE_PASSWORD;
+        super.inputHintUsername = INPUT_HINT_USERNAME;
+        super.staticBalance = STATIC_BALANCE;
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public BrummerKF(String username, String password, Context context) throws BankException,

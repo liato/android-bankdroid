@@ -47,8 +47,6 @@ public class OKQ8 extends Bank {
 
     private static final String NAME = "OKQ8 VISA";
 
-    private static final String NAME_SHORT = "okq8";
-
     private static final String URL
             = "https://nettbank.edb.com/Logon/index.jsp?domain=0066&from_page=http://www.okq8.se&to_page=https://nettbank.edb.com/cardpayment/transigo/logon/done/okq8";
 
@@ -76,13 +74,20 @@ public class OKQ8 extends Bank {
     public OKQ8(Context context) {
         super(context, R.drawable.logo_okq8);
 
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
-        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
-        super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
-        super.STATIC_BALANCE = STATIC_BALANCE;
+        super.url = URL;
+        super.inputTypeUsername = INPUT_TYPE_USERNAME;
+        super.inputHintUsername = INPUT_HINT_USERNAME;
+        super.staticBalance = STATIC_BALANCE;
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public OKQ8(String username, String password, Context context) throws BankException,

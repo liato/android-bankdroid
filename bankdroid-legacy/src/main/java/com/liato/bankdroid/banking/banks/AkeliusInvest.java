@@ -46,8 +46,6 @@ public class AkeliusInvest extends Bank {
 
     private static final String NAME = "Akelius Invest";
 
-    private static final String NAME_SHORT = "akeliusinvest";
-
     private static final String URL = "https://online.akeliusinvest.com/";
 
     private static final int BANKTYPE_ID = IBankTypes.AKELIUSINVEST;
@@ -80,14 +78,11 @@ public class AkeliusInvest extends Bank {
 
     public AkeliusInvest(Context context) {
         super(context, R.drawable.logo_akeliusinvest);
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
-        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
-        super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
-        super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
-        super.STATIC_BALANCE = STATIC_BALANCE;
+        super.url = URL;
+        super.inputTypeUsername = INPUT_TYPE_USERNAME;
+        super.inputTypePassword = INPUT_TYPE_PASSWORD;
+        super.inputHintUsername = INPUT_HINT_USERNAME;
+        super.staticBalance = STATIC_BALANCE;
     }
 
     public AkeliusInvest(String username, String password, Context context) throws BankException,
@@ -135,6 +130,16 @@ public class AkeliusInvest extends Bank {
             }
         }
         return urlopen;
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     @Override

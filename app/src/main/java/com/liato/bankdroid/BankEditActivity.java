@@ -81,9 +81,9 @@ public class BankEditActivity extends LockableActivity implements OnItemSelected
     @InjectView(R.id.txtErrorDesc)
     TextView mErrorDescription;
 
-    private Bank SELECTED_BANK;
+    private Bank selectedBank;
 
-    private long BANKID = -1;
+    private long bankId = -1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -101,16 +101,16 @@ public class BankEditActivity extends LockableActivity implements OnItemSelected
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            BANKID = extras.getLong("id", -1);
-            if (BANKID != -1) {
-                Bank bank = BankFactory.bankFromDb(BANKID, this, false);
+            bankId = extras.getLong("id", -1);
+            if (bankId != -1) {
+                Bank bank = BankFactory.bankFromDb(bankId, this, false);
                 if (bank != null) {
                     mErrorDescription.setVisibility(
                             bank.isDisabled() ? View.VISIBLE : View.INVISIBLE);
                     mBankSpinner.setEnabled(false);
                     mBankSpinner.setSelection(adapter.getPosition(bank));
-                    SELECTED_BANK = bank;
-                    createForm(SELECTED_BANK.getConnectionConfiguration(),
+                    selectedBank = bank;
+                    createForm(selectedBank.getConnectionConfiguration(),
                             DefaultConnectionConfiguration.fields()
                     );
                     populateForm(bank);
@@ -125,10 +125,10 @@ public class BankEditActivity extends LockableActivity implements OnItemSelected
         if (!validate()) {
             return;
         }
-        SELECTED_BANK.setProperties(getFormParameters(SELECTED_BANK.getConnectionConfiguration()));
-        SELECTED_BANK.setCustomName(getFormParameter(DefaultConnectionConfiguration.NAME));
-        SELECTED_BANK.setDbid(BANKID);
-        new DataRetrieverTask(this, SELECTED_BANK).execute();
+        selectedBank.setProperties(getFormParameters(selectedBank.getConnectionConfiguration()));
+        selectedBank.setCustomName(getFormParameter(DefaultConnectionConfiguration.NAME));
+        selectedBank.setDbid(bankId);
+        new DataRetrieverTask(this, selectedBank).execute();
     }
 
     @OnClick(R.id.btnSettingsCancel)
@@ -139,10 +139,10 @@ public class BankEditActivity extends LockableActivity implements OnItemSelected
     @Override
     public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int pos, long id) {
         Bank selectedBank = (Bank) parentView.getItemAtPosition(pos);
-        if (SELECTED_BANK == null || !SELECTED_BANK.equals(selectedBank)) {
-            SELECTED_BANK = selectedBank;
+        if (this.selectedBank == null || !this.selectedBank.equals(selectedBank)) {
+            this.selectedBank = selectedBank;
                     mFormContainer.removeAllViewsInLayout();
-            createForm(SELECTED_BANK.getConnectionConfiguration(),
+            createForm(this.selectedBank.getConnectionConfiguration(),
                     DefaultConnectionConfiguration.fields()
             );
         }
@@ -233,7 +233,7 @@ public class BankEditActivity extends LockableActivity implements OnItemSelected
 
     private boolean validate() {
         boolean valid = true;
-        Iterator<Field> fields = Iterators.concat(SELECTED_BANK.getConnectionConfiguration().iterator(),
+        Iterator<Field> fields = Iterators.concat(selectedBank.getConnectionConfiguration().iterator(),
                 DefaultConnectionConfiguration.fields().iterator());
         while (fields.hasNext()) {
             Field field = fields.next();
@@ -357,8 +357,8 @@ public class BankEditActivity extends LockableActivity implements OnItemSelected
                     builder.setTitle(R.string.select_a_bank);
                     builder.setItems(items, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int item) {
-                            SELECTED_BANK.setExtras(e.getBanks().get(item).getId());
-                            new DataRetrieverTask(context, SELECTED_BANK).execute();
+                            selectedBank.setExtras(e.getBanks().get(item).getId());
+                            new DataRetrieverTask(context, selectedBank).execute();
                         }
                     });
                 } else {

@@ -45,8 +45,6 @@ public class SvenskaSpel extends Bank {
 
     private static final String NAME = "Svenska Spel";
 
-    private static final String NAME_SHORT = "svenskaspel";
-
     private static final String URL = "https://api.www.svenskaspel.se/player/sessions";
 
     private static final int BANKTYPE_ID = Bank.SVENSKASPEL;
@@ -62,12 +60,19 @@ public class SvenskaSpel extends Bank {
     public SvenskaSpel(Context context) {
         super(context, R.drawable.logo_svenskaspel);
 
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
-        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
-        super.INPUT_TITLETEXT_USERNAME = INPUT_TITLETEXT_USERNAME;
+        super.url = URL;
+        super.inputTypeUsername = INPUT_TYPE_USERNAME;
+        super.inputTitletextUsername = INPUT_TITLETEXT_USERNAME;
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public SvenskaSpel(String username, String password, Context context) throws BankException,

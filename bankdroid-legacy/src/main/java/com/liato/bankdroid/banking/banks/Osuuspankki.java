@@ -45,8 +45,6 @@ public class Osuuspankki extends Bank {
 
     private static final String NAME = "Osuuspankki";
 
-    private static final String NAME_SHORT = "osuuspankki";
-
     private static final String URL = "https://www.op.fi/op?kielikoodi=sv";
 
     private static final int BANKTYPE_ID = IBankTypes.OSUUSPANKKI;
@@ -62,11 +60,17 @@ public class Osuuspankki extends Bank {
 
     public Osuuspankki(Context context) {
         super(context, R.drawable.logo_osuuspankki);
+        super.url = URL;
+    }
 
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public Osuuspankki(String username, String password, Context context) throws BankException,

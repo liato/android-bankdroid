@@ -52,11 +52,7 @@ import eu.nullbyte.android.urllib.Urllib;
 
 public class AmericanExpress extends Bank {
 
-    private static final String TAG = "AmericanExpress";
-
     private static final String NAME = "American Express";
-
-    private static final String NAME_SHORT = "americanexpress";
 
     private static final int BANKTYPE_ID = IBankTypes.AMERICANEXPRESS;
 
@@ -67,11 +63,17 @@ public class AmericanExpress extends Bank {
 
     public AmericanExpress(Context context) {
         super(context, R.drawable.logo_americanexpress);
-        super.TAG = TAG;
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.WEB_VIEW_ENABLED = false;
+        super.webViewEnabled = false;
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public AmericanExpress(String username, String password, Context context) throws BankException,

@@ -42,8 +42,6 @@ public class AppeakPoker extends Bank {
 
     private static final String NAME = "Appeak Poker";
 
-    private static final String NAME_SHORT = "appeakpoker";
-
     private static final String URL = "http://poker.appeak.se/";
 
     private static final int BANKTYPE_ID = Bank.APPEAKPOKER;
@@ -56,14 +54,21 @@ public class AppeakPoker extends Bank {
 
     public AppeakPoker(Context context) {
         super(context, R.drawable.logo_appeakpoker);
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
-        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
-        super.INPUT_HIDDEN_PASSWORD = INPUT_HIDDEN_PASSWORD;
-        super.DISPLAY_DECIMALS = false;
+        super.url = URL;
+        super.inputTypeUsername = INPUT_TYPE_USERNAME;
+        super.inputHiddenPassword = INPUT_HIDDEN_PASSWORD;
+        super.displayDecimals = false;
         currency = "chips";
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public AppeakPoker(String username, String password, Context context) throws BankException,

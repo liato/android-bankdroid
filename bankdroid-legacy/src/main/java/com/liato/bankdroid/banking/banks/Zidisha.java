@@ -44,8 +44,6 @@ public class Zidisha extends Bank {
 
     private static final String NAME = "Zidisha";
 
-    private static final String NAME_SHORT = "zidisha";
-
     private static final String URL = "https://www.zidisha.org/";
 
     private static final int BANKTYPE_ID = IBankTypes.ZIDISHA;
@@ -70,15 +68,22 @@ public class Zidisha extends Bank {
     public Zidisha(Context context) {
         super(context, R.drawable.logo_zidisha);
 
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
-        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
-        super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
-        super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
-        super.STATIC_BALANCE = STATIC_BALANCE;
+        super.url = URL;
+        super.inputTypeUsername = INPUT_TYPE_USERNAME;
+        super.inputTypePassword = INPUT_TYPE_PASSWORD;
+        super.inputHintUsername = INPUT_HINT_USERNAME;
+        super.staticBalance = STATIC_BALANCE;
         super.currency = "USD";
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public Zidisha(String username, String password, Context context) throws BankException,
@@ -99,14 +104,14 @@ public class Zidisha extends Bank {
             throw new BankException(
                     res.getText(R.string.unable_to_find).toString() + " user_guess.");
         }
-        String user_guess = mUserGuess.group(1);
+        String userGuess = mUserGuess.group(1);
 
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("username", getUsername()));
         postData.add(new BasicNameValuePair("password", getPassword()));
         postData.add(new BasicNameValuePair("textpassword", getUsername()));
         postData.add(new BasicNameValuePair("userlogin", ""));
-        postData.add(new BasicNameValuePair("user_guess", user_guess));
+        postData.add(new BasicNameValuePair("user_guess", userGuess));
         return new LoginPackage(urlopen, postData, response, "https://www.zidisha.org/process.php");
     }
 

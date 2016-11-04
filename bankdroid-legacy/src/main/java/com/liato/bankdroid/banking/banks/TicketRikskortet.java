@@ -44,8 +44,6 @@ public class TicketRikskortet extends Bank {
 
     private static final String NAME = "Ticket Rikskortet";
 
-    private static final String NAME_SHORT = "rikskortet";
-
     private static final String URL = "https://www.edenred.se/rikskuponger/mina-sidor/logga-in/";
 
     private static final String URL_OVERVIEW = "https://www.edenred.se/rikskuponger/mina-sidor/employee/start/";
@@ -71,10 +69,17 @@ public class TicketRikskortet extends Bank {
     public TicketRikskortet(Context context) {
         super(context, R.drawable.logo_rikskortet);
 
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
+        super.url = URL;
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public TicketRikskortet(String username, String password, Context context) throws BankException,

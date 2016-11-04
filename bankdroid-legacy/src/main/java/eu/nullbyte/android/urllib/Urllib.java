@@ -88,9 +88,9 @@ import timber.log.Timber;
 
 public class Urllib {
 
-    private static int MAX_RETRIES = 5;
+    private final static int MAX_RETRIES = 5;
 
-    public static String DEFAULT_USER_AGENT
+    public final static String DEFAULT_USER_AGENT
             = "Mozilla/5.0 (Linux; U; Android 2.1; en-us; Nexus One Build/ERD62) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17";
 
     private String userAgent = null;

@@ -43,8 +43,6 @@ public class TestBank extends Bank {
 
     private static final String NAME = "Testbank";
 
-    private static final String NAME_SHORT = "testbank";
-
     private static final String URL = "http://www.nullbyte.eu/";
 
     private static final int BANKTYPE_ID = IBankTypes.TESTBANK;
@@ -70,13 +68,20 @@ public class TestBank extends Bank {
     public TestBank(Context context) {
         super(context, R.drawable.logo_bankdroid);
 
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
-        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
-        super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
-        super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
+        super.url = URL;
+        super.inputTypeUsername = INPUT_TYPE_USERNAME;
+        super.inputTypePassword = INPUT_TYPE_PASSWORD;
+        super.inputHintUsername = INPUT_HINT_USERNAME;
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public TestBank(String username, String password, Context context) throws BankException,

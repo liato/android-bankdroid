@@ -31,7 +31,7 @@ import android.view.WindowManager;
 
 public class LockablePreferenceActivity extends PreferenceActivity {
 
-    private static int PATTERNLOCK_UNLOCK = 42;
+    private static final int PATTERNLOCK_UNLOCK = 42;
 
     private SharedPreferences mPrefs;
 

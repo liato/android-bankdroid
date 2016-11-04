@@ -49,8 +49,6 @@ public class CSN extends Bank {
 
     private static final String NAME = "CSN";
 
-    private static final String NAME_SHORT = "csn";
-
     private static final String URL = "https://www.csn.se/bas/inloggning/pinkod.do";
 
     private static final int BANKTYPE_ID = IBankTypes.CSN;
@@ -82,14 +80,21 @@ public class CSN extends Bank {
 
     public CSN(Context context) {
         super(context, R.drawable.logo_csn);
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
-        super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
-        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
-        super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
-        super.STATIC_BALANCE = STATIC_BALANCE;
+        super.url = URL;
+        super.inputTypePassword = INPUT_TYPE_PASSWORD;
+        super.inputTypeUsername = INPUT_TYPE_USERNAME;
+        super.inputHintUsername = INPUT_HINT_USERNAME;
+        super.staticBalance = STATIC_BALANCE;
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public CSN(String username, String password, Context context) throws BankException,

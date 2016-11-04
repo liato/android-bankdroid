@@ -28,8 +28,6 @@ public class Chalmrest extends Bank {
 
     private static final String NAME = "Chalmrest";
 
-    private static final String NAME_SHORT = "chalmrest";
-
     private static final int BANKTYPE_ID = IBankTypes.CHALMREST;
 
     private Pattern reViewState = Pattern.compile("__VIEWSTATE\"\\s+value=\"([^\"]+)\"");
@@ -47,13 +45,20 @@ public class Chalmrest extends Bank {
 
     public Chalmrest(Context context) {
         super(context, R.drawable.logo_chalmrest);
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.INPUT_TITLETEXT_USERNAME = R.string.card_number;
-        super.INPUT_HINT_USERNAME = "XXXXXXXXXXXXXXXX";
-        super.INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_NUMBER;
-        super.INPUT_HIDDEN_PASSWORD = true;
+        super.inputTitletextUsername = R.string.card_number;
+        super.inputHintUsername = "XXXXXXXXXXXXXXXX";
+        super.inputTypeUsername = InputType.TYPE_CLASS_NUMBER;
+        super.inputHiddenPassword = true;
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public Chalmrest(String username, String password, Context context) throws BankException,
@@ -110,30 +115,30 @@ public class Chalmrest extends Bank {
         }
         urlopen = login();
         response = urlopen.open("http://kortladdning3.chalmerskonferens.se/CardLoad_Order.aspx");
-        Matcher matcher;
-        Matcher matcher_b;
+        Matcher accountMatcher;
+        Matcher balanceMatcher;
 
-        matcher = reAccount.matcher(response);
-        if (matcher.find()) {
+        accountMatcher = reAccount.matcher(response);
+        if (accountMatcher.find()) {
             /*
              * Capture groups:
              * GROUP                EXAMPLE DATA
              * 1: Name              Kalle Karlsson
              */
 
-            matcher_b = reBalance.matcher(response);
-            if (matcher_b.find()) {
+            balanceMatcher = reBalance.matcher(response);
+            if (balanceMatcher.find()) {
                 /*
                  * Capture groups:
                  * GROUP                EXAMPLE DATA
                  * 1: Balance              118 kr
                  */
 
-                String balanceString = matcher_b.group(1).replaceAll("\\<a[^>]*>", "")
+                String balanceString = balanceMatcher.group(1).replaceAll("\\<a[^>]*>", "")
                         .replaceAll("\\<[^>]*>", "").trim();
 
-                accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim(),
-                        Helpers.parseBalance(balanceString), matcher.group(1)));
+                accounts.add(new Account(Html.fromHtml(accountMatcher.group(1)).toString().trim(),
+                        Helpers.parseBalance(balanceString), accountMatcher.group(1)));
                 balance = balance.add(Helpers.parseBalance(balanceString));
             }
         }

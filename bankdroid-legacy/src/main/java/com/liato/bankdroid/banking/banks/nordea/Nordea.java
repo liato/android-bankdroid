@@ -46,8 +46,6 @@ public class Nordea extends Bank {
 
     private static final String NAME = "Nordea";
 
-    private static final String NAME_SHORT = "nordea";
-
     private static final String BASE_URL = "https://internetbanken.privat.nordea.se/nsp/";
 
     private static final String LOGIN_URL = BASE_URL + "login";
@@ -210,13 +208,20 @@ public class Nordea extends Bank {
     public Nordea(Context context) {
         super(context, R.drawable.logo_nordea);
 
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = BASE_URL;
-        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
-        super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
-        super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
+        super.url = BASE_URL;
+        super.inputTypeUsername = INPUT_TYPE_USERNAME;
+        super.inputTypePassword = INPUT_TYPE_PASSWORD;
+        super.inputHintUsername = INPUT_HINT_USERNAME;
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public Nordea(String username, String password, Context context) throws BankException,

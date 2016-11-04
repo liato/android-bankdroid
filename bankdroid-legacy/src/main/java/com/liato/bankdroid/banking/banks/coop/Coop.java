@@ -57,8 +57,6 @@ public class Coop extends Bank {
 
     private static final String NAME = "Coop";
 
-    private static final String NAME_SHORT = "coop";
-
     private static final String URL = "https://www.coop.se/mina-sidor/oversikt/";
 
     private static final int BANKTYPE_ID = IBankTypes.COOP;
@@ -83,11 +81,18 @@ public class Coop extends Bank {
     public Coop(Context context) {
         super(context, R.drawable.logo_coop);
 
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
-        super.STATIC_BALANCE = true;
+        super.url = URL;
+        super.staticBalance = true;
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public Coop(String username, String password, Context context) throws BankException,

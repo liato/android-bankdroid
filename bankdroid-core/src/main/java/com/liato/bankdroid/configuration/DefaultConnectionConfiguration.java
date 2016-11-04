@@ -12,7 +12,7 @@ public class DefaultConnectionConfiguration {
 
     public static final String NAME = "provider.configuration.name";
 
-    private final static List<Field> configuration = createConfiguration();
+    private final static List<Field> CONFIGURATION = createConfiguration();
 
     private static List<Field> createConfiguration() {
         List<Field> configuration = new ArrayList<>();
@@ -24,6 +24,6 @@ public class DefaultConnectionConfiguration {
     }
 
     public static List<Field> fields() {
-        return configuration;
+        return CONFIGURATION;
     }
 }

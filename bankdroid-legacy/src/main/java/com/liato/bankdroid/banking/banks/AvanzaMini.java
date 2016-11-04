@@ -26,9 +26,16 @@ public class AvanzaMini extends Avanza {
 
     public AvanzaMini(Context context) {
         super(context, R.drawable.logo_avanzamini);
-        NAME = "Avanza Mini";
-        NAME_SHORT = "avanzamini";
-        URL = "https://www.avanza.se/mini/hem/";
-        BANKTYPE_ID = IBankTypes.AVANZAMINI;
+        url = "https://www.avanza.se/mini/hem/";
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return IBankTypes.AVANZAMINI;
+    }
+
+    @Override
+    public String getName() {
+        return "Avanza Mini";
     }
 }

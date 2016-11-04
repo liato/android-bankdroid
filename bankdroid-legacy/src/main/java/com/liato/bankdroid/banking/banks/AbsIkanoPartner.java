@@ -58,10 +58,10 @@ public abstract class AbsIkanoPartner extends Bank {
 
     public AbsIkanoPartner(Context context, @DrawableRes int logoResource) {
         super(context, logoResource);
-        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
-        super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
-        super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
-        super.STATIC_BALANCE = true;
+        super.inputTypeUsername = INPUT_TYPE_USERNAME;
+        super.inputTypePassword = INPUT_TYPE_PASSWORD;
+        super.inputHintUsername = INPUT_HINT_USERNAME;
+        super.staticBalance = true;
     }
 
     public AbsIkanoPartner(String username, String password, Context context, @DrawableRes int logoResource)

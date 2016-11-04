@@ -64,8 +64,6 @@ public class Lansforsakringar extends Bank {
 
     private static final String NAME = "Länsförsäkringar";
 
-    private static final String NAME_SHORT = "lansforsakringar";
-
     private static final int BANKTYPE_ID = IBankTypes.LANSFORSAKRINGAR;
 
     private static final int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
@@ -83,15 +81,22 @@ public class Lansforsakringar extends Bank {
     public Lansforsakringar(Context context) {
         super(context, R.drawable.logo_lansforsakringar);
 
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
-        super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
-        super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
+        super.inputTypeUsername = INPUT_TYPE_USERNAME;
+        super.inputTypePassword = INPUT_TYPE_PASSWORD;
+        super.inputHintUsername = INPUT_HINT_USERNAME;
         mObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mObjectMapper.configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false);
         mObjectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public Urllib login() throws LoginException, BankException, IOException {

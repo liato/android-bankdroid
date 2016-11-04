@@ -46,8 +46,6 @@ public class Bioklubben extends Bank {
 
     private static final String NAME = "Bioklubben";
 
-    private static final String NAME_SHORT = "bioklubben";
-
     private static final String URL = "https://bioklubben.sf.se/Start.aspx";
 
     private static final int BANKTYPE_ID = Bank.BIOKLUBBEN;
@@ -58,15 +56,22 @@ public class Bioklubben extends Bank {
 
     public Bioklubben(Context context) {
         super(context, R.drawable.logo_bioklubben);
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
-        super.DISPLAY_DECIMALS = DISPLAY_DECIMALS;
-        super.INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT
+        super.url = URL;
+        super.displayDecimals = DISPLAY_DECIMALS;
+        super.inputTypeUsername = InputType.TYPE_CLASS_TEXT
                 | +InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
-        super.INPUT_HINT_USERNAME = context.getString(R.string.email);
+        super.inputHintUsername = context.getString(R.string.email);
         currency = context.getString(R.string.points);
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public Bioklubben(String username, String password, Context context) throws BankException,

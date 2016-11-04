@@ -390,15 +390,15 @@ public abstract class BankdroidWidgetProvider extends AppWidgetProvider {
                     }
 
                 } catch (BankException e) {
-                    Timber.e(e, "Could not update bank %s", bank.getShortName());
+                    Timber.e(e, "Could not update bank %s", bank.getName());
                 } catch (LoginException e) {
-                    Timber.w(e, "Invalid credentials for bank %s", bank.getShortName());
+                    Timber.w(e, "Invalid credentials for bank %s", bank.getName());
                     DBAdapter.disable(bank, context);
                 } catch (BankChoiceException e) {
                     Timber.w(e, "BankChoiceException");
                 } catch (IOException e) {
                     if (NetworkUtils.isInternetAvailable()) {
-                        Timber.e(e, "Could not update bank %s", bank.getShortName());
+                        Timber.e(e, "Could not update bank %s", bank.getName());
                     }
                 }
                 BankdroidWidgetProvider.updateAppWidget(context, appWidgetManager, appWidgetId);

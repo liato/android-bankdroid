@@ -3,6 +3,7 @@ package com.liato.bankdroid.appwidget;
 import com.liato.bankdroid.banking.Account;
 import com.liato.bankdroid.banking.Bank;
 import com.liato.bankdroid.db.DBAdapter;
+import com.liato.bankdroid.provider.IBankTypes;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -55,6 +56,16 @@ public class DataRetrieverTaskTest {
         @Override
         public BigDecimal getBalance() {
             return getAccounts().get(0).getBalance();
+        }
+
+        @Override
+        public int getBanktypeId() {
+            return IBankTypes.TESTBANK;
+        }
+
+        @Override
+        public String getName() {
+            return "Testbanken";
         }
     }
 

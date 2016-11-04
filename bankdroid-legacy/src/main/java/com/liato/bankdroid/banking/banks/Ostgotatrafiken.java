@@ -43,8 +43,6 @@ public class Ostgotatrafiken extends Bank {
 
     private static final String NAME = "Östgötatrafiken";
 
-    private static final String NAME_SHORT = "ogt";
-
     private static final int BANKTYPE_ID = IBankTypes.OSTGOTATRAFIKEN;
 
     private Pattern reViewState = Pattern.compile(
@@ -68,10 +66,16 @@ public class Ostgotatrafiken extends Bank {
 
     public Ostgotatrafiken(Context context) {
         super(context, R.drawable.logo_ogt);
+    }
 
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public Ostgotatrafiken(String username, String password, Context context) throws BankException,

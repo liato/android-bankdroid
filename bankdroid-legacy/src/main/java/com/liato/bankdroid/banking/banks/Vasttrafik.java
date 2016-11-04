@@ -44,8 +44,6 @@ public class Vasttrafik extends Bank {
 
     private static final String NAME = "Västtrafik";
 
-    private static final String NAME_SHORT = "vasttrafik";
-
     private static final String URL = "https://www.vasttrafik.se/mina-sidor/";
 
     private static final int BANKTYPE_ID = IBankTypes.VASTTRAFIK;
@@ -64,11 +62,17 @@ public class Vasttrafik extends Bank {
 
     public Vasttrafik(Context context) {
         super(context, R.drawable.logo_vasttrafik);
+        super.url = URL;
+    }
 
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public Vasttrafik(String username, String password, Context context) throws BankException,
@@ -127,11 +131,11 @@ public class Vasttrafik extends Bank {
         }
         urlopen = login();
         response = urlopen.open("https://www.vasttrafik.se/mina-sidor-inloggad/mina-kort/");
-        Matcher matcher;
-        Matcher matcher_b;
+        Matcher accountMatcher;
+        Matcher balanceMatcher;
 
-        matcher = reAccounts.matcher(response);
-        while (matcher.find()) {
+        accountMatcher = reAccounts.matcher(response);
+        while (accountMatcher.find()) {
             /*
              * Capture groups:
              * GROUP                EXAMPLE DATA
@@ -139,12 +143,12 @@ public class Vasttrafik extends Bank {
              * 2: Balance information
              */
 
-            if ("".equals(matcher.group(1))) {
+            if ("".equals(accountMatcher.group(1))) {
                 continue;
             }
 
-            matcher_b = reBalance.matcher(matcher.group(2));
-            if (matcher_b.find()) {
+            balanceMatcher = reBalance.matcher(accountMatcher.group(2));
+            if (balanceMatcher.find()) {
                 /*
                  * Capture groups:
                  * GROUP                EXAMPLE DATA
@@ -152,11 +156,11 @@ public class Vasttrafik extends Bank {
                  * 2: Amount            592,80 kr
                  */
 
-                String balanceString = matcher_b.group(2).replaceAll("\\<a[^>]*>", "")
+                String balanceString = balanceMatcher.group(2).replaceAll("\\<a[^>]*>", "")
                         .replaceAll("\\<[^>]*>", "").trim();
 
-                accounts.add(new Account(Html.fromHtml(matcher.group(1)).toString().trim(),
-                        Helpers.parseBalance(balanceString), matcher.group(1)));
+                accounts.add(new Account(Html.fromHtml(accountMatcher.group(1)).toString().trim(),
+                        Helpers.parseBalance(balanceString), accountMatcher.group(1)));
                 balance = balance.add(Helpers.parseBalance(balanceString));
             }
         }

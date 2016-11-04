@@ -113,7 +113,6 @@
         <exclude name="SimplifyBooleanReturns" />
         <exclude name="SimplifyStartsWith" />
         <exclude name="StdCyclomaticComplexity" />
-        <exclude name="SuspiciousConstantFieldName" />
         <exclude name="SwitchDensity" />
         <exclude name="SwitchStmtsShouldHaveDefault" />
         <exclude name="TooFewBranchesForASwitchStatement" />
@@ -139,6 +138,5 @@
         <exclude name="UselessOverridingMethod" />
         <exclude name="UselessParentheses" />
         <exclude name="UselessQualifiedThis" />
-        <exclude name="VariableNamingConventions" />
     </rule>
 </ruleset>
