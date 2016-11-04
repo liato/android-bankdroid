@@ -30,8 +30,6 @@ public class IKEA extends AbsIkanoPartner {
 
     private static final String NAME = "IKEA HANDLA kort";
 
-    private static final String NAME_SHORT = "ikea";
-
     private static final String URL
             = "https://partner.ikanobank.se/web/engines/page.aspx?structid=1420";
 
@@ -40,11 +38,18 @@ public class IKEA extends AbsIkanoPartner {
     public IKEA(Context context) {
         super(context, R.drawable.logo_ikea);
 
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
+        super.url = URL;
         this.structId = "1420";
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public IKEA(String username, String password, Context context) throws BankException,

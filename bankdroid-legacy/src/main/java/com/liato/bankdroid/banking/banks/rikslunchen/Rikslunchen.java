@@ -40,8 +40,6 @@ public class Rikslunchen extends Bank {
 
     private static final String NAME = "Rikslunchen";
 
-    private static final String NAME_SHORT = "rikslunchen";
-
     private static final String URL = "http://www.rikslunchen.se/index.html";
 
     private static final int BANKTYPE_ID = Bank.RIKSLUNCHEN;
@@ -53,13 +51,20 @@ public class Rikslunchen extends Bank {
     public Rikslunchen(Context context) {
         super(context, R.drawable.logo_rikslunchen);
 
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
-        super.INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
-        super.INPUT_TITLETEXT_USERNAME = R.string.card_id;
-        super.INPUT_HIDDEN_PASSWORD = true;
+        super.url = URL;
+        super.inputTypeUsername = InputType.TYPE_CLASS_PHONE;
+        super.inputTitletextUsername = R.string.card_id;
+        super.inputHiddenPassword = true;
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public Rikslunchen(String username, String password, Context context) throws BankException,

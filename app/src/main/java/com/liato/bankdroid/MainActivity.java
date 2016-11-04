@@ -59,9 +59,9 @@ public class MainActivity extends LockableActivity {
 
     protected static boolean showHidden = false;
 
-    private static Bank selected_bank = null;
+    private static Bank selectedBank = null;
 
-    private static Account selected_account = null;
+    private static Account selectedAccount = null;
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -91,14 +91,14 @@ public class MainActivity extends LockableActivity {
             public boolean onItemLongClick(final AdapterView<?> parent, final View view,
                     final int position, final long id) {
                 if (adapter.getItem(position) instanceof Account) {
-                    selected_account = (Account) adapter.getItem(position);
+                    selectedAccount = (Account) adapter.getItem(position);
                     final PopupMenuAccount pmenu = new PopupMenuAccount(parent, view, MainActivity.this);
                     pmenu.showLikeQuickAction(0, 12);
                     return true;
                 } else if (adapter.getItem(position) instanceof Bank) {
-                    selected_bank = (Bank) adapter.getItem(position);
-                    selected_bank.toggleHideAccounts();
-                    DBAdapter.save(selected_bank, MainActivity.this);
+                    selectedBank = (Bank) adapter.getItem(position);
+                    selectedBank.toggleHideAccounts();
+                    DBAdapter.save(selectedBank, MainActivity.this);
                     refreshView();
                     return true;
                 }
@@ -110,7 +110,7 @@ public class MainActivity extends LockableActivity {
             public void onItemClick(final AdapterView<?> parent, final View view,
                     final int position, final long id) {
                 if (adapter.getItem(position) instanceof Bank) {
-                    selected_bank = (Bank) adapter.getItem(position);
+                    selectedBank = (Bank) adapter.getItem(position);
                     final PopupMenuBank pmenu = new PopupMenuBank(parent, view, MainActivity.this);
                     pmenu.showLikeQuickAction(0, 12);
                 } else {
@@ -241,7 +241,7 @@ public class MainActivity extends LockableActivity {
             final Button btnHide = (Button) root.findViewById(R.id.btnHide);
             final Button btnUnhide = (Button) root.findViewById(R.id.btnUnhide);
             final Button btnWWW = (Button) root.findViewById(R.id.btnWWW);
-            if (selected_bank.getHideAccounts()) {
+            if (selectedBank.getHideAccounts()) {
                 btnHide.setVisibility(View.GONE);
                 btnUnhide.setVisibility(View.VISIBLE);
                 btnUnhide.setOnClickListener(this);
@@ -250,7 +250,7 @@ public class MainActivity extends LockableActivity {
                 btnUnhide.setVisibility(View.GONE);
                 btnHide.setOnClickListener(this);
             }
-            if (selected_bank.isWebViewEnabled()) {
+            if (selectedBank.isWebViewEnabled()) {
                 btnWWW.setOnClickListener(this);
             } else {
                 btnWWW.setVisibility(View.GONE);
@@ -270,29 +270,29 @@ public class MainActivity extends LockableActivity {
                 case R.id.btnHide:
                 case R.id.btnUnhide:
                     this.dismiss();
-                    selected_bank.toggleHideAccounts();
-                    DBAdapter.save(selected_bank, context);
+                    selectedBank.toggleHideAccounts();
+                    DBAdapter.save(selectedBank, context);
                     parent.refreshView();
                     return;
                 case R.id.btnWWW:
-                    if (selected_bank != null && selected_bank.isWebViewEnabled()) {
-                        //Uri uri = Uri.parse(selected_bank.getURL());
+                    if (selectedBank != null && selectedBank.isWebViewEnabled()) {
+                        //Uri uri = Uri.parse(selectedBank.getURL());
                         //Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                         final Intent intent = new Intent(context, WebViewActivity.class);
-                        intent.putExtra("bankid", selected_bank.getDbId());
+                        intent.putExtra("bankid", selectedBank.getDbId());
                         context.startActivity(intent);
                     }
                     this.dismiss();
                     return;
                 case R.id.btnEdit:
                     final Intent intent = new Intent(context, BankEditActivity.class);
-                    intent.putExtra("id", selected_bank.getDbId());
+                    intent.putExtra("id", selectedBank.getDbId());
                     context.startActivity(intent);
                     this.dismiss();
                     return;
                 case R.id.btnRefresh:
                     this.dismiss();
-                    new DataRetrieverTask(parent, selected_bank.getDbId()).execute();
+                    new DataRetrieverTask(parent, selectedBank.getDbId()).execute();
                     return;
                 case R.id.btnRemove:
                     this.dismiss();
@@ -307,7 +307,7 @@ public class MainActivity extends LockableActivity {
                                         public void onClick(final DialogInterface dialog,
                                                 final int id) {
                                             final DBAdapter db = new DBAdapter(context);
-                                            db.deleteBank(selected_bank.getDbId());
+                                            db.deleteBank(selectedBank.getDbId());
                                             dialog.cancel();
                                             parent.refreshView();
                                         }
@@ -358,7 +358,7 @@ public class MainActivity extends LockableActivity {
                     .findViewById(R.id.btnDisableNotifications);
             final Button btnEnableNotifications = (Button) root
                     .findViewById(R.id.btnEnableNotifications);
-            if (selected_account.isHidden()) {
+            if (selectedAccount.isHidden()) {
                 btnHide.setVisibility(View.GONE);
                 btnUnhide.setVisibility(View.VISIBLE);
                 btnUnhide.setOnClickListener(this);
@@ -367,7 +367,7 @@ public class MainActivity extends LockableActivity {
                 btnUnhide.setVisibility(View.GONE);
                 btnHide.setOnClickListener(this);
             }
-            if (selected_account.isNotify()) {
+            if (selectedAccount.isNotify()) {
                 btnDisableNotifications.setVisibility(View.VISIBLE);
                 btnDisableNotifications.setOnClickListener(this);
                 btnEnableNotifications.setVisibility(View.GONE);
@@ -385,26 +385,26 @@ public class MainActivity extends LockableActivity {
             switch (id) {
                 case R.id.btnHide:
                     this.dismiss();
-                    selected_account.setHidden(true);
-                    DBAdapter.save(selected_account.getBank(), parent);
+                    selectedAccount.setHidden(true);
+                    DBAdapter.save(selectedAccount.getBank(), parent);
                     parent.refreshView();
                     return;
                 case R.id.btnUnhide:
                     this.dismiss();
-                    selected_account.setHidden(false);
-                    DBAdapter.save(selected_account.getBank(), parent);
+                    selectedAccount.setHidden(false);
+                    DBAdapter.save(selectedAccount.getBank(), parent);
                     parent.refreshView();
                     return;
                 case R.id.btnEnableNotifications:
                     this.dismiss();
-                    selected_account.setNotify(true);
-                    DBAdapter.save(selected_account.getBank(), parent);
+                    selectedAccount.setNotify(true);
+                    DBAdapter.save(selectedAccount.getBank(), parent);
                     parent.refreshView();
                     return;
                 case R.id.btnDisableNotifications:
                     this.dismiss();
-                    selected_account.setNotify(false);
-                    DBAdapter.save(selected_account.getBank(), parent);
+                    selectedAccount.setNotify(false);
+                    DBAdapter.save(selectedAccount.getBank(), parent);
                     parent.refreshView();
                     return;
 

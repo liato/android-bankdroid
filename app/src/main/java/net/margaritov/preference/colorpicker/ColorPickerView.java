@@ -64,29 +64,29 @@ public class ColorPickerView extends View {
     /**
      * The width in dp of the hue panel.
      */
-    private float HUE_PANEL_WIDTH = 30f;
+    private float huePanelWidth = 30f;
 
     /**
      * The height in dp of the alpha panel
      */
-    private float ALPHA_PANEL_HEIGHT = 20f;
+    private float alphaPanelHeight = 20f;
 
     /**
      * The distance in dp between the different
      * color panels.
      */
-    private float PANEL_SPACING = 10f;
+    private float panelSpacing = 10f;
 
     /**
      * The radius in dp of the color palette tracker circle.
      */
-    private float PALETTE_CIRCLE_TRACKER_RADIUS = 5f;
+    private float paletteCircleTrackerRadius = 5f;
 
     /**
      * The dp which the tracker of the hue or alpha panel
      * will extend outside of its bounds.
      */
-    private float RECTANGLE_TRACKER_OFFSET = 2f;
+    private float rectangleTrackerOffset = 2f;
 
     private float mDensity = 1f;
 
@@ -172,11 +172,11 @@ public class ColorPickerView extends View {
             setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         }
         mDensity = getContext().getResources().getDisplayMetrics().density;
-        PALETTE_CIRCLE_TRACKER_RADIUS *= mDensity;
-        RECTANGLE_TRACKER_OFFSET *= mDensity;
-        HUE_PANEL_WIDTH *= mDensity;
-        ALPHA_PANEL_HEIGHT *= mDensity;
-        PANEL_SPACING = PANEL_SPACING * mDensity;
+        paletteCircleTrackerRadius *= mDensity;
+        rectangleTrackerOffset *= mDensity;
+        huePanelWidth *= mDensity;
+        alphaPanelHeight *= mDensity;
+        panelSpacing = panelSpacing * mDensity;
 
         mDrawingOffset = calculateRequiredOffset();
 
@@ -216,7 +216,7 @@ public class ColorPickerView extends View {
     }
 
     private float calculateRequiredOffset() {
-        float offset = Math.max(PALETTE_CIRCLE_TRACKER_RADIUS, RECTANGLE_TRACKER_OFFSET);
+        float offset = Math.max(paletteCircleTrackerRadius, rectangleTrackerOffset);
         offset = Math.max(offset, BORDER_WIDTH_PX * mDensity);
 
         return offset * 1.5f;
@@ -274,11 +274,11 @@ public class ColorPickerView extends View {
         Point p = satValToPoint(mSat, mVal);
 
         mSatValTrackerPaint.setColor(0xff000000);
-        canvas.drawCircle(p.x, p.y, PALETTE_CIRCLE_TRACKER_RADIUS - 1f * mDensity,
+        canvas.drawCircle(p.x, p.y, paletteCircleTrackerRadius - 1f * mDensity,
                 mSatValTrackerPaint);
 
         mSatValTrackerPaint.setColor(0xffdddddd);
-        canvas.drawCircle(p.x, p.y, PALETTE_CIRCLE_TRACKER_RADIUS, mSatValTrackerPaint);
+        canvas.drawCircle(p.x, p.y, paletteCircleTrackerRadius, mSatValTrackerPaint);
 
     }
 
@@ -308,8 +308,8 @@ public class ColorPickerView extends View {
         Point p = hueToPoint(mHue);
 
         RectF r = new RectF();
-        r.left = rect.left - RECTANGLE_TRACKER_OFFSET;
-        r.right = rect.right + RECTANGLE_TRACKER_OFFSET;
+        r.left = rect.left - rectangleTrackerOffset;
+        r.right = rect.right + rectangleTrackerOffset;
         r.top = p.y - rectHeight;
         r.bottom = p.y + rectHeight;
 
@@ -359,8 +359,8 @@ public class ColorPickerView extends View {
         RectF r = new RectF();
         r.left = p.x - rectWidth;
         r.right = p.x + rectWidth;
-        r.top = rect.top - RECTANGLE_TRACKER_OFFSET;
-        r.bottom = rect.bottom + RECTANGLE_TRACKER_OFFSET;
+        r.top = rect.top - rectangleTrackerOffset;
+        r.bottom = rect.bottom + rectangleTrackerOffset;
 
         canvas.drawRoundRect(r, 2, 2, mHueTrackerPaint);
 
@@ -663,22 +663,22 @@ public class ColorPickerView extends View {
 
         if (!mShowAlphaPanel) {
 
-            height = (int) (widthAllowed - PANEL_SPACING - HUE_PANEL_WIDTH);
+            height = (int) (widthAllowed - panelSpacing - huePanelWidth);
 
             //If calculated height (based on the width) is more than the allowed height.
             if (height > heightAllowed || getTag().equals("landscape")) {
                 height = heightAllowed;
-                width = (int) (height + PANEL_SPACING + HUE_PANEL_WIDTH);
+                width = (int) (height + panelSpacing + huePanelWidth);
             } else {
                 width = widthAllowed;
             }
         } else {
 
-            width = (int) (heightAllowed - ALPHA_PANEL_HEIGHT + HUE_PANEL_WIDTH);
+            width = (int) (heightAllowed - alphaPanelHeight + huePanelWidth);
 
             if (width > widthAllowed) {
                 width = widthAllowed;
-                height = (int) (widthAllowed - HUE_PANEL_WIDTH + ALPHA_PANEL_HEIGHT);
+                height = (int) (widthAllowed - huePanelWidth + alphaPanelHeight);
             } else {
                 height = heightAllowed;
             }
@@ -709,10 +709,10 @@ public class ColorPickerView extends View {
         int width = getPrefferedHeight();
 
         if (mShowAlphaPanel) {
-            width -= (PANEL_SPACING + ALPHA_PANEL_HEIGHT);
+            width -= (panelSpacing + alphaPanelHeight);
         }
 
-        return (int) (width + HUE_PANEL_WIDTH + PANEL_SPACING);
+        return (int) (width + huePanelWidth + panelSpacing);
 
     }
 
@@ -721,7 +721,7 @@ public class ColorPickerView extends View {
         int height = (int) (200 * mDensity);
 
         if (mShowAlphaPanel) {
-            height += PANEL_SPACING + ALPHA_PANEL_HEIGHT;
+            height += panelSpacing + alphaPanelHeight;
         }
 
         return height;
@@ -748,7 +748,7 @@ public class ColorPickerView extends View {
         float panelSide = dRect.height() - BORDER_WIDTH_PX * 2;
 
         if (mShowAlphaPanel) {
-            panelSide -= PANEL_SPACING + ALPHA_PANEL_HEIGHT;
+            panelSide -= panelSpacing + alphaPanelHeight;
         }
 
         float left = dRect.left + BORDER_WIDTH_PX;
@@ -762,10 +762,10 @@ public class ColorPickerView extends View {
     private void setUpHueRect() {
         final RectF dRect = mDrawingRect;
 
-        float left = dRect.right - HUE_PANEL_WIDTH + BORDER_WIDTH_PX;
+        float left = dRect.right - huePanelWidth + BORDER_WIDTH_PX;
         float top = dRect.top + BORDER_WIDTH_PX;
-        float bottom = dRect.bottom - BORDER_WIDTH_PX - (mShowAlphaPanel ? (PANEL_SPACING
-                + ALPHA_PANEL_HEIGHT) : 0);
+        float bottom = dRect.bottom - BORDER_WIDTH_PX - (mShowAlphaPanel ? (panelSpacing
+                + alphaPanelHeight) : 0);
         float right = dRect.right - BORDER_WIDTH_PX;
 
         mHueRect = new RectF(left, top, right, bottom);
@@ -780,7 +780,7 @@ public class ColorPickerView extends View {
         final RectF dRect = mDrawingRect;
 
         float left = dRect.left + BORDER_WIDTH_PX;
-        float top = dRect.bottom - ALPHA_PANEL_HEIGHT + BORDER_WIDTH_PX;
+        float top = dRect.bottom - alphaPanelHeight + BORDER_WIDTH_PX;
         float bottom = dRect.bottom - BORDER_WIDTH_PX;
         float right = dRect.right - BORDER_WIDTH_PX;
 

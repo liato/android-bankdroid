@@ -67,44 +67,44 @@ public class BankTransactionsProvider extends ContentProvider implements
 
     private static final String TRANSACTIONS_TABLE = "transactions";
 
-    private final static UriMatcher uriMatcher;
+    private final static UriMatcher URI_MATCHER;
 
-    private final static Map<String, String> bankAccountProjectionMap;
+    private final static Map<String, String> BANK_ACCOUNT_PROJECTION_MAP;
 
-    private final static Map<String, String> transProjectionMap;
+    private final static Map<String, String> TRANS_PROJECTION_MAP;
 
     static {
-        uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        uriMatcher.addURI(AUTHORITY, TRANSACTIONS_CAT + "/" + WILD_CARD,
+        URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
+        URI_MATCHER.addURI(AUTHORITY, TRANSACTIONS_CAT + "/" + WILD_CARD,
                 TRANSACTIONS);
-        uriMatcher.addURI(AUTHORITY, BANK_ACCOUNTS_CAT + "/" + WILD_CARD,
+        URI_MATCHER.addURI(AUTHORITY, BANK_ACCOUNTS_CAT + "/" + WILD_CARD,
                 BANK_ACCOUNTS);
 
         // Projections are "Poor mans views" of the data.
-        bankAccountProjectionMap = new HashMap<String, String>();
+        BANK_ACCOUNT_PROJECTION_MAP = new HashMap<String, String>();
 
         // Must match bankAccountProjection in
         // IBankTransactionsProvider#bankAccountProjection
-        bankAccountProjectionMap.put(BANK_ID, BANK_ID);
-        bankAccountProjectionMap.put(BANK_NAME, BANK_NAME);
-        bankAccountProjectionMap.put(BANK_TYPE, BANK_TYPE);
-        bankAccountProjectionMap.put(BANK_LAST_UPDATED, BANK_LAST_UPDATED);
-        bankAccountProjectionMap.put(ACC_ID, ACC_ID);
-        bankAccountProjectionMap.put(ACC_NAME, ACC_NAME);
+        BANK_ACCOUNT_PROJECTION_MAP.put(BANK_ID, BANK_ID);
+        BANK_ACCOUNT_PROJECTION_MAP.put(BANK_NAME, BANK_NAME);
+        BANK_ACCOUNT_PROJECTION_MAP.put(BANK_TYPE, BANK_TYPE);
+        BANK_ACCOUNT_PROJECTION_MAP.put(BANK_LAST_UPDATED, BANK_LAST_UPDATED);
+        BANK_ACCOUNT_PROJECTION_MAP.put(ACC_ID, ACC_ID);
+        BANK_ACCOUNT_PROJECTION_MAP.put(ACC_NAME, ACC_NAME);
         // Table name has to be explicitly included here since Banks also have a column named balance.
-        bankAccountProjectionMap.put(ACC_BALANCE, ACCOUNT_TABLE + "." + ACC_BALANCE);
-        bankAccountProjectionMap.put(ACC_TYPE, ACC_TYPE);
+        BANK_ACCOUNT_PROJECTION_MAP.put(ACC_BALANCE, ACCOUNT_TABLE + "." + ACC_BALANCE);
+        BANK_ACCOUNT_PROJECTION_MAP.put(ACC_TYPE, ACC_TYPE);
 
-        transProjectionMap = new HashMap<String, String>();
+        TRANS_PROJECTION_MAP = new HashMap<String, String>();
 
         // Must match transactionProjection in
         // IBankTransactionsProvider#transactionProjection
-        transProjectionMap.put(TRANS_ID, TRANS_ID);
-        transProjectionMap.put(TRANS_DATE, TRANS_DATE);
-        transProjectionMap.put(TRANS_DESC, TRANS_DESC);
-        transProjectionMap.put(TRANS_AMT, TRANS_AMT);
-        transProjectionMap.put(TRANS_CUR, TRANS_CUR);
-        transProjectionMap.put(TRANS_ACCNT, TRANS_ACCNT);
+        TRANS_PROJECTION_MAP.put(TRANS_ID, TRANS_ID);
+        TRANS_PROJECTION_MAP.put(TRANS_DATE, TRANS_DATE);
+        TRANS_PROJECTION_MAP.put(TRANS_DESC, TRANS_DESC);
+        TRANS_PROJECTION_MAP.put(TRANS_AMT, TRANS_AMT);
+        TRANS_PROJECTION_MAP.put(TRANS_CUR, TRANS_CUR);
+        TRANS_PROJECTION_MAP.put(TRANS_ACCNT, TRANS_ACCNT);
     }
 
     private DatabaseHelper dbHelper;
@@ -143,7 +143,7 @@ public class BankTransactionsProvider extends ContentProvider implements
     public String getType(final Uri uri) {
         Timber.d("Got URI: %s", uri.toString());
 
-        switch (uriMatcher.match(uri)) {
+        switch (URI_MATCHER.match(uri)) {
             case BANK_ACCOUNTS:
                 return BANK_ACCOUNTS_MIME;
             case TRANSACTIONS:
@@ -207,12 +207,12 @@ public class BankTransactionsProvider extends ContentProvider implements
         if (BANK_ACCOUNTS_MIME.equals(getType(uri))) {
             qb = new SQLiteQueryBuilder();
             qb.setTables(BANK_ACCOUNT_TABLES);
-            qb.setProjectionMap(bankAccountProjectionMap);
+            qb.setProjectionMap(BANK_ACCOUNT_PROJECTION_MAP);
             qb.setDistinct(true);
         } else if (TRANSACTIONS_MIME.equals(getType(uri))) {
             qb = new SQLiteQueryBuilder();
             qb.setTables(TRANSACTIONS_TABLE);
-            qb.setProjectionMap(transProjectionMap);
+            qb.setProjectionMap(TRANS_PROJECTION_MAP);
         } else {
             throw new IllegalArgumentException("Unsupported URI: " + uri);
         }

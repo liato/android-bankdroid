@@ -47,8 +47,6 @@ public class IkanoBank extends Bank {
 
     private static final String NAME = "Ikano Bank";
 
-    private static final String NAME_SHORT = "ikanobank";
-
     private static final String URL = "https://secure.ikanobank.se/engines/page.aspx?structid=1895";
 
     private static final int BANKTYPE_ID = IBankTypes.IKANOBANK;
@@ -81,13 +79,20 @@ public class IkanoBank extends Bank {
     public IkanoBank(Context context) {
         super(context, R.drawable.logo_ikanobank);
 
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
-        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
-        super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
-        super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
+        super.url = URL;
+        super.inputTypeUsername = INPUT_TYPE_USERNAME;
+        super.inputTypePassword = INPUT_TYPE_PASSWORD;
+        super.inputHintUsername = INPUT_HINT_USERNAME;
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public IkanoBank(String username, String password, Context context) throws BankException,

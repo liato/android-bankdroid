@@ -41,7 +41,7 @@ public class ColorPickerPreference
         Preference.OnPreferenceClickListener,
         ColorPickerDialog.OnColorChangedListener {
 
-    private static final String androidns = "http://schemas.android.com/apk/res/android";
+    private static final String ANDROID_NS = "http://schemas.android.com/apk/res/android";
 
     private ViewGroup parent;
 
@@ -137,7 +137,7 @@ public class ColorPickerPreference
         mDensity = getContext().getResources().getDisplayMetrics().density;
         setOnPreferenceClickListener(this);
         if (attrs != null) {
-            String defaultValue = attrs.getAttributeValue(androidns, "defaultValue");
+            String defaultValue = attrs.getAttributeValue(ANDROID_NS, "defaultValue");
             if (defaultValue.startsWith("#")) {
                 try {
                     mDefaultValue = convertToColorInt(defaultValue);
@@ -146,7 +146,7 @@ public class ColorPickerPreference
                     mDefaultValue = convertToColorInt("#FF000000");
                 }
             } else {
-                int resourceId = attrs.getAttributeResourceValue(androidns, "defaultValue", 0);
+                int resourceId = attrs.getAttributeResourceValue(ANDROID_NS, "defaultValue", 0);
                 if (resourceId != 0) {
                     mDefaultValue = context.getResources().getInteger(resourceId);
                 }

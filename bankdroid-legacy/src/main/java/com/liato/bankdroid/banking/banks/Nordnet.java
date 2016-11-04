@@ -48,8 +48,6 @@ public class Nordnet extends Bank {
 
     private static final String NAME = "Nordnet";
 
-    private static final String NAME_SHORT = "nordnet";
-
     private static final String URL = "https://www.nordnet.se/mux/login/startSE.html";
 
     private static final int BANKTYPE_ID = IBankTypes.NORDNET;
@@ -66,10 +64,17 @@ public class Nordnet extends Bank {
     public Nordnet(Context context) {
         super(context, R.drawable.logo_nordnet);
 
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
+        super.url = URL;
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public Nordnet(String username, String password, Context context) throws BankException,
@@ -128,32 +133,32 @@ public class Nordnet extends Bank {
             throw new LoginException(res.getText(R.string.invalid_username_password).toString());
         }
         urlopen = login();
-        Matcher matcher = reAccounts.matcher(response);
-        Matcher matcher_b = reBalance.matcher(response);
-        while (matcher.find()) {
+        Matcher accountMatcher = reAccounts.matcher(response);
+        Matcher balanceMatcher = reBalance.matcher(response);
+        while (accountMatcher.find()) {
             /*
              * Capture groups:
              * GROUP                EXAMPLE DATA
              * 1: Account name and number      Investeringssparkonto 1234567   | Sparkonto 1234 567890 1
              *
              */
-            if (matcher_b.find()) {
+            if (balanceMatcher.find()) {
                 /*
                 * Capture groups:
                 * GROUP                EXAMPLE DATA
                 * 1: Account balance     62 356 | 0
                 *
                 */
-                Account account = new Account(Html.fromHtml(matcher.group(1)).toString().trim(),
-                        Helpers.parseBalance(matcher_b.group(1)),
-                        Html.fromHtml(matcher.group(1)).toString().trim().replaceAll(" ", ""));
+                Account account = new Account(Html.fromHtml(accountMatcher.group(1)).toString().trim(),
+                        Helpers.parseBalance(balanceMatcher.group(1)),
+                        Html.fromHtml(accountMatcher.group(1)).toString().trim().replaceAll(" ", ""));
 
                 // Saving accounts contain white space characters in the account number
-                if (!matcher.group(1).trim().contains(" ")) {
+                if (!accountMatcher.group(1).trim().contains(" ")) {
                     account.setType(Account.FUNDS);
                 }
                 accounts.add(account);
-                balance = balance.add(Helpers.parseBalance(matcher_b.group(1)));
+                balance = balance.add(Helpers.parseBalance(balanceMatcher.group(1)));
             }
         }
 

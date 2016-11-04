@@ -45,8 +45,6 @@ public class Everydaycard extends Bank {
 
     private static final String NAME = "Everydaycard";
 
-    private static final String NAME_SHORT = "everydaycard";
-
     private static final String URL = "http://www.everydaycard.se/mobil/";
 
     private static final int BANKTYPE_ID = IBankTypes.EVERYDAYCARD;
@@ -67,12 +65,19 @@ public class Everydaycard extends Bank {
 
     public Everydaycard(Context context) {
         super(context, R.drawable.logo_everydaycard);
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
-        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
-        super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
+        super.url = URL;
+        super.inputTypeUsername = INPUT_TYPE_USERNAME;
+        super.inputHintUsername = INPUT_HINT_USERNAME;
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public Everydaycard(String username, String password, Context context)

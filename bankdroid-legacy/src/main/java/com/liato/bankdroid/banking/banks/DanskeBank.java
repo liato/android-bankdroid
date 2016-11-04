@@ -49,8 +49,6 @@ public class DanskeBank extends Bank {
 
     private static final String NAME = "DanskeBank";
 
-    private static final String NAME_SHORT = "danskebank";
-
     private static final String URL
             = "https://mobil.danskebank.se/XI?WP=XAI&WO=Logon&WA=MBSELogon&gsSprog=SE&gsBrand=OEB";
 
@@ -82,13 +80,20 @@ public class DanskeBank extends Bank {
 
     public DanskeBank(Context context) {
         super(context, R.drawable.logo_danskebank);
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
-        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
-        super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
-        super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
+        super.url = URL;
+        super.inputTypeUsername = INPUT_TYPE_USERNAME;
+        super.inputHintUsername = INPUT_HINT_USERNAME;
+        super.inputTypePassword = INPUT_TYPE_PASSWORD;
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public DanskeBank(String username, String password, Context context) throws BankException,

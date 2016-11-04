@@ -45,8 +45,6 @@ public class McDonalds extends Bank {
 
     private static final String NAME = "McDonald's Presentkort";
 
-    private static final String NAME_SHORT = "mcdonalds";
-
     private static final String URL = "http://apps.mcdonalds.se/sweden/giftquer.nsf/egift?OpenForm";
 
     private static final int BANKTYPE_ID = Bank.MCDONALDS;
@@ -67,13 +65,20 @@ public class McDonalds extends Bank {
     public McDonalds(Context context) {
         super(context, R.drawable.logo_mcdonalds);
 
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
-        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
-        super.INPUT_HIDDEN_PASSWORD = INPUT_HIDDEN_PASSWORD;
-        super.INPUT_TITLETEXT_USERNAME = INPUT_TITLETEXT_USERNAME;
+        super.url = URL;
+        super.inputTypeUsername = INPUT_TYPE_USERNAME;
+        super.inputHiddenPassword = INPUT_HIDDEN_PASSWORD;
+        super.inputTitletextUsername = INPUT_TITLETEXT_USERNAME;
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public McDonalds(String username, String password, Context context) throws BankException,

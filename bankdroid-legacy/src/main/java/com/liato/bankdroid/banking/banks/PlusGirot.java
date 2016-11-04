@@ -45,8 +45,6 @@ public class PlusGirot extends Bank {
 
     private static final String NAME = "PlusGirot";
 
-    private static final String NAME_SHORT = "plusgirot";
-
     private static final String URL = "https://kontoutdrag.plusgirot.se/";
 
     private static final int BANKTYPE_ID = IBankTypes.PLUSGIROT;
@@ -63,11 +61,17 @@ public class PlusGirot extends Bank {
 
     public PlusGirot(Context context) {
         super(context, R.drawable.logo_plusgirot);
+        super.url = URL;
+    }
 
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public PlusGirot(String username, String password, Context context) throws BankException,

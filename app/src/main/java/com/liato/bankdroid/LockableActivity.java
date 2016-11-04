@@ -40,7 +40,7 @@ import android.view.WindowManager;
 
 public class LockableActivity extends ActionBarActivity {
 
-    private static int PATTERNLOCK_UNLOCK = 42;
+    private static final int PATTERNLOCK_UNLOCK = 42;
 
     protected boolean mSkipLockOnce = false;
 

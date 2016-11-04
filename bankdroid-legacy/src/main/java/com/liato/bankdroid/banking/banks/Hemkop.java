@@ -50,8 +50,6 @@ public class Hemkop extends Bank {
 
     private static final String NAME = "Hemköp Kundkort";
 
-    private static final String NAME_SHORT = "hemkop";
-
     private static final String URL = "https://www.hemkop.se/Mina-sidor/Logga-in/";
 
     private static final int BANKTYPE_ID = IBankTypes.HEMKOP;
@@ -65,12 +63,19 @@ public class Hemkop extends Bank {
     public Hemkop(Context context) {
         super(context, R.drawable.logo_hemkop);
 
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
-        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
-        super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
+        super.url = URL;
+        super.inputTypeUsername = INPUT_TYPE_USERNAME;
+        super.inputHintUsername = INPUT_HINT_USERNAME;
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public Hemkop(String username, String password, Context context) throws BankException,

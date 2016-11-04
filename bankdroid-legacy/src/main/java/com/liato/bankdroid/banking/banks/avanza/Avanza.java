@@ -57,11 +57,17 @@ public class Avanza extends Bank {
 
     protected Avanza(Context context, @DrawableRes int logoResource) {
         super(context, logoResource);
-        TAG = "Avanza";
-        NAME = "Avanza";
-        NAME_SHORT = "avanza";
-        URL = "https://iphone.avanza.se";
-        BANKTYPE_ID = IBankTypes.AVANZA;
+        url = "https://iphone.avanza.se";
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return IBankTypes.AVANZA;
+    }
+
+    @Override
+    public String getName() {
+        return "Avanza";
     }
 
     public Avanza(Context context) {
@@ -72,12 +78,12 @@ public class Avanza extends Bank {
     protected LoginPackage preLogin() throws BankException, IOException {
         urlopen = new Urllib(context,
                 CertificateReader.getCertificates(context, R.raw.cert_avanza));
-        urlopen.addHeader("Referer", URL + "/start");
+        urlopen.addHeader("Referer", url + "/start");
         List<NameValuePair> postData = new ArrayList<NameValuePair>();
         postData.add(new BasicNameValuePair("j_username", getUsername()));
         postData.add(new BasicNameValuePair("j_password", getPassword()));
-        postData.add(new BasicNameValuePair("url", URL + "/start"));
-        String response = urlopen.open(URL + "/ab/handlelogin", postData);
+        postData.add(new BasicNameValuePair("url", url + "/start"));
+        String response = urlopen.open(url + "/ab/handlelogin", postData);
         String homeUrl = "";
         try {
             JSONObject jsonResponse = new JSONObject(response);
@@ -86,7 +92,7 @@ public class Avanza extends Bank {
             throw new BankException(
                     res.getText(R.string.unable_to_find).toString() + " login link.", e);
         }
-        LoginPackage lp = new LoginPackage(urlopen, postData, "", URL + homeUrl);
+        LoginPackage lp = new LoginPackage(urlopen, postData, "", url + homeUrl);
         lp.setIsLoggedIn(true);
         return lp;
     }

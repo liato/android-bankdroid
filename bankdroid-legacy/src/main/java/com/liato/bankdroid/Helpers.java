@@ -38,7 +38,7 @@ import timber.log.Timber;
 public class Helpers {
     private static final StrikethroughSpan STRIKE_THROUGH_SPAN = new StrikethroughSpan();
 
-    private final static String[] currencies = {"AED", "AFN", "ALL", "AMD", "ANG", "AOA", "ARS",
+    private final static String[] CURRENCIES = {"AED", "AFN", "ALL", "AMD", "ANG", "AOA", "ARS",
             "AUD",
             "AWG", "AZN", "BAM", "BBD", "BDT", "BGN", "BHD", "BIF",
             "BMD", "BND", "BOB", "BRL", "BSD", "BTN", "BWP", "BYR",
@@ -62,7 +62,7 @@ public class Helpers {
             "XAU", "XCD", "XDR", "XOF", "XPD", "XPF", "XPT", "YER",
             "ZAR", "ZMK", "ZWD"};
 
-    private final static String[][] symMappings = {{"$U", "UYU"}, {"$b", "BOB"}, {"BZ$", "BZD"},
+    private final static String[][] SYM_MAPPINGS = {{"$U", "UYU"}, {"$b", "BOB"}, {"BZ$", "BZD"},
             {"C$", "NIO"}, {"J$", "JMD"}, {"NT$", "TWD"},
             {"R$", "BRL"}, {"RD$", "DOP"}, {"TT$", "TTD"},
             {"Z$", "ZWD"}, {"$", "USD"}, {"B/.", "PAB"},
@@ -148,12 +148,12 @@ public class Helpers {
 
     public static String parseCurrency(String text, String def) {
         text = text != null ? text.toLowerCase() : "";
-        for (String currency : currencies) {
+        for (String currency : CURRENCIES) {
             if (text.contains(currency)) {
                 return currency;
             }
         }
-        for (String[] symCur : symMappings) {
+        for (String[] symCur : SYM_MAPPINGS) {
             if (text.contains(symCur[0])) {
                 return symCur[1];
             }

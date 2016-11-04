@@ -63,11 +63,18 @@ public class Bredband2VoIP extends Bank {
 
     public Bredband2VoIP(Context context) {
         super(context, R.drawable.logo_bredband2voip);
-        NAME = "Bredband2 VoIP";
-        NAME_SHORT = "bredband2voip";
-        BANKTYPE_ID = IBankTypes.BREDBAND2VOIP;
-        super.INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
-        super.INPUT_HINT_USERNAME = "19XXXXXX-XXXX";
+        super.inputTypeUsername = InputType.TYPE_CLASS_PHONE;
+        super.inputHintUsername = "19XXXXXX-XXXX";
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return IBankTypes.BREDBAND2VOIP;
+    }
+
+    @Override
+    public String getName() {
+        return "Bredband2 VoIP";
     }
 
     public Bredband2VoIP(String username, String password, Context context)

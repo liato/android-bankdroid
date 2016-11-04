@@ -42,8 +42,6 @@ public class BlekingeTrafiken extends Bank {
 
     private static final String NAME = "Blekingetrafiken";
 
-    private static final String NAME_SHORT = "blekingetrafiken";
-
     private static final String URL = "https://www.blekingetrafiken.se";
 
     private static final int BANKTYPE_ID = IBankTypes.BLEKINGETRAFIKEN;
@@ -52,15 +50,21 @@ public class BlekingeTrafiken extends Bank {
 
     public BlekingeTrafiken(Context context) {
         super(context, R.drawable.logo_blekingetrafiken);
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
-        super.INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
-        super.INPUT_HINT_USERNAME = "XXXXXXXXXX";
-        super.INPUT_TITLETEXT_USERNAME = R.string.card_number;
-        super.INPUT_HIDDEN_PASSWORD = true;
+        super.url = URL;
+        super.inputTypeUsername = InputType.TYPE_CLASS_PHONE;
+        super.inputHintUsername = "XXXXXXXXXX";
+        super.inputTitletextUsername = R.string.card_number;
+        super.inputHiddenPassword = true;
+    }
 
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public BlekingeTrafiken(String username, String password, Context context)

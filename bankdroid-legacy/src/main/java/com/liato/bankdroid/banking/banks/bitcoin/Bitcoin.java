@@ -40,8 +40,6 @@ public class Bitcoin extends Bank {
 
     private static final String NAME = "Bitcoin";
 
-    private static final String NAME_SHORT = "bitcoin";
-
     private static final String URL = "http://blockchain.info";
 
     private static final int BANKTYPE_ID = IBankTypes.BITCOIN;
@@ -59,14 +57,21 @@ public class Bitcoin extends Bank {
     public Bitcoin(Context context) {
         super(context, R.drawable.logo_bitcoin);
 
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
-        super.STATIC_BALANCE = STATIC_BALANCE;
+        super.url = URL;
+        super.staticBalance = STATIC_BALANCE;
         super.currency = "BTC";
-        super.INPUT_HIDDEN_PASSWORD = INPUT_HIDDEN_PASSWORD;
-        super.INPUT_TITLETEXT_USERNAME = INPUT_TITLETEXT_USERNAME;
+        super.inputHiddenPassword = INPUT_HIDDEN_PASSWORD;
+        super.inputTitletextUsername = INPUT_TITLETEXT_USERNAME;
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public Bitcoin(String username, String password, Context context)

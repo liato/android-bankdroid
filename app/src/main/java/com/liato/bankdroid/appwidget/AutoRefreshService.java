@@ -394,15 +394,15 @@ public class AutoRefreshService extends Service {
                     }
                 } catch (final BankException e) {
                     // Refresh widgets if an update fails
-                    Timber.e(e, "Could not update bank %s", bank.getShortName());
+                    Timber.e(e, "Could not update bank %s", bank.getName());
                 } catch (final LoginException e) {
-                    Timber.d(e, "Invalid credentials for bank %s", bank.getShortName());
+                    Timber.d(e, "Invalid credentials for bank %s", bank.getName());
                     refreshWidgets = true;
                     db.disableBank(bank.getDbId());
                 } catch (BankChoiceException e) {
                     Timber.w(e, "BankChoiceException");
                 } catch (Exception e) {
-                    Timber.e(e, "An unexpected error occurred while updating bank %s", bank.getShortName());
+                    Timber.e(e, "An unexpected error occurred while updating bank %s", bank.getName());
                 }
             }
 

@@ -32,8 +32,6 @@ public class Meniga extends Bank {
 
     private static final String NAME = "Meniga";
 
-    private static final String NAME_SHORT = "meniga";
-
     private static final String URL = "https://www.meniga.is/";
 
     private static final int BANKTYPE_ID = IBankTypes.MENIGA;
@@ -53,13 +51,20 @@ public class Meniga extends Bank {
     public Meniga(Context context) {
         super(context, R.drawable.logo_meniga);
 
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
-        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
-        super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
+        super.url = URL;
+        super.inputTypeUsername = INPUT_TYPE_USERNAME;
+        super.inputHintUsername = INPUT_HINT_USERNAME;
         super.setCurrency("ISK");
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public Meniga(String username, String password, Context context) throws BankException,

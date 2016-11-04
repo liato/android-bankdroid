@@ -48,13 +48,19 @@ public class MinPension extends Bank {
 
     public MinPension(Context context) {
         super(context, R.drawable.logo_minpension);
-        TAG = "MinPension";
-        NAME = "Min Pension.se";
-        NAME_SHORT = "minpension";
-        BANKTYPE_ID = IBankTypes.MINPENSION;
-        INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
-        INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE | InputType.TYPE_TEXT_VARIATION_PASSWORD;
-        INPUT_HINT_USERNAME = res.getText(R.string.pno).toString();
+        inputTypeUsername = InputType.TYPE_CLASS_PHONE;
+        inputTypePassword = InputType.TYPE_CLASS_PHONE | InputType.TYPE_TEXT_VARIATION_PASSWORD;
+        inputHintUsername = res.getText(R.string.pno).toString();
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return IBankTypes.MINPENSION;
+    }
+
+    @Override
+    public String getName() {
+        return "Min Pension.se";
     }
 
     public MinPension(String username, String password, Context context)
@@ -128,8 +134,8 @@ public class MinPension extends Bank {
         super.updateComplete();
     }
 
-    private Account updateAccount(String URL, String selector, String name) throws IOException {
-        String response = urlopen.open(URL);
+    private Account updateAccount(String url, String selector, String name) throws IOException {
+        String response = urlopen.open(url);
         Document dResponse = Jsoup.parse(response);
         List<Transaction> transactions = new ArrayList<>();
         String institute = "";

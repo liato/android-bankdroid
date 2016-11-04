@@ -48,8 +48,6 @@ public class Jojo extends Bank {
 
     private static final String NAME = "Jojo Reskassa";
 
-    private static final String NAME_SHORT = "jojo";
-
     private static final String URL = "https://www.skanetrafiken.se";
 
     private static final int BANKTYPE_ID = IBankTypes.JOJO;
@@ -64,12 +62,19 @@ public class Jojo extends Bank {
     public Jojo(Context context) {
         super(context, R.drawable.logo_jojo);
 
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
-        super.INPUT_TITLETEXT_USERNAME = R.string.email;
-        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
+        super.url = URL;
+        super.inputTitletextUsername = R.string.email;
+        super.inputTypeUsername = INPUT_TYPE_USERNAME;
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public Jojo(String username, String password, Context context) throws BankException,

@@ -54,14 +54,6 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     @DrawableRes
     private final int logoResource;
 
-    protected String TAG = "Bank";
-
-    protected String NAME = "Bank";
-
-    protected String NAME_SHORT = "bank";
-
-    protected int BANKTYPE_ID = 0;
-
     /**
      * URL for human-accessible web bank.
      * <p/>
@@ -71,43 +63,43 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
      * @see #isWebViewEnabled()
      */
     @Nullable
-    protected String URL;
+    protected String url;
 
-    protected int INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT;
+    protected int inputTypeUsername = InputType.TYPE_CLASS_TEXT;
 
-    protected int INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_TEXT
+    protected int inputTypePassword = InputType.TYPE_CLASS_TEXT
             | InputType.TYPE_TEXT_VARIATION_PASSWORD;
 
-    protected int INPUT_TYPE_EXTRAS = InputType.TYPE_CLASS_TEXT;
+    private static final int INPUT_TYPE_EXTRAS = InputType.TYPE_CLASS_TEXT;
 
-    protected String INPUT_HINT_USERNAME = null;
+    protected String inputHintUsername = null;
 
-    protected boolean INPUT_HIDDEN_USERNAME = false;
+    private static final boolean INPUT_HIDDEN_USERNAME = false;
 
-    protected boolean INPUT_HIDDEN_PASSWORD = false;
+    protected boolean inputHiddenPassword = false;
 
-    protected boolean INPUT_HIDDEN_EXTRAS = true;
+    private static final boolean INPUT_HIDDEN_EXTRAS = true;
 
-    protected int INPUT_TITLETEXT_USERNAME = R.string.username;
+    protected int inputTitletextUsername = R.string.username;
 
-    protected int INPUT_TITLETEXT_PASSWORD = R.string.password;
+    private final int INPUT_TITLETEXT_PASSWORD = R.string.password;
 
-    protected int INPUT_TITLETEXT_EXTRAS = R.string.extras_field;
+    private final int INPUT_TITLETEXT_EXTRAS = R.string.extras_field;
 
-    protected boolean STATIC_BALANCE = false;
+    protected boolean staticBalance = false;
 
-    protected boolean BROKEN = false;
+    private static final boolean BROKEN = false;
 
-    protected boolean DISPLAY_DECIMALS = true;
+    protected boolean displayDecimals = true;
 
     /**
      * Whether or not we support opening the web version of a bank.
      * <p/>
      * Lots of banks don't have this any more, but have apps instead.
      * @see #isWebViewEnabled()
-     * @see #URL
+     * @see #url
      */
-    protected boolean WEB_VIEW_ENABLED = true;
+    protected boolean webViewEnabled = true;
 
     protected Context context;
 
@@ -229,7 +221,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     }
 
     public BigDecimal getBalance() {
-        if (STATIC_BALANCE) {
+        if (staticBalance) {
             return balance;
         } else {
             BigDecimal bal = new BigDecimal(0);
@@ -246,13 +238,9 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
         }
     }
 
-    public int getBanktypeId() {
-        return BANKTYPE_ID;
-    }
+    public abstract int getBanktypeId();
 
-    public String getName() {
-        return NAME;
-    }
+    public abstract String getName();
 
     public String getDisplayName() {
         if (customName != null && customName.length() > 0) {
@@ -277,10 +265,6 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     public void setExtras(String extras) {
         getProperties().put(LegacyProviderConfiguration.EXTRAS, extras);
       }
-
-    public String getShortName() {
-        return NAME_SHORT;
-    }
 
     public void setData(BigDecimal balance,
             boolean disabled, long dbid, String currency, String customName,
@@ -314,15 +298,15 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     }
 
     public String getURL() {
-        return URL;
+        return url;
     }
 
     public int getInputTypeUsername() {
-        return INPUT_TYPE_USERNAME;
+        return inputTypeUsername;
     }
 
     public int getInputTypePassword() {
-        return INPUT_TYPE_PASSWORD;
+        return inputTypePassword;
     }
 
     public int getInputTypeExtras() {
@@ -330,7 +314,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     }
 
     public String getInputHintUsername() {
-        return INPUT_HINT_USERNAME;
+        return inputHintUsername;
     }
 
     public boolean isInputUsernameHidden() {
@@ -338,7 +322,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     }
 
     public boolean isInputPasswordHidden() {
-        return INPUT_HIDDEN_PASSWORD;
+        return inputHiddenPassword;
     }
 
     public boolean isInputExtrasHidden() {
@@ -346,7 +330,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     }
 
     public int getInputTitleUsername() {
-        return INPUT_TITLETEXT_USERNAME;
+        return inputTitletextUsername;
     }
 
     public int getInputTitlePassword() {
@@ -361,11 +345,11 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
      * Whether or not we support opening the web version of a bank.
      * <p/>
      * Lots of banks don't have this any more, but have apps instead.
-     * @see #WEB_VIEW_ENABLED
-     * @see #URL
+     * @see #webViewEnabled
+     * @see #url
      */
     public boolean isWebViewEnabled() {
-        return URL != null && WEB_VIEW_ENABLED;
+        return url != null && webViewEnabled;
     }
 
     public Map<String, String> getProperties() {
@@ -455,7 +439,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
             Timber.e(e, "Error getting session package");
         }
         String html = String.format(preloader,
-                String.format("function go(){window.location=\"%s\" }", this.URL),
+                String.format("function go(){window.location=\"%s\" }", this.url),
                 // Javascript function
                 "<script type=\"text/javascript\">setTimeout('go()', 1000);</script>" // HTML
         );
@@ -467,7 +451,7 @@ public abstract class Bank implements Comparable<Bank>, IBankTypes {
     }
 
     public boolean getDisplayDecimals() {
-        return DISPLAY_DECIMALS;
+        return displayDecimals;
     }
 
     protected Context getContext() {

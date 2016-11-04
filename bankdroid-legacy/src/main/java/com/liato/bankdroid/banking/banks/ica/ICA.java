@@ -66,17 +66,23 @@ public class ICA extends Bank {
 
     public ICA(Context context) {
         super(context, R.drawable.logo_ica);
-        TAG = "ICA";
-        NAME = "ICA";
-        NAME_SHORT = "ica";
-        URL = "http://mobil.ica.se/";
-        BANKTYPE_ID = IBankTypes.ICA;
-        INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_PHONE;
-        INPUT_TYPE_PASSWORD = InputType.TYPE_CLASS_PHONE;
-        INPUT_HINT_USERNAME = "ÅÅMMDDXXXX";
+        url = "http://mobil.ica.se/";
+        inputTypeUsername = InputType.TYPE_CLASS_PHONE;
+        inputTypePassword = InputType.TYPE_CLASS_PHONE;
+        inputHintUsername = "ÅÅMMDDXXXX";
         mHeaders.put(AUTHENTICATION_TICKET_HEADER, null);
         mHeaders.put(SESSION_TICKET_HEADER, null);
         mHeaders.put(LOGOUT_KEY_HEADER, null);
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return IBankTypes.ICA;
+    }
+
+    @Override
+    public String getName() {
+        return "ICA";
     }
 
     public ICA(String username, String password, Context context)

@@ -45,8 +45,6 @@ public class Hors extends Bank {
 
     private static final String NAME = "Hörs";
 
-    private static final String NAME_SHORT = "hors";
-
     private static final String URL = "http://www.dittkort.se/hors/";
 
     private static final int BANKTYPE_ID = IBankTypes.HORS;
@@ -58,15 +56,22 @@ public class Hors extends Bank {
     public Hors(Context context) {
         super(context, R.drawable.logo_hors);
 
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
-        super.DISPLAY_DECIMALS = DISPLAY_DECIMALS;
-        super.INPUT_TYPE_USERNAME = InputType.TYPE_CLASS_TEXT
+        super.url = URL;
+        super.displayDecimals = DISPLAY_DECIMALS;
+        super.inputTypeUsername = InputType.TYPE_CLASS_TEXT
                 | +InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
-        super.INPUT_HINT_USERNAME = context.getString(R.string.card_id);
-        super.INPUT_HIDDEN_PASSWORD = true;
+        super.inputHintUsername = context.getString(R.string.card_id);
+        super.inputHiddenPassword = true;
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public Hors(String username, String password, Context context) throws BankException,

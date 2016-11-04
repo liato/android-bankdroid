@@ -46,8 +46,6 @@ public class Payson extends Bank {
 
     private static final String NAME = "Payson";
 
-    private static final String NAME_SHORT = "payson";
-
     private static final String URL = "https://www.payson.se/signin/";
 
     private static final int BANKTYPE_ID = IBankTypes.PAYSON;
@@ -66,11 +64,18 @@ public class Payson extends Bank {
     public Payson(Context context) {
         super(context, R.drawable.logo_payson);
 
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
-        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
+        super.url = URL;
+        super.inputTypeUsername = INPUT_TYPE_USERNAME;
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public Payson(String username, String password, Context context) throws BankChoiceException,

@@ -32,8 +32,6 @@ public class SveaDirekt extends Bank {
 
     private static final String NAME = "Svea Direkt";
 
-    private static final String NAME_SHORT = "sveadirekt";
-
     private static final String URL = "https://http://www.sveadirekt.com/sv/swe//";
 
     private static final int BANKTYPE_ID = IBankTypes.SVEADIREKT;
@@ -61,13 +59,20 @@ public class SveaDirekt extends Bank {
     public SveaDirekt(Context context) {
         super(context, R.drawable.logo_sveadirekt);
 
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.URL = URL;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
-        super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
-        super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
+        super.url = URL;
+        super.inputTypeUsername = INPUT_TYPE_USERNAME;
+        super.inputTypePassword = INPUT_TYPE_PASSWORD;
+        super.inputHintUsername = INPUT_HINT_USERNAME;
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public SveaDirekt(String username, String password, Context context) throws BankException,

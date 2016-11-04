@@ -44,8 +44,6 @@ public class BetterGlobe extends Bank {
 
     private static final String NAME = "Better Globe";
 
-    private static final String NAME_SHORT = "betterglobe";
-
     private static final String URL = "http://betterglobe.com";
 
     private static final int BANKTYPE_ID = IBankTypes.BETTERGLOBE;
@@ -70,15 +68,22 @@ public class BetterGlobe extends Bank {
 
     public BetterGlobe(Context context) {
         super(context, R.drawable.logo_betterglobe);
-        super.NAME = NAME;
-        super.NAME_SHORT = NAME_SHORT;
-        super.BANKTYPE_ID = BANKTYPE_ID;
-        super.URL = URL;
-        super.INPUT_TYPE_USERNAME = INPUT_TYPE_USERNAME;
-        super.INPUT_TYPE_PASSWORD = INPUT_TYPE_PASSWORD;
-        super.INPUT_HINT_USERNAME = INPUT_HINT_USERNAME;
-        super.STATIC_BALANCE = STATIC_BALANCE;
+        super.url = URL;
+        super.inputTypeUsername = INPUT_TYPE_USERNAME;
+        super.inputTypePassword = INPUT_TYPE_PASSWORD;
+        super.inputHintUsername = INPUT_HINT_USERNAME;
+        super.staticBalance = STATIC_BALANCE;
         super.currency = "EUR";
+    }
+
+    @Override
+    public int getBanktypeId() {
+        return BANKTYPE_ID;
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
     public BetterGlobe(String username, String password, Context context) throws BankException,

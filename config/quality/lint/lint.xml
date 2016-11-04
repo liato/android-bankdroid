@@ -30,7 +30,6 @@
     <issue id="NewerVersionAvailable" severity="ignore" />
     <issue id="NotSibling" severity="ignore" />
     <issue id="ObsoleteLayoutParam" severity="ignore" />
-    <issue id="OldTargetApi" severity="ignore" />
     <issue id="Orientation" severity="ignore" />
     <issue id="Overdraw" severity="ignore" />
     <issue id="ParcelClassLoader" severity="ignore" />
