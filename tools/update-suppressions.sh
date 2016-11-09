@@ -21,8 +21,11 @@ function set_lint_suppressions() {
   cat > ${LINT_XML} << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <lint>
-    <!-- Disable since it has external dependencies that we cannot affect.-->
+    <!-- Disable since it has external dependencies that we cannot affect. -->
     <issue id="GradleDependency" severity="ignore" />
+
+    <!-- Disable since it starts failing for non-code-related reasons. -->
+    <issue id="OldTargetApi" severity="ignore" />
 
     <!-- FIXME: This file should be empty and all violations fixed. Then we will all hug. -->
 
