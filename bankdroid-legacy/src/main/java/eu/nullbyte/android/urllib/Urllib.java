@@ -149,7 +149,8 @@ public class Urllib {
         try {
             return this.open(url, new ArrayList<NameValuePair>());
         } catch (IOException e) {
-            throw ExceptionUtils.bankdroidifyException(e);
+            ExceptionUtils.blameBankdroid(e);
+            throw e;
         }
     }
 
@@ -162,7 +163,8 @@ public class Urllib {
         try {
             return open(url, postData, false);
         } catch (IOException e) {
-            throw ExceptionUtils.bankdroidifyException(e);
+            ExceptionUtils.blameBankdroid(e);
+            throw e;
         }
     }
 
@@ -182,7 +184,8 @@ public class Urllib {
         try {
             return openAsHttpResponse(url, entity, forcePost);
         } catch (IOException e) {
-            throw ExceptionUtils.bankdroidifyException(e);
+            ExceptionUtils.blameBankdroid(e);
+            throw e;
         }
     }
 
@@ -200,7 +203,8 @@ public class Urllib {
                 return openAsHttpResponse(url, entity, HttpMethod.POST);
             }
         } catch (IOException e) {
-            throw ExceptionUtils.bankdroidifyException(e);
+            ExceptionUtils.blameBankdroid(e);
+            throw e;
         }
     }
 
@@ -293,7 +297,8 @@ public class Urllib {
             return openStream(url, postData != null ? new StringEntity(postData, this.charset) : null,
                     forcePost);
         } catch (IOException e) {
-            throw ExceptionUtils.bankdroidifyException(e);
+            ExceptionUtils.blameBankdroid(e);
+            throw e;
         }
     }
 
