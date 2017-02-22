@@ -27,8 +27,6 @@ public interface IBankTypes {
     int LANSFORSAKRINGAR = 4;
     int COOP = 6;
     int ICA = 7;
-    int AVANZA = 9;
-    int AVANZAMINI = 11;
     int OKQ8 = 12;
     int FIRSTCARD = 14;
     int PAYSON = 16;

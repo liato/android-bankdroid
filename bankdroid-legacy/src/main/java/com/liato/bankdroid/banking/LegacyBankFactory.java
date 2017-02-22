@@ -4,7 +4,6 @@ import com.liato.bankdroid.banking.banks.AkeliusInvest;
 import com.liato.bankdroid.banking.banks.AkeliusSpar;
 import com.liato.bankdroid.banking.banks.americanexpress.AmericanExpress;
 import com.liato.bankdroid.banking.banks.AppeakPoker;
-import com.liato.bankdroid.banking.banks.AvanzaMini;
 import com.liato.bankdroid.banking.banks.BetterGlobe;
 import com.liato.bankdroid.banking.banks.Bioklubben;
 import com.liato.bankdroid.banking.banks.BlekingeTrafiken;
@@ -36,7 +35,6 @@ import com.liato.bankdroid.banking.banks.TestBank;
 import com.liato.bankdroid.banking.banks.TicketRikskortet;
 import com.liato.bankdroid.banking.banks.Vasttrafik;
 import com.liato.bankdroid.banking.banks.Zidisha;
-import com.liato.bankdroid.banking.banks.avanza.Avanza;
 import com.liato.bankdroid.banking.banks.bitcoin.Bitcoin;
 import com.liato.bankdroid.banking.banks.coop.Coop;
 import com.liato.bankdroid.banking.banks.ica.ICA;
@@ -71,10 +69,6 @@ public class LegacyBankFactory {
                 return new Coop(context);
             case IBankTypes.ICA:
                 return new ICA(context);
-            case IBankTypes.AVANZA:
-                return new Avanza(context);
-            case IBankTypes.AVANZAMINI:
-                return new AvanzaMini(context);
             case IBankTypes.OKQ8:
                 return new OKQ8(context);
             case IBankTypes.FIRSTCARD:
@@ -157,8 +151,6 @@ public class LegacyBankFactory {
         banks.add(new Lansforsakringar(context));
         banks.add(new Coop(context));
         banks.add(new ICA(context));
-        banks.add(new Avanza(context));
-        banks.add(new AvanzaMini(context));
         banks.add(new OKQ8(context));
         banks.add(new FirstCard(context));
         banks.add(new Payson(context));
