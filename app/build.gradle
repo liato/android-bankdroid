@@ -38,14 +38,14 @@ ext {
 }
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.3"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.1"
 
     useLibrary 'org.apache.http.legacy'
     defaultConfig {
         applicationId "com.liato.bankdroid"
         minSdkVersion 9
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode 224 + gitVersionCode
         versionName gitVersionName
     }
@@ -87,7 +87,7 @@ dependencies {
     compile project(':bankdroid-core')
     compile 'com.jakewharton:butterknife:6.1.0'
     compile 'com.jakewharton.timber:timber:4.3.1'
-    compile "com.android.support:appcompat-v7:24.2.1"
+    compile "com.android.support:appcompat-v7:25.2.0"
     compile 'com.google.collections:google-collections:1.0'
     compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
         transitive = true;
