@@ -20,7 +20,6 @@
     <issue id="GoogleAppIndexingWarning" severity="ignore" />
     <issue id="IconDensities" severity="ignore" />
     <issue id="IconDuplicates" severity="ignore" />
-    <issue id="IconExpectedSize" severity="ignore" />
     <issue id="IconLocation" severity="ignore" />
     <issue id="IconMissingDensityFolder" severity="ignore" />
     <issue id="InefficientWeight" severity="ignore" />
