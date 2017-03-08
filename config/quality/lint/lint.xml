@@ -47,8 +47,6 @@
     <issue id="TrulyRandom" severity="ignore" />
     <issue id="UnknownIdInLayout" severity="ignore" />
     <issue id="UnusedAttribute" severity="ignore" />
-    <issue id="UnusedIds" severity="ignore" />
-    <issue id="UnusedResources" severity="ignore" />
     <issue id="UseCompoundDrawables" severity="ignore" />
     <issue id="UselessParent" severity="ignore" />
     <issue id="WorldReadableFiles" severity="ignore" />
