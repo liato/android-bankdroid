@@ -154,7 +154,7 @@ public class FieldBuilder {
 
         @Override
         public void validate(String value) throws IllegalArgumentException {
-            if (isRequired()) {
+            if (required) {
                 if (value == null || value.trim().isEmpty()) {
                     throw new IllegalArgumentException(String.format("%s is required", getLabel()));
                 }
@@ -168,7 +168,7 @@ public class FieldBuilder {
             if (!isLocale()) {
                 return null;
             }
-            String propertyKey = String.format("field.%s.%s", getReference(), key);
+            String propertyKey = String.format("field.%s.%s", reference, key);
             return resourceBundle.containsKey(propertyKey) ? resourceBundle.getString(propertyKey)
                     : propertyKey;
         }

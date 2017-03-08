@@ -59,7 +59,7 @@ public class MainActivity extends LockableActivity {
 
     protected static boolean showHidden = false;
 
-    private static Bank selectedBank = null;
+    private Bank selectedBank = null;
 
     private static Account selectedAccount = null;
 
@@ -241,7 +241,7 @@ public class MainActivity extends LockableActivity {
             final Button btnHide = (Button) root.findViewById(R.id.btnHide);
             final Button btnUnhide = (Button) root.findViewById(R.id.btnUnhide);
             final Button btnWWW = (Button) root.findViewById(R.id.btnWWW);
-            if (selectedBank.getHideAccounts()) {
+            if (parent.selectedBank.getHideAccounts()) {
                 btnHide.setVisibility(View.GONE);
                 btnUnhide.setVisibility(View.VISIBLE);
                 btnUnhide.setOnClickListener(this);
@@ -250,7 +250,7 @@ public class MainActivity extends LockableActivity {
                 btnUnhide.setVisibility(View.GONE);
                 btnHide.setOnClickListener(this);
             }
-            if (selectedBank.isWebViewEnabled()) {
+            if (parent.selectedBank.isWebViewEnabled()) {
                 btnWWW.setOnClickListener(this);
             } else {
                 btnWWW.setVisibility(View.GONE);
@@ -270,29 +270,29 @@ public class MainActivity extends LockableActivity {
                 case R.id.btnHide:
                 case R.id.btnUnhide:
                     this.dismiss();
-                    selectedBank.toggleHideAccounts();
-                    DBAdapter.save(selectedBank, context);
+                    parent.selectedBank.toggleHideAccounts();
+                    DBAdapter.save(parent.selectedBank, context);
                     parent.refreshView();
                     return;
                 case R.id.btnWWW:
-                    if (selectedBank != null && selectedBank.isWebViewEnabled()) {
+                    if (parent.selectedBank != null && parent.selectedBank.isWebViewEnabled()) {
                         //Uri uri = Uri.parse(selectedBank.getURL());
                         //Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                         final Intent intent = new Intent(context, WebViewActivity.class);
-                        intent.putExtra("bankid", selectedBank.getDbId());
+                        intent.putExtra("bankid", parent.selectedBank.getDbId());
                         context.startActivity(intent);
                     }
                     this.dismiss();
                     return;
                 case R.id.btnEdit:
                     final Intent intent = new Intent(context, BankEditActivity.class);
-                    intent.putExtra("id", selectedBank.getDbId());
+                    intent.putExtra("id", parent.selectedBank.getDbId());
                     context.startActivity(intent);
                     this.dismiss();
                     return;
                 case R.id.btnRefresh:
                     this.dismiss();
-                    new DataRetrieverTask(parent, selectedBank.getDbId()).execute();
+                    new DataRetrieverTask(parent, parent.selectedBank.getDbId()).execute();
                     return;
                 case R.id.btnRemove:
                     this.dismiss();
@@ -307,7 +307,7 @@ public class MainActivity extends LockableActivity {
                                         public void onClick(final DialogInterface dialog,
                                                 final int id) {
                                             final DBAdapter db = new DBAdapter(context);
-                                            db.deleteBank(selectedBank.getDbId());
+                                            db.deleteBank(parent.selectedBank.getDbId());
                                             dialog.cancel();
                                             parent.refreshView();
                                         }
