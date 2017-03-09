@@ -5,15 +5,11 @@
     <string name="password">Password</string>
     <string name="extras_field">Extras</string>
     <string name="card_number">Card number</string>
-    <string name="account_number">Account number</string>
-    <string name="control_code">Control code</string>
     <string name="email">E-mail</string>
     <string name="points">points</string>
     <string name="card_id">Card ID</string>
     <string name="balance">Balance</string>
     <string name="pno">YYYYMMDDNNNN</string>
-
-    <string name="nordnetdirekt_extras_title">Key</string>
 
     <string name="bitcoin_address">Bitcoin address</string>
     <string name="invalid_bitcoin_address">Invalid bitcoin address.</string>
@@ -27,7 +23,6 @@
     <string name="no_accounts_found">No accounts found</string>
     <string name="invalid_username">Invalid username.</string>
     <string name="invalid_card_number">Invalid card number.</string>
-    <string name="bank_closed">The bank is currently closed.</string>
     <string name="server_error_try_again">Server error. Please try again later.</string>
     <string name="update_transactions_error">"There was a problem updating the transaction details. Please try again later."</string>
 

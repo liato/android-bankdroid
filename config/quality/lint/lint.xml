@@ -20,7 +20,6 @@
     <issue id="GoogleAppIndexingWarning" severity="ignore" />
     <issue id="IconDensities" severity="ignore" />
     <issue id="IconDuplicates" severity="ignore" />
-    <issue id="IconExpectedSize" severity="ignore" />
     <issue id="IconLocation" severity="ignore" />
     <issue id="IconMissingDensityFolder" severity="ignore" />
     <issue id="InefficientWeight" severity="ignore" />
@@ -47,8 +46,6 @@
     <issue id="TrulyRandom" severity="ignore" />
     <issue id="UnknownIdInLayout" severity="ignore" />
     <issue id="UnusedAttribute" severity="ignore" />
-    <issue id="UnusedIds" severity="ignore" />
-    <issue id="UnusedResources" severity="ignore" />
     <issue id="UseCompoundDrawables" severity="ignore" />
     <issue id="UselessParent" severity="ignore" />
     <issue id="WorldReadableFiles" severity="ignore" />

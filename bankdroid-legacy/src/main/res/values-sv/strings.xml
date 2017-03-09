@@ -2,15 +2,11 @@
     <string name="username">Användarnamn</string>
     <string name="password">Lösenord</string>
     <string name="card_number">Kortnummer</string>
-    <string name="account_number">Kontonummer</string>
-    <string name="control_code">Kontrollkod</string>
     <string name="email">E-post</string>
     <string name="points">poäng</string>
     <string name="card_id">Kort ID</string>
     <string name="balance">Saldo</string>
     <string name="pno">ÅÅÅÅMMDDNNNN</string>
-
-    <string name="nordnetdirekt_extras_title">Nyckel</string>
 
     <string name="bitcoin_address">Bitcoin-adress</string>
     <string name="invalid_bitcoin_address">Ogiltig bitcoin-adress.</string>
@@ -24,7 +20,6 @@
     <string name="no_accounts_found">Inga konton funna</string>
     <string name="invalid_username">Ogiltigt användarnamn.</string>
     <string name="invalid_card_number">Ogiltigt kortnummer.</string>
-    <string name="bank_closed">Banken är för närvarande stängd.</string>
     <string name="server_error_try_again">Serverfel. Var god försök igen om en stund.</string>
     <string name="update_transactions_error">Kunde ej uppdatera transaktionsdata. Var vänlig försök igen senare.</string>
 </resources>
