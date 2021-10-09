@@ -5,7 +5,7 @@
     :alt: Join the chat at https://bankdroid.herokuapp.com/
     :target: https://bankdroid.herokuapp.com/
 
-Bankdroid
+Bankdroid:-
 =========
 
 Bankdroid is an Android app for Swedish banks, payment cards and similar services. Key features include:
@@ -14,12 +14,12 @@ Bankdroid is an Android app for Swedish banks, payment cards and similar service
 * Notifications whenever your balance changes
 * Widgets to show your balance anywhere on your home screen
 
-More information can be found at:
+More information can be found at:-
 
 * `Bankdroid on Google Play <https://play.google.com/store/apps/details?id=com.liato.bankdroid>`_
 * `Bankdroid thread at the Swedroid Forum <http://goo.gl/9tJeH>`_ (Swedish)
 
-Contribute or report broken banks
+Contribute or report broken banks:-
 ------------------------------------
 The following information is needed for troubleshooting a broken bank or if you want a new bank to be supported 
 by Bankdroid.
@@ -33,7 +33,7 @@ NOTE. Do not forget to replace your personal information in the html code with r
 information before you send everything to android [at] nullbyte.eu. 
 You can also open an issue here at Github with the required files included as an attachment.
 
-Development environment
+Development environment:-
 -----------------------
 
 Bankdroid is written for Android Studio 0.8.2 and Gradle 1.12. Here's how to get the code up and
@@ -45,7 +45,7 @@ running on your computer:
 4. Select "Make project" from the Build menu
 5. Select Run from the Run menu
 
-License
+License:-
 -------
 
 The Bankdroid source code is licensed under the
