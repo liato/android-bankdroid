@@ -13,6 +13,17 @@ buildscript {
 }
 
 allprojects {
+    //tasks.withType(Test).configureEach {
+    //    maxParallelForks = 4
+    //    forkEvery = 100
+    //    reports.html.required = false
+    //    reports.junitXml.required = false
+    //}
+
+    tasks.withType(JavaCompile).configureEach {
+        options.incremental = true
+    }
+
     repositories {
         mavenCentral()
     }
